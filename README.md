@@ -1,121 +1,91 @@
-# 🐱 Core Cats - Fully On-chain NFT Project on Core Blockchain
+# CoreCats 🐱
+A fully on-chain, KYC-gated NFT project on Core Blockchain.
 
-## English
+- 🧱 Built with Solidity for the Core ecosystem
+- 🎨 Features 100% on-chain SVG artwork
+- 🔐 Minting limited to CorePass KYC users
+- 📦 Open-source, transparent, and rugpull-resistant
 
-### Overview
-Core Cats is one of the earliest fully on-chain NFT collections on the **Core Blockchain**.  
-It features **24x24 pixel generative cats**, inspired by CryptoPunks, each with unique patterns, eye colors, and poses.  
-All 1,000 NFTs are **fully generated and stored on-chain**—no off-chain metadata.
 
-- **Total Supply:** 1,000 unique cats
-- **Mint Type:** Free Mint (KYC required via CorePass)
-- **License:** Fully open-source (MIT)
-- **Blockchain:** Core Blockchain (CBC-20 / ERC-721 compatible)
+## License
+This project is licensed under the MIT License.
 
----
 
-### Objectives
-- Become a **historic first wave** of fully on-chain NFTs on Core Blockchain.
-- Provide a **fun, open, and transparent** experience for the community.
-- **No hidden processes**: All code, assets, and development steps will be open-sourced on GitHub.
-- Use **CorePass KYC** as a minting requirement to showcase its utility.
-- Design inspired by CryptoPunks, but with unique cat personalities.
+## 📜 Project Specification / プロジェクト仕様書
+_Last updated: 2025-08-13_
 
 ---
 
-### Roadmap
-1. **Local Development Setup**
-   - Initialize Foxar/Spark project
-   - GitHub repository setup and `.gitignore` for security
-   - Connect to full node (Contabo-hosted)
+### English
 
-2. **Smart Contract Development**
-   - Implement minimal ERC-721-compatible contract
-   - Store SVG images fully on-chain
-   - Random trait generation logic
+**Project Name**: CoreCats  
+**Blockchain**: Core Blockchain  
+**Token Standard**: CBC-20 / ERC721-compatible  
+**Total Supply**: **1,000 (immutable)**  
+**Mint Limit per User**: **3 (per KYC-verified address, immutable)**  
+**Artwork Specs**: **24×24 SVG pixel art** / Fully on-chain storage / Unique generation via part combination  
+**Mint Condition**: CorePass KYC-verified users only (verification method TBD)  
+**Mint Price**: **Free (no primary sale fee)**  
+**Secondary Sale Fee**: **None**  
+**Transparency Policy**: All contract code, generation logic, and deployment history will be publicly available on GitHub  
 
-3. **Local & Testnet Testing**
-   - Deploy to Foxar local environment
-   - Run integration tests for minting and metadata
+**Technical Policy**:
+1. **Randomness Method**: Pre-commitment + `blockhash`  
+   - Publish SHA256 hash of all art parts before mint  
+   - Combine with `blockhash` at mint time to determine parts  
+2. **Immutability**: Total supply and per-user limit fixed at the contract level  
+3. **Trust & Openness**:  
+   - Full source code and art parts published on GitHub  
+   - Open review process instead of formal audit (cost-saving)  
 
-4. **Mainnet Deployment**
-   - Deploy using dedicated issuer wallet (different from CorePass personal wallet)
-   - Verify contract on explorer
+**Development Steps**:
+1. **MVP Smart Contract**:  
+   - Implement minimal `mint()`, `generateSVG()`, `tokenURI()` functions  
+   - Use pre-commitment + `blockhash` randomness  
+2. **Testnet Verification**:  
+   - Deploy & mint on Devin or Koliba Testnet  
+3. **Mainnet Deployment**:  
+   - Store all data fully on-chain  
+   - Publish code, parts, and hashes on GitHub  
 
-5. **Launch & Community Engagement**
-   - Open mint for KYC-verified users
-   - Community showcase and support for trading
-
----
-
-### Tech Stack
-- **Smart Contracts:** Solidity (CBC-20/ERC-721)
-- **Dev Tools:** Spark, Probe, Foxar
-- **Frontend:** Static site (GitHub Pages / Vercel)
-- **Node:** Contabo VPS full node
-
----
-
-### License
-MIT License - Feel free to use, remix, and build upon.
-
----
-
-## 日本語
-
-### 概要
-**Core Cats** は **Core Blockchain** 上にデプロイされる、最初期のフルオンチェーンNFTコレクションの一つです。  
-**24×24ピクセルのジェネラティブ猫アート**を特徴とし、模様・目の色・ポーズがすべてランダム生成されます。  
-1,000体すべてが**完全にオンチェーンに保存**され、オフチェーンのメタデータは一切使用しません。
-
-- **発行総数:** 1,000匹
-- **ミント形式:** フリーミント（CorePassによるKYC必須）
-- **ライセンス:** 完全オープンソース（MIT）
-- **ブロックチェーン:** Core Blockchain（CBC-20 / ERC-721互換）
+**Operation Policy**:
+- Fully free project, no secondary sale royalties  
+- No operational control to change total supply or core specifications after deployment
 
 ---
 
-### 目的
-- Core Blockchain上の**歴史的初期フルオンチェーンNFT**として位置づける
-- コミュニティが安心して楽しめる、**オープンで透明なプロジェクト**
-- 制作過程やコードを**完全公開**
-- CorePass KYCをミント条件にし、**ユースケースを提示**
-- クリプトパンクスを参考にしつつ、独自の猫キャラクターを創造
+### 日本語
 
----
+**プロジェクト名**: CoreCats  
+**ブロックチェーン**: Core Blockchain  
+**トークン規格**: CBC-20 / ERC721互換  
+**総発行枚数**: **1,000体（不可変）**  
+**ユーザーあたりミント上限**: **3体（KYC認証済みアドレスごと、不可変）**  
+**画像仕様**: **24×24 SVGドットアート** / 全てオンチェーン保存 / パーツ組合せで唯一性生成  
+**ミント条件**: CorePass KYC認証済ユーザーのみ（認証方法は後日決定）  
+**ミント価格**: **無料（一次販売手数料なし）**  
+**二次流通手数料**: **なし**  
+**公開方針**: コントラクト、生成ロジック、デプロイ履歴をGitHubで全公開  
 
-### ロードマップ
-1. **ローカル開発環境構築**
-   - Foxar/Sparkプロジェクト初期化
-   - GitHubリポジトリ設定 & `.gitignore`で秘匿情報保護
-   - フルノード（Contabo）接続
+**技術方針**:
+1. **乱数生成方式**: 事前コミットメント＋`blockhash`  
+   - ミント前に全アートパーツのSHA256ハッシュを公開  
+   - ミント時に`blockhash`と組み合わせてパーツ決定  
+2. **不可変設定**: 総発行枚数・ユーザー上限をコントラクトで固定  
+3. **信頼性・オープン性**:  
+   - ソースコードとアートパーツをすべてGitHubで公開  
+   - 外部監査は省略し、オープンレビュー方式でコスト削減  
 
-2. **スマートコントラクト開発**
-   - 最小限のERC-721互換コントラクト実装
-   - SVG画像を完全オンチェーン化
-   - ランダム属性生成ロジック構築
+**開発ステップ**:
+1. **MVPスマートコントラクト作成**:  
+   - `mint()`・`generateSVG()`・`tokenURI()` の最低限機能を実装  
+   - 乱数生成は事前コミット＋`blockhash`  
+2. **テストネット検証**:  
+   - DevinまたはKoliba Testnetでデプロイ＆ミント  
+3. **本番デプロイ**:  
+   - 全データをオンチェーンに書き込み  
+   - コード・パーツ・ハッシュをGitHubで公開  
 
-3. **ローカル & テストネットテスト**
-   - Foxarローカル環境にデプロイ
-   - ミントやメタデータの統合テスト実施
-
-4. **メインネットデプロイ**
-   - CorePass個人アドレスとは別の発行者ウォレットでデプロイ
-   - コントラクトをエクスプローラで検証
-
-5. **ローンチ & コミュニティ展開**
-   - KYC認証済みユーザー向けにミント開放
-   - コミュニティ展示や取引サポート
-
----
-
-### 技術スタック
-- **スマートコントラクト:** Solidity (CBC-20/ERC-721)
-- **開発ツール:** Spark, Probe, Foxar
-- **フロントエンド:** 静的サイト（GitHub Pages / Vercel）
-- **ノード:** Contabo VPS フルノード
-
----
-
-### ライセンス
-MITライセンス - 自由に利用・改変可能
+**運営ポリシー**:
+- プロジェクトは完全フリー、二次流通ロイヤリティなし  
+- デプロイ後は総発行数や主要仕様を変更できないように設計
