@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 // ERC721 本体は Solmate を使用
 import {ERC721} from "solmate/tokens/ERC721.sol";
 // Base64 は OpenZeppelin を使用（インストール手順は上の①参照）
-import {Base64} from "openzeppelin-contracts/utils/Base64.sol";
+import "openzeppelin-contracts/contracts/utils/Base64.sol";
 
 contract CoreCats is ERC721 {
     string public constant VERSION = "0.1.0";
