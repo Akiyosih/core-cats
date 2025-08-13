@@ -1,43 +1,85 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+// ERC721 本体は Solmate を使用
 import {ERC721} from "solmate/tokens/ERC721.sol";
-import {Owned} from "solmate/auth/Owned.sol";
-// ←ここをOpenZeppelinのBase64に変更
-import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+// Base64 は OpenZeppelin を使用（インストール手順は上の①参照）
+import {Base64} from "openzeppelin-contracts/utils/Base64.sol";
 
-/// @title CoreCats (最小プロトタイプ)
-/// @notice 固定の24x24 SVGを返すフルオンチェーンNFT（雛形）
-contract CoreCats is ERC721, Owned {
-    string internal constant _SVG =
-        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' shape-rendering='crispEdges'>"
-        "<rect width='24' height='24' fill='#fff'/>"
-        "<rect x='4' y='3' width='4' height='4' fill='#000'/>"
-        "<rect x='16' y='3' width='4' height='4' fill='#000'/>"
-        "<rect x='6' y='8' width='4' height='4' fill='#000'/>"
-        "<rect x='14' y='8' width='4' height='4' fill='#000'/>"
-        "<rect x='6' y='16' width='12' height='2' fill='#000'/>"
-        "</svg>";
+contract CoreCats is ERC721 {
+    string public constant VERSION = "0.1.0";
+    address public owner;
 
-    string internal constant _NAME = "CoreCats";
-    string internal constant _DESC = "Fully on-chain placeholder SVG (24x24). Prototype.";
+    // シンプルなオーナー権限
+    modifier onlyOwner() {
+        require(msg.sender == owner, "not owner");
+        _;
+    }
 
-    constructor() ERC721(_NAME, "CCAT") Owned(msg.sender) {}
+    constructor() ERC721("CoreCats", "CCAT") {
+        owner = msg.sender;
+    }
 
+    /// @notice 暫定: ownerのみ任意IDをmint
     function mint(address to, uint256 id) external onlyOwner {
         _safeMint(to, id);
     }
 
-    function tokenURI(uint256 id) public view override returns (string memory) {
-        require(ownerOf[id] != address(0), "NOT_MINTED");
+    /// @notice 固定SVG（24×24のプレースホルダ）を data: URI JSON として返す
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(ownerOf(tokenId) != address(0), "nonexistent token");
 
-        string memory image = Base64.encode(bytes(_SVG));
-        string memory json = string.concat(
-            '{"name":"', _NAME,
-            '","description":"', _DESC,
-            '","image":"data:image/svg+xml;base64,', image,
-            '"}'
+        // 24x24の超シンプルなプレースホルダSVG（背景グレー、中央に猫の「:3」）
+        string memory svg = string(
+            abi.encodePacked(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" shape-rendering="crispEdges">',
+                '<rect width="24" height="24" fill="#e5e7eb"/>',
+                '<text x="12" y="14" font-size="10" text-anchor="middle" fill="#111827">:3</text>',
+                "</svg>"
+            )
         );
-        return string.concat("data:application/json;base64,", Base64.encode(bytes(json)));
+
+        // SVGをBase64
+        string memory imageData = string(
+            abi.encodePacked(
+                "data:image/svg+xml;base64,",
+                Base64.encode(bytes(svg))
+            )
+        );
+
+        // JSONメタデータを組み立て
+        string memory json = string(
+            abi.encodePacked(
+                '{"name":"CoreCats #',
+                _toString(tokenId),
+                '","description":"On-chain 24x24 placeholder (will be replaced by palette-compressed art).",',
+                '"image":"', imageData, '"}'
+            )
+        );
+
+        return string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64.encode(bytes(json))
+            )
+        );
+    }
+
+    // --- 内部: uint256 -> string（最小限の実装） ---
+    function _toString(uint256 value) internal pure returns (string memory) {
+        if (value == 0) return "0";
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        return string(buffer);
     }
 }
