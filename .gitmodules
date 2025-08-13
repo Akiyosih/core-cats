@@ -1,3 +1,6 @@
 [submodule "foxar/lib/spark-std"]
 	path = foxar/lib/spark-std
 	url = https://github.com/bchainhub/spark-std
+[submodule "foxar/lib/solmate"]
+	path = foxar/lib/solmate
+	url = https://github.com/transmissions11/solmate
