@@ -5,6 +5,12 @@ A fully on-chain, KYC-gated NFT project on Core Blockchain.
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid.png)
 Representative sample grid from the current 1,000-cat artwork review set.
 
+## Project Docs
+- [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
+- [Core Cats ETH: Project Status](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/PROJECT_STATUS.md)
+- [Core Cats ETH: Core Migration Roadmap](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)
+- [Core Cats ETH: ADR-0001 ETH-first Strategy](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/DECISIONS/ADR-0001-eth-first-strategy.md)
+
 - 🧱 Built with Solidity for the Core ecosystem
 - 🎨 Features 100% on-chain SVG artwork
 - 🔐 Minting limited to CorePass KYC users
