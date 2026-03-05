@@ -16,8 +16,6 @@ This project is licensed under the MIT License.
 
 
 ## 📜 Project Specification / プロジェクト仕様書
-_Last updated: 2025-08-13_
-
 ---
 
 ### English
