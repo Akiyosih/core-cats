@@ -12,7 +12,7 @@ Clarify where active implementation and migration planning are maintained.
 - Role: frozen reference track and historical implementation log
 - GitHub: https://github.com/Akiyosih/core-cats-eth
 - Local path: `C:\Users\b8_q6\myproject\core-cats-eth`
-- Latest reference commit: `f264140`
+- Latest reference commit: `cae76d3`
 
 ## Reference Documents (core-cats-eth)
 - `docs/PROJECT_STATUS.md`
@@ -31,4 +31,4 @@ Clarify where active implementation and migration planning are maintained.
 ## Mirrored Artifact Snapshot (from `core-cats-eth`)
 - Local path: `manifests/`
 - Includes final 1000 manifests, validation/summary/audit outputs, and display-label mapping.
-- Sync source commit (core-cats-eth): `f264140`
+- Sync source commit (core-cats-eth): `f264140` (implementation payload baseline)
