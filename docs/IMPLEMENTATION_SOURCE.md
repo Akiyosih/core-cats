@@ -4,9 +4,15 @@
 Clarify where active implementation and migration planning are maintained.
 
 ## Source of Truth
-- Active implementation repository: `core-cats-eth`
+- Active implementation repository: `core-cats`
+- GitHub: https://github.com/Akiyosih/core-cats
+- Local path: `C:\Users\b8_q6\myproject\core-cats`
+
+## Reference Archive (`core-cats-eth`)
+- Role: frozen reference track and historical implementation log
 - GitHub: https://github.com/Akiyosih/core-cats-eth
 - Local path: `C:\Users\b8_q6\myproject\core-cats-eth`
+- Latest reference commit: `f264140`
 
 ## Reference Documents (core-cats-eth)
 - `docs/PROJECT_STATUS.md`
@@ -16,9 +22,11 @@ Clarify where active implementation and migration planning are maintained.
 - `docs/DECISIONS/ADR-0002-randomness-strategy.md`
 
 ## Role of This Repository (`core-cats`)
-- Core production-facing repository and release context.
-- Keeps high-level spec and links to active implementation docs.
-- Final Core deployment artifacts and launch records can be mirrored here as needed.
+- Core production-facing repository and active implementation track.
+- Core testnet and mainnet deployment work is executed here.
+- Includes imported reference implementation snippets under:
+  - `contracts/reference_eth/`
+  - `scripts/reference_eth/`
 
 ## Mirrored Artifact Snapshot (from `core-cats-eth`)
 - Local path: `manifests/`

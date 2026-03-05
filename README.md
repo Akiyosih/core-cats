@@ -1,6 +1,10 @@
 # CoreCats 🐱
 A fully on-chain NFT project on Core Blockchain.
 
+## Repository Role
+- Active implementation source of truth: this repository (`core-cats`)
+- Reference archive repository: `core-cats-eth` (frozen reference track)
+
 ## Preview
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid.png)
 Representative sample grid from the current 1,000-cat artwork review set.
@@ -22,6 +26,14 @@ Representative sample grid from the current 1,000-cat artwork review set.
 - `manifests/final_1000_trait_summary_v1.json`
 - `manifests/final_1000_preview_consistency_v1.json`
 - `manifests/trait_display_labels_v1.json`
+
+## Imported Reference Implementation (from `core-cats-eth`)
+- `contracts/reference_eth/CoreCats.sol`
+- `contracts/reference_eth/CoreCatsMetadataRenderer.sol`
+- `contracts/reference_eth/CoreCatsOnchainData.sol`
+- `scripts/reference_eth/generate_onchain_data.py`
+- `scripts/reference_eth/verify_renderer_manifest_match.mjs`
+- `scripts/reference_eth/verify_renderer_pixels.mjs`
 
 - 🧱 Built with Solidity for the Core ecosystem
 - 🎨 Features 100% on-chain SVG artwork
@@ -62,9 +74,9 @@ This project is licensed under the MIT License.
 **Development Steps**:
 1. **MVP Smart Contract**:  
    - Implement minimal `mint()`, `generateSVG()`, `tokenURI()` functions  
-   - Use pre-commitment + `blockhash` randomness  
+   - Use `commit-reveal + future blockhash + lazy Fisher-Yates` randomness  
 2. **Testnet Verification**:  
-   - Deploy & mint on Devin or Koliba Testnet  
+   - Deploy & mint on Core testnet  
 3. **Mainnet Deployment**:  
    - Store all data fully on-chain  
    - Publish code, parts, and hashes on GitHub  
@@ -101,9 +113,9 @@ This project is licensed under the MIT License.
 **開発ステップ**:
 1. **MVPスマートコントラクト作成**:  
    - `mint()`・`generateSVG()`・`tokenURI()` の最低限機能を実装  
-   - 乱数生成は事前コミット＋`blockhash`  
+   - 乱数生成は`commit-reveal + future blockhash + lazy Fisher-Yates`  
 2. **テストネット検証**:  
-   - DevinまたはKoliba Testnetでデプロイ＆ミント  
+   - Core testnetでデプロイ＆ミント  
 3. **本番デプロイ**:  
    - 全データをオンチェーンに書き込み  
    - コード・パーツ・ハッシュをGitHubで公開  
