@@ -18,3 +18,8 @@ Clarify where active implementation and migration planning are maintained.
 - Core production-facing repository and release context.
 - Keeps high-level spec and links to active implementation docs.
 - Final Core deployment artifacts and launch records can be mirrored here as needed.
+
+## Mirrored Artifact Snapshot (from `core-cats-eth`)
+- Local path: `manifests/`
+- Includes final 1000 manifests, validation/summary/audit outputs, and display-label mapping.
+- Sync source commit (core-cats-eth): `677bf96`
