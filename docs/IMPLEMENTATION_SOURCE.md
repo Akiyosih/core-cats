@@ -7,6 +7,8 @@ Clarify where active implementation and migration planning are maintained.
 - Active implementation repository: `core-cats`
 - GitHub: https://github.com/Akiyosih/core-cats
 - Local path: `C:\Users\b8_q6\myproject\core-cats`
+- Core contract path priority: `docs/DECISIONS/ADR-0001-core-toolchain-priority.md` (A -> B -> C)
+- Current execution procedure: `docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md`
 
 ## Reference Archive (`core-cats-eth`)
 - Role: frozen reference track and historical implementation log
@@ -20,10 +22,15 @@ Clarify where active implementation and migration planning are maintained.
 - `docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md`
 - `docs/DECISIONS/ADR-0001-eth-first-strategy.md`
 - `docs/DECISIONS/ADR-0002-randomness-strategy.md`
+- `README.md` (Repository Mode section)
 
 ## Role of This Repository (`core-cats`)
 - Core production-facing repository and active implementation track.
 - Core testnet and mainnet deployment work is executed here.
+- Core toolchain fallback order is fixed as:
+  - A: CoreZeppelin direct implementation
+  - B: External solc operation
+  - C: Self-implemented minimal core
 - Includes imported reference implementation snippets under:
   - `contracts/reference_eth/`
   - `scripts/reference_eth/`

@@ -12,11 +12,10 @@ Representative sample grid from the current 1,000-cat artwork review set.
 ## Project Docs
 - [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
 - [Final 1000 Trait Schema](docs/FINAL1000_TRAIT_SCHEMA.md)
-- [Core Cats ETH: Project Status](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/PROJECT_STATUS.md)
-- [Core Cats ETH: Core Migration Roadmap](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)
-- [Core Cats ETH: Core Blockchain Work Procedure](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
-- [Core Cats ETH: ADR-0001 ETH-first Strategy](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/DECISIONS/ADR-0001-eth-first-strategy.md)
-- [Core Cats ETH: ADR-0002 Randomness Strategy](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/DECISIONS/ADR-0002-randomness-strategy.md)
+- [Core Blockchain Work Procedure (A -> B -> C)](docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
+- [ADR-0001: Core Toolchain Priority](docs/DECISIONS/ADR-0001-core-toolchain-priority.md)
+- [Core Cats ETH: Project Status (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/PROJECT_STATUS.md)
+- [Core Cats ETH: Roadmap (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)
 
 ## Mirrored Final Artifacts
 - `manifests/base1000_no_rare_latest.json`
