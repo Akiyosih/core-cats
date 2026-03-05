@@ -1,19 +1,26 @@
 # CoreCats 🐱
-A fully on-chain, KYC-gated NFT project on Core Blockchain.
+A fully on-chain NFT project on Core Blockchain.
+
+## Critical Chain Rule (最重要)
+- In this project, **Core Blockchain** means the `core-coin` ecosystem.
+- **Do not** mix Core Blockchain work with CoreDAO references.
+- Rule details: [CRITICAL_CHAIN_RULE.md](CRITICAL_CHAIN_RULE.md)
 
 ## Preview
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid.png)
 Representative sample grid from the current 1,000-cat artwork review set.
 
 ## Project Docs
+- [Critical Chain Rule](CRITICAL_CHAIN_RULE.md)
 - [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
 - [Core Cats ETH: Project Status](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/PROJECT_STATUS.md)
 - [Core Cats ETH: Core Migration Roadmap](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)
+- [Core Cats ETH: Core Blockchain Work Procedure](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
 - [Core Cats ETH: ADR-0001 ETH-first Strategy](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/DECISIONS/ADR-0001-eth-first-strategy.md)
 
 - 🧱 Built with Solidity for the Core ecosystem
 - 🎨 Features 100% on-chain SVG artwork
-- 🔐 Minting limited to CorePass KYC users
+- 🔐 KYC-gated mint is a target feature (final integration path under validation)
 - 📦 Open-source, transparent, and rugpull-resistant
 
 
@@ -32,7 +39,7 @@ This project is licensed under the MIT License.
 **Total Supply**: **1,000 (immutable)**  
 **Mint Limit per User**: **3 (per KYC-verified address, immutable)**  
 **Artwork Specs**: **24×24 SVG pixel art** / Fully on-chain storage / Unique generation via part combination  
-**Mint Condition**: CorePass KYC-verified users only (verification method TBD)  
+**Mint Condition**: KYC-gated mint planned (final integration path TBD)  
 **Mint Price**: **Free (no primary sale fee)**  
 **Secondary Sale Fee**: **None**  
 **Transparency Policy**: All contract code, generation logic, and deployment history will be publicly available on GitHub  
@@ -70,7 +77,7 @@ This project is licensed under the MIT License.
 **総発行枚数**: **1,000体（不可変）**  
 **ユーザーあたりミント上限**: **3体（KYC認証済みアドレスごと、不可変）**  
 **画像仕様**: **24×24 SVGドットアート** / 全てオンチェーン保存 / パーツ組合せで唯一性生成  
-**ミント条件**: CorePass KYC認証済ユーザーのみ（認証方法は後日決定）  
+**ミント条件**: KYC制限ミントを予定（最終的な連携方式は後日確定）  
 **ミント価格**: **無料（一次販売手数料なし）**  
 **二次流通手数料**: **なし**  
 **公開方針**: コントラクト、生成ロジック、デプロイ履歴をGitHubで全公開  
