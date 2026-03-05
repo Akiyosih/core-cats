@@ -77,6 +77,26 @@ contract CoreCatsTest is Test {
         _coreCats.mint(_minter, nonce, expiry, sig);
     }
 
+    function testMintPerAddressLimitRevertsOnFourthMint() public {
+        _mintOne(_minter, 31);
+        _mintOne(_minter, 32);
+        _mintOne(_minter, 33);
+
+        bytes memory sig = _mintSignature(_minter, 34, block.timestamp + 1 days, _signerKey);
+        vm.expectRevert(bytes("address mint limit"));
+        vm.prank(_minter);
+        _coreCats.mint(_minter, 34, block.timestamp + 1 days, sig);
+    }
+
+    function testMintSoldOutRevertsAtMaxSupply() public {
+        // _nextId storage slot is 7 in current layout.
+        vm.store(address(_coreCats), bytes32(uint256(7)), bytes32(uint256(1001)));
+
+        vm.expectRevert(bytes("sold out"));
+        vm.prank(_minter);
+        _coreCats.mint(_minter, 41, block.timestamp + 1 days, bytes(""));
+    }
+
     function testTokenURIRevertsWhenRendererUnset() public {
         _mintOne(_minter, 21);
 
@@ -94,6 +114,24 @@ contract CoreCatsTest is Test {
         string memory actual = _coreCats.tokenURI(1);
         assertEq(actual, expected);
         assertTrue(_startsWith(actual, "data:application/json;base64,"));
+    }
+
+    function testSetSignerOnlyOwner() public {
+        address nonOwner = makeAddr("non-owner");
+        address anotherSigner = makeAddr("another-signer");
+
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.prank(nonOwner);
+        _coreCats.setSigner(anotherSigner);
+    }
+
+    function testSetMetadataRendererOnlyOwner() public {
+        address nonOwner = makeAddr("non-owner");
+        MockMetadataRenderer renderer = new MockMetadataRenderer("data:application/json;base64,Zm9v");
+
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        vm.prank(nonOwner);
+        _coreCats.setMetadataRenderer(address(renderer));
     }
 
     function _mintOne(address to, uint256 nonce) internal {

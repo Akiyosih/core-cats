@@ -13,6 +13,7 @@ Representative sample grid from the current 1,000-cat artwork review set.
 - [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
 - [Final 1000 Trait Schema](docs/FINAL1000_TRAIT_SCHEMA.md)
 - [Core Blockchain Work Procedure (A -> B -> C)](docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
+- [Core Testnet Deploy Runbook](docs/CORE_TESTNET_DEPLOY_RUNBOOK.md)
 - [ADR-0001: Core Toolchain Priority](docs/DECISIONS/ADR-0001-core-toolchain-priority.md)
 - [Core Cats ETH: Project Status (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/PROJECT_STATUS.md)
 - [Core Cats ETH: Roadmap (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)
