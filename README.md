@@ -1,17 +1,11 @@
 # CoreCats 🐱
 A fully on-chain NFT project on Core Blockchain.
 
-## Critical Chain Rule (最重要)
-- In this project, **Core Blockchain** means the `core-coin` ecosystem.
-- **Do not** mix Core Blockchain work with CoreDAO references.
-- Rule details: [CRITICAL_CHAIN_RULE.md](CRITICAL_CHAIN_RULE.md)
-
 ## Preview
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid.png)
 Representative sample grid from the current 1,000-cat artwork review set.
 
 ## Project Docs
-- [Critical Chain Rule](CRITICAL_CHAIN_RULE.md)
 - [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
 - [Core Cats ETH: Project Status](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/PROJECT_STATUS.md)
 - [Core Cats ETH: Core Migration Roadmap](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)

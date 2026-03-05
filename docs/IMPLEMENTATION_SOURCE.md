@@ -8,10 +8,6 @@ Clarify where active implementation and migration planning are maintained.
 - GitHub: https://github.com/Akiyosih/core-cats-eth
 - Local path: `C:\Users\b8_q6\myproject\core-cats-eth`
 
-## Critical Rule
-- See [../CRITICAL_CHAIN_RULE.md](../CRITICAL_CHAIN_RULE.md).
-- Core-chain work must follow the `core-coin` ecosystem source family only.
-
 ## Reference Documents (core-cats-eth)
 - `docs/PROJECT_STATUS.md`
 - `docs/ROADMAP_CORE_MIGRATION.md`
