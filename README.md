@@ -12,6 +12,7 @@ Representative sample grid from the current 1,000-cat artwork review set.
 - [Core Cats ETH: Core Migration Roadmap](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)
 - [Core Cats ETH: Core Blockchain Work Procedure](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
 - [Core Cats ETH: ADR-0001 ETH-first Strategy](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/DECISIONS/ADR-0001-eth-first-strategy.md)
+- [Core Cats ETH: ADR-0002 Randomness Strategy](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/DECISIONS/ADR-0002-randomness-strategy.md)
 
 ## Mirrored Final Artifacts
 - `manifests/base1000_no_rare_latest.json`
@@ -49,9 +50,10 @@ This project is licensed under the MIT License.
 **Transparency Policy**: All contract code, generation logic, and deployment history will be publicly available on GitHub  
 
 **Technical Policy**:
-1. **Randomness Method**: Pre-commitment + `blockhash`  
-   - Publish SHA256 hash of all art parts before mint  
-   - Combine with `blockhash` at mint time to determine parts  
+1. **Randomness Method**: `commit-reveal + future blockhash + lazy Fisher-Yates`  
+   - Same algorithm on Sepolia rehearsal and Core production path  
+   - Assignment process is designed to be replay-verifiable from on-chain data  
+   - `RandomSource` abstraction keeps future VRF migration possible without NFT semantic changes  
 2. **Immutability**: Total supply and per-user limit fixed at the contract level  
 3. **Trust & Openness**:  
    - Full source code and art parts published on GitHub  
@@ -87,9 +89,10 @@ This project is licensed under the MIT License.
 **公開方針**: コントラクト、生成ロジック、デプロイ履歴をGitHubで全公開  
 
 **技術方針**:
-1. **乱数生成方式**: 事前コミットメント＋`blockhash`  
-   - ミント前に全アートパーツのSHA256ハッシュを公開  
-   - ミント時に`blockhash`と組み合わせてパーツ決定  
+1. **乱数生成方式**: `commit-reveal + future blockhash + lazy Fisher-Yates`  
+   - SepoliaリハーサルとCore本番で同一アルゴリズムを採用  
+   - オンチェーンデータから第三者が再計算・検証できる設計  
+   - 将来VRFが確定した場合は`RandomSource`抽象で差し替え可能（NFT意味論は維持）  
 2. **不可変設定**: 総発行枚数・ユーザー上限をコントラクトで固定  
 3. **信頼性・オープン性**:  
    - ソースコードとアートパーツをすべてGitHubで公開  

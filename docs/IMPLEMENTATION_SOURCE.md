@@ -13,6 +13,7 @@ Clarify where active implementation and migration planning are maintained.
 - `docs/ROADMAP_CORE_MIGRATION.md`
 - `docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md`
 - `docs/DECISIONS/ADR-0001-eth-first-strategy.md`
+- `docs/DECISIONS/ADR-0002-randomness-strategy.md`
 
 ## Role of This Repository (`core-cats`)
 - Core production-facing repository and release context.
@@ -22,4 +23,4 @@ Clarify where active implementation and migration planning are maintained.
 ## Mirrored Artifact Snapshot (from `core-cats-eth`)
 - Local path: `manifests/`
 - Includes final 1000 manifests, validation/summary/audit outputs, and display-label mapping.
-- Sync source commit (core-cats-eth): `677bf96`
+- Sync source commit (core-cats-eth): `f264140`
