@@ -1,6 +1,10 @@
 # CoreCats 🐱
 A fully on-chain, KYC-gated NFT project on Core Blockchain.
 
+## Preview
+![Core Cats Preview Grid](docs/assets/core_cats_preview_grid.png)
+Representative sample grid from the current 1,000-cat artwork review set.
+
 - 🧱 Built with Solidity for the Core ecosystem
 - 🎨 Features 100% on-chain SVG artwork
 - 🔐 Minting limited to CorePass KYC users
