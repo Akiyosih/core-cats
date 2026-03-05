@@ -7,3 +7,6 @@
 [submodule "foxar/lib/openzeppelin-contracts"]
 	path = foxar/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "foxar/lib/corezeppelin-contracts"]
+	path = foxar/lib/corezeppelin-contracts
+	url = git@github.com:bchainhub/openzeppelin-contracts.git
