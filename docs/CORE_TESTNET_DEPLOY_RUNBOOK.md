@@ -1,7 +1,7 @@
 # Core Testnet Deploy Runbook (Phase A)
 
-Last updated: 2026-03-05
-Status: Draft for rehearsal
+Last updated: 2026-03-06
+Status: Rehearsed once on Core Devin (verify pending)
 
 ## 1. Purpose
 Deploy and verify the current CoreCats Phase A contracts on Core testnet with reproducible steps:
@@ -85,6 +85,21 @@ spark script script/CoreCatsPostDeployCheck.s.sol:CoreCatsPostDeployCheckScript 
   --network-id 3
 ```
 
+### 7.1 TokenURI Decode Check (Manual)
+Use this when you want explicit decoded artifacts (`tokenURI`, metadata JSON, SVG):
+
+```bash
+CORECATS_ADDRESS="<deployed-corecats-address>" TOKEN_ID=1 \
+spark script script/CoreCatsExportTokenURI.s.sol:CoreCatsExportTokenURIScript \
+  --fork-url "$CORE_TESTNET_RPC_URL" \
+  --network-id 3
+```
+
+Then decode the returned `data:application/json;base64,...` and confirm:
+1. metadata has expected `name` and `attributes`
+2. `image` starts with `data:image/svg+xml;base64,`
+3. decoded SVG renders correctly
+
 ## 8. Verification
 Verify each deployed contract (example uses blockscout-compatible verifier):
 
@@ -133,3 +148,21 @@ If any check fails:
 1. stop further deploy attempts
 2. log exact error and command output
 3. fix in branch and re-run from section 4
+
+## 11. Known Gotchas (Observed in First Rehearsal)
+1. `spark` may not be on `PATH`; if needed, use full path (example: `/home/<user>/.foxar/bin/spark`).
+2. Core Devin script execution requires explicit `--network-id 3`.
+3. `DEPLOYER_PRIVATE_KEY` must be Core/Foxar format (57-byte key; 114 hex chars, `0x` optional).
+4. `run-latest.json` includes energy usage but not reliable fee totals in XAB; capture fee from explorer for final reporting.
+5. Writing files from script via cheatcodes may require allowed paths; prefer stdout + shell decode for portability.
+
+## 12. Recorded Rehearsal Snapshot (2026-03-05)
+1. Block hash: `0x2a3a34da50127b9899e7d4f7ef7d838a736a01094cf3abce5a17fb1316fb5f83`
+2. Deployed:
+   - `CoreCatsOnchainData`: `ab955ac6d28cfd8dd41fcae677dc8968c4b26e1f17b1`
+   - `CoreCatsMetadataRenderer`: `ab46969ce93676eb4ff5a82e02a1c712f7d076ca1901`
+   - `CoreCats`: `ab58e879a3b77a58dbd2a0016a2ee56a8b6352ccaec5`
+3. First mint tx: `0x5737a54e14a0418e6788ef6aee8b25d05db33e250fa4580141b06b4fcc583650`
+4. Fee summary:
+   - deploy total: `0.007050933 XAB`
+   - first mint: `0.000129074 XAB`

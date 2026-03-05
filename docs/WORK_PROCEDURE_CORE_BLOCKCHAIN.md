@@ -1,6 +1,6 @@
 # Core Cats Work Procedure (Core-First, A -> B -> C)
 
-Last updated: 2026-03-05  
+Last updated: 2026-03-06  
 Version: v2.0
 
 ## 0. Non-negotiable Rules
@@ -21,6 +21,27 @@ Version: v2.0
 2. Renderer/reference behavior exists and has parity checks (manifest and pixel checks).
 3. Active implementation repository is `core-cats`.
 4. `core-cats-eth` is reference/archive only.
+5. Core Devin testnet rehearsal deployment succeeded on 2026-03-05.
+6. First mint succeeded (`tokenId=1`) and `tokenURI` was decoded to on-chain JSON/SVG.
+7. Deployment + first mint fee stayed under 1 XAB total.
+
+## 2.1 Checkpoint Snapshot (2026-03-05)
+1. Deployed contracts:
+   - `CoreCatsOnchainData`: `ab955ac6d28cfd8dd41fcae677dc8968c4b26e1f17b1`
+   - `CoreCatsMetadataRenderer`: `ab46969ce93676eb4ff5a82e02a1c712f7d076ca1901`
+   - `CoreCats`: `ab58e879a3b77a58dbd2a0016a2ee56a8b6352ccaec5`
+2. Mint/readback:
+   - `totalSupply = 1`
+   - `ownerOf(1) = ab2619b646aaed439289a47f5f62168182dd1b1456da`
+   - `tokenURI(1)` prefix: `data:application/json;base64,`
+   - decoded metadata `image` prefix: `data:image/svg+xml;base64,`
+3. Fees (Core Devin explorer):
+   - deploy total: `0.007050933 XAB`
+   - first mint: `0.000129074 XAB`
+4. Evidence:
+   - `docs/worklogs/2026-03-05-phase-a-005.md`
+   - `docs/verify_inputs/devin/`
+   - `art/review/devin_token1/` (local decode artifacts; not committed by default)
 
 ## 3. Phase A (Primary): CoreZeppelin Direct Implementation
 ### Objective
@@ -43,6 +64,12 @@ Compile/deploy production-shape contract on Core toolchain using CoreZeppelin-co
 1. Compile passes on Core toolchain.
 2. Core testnet deploy + mint + `tokenURI` checks pass.
 3. Verification and reproducibility docs are complete.
+
+### Current A Status
+1. `A-1` compile/test/deploy/mint/tokenURI checks: done.
+2. Explorer verify flow: pending completion.
+3. Random assignment (`commit-reveal + future blockhash + lazy Fisher-Yates`): pending implementation.
+4. Quantity mint UX/policy (`1/2/3` selection path): pending implementation/final interface decision.
 
 ### A Blocker Criteria (required to move A -> B)
 1. Reproducible compiler/runtime incompatibility that cannot be resolved with acceptable code changes.
