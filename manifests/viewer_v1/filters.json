@@ -1,0 +1,275 @@
+{
+  "version": "viewer_filters_v1",
+  "generated_at": "2026-03-06T01:15:42.739Z",
+  "source_manifest": "manifests/final_1000_manifest_v1.json",
+  "source_trait_labels": "manifests/trait_display_labels_v1.json",
+  "source_trait_summary": "manifests/final_1000_trait_summary_v1.json",
+  "source_collection": "manifests/viewer_v1/collection.json",
+  "total": 1000,
+  "filters": {
+    "pattern": {
+      "trait_type_id": "Pattern",
+      "trait_type_label": "Coat Pattern",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "calico",
+          "label": "calico",
+          "count": 159
+        },
+        {
+          "id": "classic_tabby",
+          "label": "classic_tabby",
+          "count": 132
+        },
+        {
+          "id": "hachiware",
+          "label": "hachiware",
+          "count": 84
+        },
+        {
+          "id": "mackerel_tabby",
+          "label": "mackerel_tabby",
+          "count": 110
+        },
+        {
+          "id": "masked",
+          "label": "masked",
+          "count": 123
+        },
+        {
+          "id": "pointed",
+          "label": "pointed",
+          "count": 118
+        },
+        {
+          "id": "solid",
+          "label": "solid",
+          "count": 44
+        },
+        {
+          "id": "tortoiseshell",
+          "label": "tortoiseshell",
+          "count": 130
+        },
+        {
+          "id": "tuxedo",
+          "label": "tuxedo",
+          "count": 98
+        },
+        {
+          "id": "superrare",
+          "label": "superrare",
+          "count": 2
+        }
+      ]
+    },
+    "palette_id": {
+      "trait_type_id": "Color Variation",
+      "trait_type_label": "Colorway",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "black_solid",
+          "label": "black_solid",
+          "count": 2
+        },
+        {
+          "id": "black_white",
+          "label": "black_white",
+          "count": 24
+        },
+        {
+          "id": "cyberpunk",
+          "label": "cyberpunk",
+          "count": 85
+        },
+        {
+          "id": "earth_tone",
+          "label": "earth_tone",
+          "count": 190
+        },
+        {
+          "id": "gray_soft",
+          "label": "gray_soft",
+          "count": 82
+        },
+        {
+          "id": "ivory_brown",
+          "label": "ivory_brown",
+          "count": 7
+        },
+        {
+          "id": "orange_warm",
+          "label": "orange_warm",
+          "count": 87
+        },
+        {
+          "id": "orange_white",
+          "label": "orange_white",
+          "count": 52
+        },
+        {
+          "id": "psychedelic",
+          "label": "psychedelic",
+          "count": 99
+        },
+        {
+          "id": "space_nebula",
+          "label": "space_nebula",
+          "count": 81
+        },
+        {
+          "id": "tricolor_soft",
+          "label": "tricolor_soft",
+          "count": 97
+        },
+        {
+          "id": "tropical_fever",
+          "label": "tropical_fever",
+          "count": 103
+        },
+        {
+          "id": "zombie",
+          "label": "zombie",
+          "count": 89
+        },
+        {
+          "id": "superrare",
+          "label": "superrare",
+          "count": 2
+        }
+      ]
+    },
+    "category": {
+      "trait_type_id": "Category",
+      "trait_type_label": "Category",
+      "source": "manifest-only",
+      "values": [
+        {
+          "id": "natural",
+          "label": "natural",
+          "count": 541
+        },
+        {
+          "id": "special",
+          "label": "special",
+          "count": 457
+        },
+        {
+          "id": "superrare",
+          "label": "superrare",
+          "count": 2
+        }
+      ]
+    },
+    "collar": {
+      "trait_type_id": "Collar",
+      "trait_type_label": "Collar",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "with_collar",
+          "label": "With Collar",
+          "count": 400
+        },
+        {
+          "id": "without_collar",
+          "label": "Without Collar",
+          "count": 600
+        }
+      ]
+    },
+    "collar_type": {
+      "trait_type_id": "Collar Type",
+      "trait_type_label": "Collar Style",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "checkered_collar",
+          "label": "Checkered Collar",
+          "count": 200
+        },
+        {
+          "id": "classic_red_collar",
+          "label": "Classic Red Collar",
+          "count": 200
+        },
+        {
+          "id": "none",
+          "label": "No Collar",
+          "count": 600
+        }
+      ]
+    },
+    "rarity_tier": {
+      "trait_type_id": "Rarity Tier",
+      "trait_type_label": "Tier",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "common",
+          "label": "Common",
+          "count": 900
+        },
+        {
+          "id": "rare",
+          "label": "Rare",
+          "count": 98
+        },
+        {
+          "id": "superrare",
+          "label": "Super Rare",
+          "count": 2
+        }
+      ]
+    },
+    "rarity_type": {
+      "trait_type_id": "Rarity Type",
+      "trait_type_label": "Special Trait",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "blue_nose",
+          "label": "Blue Nose",
+          "count": 22
+        },
+        {
+          "id": "corelogo",
+          "label": "Core Logo",
+          "count": 1
+        },
+        {
+          "id": "glasses",
+          "label": "Glasses",
+          "count": 16
+        },
+        {
+          "id": "none",
+          "label": "None",
+          "count": 900
+        },
+        {
+          "id": "odd_eyes",
+          "label": "Odd Eyes",
+          "count": 22
+        },
+        {
+          "id": "pinglogo",
+          "label": "Ping Logo",
+          "count": 1
+        },
+        {
+          "id": "red_nose",
+          "label": "Red Nose",
+          "count": 22
+        },
+        {
+          "id": "sunglasses",
+          "label": "Sunglasses",
+          "count": 16
+        }
+      ]
+    }
+  }
+}

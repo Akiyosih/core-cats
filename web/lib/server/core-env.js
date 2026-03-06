@@ -1,0 +1,77 @@
+import fs from "node:fs";
+import path from "node:path";
+
+const ROOT_DIR = path.resolve(process.cwd(), "..");
+const FOXAR_ENV_PATH = path.join(ROOT_DIR, "foxar", ".env");
+
+const DEFAULTS = {
+  rpcUrl: "https://xcbapi-arch-devin.coreblockchain.net/",
+  chainId: 3,
+  networkId: 3,
+  networkName: "devin",
+  coreCatsAddress: "ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba",
+  explorerBaseUrl: "https://xab.blockindex.net",
+};
+
+function parseEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return {};
+  }
+
+  const text = fs.readFileSync(filePath, "utf8");
+  const env = {};
+
+  for (const line of text.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    env[key] = value;
+  }
+
+  return env;
+}
+
+export function getCoreServerEnv() {
+  const fileEnv = parseEnvFile(FOXAR_ENV_PATH);
+
+  const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY || fileEnv.DEPLOYER_PRIVATE_KEY || "";
+  const signerPrivateKey = process.env.MINT_SIGNER_PRIVATE_KEY || fileEnv.MINT_SIGNER_PRIVATE_KEY || deployerPrivateKey;
+  const finalizerPrivateKey =
+    process.env.FINALIZER_PRIVATE_KEY || fileEnv.FINALIZER_PRIVATE_KEY || deployerPrivateKey;
+
+  return {
+    rootDir: ROOT_DIR,
+    foxarDir: path.join(ROOT_DIR, "foxar"),
+    sparkPath: process.env.SPARK_PATH || path.join(process.env.HOME || "", ".foxar", "bin", "spark"),
+    rpcUrl: process.env.CORE_TESTNET_RPC_URL || fileEnv.CORE_TESTNET_RPC_URL || DEFAULTS.rpcUrl,
+    chainId: Number(process.env.NEXT_PUBLIC_CORE_CHAIN_ID || process.env.CORE_CHAIN_ID || DEFAULTS.chainId),
+    networkId: Number(process.env.CORE_NETWORK_ID || DEFAULTS.networkId),
+    networkName: process.env.CORE_NETWORK_NAME || DEFAULTS.networkName,
+    coreCatsAddress:
+      process.env.NEXT_PUBLIC_CORECATS_ADDRESS ||
+      process.env.CORECATS_ADDRESS ||
+      fileEnv.CORECATS_ADDRESS ||
+      DEFAULTS.coreCatsAddress,
+    deployerPrivateKey,
+    signerPrivateKey,
+    finalizerPrivateKey,
+    explorerBaseUrl: process.env.NEXT_PUBLIC_CORE_EXPLORER_BASE_URL || DEFAULTS.explorerBaseUrl,
+  };
+}
+
+export function getCorePublicConfig() {
+  const env = getCoreServerEnv();
+  return {
+    chainId: env.chainId,
+    networkName: env.networkName,
+    coreCatsAddress: env.coreCatsAddress,
+    explorerBaseUrl: env.explorerBaseUrl,
+    relayerEnabled: Boolean(env.finalizerPrivateKey),
+  };
+}
