@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { getCollection, getSummary } from "../lib/viewer-data";
 
+const HOME_NATURAL_IDS = [28, 70, 107, 125, 174, 246, 329, 388, 470, 565];
+const HOME_SPECIAL_IDS = [603, 663, 666, 903, 934, 941, 993, 998, 999, 1000];
+
 function Metric({ value, label }) {
   return (
     <div className="metric-card">
@@ -12,7 +15,9 @@ function Metric({ value, label }) {
 
 export default async function HomePage() {
   const [collection, summary] = await Promise.all([getCollection(), getSummary()]);
-  const preview = collection.items.slice(0, 8);
+  const itemById = new Map(collection.items.map((item) => [item.token_id, item]));
+  const naturalPreview = HOME_NATURAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
+  const specialPreview = HOME_SPECIAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
 
   return (
     <div className="page-stack">
@@ -37,12 +42,34 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="hero-grid">
-          {preview.map((item) => (
-            <Link key={item.token_id} href={`/cats/${item.token_id}`} className="hero-grid__item">
-              <img src={item.image_data_uri} alt={item.name} width="160" height="160" className="pixel-art" />
-            </Link>
-          ))}
+        <div className="curated-gallery">
+          <section className="curated-gallery__band curated-gallery__band--natural">
+            <header className="curated-gallery__header">
+              <p className="eyebrow">Natural tone picks</p>
+              <h2>Cats chosen for a grounded first impression.</h2>
+            </header>
+            <div className="curated-gallery__grid">
+              {naturalPreview.map((item) => (
+                <Link key={item.token_id} href={`/cats/${item.token_id}`} className="hero-grid__item">
+                  <img src={item.image_data_uri} alt={item.name} width="160" height="160" className="pixel-art" />
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section className="curated-gallery__band curated-gallery__band--special">
+            <header className="curated-gallery__header">
+              <p className="eyebrow">Rare and signal picks</p>
+              <h2>Special traits, vivid palettes, and logo pieces anchor the lower field.</h2>
+            </header>
+            <div className="curated-gallery__grid">
+              {specialPreview.map((item) => (
+                <Link key={item.token_id} href={`/cats/${item.token_id}`} className="hero-grid__item">
+                  <img src={item.image_data_uri} alt={item.name} width="160" height="160" className="pixel-art" />
+                </Link>
+              ))}
+            </div>
+          </section>
         </div>
       </section>
 
