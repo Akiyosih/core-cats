@@ -1,7 +1,7 @@
 # ADR-0001: Core Toolchain Priority (A -> B -> C)
 
 Date: 2026-03-05  
-Status: Accepted (Highest Priority)
+Status: Accepted as historical path-selection ADR; no longer the active remaining execution plan after direct Core success
 
 ## Context
 - Final target is Core Blockchain mainnet deployment for Core Cats.
@@ -17,6 +17,12 @@ From now on, Core deployment work must follow this strict priority order:
 3. C: Self-implemented minimal ERC-721-compatible core third.
 
 Do not start from B or C unless the previous step is explicitly documented as blocked.
+
+## 2026-03-06 Operational Update
+1. Direct Core implementation has now succeeded on the active `main` branch.
+2. Because of that, the project is no longer actively progressing through B/C.
+3. Treat this ADR as historical evidence of the fallback logic that guided earlier contract work.
+4. The active remaining execution plan now lives in `docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md` and `docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md`.
 
 ## Definition of A / B / C
 ### A. CoreZeppelin direct implementation
@@ -55,5 +61,5 @@ Do not start from B or C unless the previous step is explicitly documented as bl
 - May temporarily keep parallel compatibility branches.
 
 ## Operational Note for Future Codex/LLM Sessions
-- Treat this ADR as authoritative execution order for Core contract delivery.
-- Before proposing implementation work, check current stage in `docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md`.
+- Treat this ADR as historical context for how the direct Core path was chosen.
+- Before proposing implementation work, check the current stage in `docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md`.

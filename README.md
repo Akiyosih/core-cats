@@ -13,7 +13,8 @@ Representative sample grid from the current 1,000-cat artwork review set.
 - [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
 - [Final 1000 Trait Schema](docs/FINAL1000_TRAIT_SCHEMA.md)
 - [Web UI / Mint DApp Spec](docs/WEB_UI_MINT_DAPP_SPEC.md)
-- [Core Blockchain Work Procedure (A -> B -> C)](docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
+- [Core Blockchain Work Procedure / Launch Path](docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
+- [Mainnet Closed Launch Runbook](docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md)
 - [Core Testnet Deploy Runbook](docs/CORE_TESTNET_DEPLOY_RUNBOOK.md)
 - [ADR-0001: Core Toolchain Priority](docs/DECISIONS/ADR-0001-core-toolchain-priority.md)
 - [ADR-0002: Randomness Strategy](docs/DECISIONS/ADR-0002-randomness-strategy.md)
@@ -65,7 +66,7 @@ This project is licensed under the MIT License.
 
 **Technical Policy**:
 1. **Randomness Method**: `commit-finalize + future blockhash + lazy Fisher-Yates`  
-   - Same algorithm on Sepolia rehearsal and Core production path  
+   - Same algorithm on Core Devin rehearsal and Core production path  
    - Assignment process is designed to be replay-verifiable from on-chain data  
    - `RandomSource` abstraction keeps future VRF migration possible without NFT semantic changes  
 2. **Immutability**: Total supply and per-user limit fixed at the contract level  
@@ -79,9 +80,13 @@ This project is licensed under the MIT License.
    - Use `commit-finalize + future blockhash + lazy Fisher-Yates` randomness  
 2. **Testnet Verification**:  
    - Deploy, commit, finalize, and inspect tokenURI on Core testnet  
-3. **Mainnet Deployment**:  
-   - Store all data fully on-chain  
-   - Publish code, parts, and hashes on GitHub  
+3. **Mainnet Closed Launch**:
+   - Deploy on Core mainnet while keeping public mint closed
+   - Publish the website, transparency links, and contract addresses
+   - Run a controlled canary mint through the real production wallet flow
+4. **Public Launch**:
+   - Open general mint only after canary success
+   - Publish code, parts, hashes, and launch evidence on GitHub
 
 **Operation Policy**:
 - Fully free project, no secondary sale royalties  
@@ -104,7 +109,7 @@ This project is licensed under the MIT License.
 
 **技術方針**:
 1. **乱数生成方式**: `commit-finalize + future blockhash + lazy Fisher-Yates`  
-   - SepoliaリハーサルとCore本番で同一アルゴリズムを採用  
+   - Core DevinリハーサルとCore本番で同一アルゴリズムを採用  
    - オンチェーンデータから第三者が再計算・検証できる設計  
    - 将来VRFが確定した場合は`RandomSource`抽象で差し替え可能（NFT意味論は維持）  
 2. **不可変設定**: 総発行枚数・ユーザー上限をコントラクトで固定  
@@ -118,9 +123,13 @@ This project is licensed under the MIT License.
    - 乱数生成は`commit-finalize + future blockhash + lazy Fisher-Yates`  
 2. **テストネット検証**:  
    - Core testnetでデプロイ、commit、finalize、tokenURI確認  
-3. **本番デプロイ**:  
-   - 全データをオンチェーンに書き込み  
-   - コード・パーツ・ハッシュをGitHubで公開  
+3. **本番クローズドローンチ**:
+   - Core mainnetへデプロイしつつ、公開ミントはまだ閉じる
+   - Web、透明性導線、コントラクトアドレスを公開する
+   - 実運用ウォレットフローで canary mint を実施する
+4. **一般公開**:
+   - canary 成功後に一般ミントを開放する
+   - コード・パーツ・ハッシュ・ローンチ記録をGitHubで公開する
 
 **運営ポリシー**:
 - プロジェクトは完全フリー、二次流通ロイヤリティなし  

@@ -1,187 +1,213 @@
-# Core Cats Work Procedure (Core-First, A -> B -> C)
+# Core Cats Work Procedure (Mainnet Closed Launch Path)
 
-Last updated: 2026-03-06  
-Version: v2.0
+Last updated: 2026-03-06
+Version: v3.0
 
 ## 0. Non-negotiable Rules
 1. Final target chain is Core Blockchain mainnet.
-2. Execution order is fixed by ADR-0001: A -> B -> C.
-3. Do not skip forward in the order unless blocker evidence is committed.
-4. Keep NFT semantics stable across all paths.
+2. Product semantics must stay stable from now through launch.
+3. Public website publication and public mint opening are separate events.
+4. Mainnet launch must follow `closed -> canary -> public`, not immediate open mint.
+5. Historical fallback phases B/C are retired from the active plan unless a new blocker is discovered and documented.
 
 ## 1. Product Invariants (Must Not Change)
 1. Total supply: 1000 fixed.
 2. Mint policy: free mint, zero royalty.
 3. Fully on-chain metadata and SVG (`tokenURI` returns data URI JSON/SVG).
-4. Trait semantics match final manifest.
+4. Trait semantics match the final manifest.
 5. Random assignment policy: `commit-finalize + future blockhash + lazy Fisher-Yates`.
+6. Mint interface policy: quantity `1 / 2 / 3` through `commitMint(...)` and permissionless `finalizeMint(minter)`.
 
 ## 2. Current Baseline
-1. Final 1000 manifest and trait schema are fixed in repository artifacts.
-2. Renderer/reference behavior exists and has parity checks (manifest and pixel checks).
-3. Active implementation repository is `core-cats`.
-4. `core-cats-eth` is reference/archive only.
-5. Core Devin testnet rehearsal deployment succeeded on 2026-03-05.
-6. First mint succeeded (`tokenId=1`) and `tokenURI` was decoded to on-chain JSON/SVG.
-7. Deployment + first mint fee stayed under 1 XAB total.
+1. Active implementation repository: `core-cats`.
+2. `core-cats-eth` is reference/archive only.
+3. Final 1000 manifest and trait schema are fixed in repository artifacts.
+4. Current `main` already contains:
+   - Core-compatible contracts
+   - Core Devin deploy/mint/tokenURI rehearsal
+   - transparent random assignment
+   - Next.js viewer foundation
+   - CorePass-first mint flow scaffold
+5. The remaining path is no longer "how to make Core compile"; it is "how to launch safely on Core mainnet".
 
-## 2.1 Checkpoint Snapshot (2026-03-05)
-1. Deployed contracts:
-   - `CoreCatsOnchainData`: `ab955ac6d28cfd8dd41fcae677dc8968c4b26e1f17b1`
-   - `CoreCatsMetadataRenderer`: `ab46969ce93676eb4ff5a82e02a1c712f7d076ca1901`
-   - `CoreCats`: `ab58e879a3b77a58dbd2a0016a2ee56a8b6352ccaec5`
-2. Mint/readback:
-   - `totalSupply = 1`
-   - `ownerOf(1) = ab2619b646aaed439289a47f5f62168182dd1b1456da`
-   - `tokenURI(1)` prefix: `data:application/json;base64,`
-   - decoded metadata `image` prefix: `data:image/svg+xml;base64,`
-3. Fees (Core Devin explorer):
-   - deploy total: `0.007050933 XAB`
-   - first mint: `0.000129074 XAB`
-4. Evidence:
-   - `docs/worklogs/2026-03-05-phase-a-005.md`
-   - `docs/verify_inputs/devin/`
-   - `art/review/devin_token1/` (local decode artifacts; not committed by default)
+## 2.1 What Is Already Proven
+1. Core contract build/test path succeeds on the direct Core implementation line.
+2. Core Devin deployment succeeded.
+3. On-chain `tokenURI` readback was decoded to JSON + SVG.
+4. Random assignment via `commit-finalize + future blockhash + lazy Fisher-Yates` was re-rehearsed successfully.
+5. Web viewer and CorePass-first mint UI scaffold exist in `web/`.
 
-## 3. Phase A (Primary): CoreZeppelin Direct Implementation
-### Objective
-Compile/deploy production-shape contract on Core toolchain using CoreZeppelin-compatible library line.
-
-### Tasks
-1. Create Core testnet compatibility branch from current stable baseline.
-2. Replace/align imports to CoreZeppelin-compatible packages.
-3. Resolve pragma/compiler settings for Core toolchain.
-4. Build and run tests for:
-   - supply and wallet limits
-   - mint quantity handling (1/2/3)
-   - signature checks (if enabled)
-   - deterministic `tokenURI` behavior
-   - random assignment replay checks
-5. Deploy to Core testnet and execute end-to-end mint rehearsal.
-6. Verify contract on Core ecosystem explorer.
-
-### Exit Criteria (A success)
-1. Compile passes on Core toolchain.
-2. Core testnet deploy + mint + `tokenURI` checks pass.
-3. Verification and reproducibility docs are complete.
-
-### Current A Status
-1. `A-1` compile/test/deploy/mint/tokenURI checks: done.
-2. Explorer verify flow:
-   - automated public endpoint attempts performed on Core Devin
-   - current public explorer endpoints do not appear to expose a usable verification API
-   - manual verify packet prepared; manual submission still pending
-3. Random assignment (`commit-finalize + future blockhash + lazy Fisher-Yates`): implemented and re-rehearsed on Core Devin.
-4. Quantity mint interface (`1/2/3` selection path): implemented as `commitMint + finalizeMint`; Core Devin rehearsal for quantity `1` succeeded.
-
-## 2.2 Checkpoint Snapshot (2026-03-06)
+## 2.2 Current Core Devin Checkpoint
 1. Re-rehearsal deployment:
    - `CoreCatsOnchainData`: `ab61bc332a3cafa28c5359587c438f087d99a24938b9`
    - `CoreCatsMetadataRenderer`: `ab6204d634c05880e35ea2c9c7cb03c9aa0a87f5c510`
    - `CoreCats`: `ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba`
 2. Commit/finalize result:
-   - deploy txs: `0xa24773c70deb0d706e3202583991e5110c7eae51529221e3bb5c2dcd9f2b7959`, `0xb1e08f207d68afb31dcc551119c99492bc77e905586b939b447dc73e3243b2cd`, `0x4f037b590a133f6e4c54de50f805d7c2485ef7bf192c7855fc2f012cbac0cb60`, `0xe8ff9dca18cf56f5c9de5cf9f2cc364a18898625a6d6c8894748ddd0684cf0fc`
    - commit tx: `0x96d4d0c304df9bf7b912888859c03833dc2ed5dd0e69bb189d8afcbd6938b182`
    - finalize tx: `0xe47050c84f3f8ce7e00ade68848a5cca4a01d3784d11fb3943b075ac1bb5d262`
    - assigned token: `#492`
 3. Readback:
    - `totalSupply = 1`
    - `availableSupply = 999`
-   - `reservedSupply = 0`
    - decoded `tokenURI(492)` confirmed on-chain JSON/SVG
-4. Operational notes:
-   - signer mode for this rehearsal: deployer
-   - finalize was broadcast with `--energy-estimate-multiplier 250`
-   - assigned token `#492` decoded to `tortoiseshell / orange_white / without_collar / common`
+4. Explorer verify:
+   - automated public-endpoint attempts were made
+   - a public verify API was not confirmed
+   - a manual verify packet was prepared in `docs/verify_inputs/devin/`
 
-## 2.3 External Wallet Dependency Snapshot (2026-03-06)
-1. CorePass-first mint UX is implemented in `web/` using QR/app-link protocol requests.
-2. Current local user environment exposes only a mainnet `cb...` CorePass account.
+## 2.3 External Wallet Dependency Snapshot
+1. The intended production wallet UX is CorePass QR/app-link.
+2. In the current local environment, the available CorePass app exposes only a mainnet `cb...` account.
 3. A Devin testnet `ab...` CorePass account is not currently available in that environment.
 4. Therefore:
-   - Core Devin contract/randomness/relayer validation is still valid
-   - CorePass mobile/desktop E2E on Devin remains pending
-5. Operational consequence:
-   - do not block remaining contract/UI work on CorePass testnet uncertainty
-   - keep CorePass as the production-target mint UX
-   - treat first real CorePass transaction validation as either:
-     - a confirmed testnet-capable CorePass path, or
-     - a controlled mainnet canary launch
-6. Supporting references:
+   - Core Devin contract/randomness validation remains valid
+   - CorePass E2E on Devin remains unverified
+   - the first real CorePass transaction validation may need to happen during a controlled mainnet canary
+5. Supporting references:
    - CorePass deployment info: https://docs.corepass.net/corepass-connector/deployment-info/
    - CorePass authorization docs: https://docs.corepass.net/corepass-connector/authorization/
    - CorePass protocol: https://docs.corepass.net/corepass-protocol/
    - Core Blockchain `AB = testnet`, `CB = mainnet`: https://github.com/core-coin/go-core
    - `network id 3 = Devin`: https://github.com/core-coin/wallet-generator/blob/master/main.go
-   - TestFlight builds expire after 90 days: https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview
 
-### A Blocker Criteria (required to move A -> B)
-1. Reproducible compiler/runtime incompatibility that cannot be resolved with acceptable code changes.
-2. Evidence committed (command logs, error signatures, attempted fixes).
+## 3. Historical Note on Phase B / C
+1. ADR-0001 recorded an earlier fallback order: `A -> B -> C`.
+2. That fallback order was useful while direct Core viability was still uncertain.
+3. Direct Core implementation is now working on `main`.
+4. Because of that, Phase B and Phase C are no longer part of the active execution plan.
+5. Keep ADR-0001 only as historical decision context unless a new hard blocker appears and is documented.
 
-## 4. Phase B (Fallback-1): External solc Operation
-### Objective
-Preserve Phase A semantics while replacing compile path with external compatible `solc`.
+## 4. Current Execution Path
 
-### Tasks
-1. Lock external `solc` version and record checksum/source.
-2. Compile contracts with external `solc` and persist artifacts deterministically.
-3. Adapt deploy/verify pipeline for Core testnet using produced artifacts.
-4. Re-run full behavioral parity checks against Phase A expectations.
+### 4.1 Step 1: Mainnet Readiness
+Objective:
+Prepare the final repository, contracts, web app, and operations model for a safe mainnet launch.
 
-### Exit Criteria (B success)
-1. Core testnet deploy/verify/mint flow succeeds with external-compiled artifacts.
-2. No semantic drift in tokenURI/traits/random assignment.
-3. Reproducible build steps documented.
+Tasks:
+1. Freeze the final 1000-art provenance inputs and keep manifest-based reproducibility artifacts current.
+2. Finalize production key separation:
+   - deployer
+   - mint signer
+   - finalizer/relayer
+3. Prepare mainnet deploy and verify inputs:
+   - constructor args
+   - standard input JSON
+   - expected addresses/logging slots
+4. Decide and document launch states for the web app:
+   - `closed`
+   - `canary`
+   - `public`
+5. Replace temporary in-memory CorePass session handling with a durable production store before any mainnet mint.
+6. Finalize public domain, callback URLs, explorer base URLs, and contract-address injection points for `web/`.
+7. Decide quantity exposure policy for day-one launch:
+   - if `1 / 2 / 3` will all be exposed immediately, canary must validate more than a single-quantity flow
+   - otherwise temporarily constrain the public UI to `1` until multi-quantity is confirmed
 
-### B Blocker Criteria (required to move B -> C)
-1. Deploy/verify cannot be completed safely under B pipeline.
-2. Evidence committed with failed commands, constraints, and why A semantics cannot be preserved via B.
+Exit criteria:
+1. Production env model is defined.
+2. Durable session storage plan is implemented or scheduled as the immediate next code task before canary.
+3. Web launch-state behavior is specified.
+4. Mainnet deploy/verify inputs are assembled.
 
-## 5. Phase C (Fallback-2): Self-Implemented Minimal Core
-### Objective
-Ship a safe minimal ERC-721-compatible implementation without library dependency lock.
+### 4.2 Step 2: Web Publication Before Mint Opening
+Objective:
+Publish the public-facing site before public mint is opened.
 
-### Scope
-1. Implement only required surface:
-   - ownership and transfer core
-   - mint limits
-   - metadata/tokenURI
-   - deterministic random assignment integration
-2. Exclude optional complexity unless required for release policy.
-3. Add explicit security checklist and focused tests before any testnet deploy.
+Tasks:
+1. Publish `/`, `/about`, `/collection`, and `/transparency`.
+2. Keep `/mint` visible but logically closed.
+3. Make launch state explicit on the site:
+   - `closed`: public can inspect, but mint is not open
+   - `canary`: live testing is happening for a restricted operator set
+   - `public`: mint is open
+4. Ensure the site can be updated with mainnet contract addresses without changing the mint flow structure.
+5. Keep GitHub, manifest, and transparency links live before mint opens.
 
-### Exit Criteria (C success)
-1. Core testnet deploy/verify/mint works.
-2. Required invariants are preserved.
-3. Review checklist and known limitations are documented.
+Exit criteria:
+1. Website is publicly reachable.
+2. Mint is clearly not open to the public yet.
+3. Production callback/app-link URLs are final.
 
-## 6. Mainnet Readiness Gate (After A or B or C Success)
-1. Provenance/freeze procedure finalized and rehearsed.
-2. Immutable parameters locked and documented.
-3. Incident response and operations checklist prepared.
-4. Final deploy/verify runbook dry-run completed.
+### 4.3 Step 3: Mainnet Closed Launch
+Objective:
+Deploy on mainnet without opening public mint.
 
-## 7. Mainnet Deployment
-1. Deploy and verify on Core mainnet.
-2. Keep public mint logically closed until first controlled validation is complete.
-   - do not open general signature issuance yet
-3. Execute first controlled canary mint with the intended production wallet flow.
-4. Confirm:
-   - CorePass/app-link/QR behavior
-   - commit/finalize success
+Tasks:
+1. Deploy `CoreCatsOnchainData`, `CoreCatsMetadataRenderer`, and `CoreCats`.
+2. Record deploy transactions, addresses, env selections, and runbook evidence.
+3. Attempt explorer verification on mainnet.
+   - use public API if available
+   - otherwise use the prepared manual verify packet path
+4. Update the public site with the real mainnet contract addresses.
+5. Keep launch state at `closed`.
+6. Keep signature issuance restricted.
+   - no general public signing
+   - only operator-controlled allowlist if needed for canary
+
+Exit criteria:
+1. Mainnet contracts exist and are recorded.
+2. Public site points to the correct mainnet addresses.
+3. Public mint is still effectively closed.
+
+### 4.4 Step 4: Canary Validation
+Objective:
+Run a controlled live mint on mainnet before public opening.
+
+Tasks:
+1. Allow only the intended operator wallet(s) to request signatures.
+2. Perform the first live canary mint through the intended production flow.
+   - preferred path: CorePass sign -> CorePass commit tx -> relayer finalize or manual finalize fallback
+3. Confirm end-to-end behavior:
+   - CorePass callback/app-link behavior
+   - commit tx visibility
+   - finalize tx visibility
+   - token assignment
+   - on-chain `tokenURI`
+   - website/explorer links
+4. Record the canary result in a worklog.
+5. If public day-one UI will expose quantity `2 / 3`, validate that quantity path before switching to `public`.
+   - if not yet validated, leave public UI at quantity `1` until it is
+
+Exit criteria:
+1. At least one full mainnet canary mint succeeds.
+2. The intended public mint flow is proven with the real wallet path.
+3. Quantity exposure policy is honest relative to what has actually been validated.
+
+### 4.5 Step 5: Public Launch
+Objective:
+Open mint to the public after canary success.
+
+Tasks:
+1. Change launch state from `closed` or `canary` to `public`.
+2. Enable general signature issuance with rate limits and nonce/expiry enforcement.
+3. Keep finalize monitoring active.
+4. Publish the mainnet contract addresses, verify links or manual-verify status, and reproducibility artifacts.
+5. Monitor:
+   - mint success rate
+   - finalize backlog
+   - session failures
    - explorer visibility
-   - tokenURI/on-chain SVG readback
-5. Only after canary success:
-   - open broader signature issuance
-   - publish contract addresses, verification links, and reproducibility artifacts
-6. Tag release commit and freeze public release notes.
 
-## 8. Worklog Requirement (For Cross-Session Handoff)
-For every major step, commit a short machine-readable note including:
-1. current phase (`A`, `B`, or `C`)
-2. command summary
-3. result (`success` or `blocked`)
-4. next action
+Exit criteria:
+1. Public mint is open on the intended path.
+2. Transparency artifacts are published.
+3. Operational monitoring is in place.
 
-Recommended location: `docs/worklogs/`.
+## 5. Immediate Next Actions From The Current State
+1. Implement launch-state handling in `web/` (`closed`, `canary`, `public`).
+2. Replace the temporary in-memory CorePass mint session store with a durable production store.
+3. Prepare a mainnet closed-launch runbook and operator checklist.
+4. Assemble mainnet deploy/verify input files alongside the existing Devin packet.
+5. Decide day-one quantity exposure:
+   - all `1 / 2 / 3`, or
+   - temporary `1`-only until mainnet multi-quantity canary is complete
+
+## 6. Runbooks and Evidence
+1. Testnet rehearsal and verification notes:
+   - `docs/CORE_TESTNET_DEPLOY_RUNBOOK.md`
+   - `docs/verify_inputs/devin/`
+2. Mainnet closed-launch operations:
+   - `docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md`
+3. Worklog requirement:
+   - every major step must write a short note in `docs/worklogs/`
+   - include command summary, result, and next action

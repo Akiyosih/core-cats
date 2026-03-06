@@ -127,6 +127,27 @@ The external draft needs these corrections:
    - it does not currently expose Devin testnet `ab...` accounts
    - therefore live CorePass E2E on Devin remains unverified even though the CorePass-first mint UI is now implemented
 
+### Launch Status Model
+Web publication and public mint opening are separate operational steps.
+
+The UI should support three launch states:
+1. `closed`
+   - website is public
+   - `/mint` is visible
+   - public signature issuance is disabled
+   - copy explains that launch is not open yet
+2. `canary`
+   - mint is live only for a small operator allowlist
+   - copy explains that controlled mainnet validation is in progress
+3. `public`
+   - normal public mint flow is open
+
+Implications:
+1. `/collection`, `/about`, and `/transparency` can be public before mint opens.
+2. `/mint` must not assume that page visibility means public mint is open.
+3. The production web app should switch between `closed`, `canary`, and `public` without redesigning the mint flow.
+4. If quantity `2 / 3` is not yet canary-validated on mainnet, the public UI should temporarily expose only quantity `1`.
+
 ### `/collection`
 This is a good early UI target because the static collection data already exists.
 
@@ -234,11 +255,12 @@ Current policy:
 3. Refine `/collection`
 4. Refine `/about`
 5. Refine `/transparency`
-6. Decide owner-indexing approach for `/my-cats`
-7. Replace the temporary in-memory CorePass mint session store with a durable production store
-8. Harden the CorePass callback/finalize routes for production operation
-9. Refine `/mint` around `sign -> commitMint -> auto-finalize -> manual finalize fallback`
-10. Add any final landing page visual refinements
+6. Implement launch-state handling for `/mint` (`closed`, `canary`, `public`)
+7. Decide owner-indexing approach for `/my-cats`
+8. Replace the temporary in-memory CorePass mint session store with a durable production store
+9. Harden the CorePass callback/finalize routes for production operation
+10. Refine `/mint` around `sign -> commitMint -> auto-finalize -> manual finalize fallback`
+11. Add any final landing page visual refinements
 
 ## Non-Goals for the First Public UI
 1. mandatory CorePass / KYC gating
@@ -251,6 +273,8 @@ Current policy:
 1. Final mint contract interface is fixed
 2. Random assignment policy is implemented and documented as `commit-finalize + future blockhash + lazy Fisher-Yates`
 3. Signature API contract compatibility is tested
-4. Owner indexing method for `/my-cats` is explicitly chosen
-5. CorePass callback/app-link behavior is tested on both desktop and mobile paths with a wallet that can actually transact on the target network
-6. Transparency page links are real and reproducible
+4. Launch-state behavior (`closed`, `canary`, `public`) is implemented
+5. Owner indexing method for `/my-cats` is explicitly chosen
+6. CorePass callback/app-link behavior is tested on both desktop and mobile paths with a wallet that can actually transact on the target network
+7. Transparency page links are real and reproducible
+8. If the public launch exposes quantity `2 / 3`, that quantity path has been validated on the target network, or the UI is temporarily constrained to quantity `1`
