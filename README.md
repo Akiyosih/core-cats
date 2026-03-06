@@ -16,6 +16,7 @@ Representative sample grid from the current 1,000-cat artwork review set.
 - [Core Blockchain Work Procedure (A -> B -> C)](docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
 - [Core Testnet Deploy Runbook](docs/CORE_TESTNET_DEPLOY_RUNBOOK.md)
 - [ADR-0001: Core Toolchain Priority](docs/DECISIONS/ADR-0001-core-toolchain-priority.md)
+- [ADR-0002: Randomness Strategy](docs/DECISIONS/ADR-0002-randomness-strategy.md)
 - [Core Cats ETH: Project Status (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/PROJECT_STATUS.md)
 - [Core Cats ETH: Roadmap (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)
 
@@ -74,10 +75,10 @@ This project is licensed under the MIT License.
 
 **Development Steps**:
 1. **MVP Smart Contract**:  
-   - Implement minimal `mint()`, `generateSVG()`, `tokenURI()` functions  
+   - Implement `commitMint()`, `revealMint()`, and `tokenURI()` around a transparent random assignment flow  
    - Use `commit-reveal + future blockhash + lazy Fisher-Yates` randomness  
 2. **Testnet Verification**:  
-   - Deploy & mint on Core testnet  
+   - Deploy, commit, reveal, and inspect tokenURI on Core testnet  
 3. **Mainnet Deployment**:  
    - Store all data fully on-chain  
    - Publish code, parts, and hashes on GitHub  
@@ -113,10 +114,10 @@ This project is licensed under the MIT License.
 
 **開発ステップ**:
 1. **MVPスマートコントラクト作成**:  
-   - `mint()`・`generateSVG()`・`tokenURI()` の最低限機能を実装  
+   - `commitMint()`・`revealMint()`・`tokenURI()` を、透明なランダム割当フローとして実装  
    - 乱数生成は`commit-reveal + future blockhash + lazy Fisher-Yates`  
 2. **テストネット検証**:  
-   - Core testnetでデプロイ＆ミント  
+   - Core testnetでデプロイ、commit、reveal、tokenURI確認  
 3. **本番デプロイ**:  
    - 全データをオンチェーンに書き込み  
    - コード・パーツ・ハッシュをGitHubで公開  

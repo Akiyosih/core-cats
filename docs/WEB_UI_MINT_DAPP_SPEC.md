@@ -26,16 +26,19 @@ This document corrects the external Web UI / Mint DApp draft against the current
 3. `selected.json` is not the current source of truth.
    - Use `manifests/final_1000_manifest_v1.json` instead.
 4. Explorer/verification wording must be Core explorer / Blockindex centric, not Etherscan centric.
-5. Current contract does not support batch mint (`1 / 2 / 3`) yet.
-   - Current Core mint interface is:
-     - `mint(address to, uint256 nonce, uint256 expiry, bytes signature)`
-   - A `1 / 2 / 3` mint UI is a target for the next contract iteration, not something the current deployed Core Devin rehearsal already supports.
-6. Current contract is not enumerable.
+5. Current contract branch introduces quantity mint and transparent randomness via a two-step flow:
+   - `commitMint(uint8 quantity, bytes32 commitHash, uint256 nonce, uint256 expiry, bytes signature)`
+   - `revealMint(bytes32 secret)`
+   - Quantity `1 / 2 / 3` is part of this interface.
+6. Current deployed Core Devin rehearsal is still the older single-step contract.
+   - UI and runbooks must distinguish deployed rehearsal state from the newer contract branch.
+7. Current contract is not enumerable.
    - Do not implement `/my-cats` assuming `tokenOfOwnerByIndex`.
    - Ownership listing requires event indexing, explorer/API lookup, or an app-side cache/index.
-7. Transparent random assignment is a target invariant, but it is not implemented in the current Core Devin rehearsal contract.
-   - Do not assume the current deployed rehearsal already has final random assignment behavior.
-8. There is currently no frontend project scaffold in this repository.
+8. Transparent random assignment is implemented in the active contract branch as:
+   - `commit-reveal + future blockhash + lazy Fisher-Yates`
+   - but it is not yet re-rehearsed on Core Devin after implementation
+9. There is currently no frontend project scaffold in this repository.
    - Frontend stack selection and project bootstrap are still pending.
 9. The manifest references local art file paths, but this repository does not currently track those preview/image files.
    - UI work must not assume `art/...png` paths already exist in the public repo state.

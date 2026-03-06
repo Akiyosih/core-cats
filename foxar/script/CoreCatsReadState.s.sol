@@ -5,12 +5,18 @@ import "spark-std/Script.sol";
 import "../src/CoreCats.sol";
 
 contract CoreCatsReadStateScript is Script {
-    function run() external view returns (uint256 totalSupply, address ownerOfToken1, address metadataRenderer) {
+    function run()
+        external
+        view
+        returns (uint256 totalSupply, uint256 availableSupply, uint256 reservedSupply, address metadataRenderer, address signer)
+    {
         address coreCatsAddress = vm.envAddress("CORECATS_ADDRESS");
         CoreCats coreCats = CoreCats(coreCatsAddress);
 
         totalSupply = coreCats.totalSupply();
+        availableSupply = coreCats.availableSupply();
+        reservedSupply = coreCats.reservedSupply();
         metadataRenderer = coreCats.metadataRenderer();
-        ownerOfToken1 = coreCats.ownerOf(1);
+        signer = coreCats.signer();
     }
 }

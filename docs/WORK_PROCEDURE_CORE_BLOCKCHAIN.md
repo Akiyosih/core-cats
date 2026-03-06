@@ -68,8 +68,27 @@ Compile/deploy production-shape contract on Core toolchain using CoreZeppelin-co
 ### Current A Status
 1. `A-1` compile/test/deploy/mint/tokenURI checks: done.
 2. Explorer verify flow: pending completion.
-3. Random assignment (`commit-reveal + future blockhash + lazy Fisher-Yates`): pending implementation.
-4. Quantity mint UX/policy (`1/2/3` selection path): pending implementation/final interface decision.
+3. Random assignment (`commit-reveal + future blockhash + lazy Fisher-Yates`): implemented and re-rehearsed on Core Devin.
+4. Quantity mint interface (`1/2/3` selection path): implemented as `commitMint + revealMint`; Core Devin rehearsal for quantity `1` succeeded.
+
+## 2.2 Checkpoint Snapshot (2026-03-06)
+1. Re-rehearsal deployment:
+   - `CoreCatsOnchainData`: `ab60028cb94c79e1a3d9b70c9bf2ba956dfe88c84f5a`
+   - `CoreCatsMetadataRenderer`: `ab8567f269cf0b17f2035662a292ed56d4e906ad8037`
+   - `CoreCats`: `ab892c04158cf0194cdf18e82910fc131b8199c7612e`
+2. Commit/reveal result:
+   - commit tx: `0x9d0eeb35f20d89a2b7fb68c09847c36c08227d2faa82af3435546d06c15f8c22`
+   - reveal tx: `0x20badb4197951d5e0b43d42b72b03f48233adb11a2dce51a507934cbd6bf3a51`
+   - assigned token: `#423`
+3. Readback:
+   - `totalSupply = 1`
+   - `availableSupply = 999`
+   - `reservedSupply = 0`
+   - decoded `tokenURI(423)` confirmed on-chain JSON/SVG
+4. Operational notes:
+   - signer was separated from deployer during this rehearsal
+   - reveal needed a higher energy estimate multiplier
+   - one script bug was fixed: signed `quantity` must be hashed as `uint256`
 
 ### A Blocker Criteria (required to move A -> B)
 1. Reproducible compiler/runtime incompatibility that cannot be resolved with acceptable code changes.
