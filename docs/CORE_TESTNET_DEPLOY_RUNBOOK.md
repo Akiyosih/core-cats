@@ -157,7 +157,9 @@ Then decode the returned `data:application/json;base64,...` and confirm:
 The assigned token id is available from the `TokenAssigned` event emitted during finalize.
 
 ## 8. Verification
-Verify each deployed contract (example uses blockscout-compatible verifier):
+Attempt automated verification first only if the explorer exposes a compatible API.
+
+Example commands (Blockscout-compatible verifier expectation):
 
 ```bash
 spark verify-contract <DATA_ADDRESS> src/CoreCatsOnchainData.sol:CoreCatsOnchainData \
@@ -190,6 +192,22 @@ spark verify-contract <RENDERER_ADDRESS> src/CoreCatsMetadataRenderer.sol:CoreCa
   --network "$NETWORK" \
   --watch
 ```
+
+### 8.1 Current Core Devin Result (2026-03-06)
+Automated verification was attempted against:
+1. `https://xab.blockindex.net/api/`
+2. `https://xab.blockindex.net/api/v2/smart-contracts`
+
+Both attempts failed immediately with:
+
+```text
+builder error: relative URL without a base
+```
+
+Current working interpretation:
+1. Core Devin explorer is not exposing a usable Blockscout-compatible verification API at those public endpoints.
+2. The explorer footer exposes `Get Verified`, which suggests the current verification flow is manual.
+3. Use the prepared packet in `docs/verify_inputs/devin/VERIFY_SUBMISSION.md` for manual submission unless/until a proper API endpoint is provided.
 
 ## 9. Artifacts to Record
 Record in `docs/worklogs/` after each rehearsal:
@@ -251,3 +269,7 @@ If any check fails:
    - signer mode: deployer
    - finalize was broadcast with `--energy-estimate-multiplier 250`
    - decoded traits: `tortoiseshell / orange_white / without_collar / common`
+6. Verify status:
+   - automated explorer verify attempted
+   - public explorer endpoints did not behave as Blockscout-compatible verifier endpoints
+   - manual submission packet prepared in `docs/verify_inputs/devin/VERIFY_SUBMISSION.md`

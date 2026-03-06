@@ -67,7 +67,10 @@ Compile/deploy production-shape contract on Core toolchain using CoreZeppelin-co
 
 ### Current A Status
 1. `A-1` compile/test/deploy/mint/tokenURI checks: done.
-2. Explorer verify flow: pending completion.
+2. Explorer verify flow:
+   - automated public endpoint attempts performed on Core Devin
+   - current public explorer endpoints do not appear to expose a usable verification API
+   - manual verify packet prepared; manual submission still pending
 3. Random assignment (`commit-finalize + future blockhash + lazy Fisher-Yates`): implemented and re-rehearsed on Core Devin.
 4. Quantity mint interface (`1/2/3` selection path): implemented as `commitMint + finalizeMint`; Core Devin rehearsal for quantity `1` succeeded.
 
