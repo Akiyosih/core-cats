@@ -12,6 +12,7 @@ Representative sample grid from the current 1,000-cat artwork review set.
 ## Project Docs
 - [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
 - [Final 1000 Trait Schema](docs/FINAL1000_TRAIT_SCHEMA.md)
+- [Web UI / Mint DApp Spec](docs/WEB_UI_MINT_DAPP_SPEC.md)
 - [Core Blockchain Work Procedure (A -> B -> C)](docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
 - [Core Testnet Deploy Runbook](docs/CORE_TESTNET_DEPLOY_RUNBOOK.md)
 - [ADR-0001: Core Toolchain Priority](docs/DECISIONS/ADR-0001-core-toolchain-priority.md)
@@ -37,7 +38,7 @@ Representative sample grid from the current 1,000-cat artwork review set.
 
 - 🧱 Built with Solidity for the Core ecosystem
 - 🎨 Features 100% on-chain SVG artwork
-- 🔐 KYC-gated mint is a target feature (final integration path under validation)
+- 🔐 Signature-gated free mint is the current public path; CorePass/KYC is a later extension target
 - 📦 Open-source, transparent, and rugpull-resistant
 
 
@@ -52,11 +53,11 @@ This project is licensed under the MIT License.
 
 **Project Name**: CoreCats  
 **Blockchain**: Core Blockchain  
-**Token Standard**: CBC-20 / ERC721-compatible  
+**Token Standard**: CRC721 / ERC721-compatible  
 **Total Supply**: **1,000 (immutable)**  
-**Mint Limit per User**: **3 (per KYC-verified address, immutable)**  
+**Mint Limit per User**: **3 per wallet address (current path, immutable)**  
 **Artwork Specs**: **24×24 SVG pixel art** / Fully on-chain storage / Unique generation via part combination  
-**Mint Condition**: KYC-gated mint planned (final integration path TBD)  
+**Mint Condition**: Signature-gated free mint first; CorePass/KYC-gated mode is a future extension target  
 **Mint Price**: **Free (no primary sale fee)**  
 **Secondary Sale Fee**: **None**  
 **Transparency Policy**: All contract code, generation logic, and deployment history will be publicly available on GitHub  
@@ -91,11 +92,11 @@ This project is licensed under the MIT License.
 
 **プロジェクト名**: CoreCats  
 **ブロックチェーン**: Core Blockchain  
-**トークン規格**: CBC-20 / ERC721互換  
+**トークン規格**: CRC721 / ERC721互換  
 **総発行枚数**: **1,000体（不可変）**  
-**ユーザーあたりミント上限**: **3体（KYC認証済みアドレスごと、不可変）**  
+**ユーザーあたりミント上限**: **1ウォレットあたり3体（現行方針、不可変）**  
 **画像仕様**: **24×24 SVGドットアート** / 全てオンチェーン保存 / パーツ組合せで唯一性生成  
-**ミント条件**: KYC制限ミントを予定（最終的な連携方式は後日確定）  
+**ミント条件**: まず署名付きフリーミントを採用し、CorePass/KYC制限は将来拡張として扱う  
 **ミント価格**: **無料（一次販売手数料なし）**  
 **二次流通手数料**: **なし**  
 **公開方針**: コントラクト、生成ロジック、デプロイ履歴をGitHubで全公開  

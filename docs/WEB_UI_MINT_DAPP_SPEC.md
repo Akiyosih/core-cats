@@ -1,0 +1,209 @@
+# Core Cats Web UI / Mint DApp Spec (Core-First Draft)
+
+Last updated: 2026-03-06
+Status: Draft aligned to current `core-cats` repository state
+
+## Purpose
+This document corrects the external Web UI / Mint DApp draft against the current repository, current contract implementation, and current Core Devin rehearsal status.
+
+## Current Source of Truth
+1. Active implementation repository: `core-cats`
+2. Reference/archive repository only: `core-cats-eth`
+3. Active Core contract implementation:
+   - `foxar/src/CoreCats.sol`
+   - `foxar/src/CoreCatsMetadataRenderer.sol`
+   - `foxar/src/CoreCatsOnchainData.sol`
+4. Final art/trait source of truth:
+   - `manifests/final_1000_manifest_v1.json`
+   - `manifests/trait_display_labels_v1.json`
+   - `docs/FINAL1000_TRAIT_SCHEMA.md`
+
+## Hard Corrections to the External Draft
+1. The project is no longer `ETH first -> Core later`.
+   - Current execution order is Core-first.
+   - `core-cats-eth` remains a reference archive, not the active delivery path.
+2. UI planning must follow current Core contract reality, not the historical ETH reference contracts.
+3. `selected.json` is not the current source of truth.
+   - Use `manifests/final_1000_manifest_v1.json` instead.
+4. Explorer/verification wording must be Core explorer / Blockindex centric, not Etherscan centric.
+5. Current contract does not support batch mint (`1 / 2 / 3`) yet.
+   - Current Core mint interface is:
+     - `mint(address to, uint256 nonce, uint256 expiry, bytes signature)`
+   - A `1 / 2 / 3` mint UI is a target for the next contract iteration, not something the current deployed Core Devin rehearsal already supports.
+6. Current contract is not enumerable.
+   - Do not implement `/my-cats` assuming `tokenOfOwnerByIndex`.
+   - Ownership listing requires event indexing, explorer/API lookup, or an app-side cache/index.
+7. Transparent random assignment is a target invariant, but it is not implemented in the current Core Devin rehearsal contract.
+   - Do not assume the current deployed rehearsal already has final random assignment behavior.
+8. There is currently no frontend project scaffold in this repository.
+   - Frontend stack selection and project bootstrap are still pending.
+9. The manifest references local art file paths, but this repository does not currently track those preview/image files.
+   - UI work must not assume `art/...png` paths already exist in the public repo state.
+
+## Current Confirmed Core Devin Checkpoint
+1. Rehearsal deployment succeeded on 2026-03-05.
+2. Deployed addresses:
+   - `CoreCatsOnchainData`: `ab955ac6d28cfd8dd41fcae677dc8968c4b26e1f17b1`
+   - `CoreCatsMetadataRenderer`: `ab46969ce93676eb4ff5a82e02a1c712f7d076ca1901`
+   - `CoreCats`: `ab58e879a3b77a58dbd2a0016a2ee56a8b6352ccaec5`
+3. `tokenId = 1` was minted successfully on Core Devin.
+4. `tokenURI(1)` was decoded and confirmed to return on-chain JSON with on-chain Base64 SVG.
+
+## Initial Public UI Goals
+The external draft direction is broadly correct. The initial public UI should still aim for:
+1. `/`
+2. `/about`
+3. `/mint`
+4. `/collection`
+5. `/my-cats`
+6. `/transparency`
+
+However, implementation order must respect current contract/backend constraints.
+
+## Page-Level Notes
+### `/`
+Keep as the public landing page.
+Focus on:
+1. 24x24 full on-chain pixel art
+2. free mint
+3. zero royalty
+4. verifiable transparency
+5. direct links to collection/transparency/GitHub
+
+### `/about`
+Good fit for:
+1. artistic intent
+2. full on-chain explanation
+3. tokenURI / SVG / metadata explanation
+4. current Core-first delivery path
+5. future CorePass / KYC expansion as a later phase
+
+### `/mint`
+The external draft needs one correction here:
+1. `1 / 2 / 3` quantity mint is a target UI, but the current Core contract does not yet support it.
+2. Initial UI implementation must choose one of two paths:
+   - Path A: wait until contract/API are upgraded to quantity mint
+   - Path B: ship a temporary single-mint UI for rehearsal only
+3. Current mint depends on an off-chain signer producing:
+   - `nonce`
+   - `expiry`
+   - `signature`
+4. `/get-signature` is currently a planned API, not an existing implementation in this repo.
+
+### `/collection`
+This is a good early UI target because the static collection data already exists.
+
+Use `manifests/final_1000_manifest_v1.json` as the base dataset.
+
+Recommended filter source of truth:
+1. `Pattern`
+2. `Color Variation`
+3. `Collar`
+4. `Collar Type`
+5. `Rarity Tier`
+6. `Rarity Type`
+
+Optional extra filter:
+1. `category`
+
+Do not make `eye / nose / accessory` primary source-of-truth fields.
+If desired, they can be derived from `Rarity Type` for UI convenience later.
+
+### `/my-cats`
+Keep this in the spec, but mark it as dependent on owner indexing.
+
+Current contract limitation:
+1. ownership enumeration is not available from contract alone
+2. app must use indexed `Transfer` history or a backend/cache layer
+
+### `/transparency`
+This page is required and should be treated as a core deliverable, not a nice-to-have.
+
+It should link to:
+1. GitHub repository
+2. deployed Core contract addresses
+3. Core explorer / Blockindex pages
+4. ABI / verification docs
+5. trait schema and manifest docs
+6. work procedure / runbook
+
+## Data Model Guidance
+### Static build-time source
+Use:
+1. `manifests/final_1000_manifest_v1.json`
+2. `manifests/trait_display_labels_v1.json`
+3. `manifests/final_1000_trait_summary_v1.json`
+
+Important:
+1. the manifest contains path references such as `final_png_24`, `review_file`, and `base_preview_file`
+2. those files are not currently tracked in this repository state
+3. frontend work must generate or import public preview assets explicitly
+
+### Derived frontend data (recommended)
+These files do not exist yet, but they are good targets for frontend build outputs:
+1. `public/data/collection.json`
+2. `public/data/traits-index.json`
+3. `public/data/rarity-summary.json`
+4. `public/previews/<id>.png` or another explicit preview asset directory
+
+### Runtime data
+These should be resolved at runtime or through a lightweight backend:
+1. minted / unminted status
+2. owner
+3. latest mint history
+4. signature issuance for mint
+
+## tokenId / artId Rule
+This is not fully settled for the final mainnet randomness design and must not be hand-waved in UI code.
+
+Current state:
+1. the final manifest already assigns fixed `token_id` values `1..1000`
+2. the current Core Devin rehearsal contract mints sequential token IDs
+3. final target architecture still expects transparent random assignment before mainnet
+
+UI rule:
+1. do not hard-code assumptions that sequential mint order will equal final fair assignment policy
+2. if the final contract introduces token-to-art remapping, the viewer data model must be updated explicitly
+3. until that contract change is implemented, treat random assignment as pending
+
+## CorePass / KYC Policy
+Initial public UI should not be blocked on CorePass/KYC integration.
+
+Current policy:
+1. initial public path: normal wallet + signature-gated free mint
+2. future extension: CorePass / KYC gating
+3. UI may show CorePass as `coming later`, but must not pretend it is already active
+
+## Security Notes for UI/API
+1. signer key must be separate from the deployment owner key in production
+2. `.env` must never be tracked
+3. signature API must enforce:
+   - short expiry
+   - one-time nonce usage
+   - rate limiting
+4. frontend restrictions alone are never sufficient
+
+## Recommended UI Implementation Order
+1. Choose frontend stack and scaffold project
+2. Generate static collection viewer data from `final_1000_manifest_v1.json`
+3. Build `/collection`
+4. Build `/about`
+5. Build `/transparency`
+6. Decide owner-indexing approach for `/my-cats`
+7. Upgrade contract/API for final mint flow (`1 / 2 / 3` and randomness), or intentionally ship a temporary single-mint rehearsal UI
+8. Build `/mint`
+9. Add landing page visuals and key art
+
+## Non-Goals for the First Public UI
+1. mandatory CorePass / KYC gating
+2. admin dashboard
+3. marketplace integration
+4. complex ranking/social features
+5. pretending unresolved contract assumptions are already solved
+
+## Acceptance Gate Before Mint UI Is Considered Final
+1. Final mint contract interface is fixed
+2. Random assignment policy is implemented or intentionally deferred with explicit public wording
+3. Signature API contract compatibility is tested
+4. Owner indexing method for `/my-cats` is explicitly chosen
+5. Transparency page links are real and reproducible
