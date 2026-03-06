@@ -5,11 +5,13 @@ export default function CollectionCard({ item }) {
     <article className="cat-card">
       <Link href={`/cats/${item.token_id}`} className="cat-card__image-frame">
         <img
-          src={item.image_data_uri}
+          src={item.image_src || item.image_data_uri}
           alt={item.name}
           width="192"
           height="192"
           className="pixel-art"
+          loading="lazy"
+          decoding="async"
         />
       </Link>
 

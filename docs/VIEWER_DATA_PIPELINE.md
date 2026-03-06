@@ -36,22 +36,32 @@ Default output directory:
 
 `manifests/viewer_v1/`
 
+Default public preview directory:
+
+`web/public/viewer_v1/svg/`
+
 Generated files:
 1. `collection.json`
    - UI-ready 1000 item dataset
-   - includes `image_data_uri` for direct rendering
+   - includes `image_src` pointing at static preview SVG files under `web/public/viewer_v1/svg/`
    - includes exact on-chain attributes and UI display labels
+   - does not embed large `data:` URIs by default
 2. `filters.json`
    - filter labels and counts for `/collection`
 3. `summary.json`
    - viewer-facing summary derived from the trait summary manifest
 
-Optional output:
-1. `svg/*.svg`
-   - one SVG preview per token when `--emit-svg-files` is used
+Default preview output:
+1. `web/public/viewer_v1/svg/*.svg`
+   - one renderer-derived SVG preview per token
+
+Optional:
+1. `--embed-data-uri`
+   - re-add `image_data_uri` to `collection.json` if inline rendering is explicitly needed
 
 ## Notes
 1. The script does not use Core testnet/mainnet RPC.
 2. It reads the packed on-chain data constants from `foxar/src/CoreCatsOnchainData.sol` directly.
 3. It ports the current renderer logic into JS and verifies decoded traits against `final_1000_manifest_v1.json` before writing outputs.
-4. This is the current source for `/collection`, `/about`, and `/transparency`, and it remains compatible with the live `commit-finalize` mint flow.
+4. The current web UI uses static preview SVGs for browsing performance while preserving the same renderer-derived image content.
+5. This is the current source for `/collection`, `/about`, and `/transparency`, and it remains compatible with the live `commit-finalize` mint flow.

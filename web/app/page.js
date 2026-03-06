@@ -51,7 +51,7 @@ export default async function HomePage() {
             <div className="curated-gallery__grid">
               {naturalPreview.map((item) => (
                 <Link key={item.token_id} href={`/cats/${item.token_id}`} className="hero-grid__item">
-                  <img src={item.image_data_uri} alt={item.name} width="160" height="160" className="pixel-art" />
+                  <img src={item.image_src || item.image_data_uri} alt={item.name} width="160" height="160" className="pixel-art" />
                 </Link>
               ))}
             </div>
@@ -65,7 +65,7 @@ export default async function HomePage() {
             <div className="curated-gallery__grid">
               {specialPreview.map((item) => (
                 <Link key={item.token_id} href={`/cats/${item.token_id}`} className="hero-grid__item">
-                  <img src={item.image_data_uri} alt={item.name} width="160" height="160" className="pixel-art" />
+                  <img src={item.image_src || item.image_data_uri} alt={item.name} width="160" height="160" className="pixel-art" />
                 </Link>
               ))}
             </div>

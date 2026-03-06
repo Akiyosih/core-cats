@@ -14,7 +14,7 @@ export default async function CatDetailPage({ params }) {
     <div className="detail-layout">
       <section className="detail-art">
         <div className="detail-art__frame">
-          <img src={item.image_data_uri} alt={item.name} width="480" height="480" className="pixel-art" />
+          <img src={item.image_src || item.image_data_uri} alt={item.name} width="480" height="480" className="pixel-art" />
         </div>
       </section>
 
@@ -35,6 +35,7 @@ export default async function CatDetailPage({ params }) {
         <div className="detail-meta">
           <p><strong>Variant key:</strong> {item.integrity.variant_key}</p>
           <p><strong>PNG24 SHA256:</strong> {item.integrity.final_png_24_sha256}</p>
+          <p><strong>Preview SVG:</strong> {item.image_src || item.image_svg_file || "not available"}</p>
         </div>
 
         <div className="cta-row">

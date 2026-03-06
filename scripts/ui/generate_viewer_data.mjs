@@ -3,6 +3,7 @@ import path from "node:path";
 import { Buffer } from "node:buffer";
 
 const DEFAULT_OUT_DIR = "manifests/viewer_v1";
+const DEFAULT_PUBLIC_SVG_DIR = "web/public/viewer_v1/svg";
 const TRAIT_FILTER_ORDER = [
   ["pattern", "Pattern"],
   ["palette_id", "Color Variation"],
@@ -39,7 +40,9 @@ const LAYER_SUPERRARE_PING = 9;
 function parseArgs(argv) {
   const opts = {
     outDir: DEFAULT_OUT_DIR,
-    emitSvgFiles: false,
+    emitSvgFiles: true,
+    publicSvgDir: DEFAULT_PUBLIC_SVG_DIR,
+    embedDataUri: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -49,8 +52,17 @@ function parseArgs(argv) {
       if (!opts.outDir) {
         throw new Error("--out-dir requires a value");
       }
+    } else if (arg === "--public-svg-dir") {
+      opts.publicSvgDir = argv[++i];
+      if (!opts.publicSvgDir) {
+        throw new Error("--public-svg-dir requires a value");
+      }
     } else if (arg === "--emit-svg-files") {
       opts.emitSvgFiles = true;
+    } else if (arg === "--no-emit-svg-files") {
+      opts.emitSvgFiles = false;
+    } else if (arg === "--embed-data-uri") {
+      opts.embedDataUri = true;
     } else {
       throw new Error(`unknown argument: ${arg}`);
     }
@@ -373,11 +385,11 @@ function main() {
   const opts = parseArgs(process.argv.slice(2));
   const root = process.cwd();
   const outDir = path.resolve(root, opts.outDir);
-  const svgDir = path.join(outDir, "svg");
+  const publicSvgDir = path.resolve(root, opts.publicSvgDir);
 
   ensureDir(outDir);
   if (opts.emitSvgFiles) {
-    ensureDir(svgDir);
+    ensureDir(publicSvgDir);
   }
 
   const manifest = readJson(path.join(root, "manifests", "final_1000_manifest_v1.json"));
@@ -419,17 +431,18 @@ function main() {
     );
 
     const svg = buildSvg(data, rec);
-    const imageSvgFile = opts.emitSvgFiles ? `svg/${String(tokenId).padStart(4, "0")}.svg` : null;
+    const imageSvgFile = opts.emitSvgFiles ? `${String(tokenId).padStart(4, "0")}.svg` : null;
+    const imageSvgPublicPath = imageSvgFile ? `/viewer_v1/svg/${imageSvgFile}` : null;
     if (imageSvgFile) {
-      fs.writeFileSync(path.join(outDir, imageSvgFile), svg);
+      fs.writeFileSync(path.join(publicSvgDir, imageSvgFile), svg);
     }
 
-    collectionItems.push({
+    const itemDoc = {
       token_id: tokenId,
       name: `CoreCats #${tokenId}`,
       description: "CoreCats fully on-chain 24x24 SVG.",
-      image_data_uri: buildImageDataUri(svg),
-      image_svg_file: imageSvgFile,
+      image_src: imageSvgPublicPath,
+      image_svg_file: imageSvgFile ? normalizeRel(root, path.join(publicSvgDir, imageSvgFile)) : null,
       trait_values: buildTraitValues(manifestItem),
       attributes: manifestItem.attributes,
       display_attributes: buildDisplayAttributes(manifestItem.attributes, labelsDoc),
@@ -437,7 +450,13 @@ function main() {
         variant_key: manifestItem.variant_key,
         final_png_24_sha256: manifestItem.final_png_24_sha256,
       },
-    });
+    };
+
+    if (opts.embedDataUri) {
+      itemDoc.image_data_uri = buildImageDataUri(svg);
+    }
+
+    collectionItems.push(itemDoc);
 
     if (tokenId % 100 === 0) {
       const sec = ((Date.now() - started) / 1000).toFixed(1);
@@ -467,7 +486,7 @@ function main() {
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "filters.json"))}`);
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "summary.json"))}`);
   if (opts.emitSvgFiles) {
-    console.log(`[viewer-data] PASS: wrote SVG previews to ${normalizeRel(root, svgDir)}`);
+    console.log(`[viewer-data] PASS: wrote SVG previews to ${normalizeRel(root, publicSvgDir)}`);
   }
 }
 

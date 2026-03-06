@@ -3,48 +3,48 @@ import CollectionCard from "../../components/collection-card";
 import {
   applyCollectionFilters,
   buildSearchHref,
+  FILTER_KEYS,
   getCollection,
   getFilters,
+  normalizeFilterState,
   paginateItems,
   sortCollection,
 } from "../../lib/viewer-data";
 
-const PAGE_SIZE = 60;
+const PAGE_SIZE = 30;
+export const dynamic = "force-dynamic";
 
-function activeValues(searchParams, key) {
-  const raw = searchParams?.[key];
-  if (!raw) return [];
-  return String(raw).split(",").filter(Boolean);
+function buildFacetCounts(items, filterKey) {
+  const counts = new Map();
+  for (const item of items) {
+    const value = item.trait_values[filterKey];
+    counts.set(value, (counts.get(value) || 0) + 1);
+  }
+  return counts;
 }
 
-function FilterBlock({ title, filterKey, values, searchParams }) {
-  const active = new Set(activeValues(searchParams, filterKey));
+function FilterBlock({ title, filterKey, values, searchParams, activeValue }) {
+  const active = activeValue;
 
   return (
     <section className="filter-block">
       <h2>{title}</h2>
       <div className="chip-wrap">
         {values.map((value) => {
-          const next = new Set(active);
-          if (next.has(value.id)) {
-            next.delete(value.id);
-          } else {
-            next.add(value.id);
-          }
-
           const href = buildSearchHref(searchParams, {
-            [filterKey]: next.size > 0 ? [...next] : null,
+            [filterKey]: active === value.id ? null : value.id,
             page: null,
           });
+          const count = value.count ?? 0;
 
           return (
             <Link
               key={`${filterKey}-${value.id}`}
               href={href}
-              className={`filter-chip ${active.has(value.id) ? "filter-chip--active" : ""}`}
+              className={`filter-chip ${active === value.id ? "filter-chip--active" : ""} ${count === 0 ? "filter-chip--empty" : ""}`}
             >
               <span>{value.label}</span>
-              <small>{value.count}</small>
+              <small>{count}</small>
             </Link>
           );
         })}
@@ -77,12 +77,26 @@ function Pagination({ page, totalPages, searchParams }) {
 }
 
 export default async function CollectionPage({ searchParams }) {
-  const params = searchParams || {};
+  const params = (await searchParams) || {};
   const [collection, filtersDoc] = await Promise.all([getCollection(), getFilters()]);
+  const activeFilters = normalizeFilterState(params);
 
   const filtered = applyCollectionFilters(collection.items, params);
   const sorted = sortCollection(filtered, params.sort);
   const pagination = paginateItems(sorted, Number(params.page || 1), PAGE_SIZE);
+  const contextualFilters = {};
+
+  for (const filterKey of FILTER_KEYS) {
+    const baseItems = applyCollectionFilters(collection.items, activeFilters, { excludeKeys: [filterKey] });
+    const counts = buildFacetCounts(baseItems, filterKey);
+    contextualFilters[filterKey] = {
+      ...filtersDoc.filters[filterKey],
+      values: filtersDoc.filters[filterKey].values.map((value) => ({
+        ...value,
+        count: counts.get(value.id) || 0,
+      })),
+    };
+  }
 
   return (
     <div className="collection-layout">
@@ -110,13 +124,13 @@ export default async function CollectionPage({ searchParams }) {
           </div>
         </div>
 
-        <FilterBlock title="Coat Pattern" filterKey="pattern" values={filtersDoc.filters.pattern.values} searchParams={params} />
-        <FilterBlock title="Colorway" filterKey="palette_id" values={filtersDoc.filters.palette_id.values} searchParams={params} />
-        <FilterBlock title="Category" filterKey="category" values={filtersDoc.filters.category.values} searchParams={params} />
-        <FilterBlock title="Collar" filterKey="collar" values={filtersDoc.filters.collar.values} searchParams={params} />
-        <FilterBlock title="Collar Style" filterKey="collar_type" values={filtersDoc.filters.collar_type.values} searchParams={params} />
-        <FilterBlock title="Tier" filterKey="rarity_tier" values={filtersDoc.filters.rarity_tier.values} searchParams={params} />
-        <FilterBlock title="Special Trait" filterKey="rarity_type" values={filtersDoc.filters.rarity_type.values} searchParams={params} />
+        <FilterBlock title="Coat Pattern" filterKey="pattern" values={contextualFilters.pattern.values} searchParams={params} activeValue={activeFilters.pattern} />
+        <FilterBlock title="Colorway" filterKey="palette_id" values={contextualFilters.palette_id.values} searchParams={params} activeValue={activeFilters.palette_id} />
+        <FilterBlock title="Category" filterKey="category" values={contextualFilters.category.values} searchParams={params} activeValue={activeFilters.category} />
+        <FilterBlock title="Collar" filterKey="collar" values={contextualFilters.collar.values} searchParams={params} activeValue={activeFilters.collar} />
+        <FilterBlock title="Collar Style" filterKey="collar_type" values={contextualFilters.collar_type.values} searchParams={params} activeValue={activeFilters.collar_type} />
+        <FilterBlock title="Tier" filterKey="rarity_tier" values={contextualFilters.rarity_tier.values} searchParams={params} activeValue={activeFilters.rarity_tier} />
+        <FilterBlock title="Special Trait" filterKey="rarity_type" values={contextualFilters.rarity_type.values} searchParams={params} activeValue={activeFilters.rarity_type} />
       </aside>
 
       <section className="results-column">
