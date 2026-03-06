@@ -14,7 +14,7 @@ Version: v2.0
 2. Mint policy: free mint, zero royalty.
 3. Fully on-chain metadata and SVG (`tokenURI` returns data URI JSON/SVG).
 4. Trait semantics match final manifest.
-5. Random assignment policy: `commit-reveal + future blockhash + lazy Fisher-Yates`.
+5. Random assignment policy: `commit-finalize + future blockhash + lazy Fisher-Yates`.
 
 ## 2. Current Baseline
 1. Final 1000 manifest and trait schema are fixed in repository artifacts.
@@ -68,27 +68,28 @@ Compile/deploy production-shape contract on Core toolchain using CoreZeppelin-co
 ### Current A Status
 1. `A-1` compile/test/deploy/mint/tokenURI checks: done.
 2. Explorer verify flow: pending completion.
-3. Random assignment (`commit-reveal + future blockhash + lazy Fisher-Yates`): implemented and re-rehearsed on Core Devin.
-4. Quantity mint interface (`1/2/3` selection path): implemented as `commitMint + revealMint`; Core Devin rehearsal for quantity `1` succeeded.
+3. Random assignment (`commit-finalize + future blockhash + lazy Fisher-Yates`): implemented and re-rehearsed on Core Devin.
+4. Quantity mint interface (`1/2/3` selection path): implemented as `commitMint + finalizeMint`; Core Devin rehearsal for quantity `1` succeeded.
 
 ## 2.2 Checkpoint Snapshot (2026-03-06)
 1. Re-rehearsal deployment:
-   - `CoreCatsOnchainData`: `ab60028cb94c79e1a3d9b70c9bf2ba956dfe88c84f5a`
-   - `CoreCatsMetadataRenderer`: `ab8567f269cf0b17f2035662a292ed56d4e906ad8037`
-   - `CoreCats`: `ab892c04158cf0194cdf18e82910fc131b8199c7612e`
-2. Commit/reveal result:
-   - commit tx: `0x9d0eeb35f20d89a2b7fb68c09847c36c08227d2faa82af3435546d06c15f8c22`
-   - reveal tx: `0x20badb4197951d5e0b43d42b72b03f48233adb11a2dce51a507934cbd6bf3a51`
-   - assigned token: `#423`
+   - `CoreCatsOnchainData`: `ab61bc332a3cafa28c5359587c438f087d99a24938b9`
+   - `CoreCatsMetadataRenderer`: `ab6204d634c05880e35ea2c9c7cb03c9aa0a87f5c510`
+   - `CoreCats`: `ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba`
+2. Commit/finalize result:
+   - deploy txs: `0xa24773c70deb0d706e3202583991e5110c7eae51529221e3bb5c2dcd9f2b7959`, `0xb1e08f207d68afb31dcc551119c99492bc77e905586b939b447dc73e3243b2cd`, `0x4f037b590a133f6e4c54de50f805d7c2485ef7bf192c7855fc2f012cbac0cb60`, `0xe8ff9dca18cf56f5c9de5cf9f2cc364a18898625a6d6c8894748ddd0684cf0fc`
+   - commit tx: `0x96d4d0c304df9bf7b912888859c03833dc2ed5dd0e69bb189d8afcbd6938b182`
+   - finalize tx: `0xe47050c84f3f8ce7e00ade68848a5cca4a01d3784d11fb3943b075ac1bb5d262`
+   - assigned token: `#492`
 3. Readback:
    - `totalSupply = 1`
    - `availableSupply = 999`
    - `reservedSupply = 0`
-   - decoded `tokenURI(423)` confirmed on-chain JSON/SVG
+   - decoded `tokenURI(492)` confirmed on-chain JSON/SVG
 4. Operational notes:
-   - signer was separated from deployer during this rehearsal
-   - reveal needed a higher energy estimate multiplier
-   - one script bug was fixed: signed `quantity` must be hashed as `uint256`
+   - signer mode for this rehearsal: deployer
+   - finalize was broadcast with `--energy-estimate-multiplier 250`
+   - assigned token `#492` decoded to `tortoiseshell / orange_white / without_collar / common`
 
 ### A Blocker Criteria (required to move A -> B)
 1. Reproducible compiler/runtime incompatibility that cannot be resolved with acceptable code changes.

@@ -28,18 +28,18 @@ This document corrects the external Web UI / Mint DApp draft against the current
 4. Explorer/verification wording must be Core explorer / Blockindex centric, not Etherscan centric.
 5. Current contract branch introduces quantity mint and transparent randomness via a two-step flow:
    - `commitMint(uint8 quantity, bytes32 commitHash, uint256 nonce, uint256 expiry, bytes signature)`
-   - `revealMint(bytes32 secret)`
+   - `finalizeMint(address minter)`
    - Quantity `1 / 2 / 3` is part of this interface.
-6. Current deployed Core Devin rehearsal is still the older single-step contract.
-   - UI and runbooks must distinguish deployed rehearsal state from the newer contract branch.
+6. Current Core Devin rehearsal already covers both the older single-step mint and the newer random assignment branch.
+   - UI and runbooks must distinguish which deployed checkpoint is being referenced.
 7. Current contract is not enumerable.
    - Do not implement `/my-cats` assuming `tokenOfOwnerByIndex`.
    - Ownership listing requires event indexing, explorer/API lookup, or an app-side cache/index.
 8. Transparent random assignment is implemented in the active contract branch as:
-   - `commit-reveal + future blockhash + lazy Fisher-Yates`
-   - but it is not yet re-rehearsed on Core Devin after implementation
-9. There is currently no frontend project scaffold in this repository.
-   - Frontend stack selection and project bootstrap are still pending.
+   - `commit-finalize + future blockhash + lazy Fisher-Yates`
+   - and it has been re-rehearsed on Core Devin
+9. There is now a frontend project scaffold in this repository.
+   - `web/` contains the current Next.js foundation and viewer pages.
 9. The manifest references local art file paths, but this repository does not currently track those preview/image files.
    - UI work must not assume `art/...png` paths already exist in the public repo state.
 
@@ -51,6 +51,15 @@ This document corrects the external Web UI / Mint DApp draft against the current
    - `CoreCats`: `ab58e879a3b77a58dbd2a0016a2ee56a8b6352ccaec5`
 3. `tokenId = 1` was minted successfully on Core Devin.
 4. `tokenURI(1)` was decoded and confirmed to return on-chain JSON with on-chain Base64 SVG.
+
+## Current Confirmed Core Devin Randomness Checkpoint
+1. Commit/finalize rehearsal succeeded on 2026-03-06.
+2. Deployed addresses:
+   - `CoreCatsOnchainData`: `ab60028cb94c79e1a3d9b70c9bf2ba956dfe88c84f5a`
+   - `CoreCatsMetadataRenderer`: `ab8567f269cf0b17f2035662a292ed56d4e906ad8037`
+   - `CoreCats`: `ab892c04158cf0194cdf18e82910fc131b8199c7612e`
+3. `commitMint -> finalizeMint` succeeded on Core Devin.
+4. Randomly assigned token `#423` was minted and `tokenURI(423)` was decoded to on-chain JSON with on-chain Base64 SVG.
 
 ## Initial Public UI Goals
 The external draft direction is broadly correct. The initial public UI should still aim for:
@@ -82,16 +91,22 @@ Good fit for:
 5. future CorePass / KYC expansion as a later phase
 
 ### `/mint`
-The external draft needs one correction here:
-1. `1 / 2 / 3` quantity mint is a target UI, but the current Core contract does not yet support it.
-2. Initial UI implementation must choose one of two paths:
-   - Path A: wait until contract/API are upgraded to quantity mint
-   - Path B: ship a temporary single-mint UI for rehearsal only
-3. Current mint depends on an off-chain signer producing:
+The external draft needs these corrections:
+1. `1 / 2 / 3` quantity mint is part of the current Core contract interface.
+2. The live flow is two-step:
+   - `commitMint(...)`
+   - `finalizeMint(minter)`
+3. `finalizeMint(minter)` is permissionless by design.
+   - the UI may call it directly
+   - or a relayer/service may finalize pending commits
+4. Current mint depends on an off-chain signer producing:
    - `nonce`
    - `expiry`
    - `signature`
-4. `/get-signature` is currently a planned API, not an existing implementation in this repo.
+5. `/get-signature` is currently a planned API, not an existing implementation in this repo.
+6. UI must explain the two-step flow clearly enough that users understand:
+   - commit does not immediately reveal the assigned cat
+   - finalize happens after the required future block boundary
 
 ### `/collection`
 This is a good early UI target because the static collection data already exists.
@@ -157,17 +172,17 @@ These should be resolved at runtime or through a lightweight backend:
 4. signature issuance for mint
 
 ## tokenId / artId Rule
-This is not fully settled for the final mainnet randomness design and must not be hand-waved in UI code.
+This is now mostly settled for the final mainnet randomness design and must not be hand-waved in UI code.
 
 Current state:
 1. the final manifest already assigns fixed `token_id` values `1..1000`
-2. the current Core Devin rehearsal contract mints sequential token IDs
-3. final target architecture still expects transparent random assignment before mainnet
+2. the active random assignment contract maps mints fairly from the remaining token pool
+3. Core Devin rehearsal for that random assignment path has already succeeded
 
 UI rule:
-1. do not hard-code assumptions that sequential mint order will equal final fair assignment policy
-2. if the final contract introduces token-to-art remapping, the viewer data model must be updated explicitly
-3. until that contract change is implemented, treat random assignment as pending
+1. do not hard-code assumptions that mint order equals `tokenId`
+2. the viewer should treat `tokenId` as the canonical art identity after finalize
+3. minted/unminted state should be layered on top of the fixed manifest data
 
 ## CorePass / KYC Policy
 Initial public UI should not be blocked on CorePass/KYC integration.
@@ -187,15 +202,15 @@ Current policy:
 4. frontend restrictions alone are never sufficient
 
 ## Recommended UI Implementation Order
-1. Choose frontend stack and scaffold project
-2. Generate static collection viewer data from `final_1000_manifest_v1.json`
-3. Build `/collection`
-4. Build `/about`
-5. Build `/transparency`
+1. Extend the existing `web/` Next.js foundation
+2. Keep static collection viewer data generation from `final_1000_manifest_v1.json`
+3. Refine `/collection`
+4. Refine `/about`
+5. Refine `/transparency`
 6. Decide owner-indexing approach for `/my-cats`
-7. Upgrade contract/API for final mint flow (`1 / 2 / 3` and randomness), or intentionally ship a temporary single-mint rehearsal UI
-8. Build `/mint`
-9. Add landing page visuals and key art
+7. Implement signature API for `commitMint(...)`
+8. Build `/mint` around `commitMint + finalizeMint`
+9. Add any final landing page visual refinements
 
 ## Non-Goals for the First Public UI
 1. mandatory CorePass / KYC gating
@@ -206,7 +221,7 @@ Current policy:
 
 ## Acceptance Gate Before Mint UI Is Considered Final
 1. Final mint contract interface is fixed
-2. Random assignment policy is implemented or intentionally deferred with explicit public wording
+2. Random assignment policy is implemented and documented as `commit-finalize + future blockhash + lazy Fisher-Yates`
 3. Signature API contract compatibility is tested
 4. Owner indexing method for `/my-cats` is explicitly chosen
 5. Transparency page links are real and reproducible

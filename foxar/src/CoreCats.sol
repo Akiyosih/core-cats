@@ -12,12 +12,12 @@ interface ICoreCatsMetadataRenderer {
 contract CoreCats is CRC721, Ownable {
     uint256 public constant MAX_SUPPLY = 1000;
     uint256 public constant MAX_PER_ADDRESS = 3;
-    uint64 public constant REVEAL_DELAY_BLOCKS = 2;
-    uint64 public constant REVEAL_WINDOW_BLOCKS = 200;
+    uint64 public constant FINALIZE_DELAY_BLOCKS = 2;
+    uint64 public constant FINALIZE_WINDOW_BLOCKS = 200;
 
     struct PendingCommit {
         uint8 quantity;
-        uint64 revealBlock;
+        uint64 finalizeBlock;
         uint64 expiryBlock;
         bytes32 commitHash;
     }
@@ -37,12 +37,12 @@ contract CoreCats is CRC721, Ownable {
     event MintCommitted(
         address indexed minter,
         uint8 quantity,
-        uint64 revealBlock,
+        uint64 finalizeBlock,
         uint64 expiryBlock,
         bytes32 commitHash
     );
-    event MintCommitExpired(address indexed minter, uint8 quantity, uint64 revealBlock, uint64 expiryBlock);
-    event MintRevealed(address indexed minter, uint8 quantity, bytes32 entropy);
+    event MintCommitExpired(address indexed minter, uint8 quantity, uint64 finalizeBlock, uint64 expiryBlock);
+    event MintFinalized(address indexed minter, address indexed finalizer, uint8 quantity, bytes32 entropy);
     event TokenAssigned(address indexed minter, uint256 indexed tokenId, uint256 indexed drawIndex, bytes32 entropy);
 
     constructor() CRC721("CoreCats", "CCAT") {
@@ -91,12 +91,12 @@ contract CoreCats is CRC721, Ownable {
         address recovered = EDDSA.recover(digest, signature);
         require(recovered == signer, "invalid signature");
 
-        uint64 revealBlock = uint64(block.number + REVEAL_DELAY_BLOCKS);
-        uint64 expiryBlock = uint64(revealBlock + REVEAL_WINDOW_BLOCKS);
+        uint64 finalizeBlock = uint64(block.number + FINALIZE_DELAY_BLOCKS);
+        uint64 expiryBlock = uint64(finalizeBlock + FINALIZE_WINDOW_BLOCKS);
 
         pendingCommit[to] = PendingCommit({
             quantity: quantity,
-            revealBlock: revealBlock,
+            finalizeBlock: finalizeBlock,
             expiryBlock: expiryBlock,
             commitHash: commitHash
         });
@@ -104,40 +104,38 @@ contract CoreCats is CRC721, Ownable {
         reservedPerAddress[to] += quantity;
         reservedSupply += quantity;
 
-        emit MintCommitted(to, quantity, revealBlock, expiryBlock, commitHash);
+        emit MintCommitted(to, quantity, finalizeBlock, expiryBlock, commitHash);
     }
 
-    function revealMint(bytes32 secret) external {
-        address to = msg.sender;
-        PendingCommit memory commitData = pendingCommit[to];
+    function finalizeMint(address minter) external {
+        PendingCommit memory commitData = pendingCommit[minter];
 
         require(commitData.quantity > 0, "no pending commit");
-        require(block.number > commitData.revealBlock, "reveal too early");
-        require(block.number <= commitData.expiryBlock, "reveal expired");
-        require(keccak256(abi.encodePacked(secret)) == commitData.commitHash, "invalid reveal");
+        require(block.number > commitData.finalizeBlock, "finalize too early");
+        require(block.number <= commitData.expiryBlock, "finalize expired");
 
-        bytes32 revealBlockHash = blockhash(commitData.revealBlock);
-        require(revealBlockHash != bytes32(0), "reveal blockhash unavailable");
+        bytes32 finalizeBlockHash = blockhash(commitData.finalizeBlock);
+        require(finalizeBlockHash != bytes32(0), "finalize blockhash unavailable");
 
         uint256 quantity = uint256(commitData.quantity);
         uint256 mintedBefore = _mintedCount;
         bytes32 entropy = keccak256(
-            abi.encodePacked(secret, revealBlockHash, to, address(this), block.chainid, commitData.revealBlock)
+            abi.encodePacked(commitData.commitHash, finalizeBlockHash, minter, address(this), block.chainid, commitData.finalizeBlock)
         );
 
-        delete pendingCommit[to];
-        reservedPerAddress[to] -= quantity;
+        delete pendingCommit[minter];
+        reservedPerAddress[minter] -= quantity;
         reservedSupply -= quantity;
-        mintedPerAddress[to] += quantity;
+        mintedPerAddress[minter] += quantity;
         _mintedCount = mintedBefore + quantity;
 
-        emit MintRevealed(to, commitData.quantity, entropy);
+        emit MintFinalized(minter, msg.sender, commitData.quantity, entropy);
 
         for (uint256 i = 0; i < quantity; i++) {
             uint256 remaining = MAX_SUPPLY - (mintedBefore + i);
             uint256 tokenId = _drawRandomTokenId(uint256(keccak256(abi.encodePacked(entropy, i))), remaining);
-            _safeMint(to, tokenId);
-            emit TokenAssigned(to, tokenId, i, entropy);
+            _safeMint(minter, tokenId);
+            emit TokenAssigned(minter, tokenId, i, entropy);
         }
     }
 
@@ -150,7 +148,7 @@ contract CoreCats is CRC721, Ownable {
         reservedPerAddress[minter] -= uint256(commitData.quantity);
         reservedSupply -= uint256(commitData.quantity);
 
-        emit MintCommitExpired(minter, commitData.quantity, commitData.revealBlock, commitData.expiryBlock);
+        emit MintCommitExpired(minter, commitData.quantity, commitData.finalizeBlock, commitData.expiryBlock);
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
@@ -173,7 +171,7 @@ contract CoreCats is CRC721, Ownable {
         reservedPerAddress[minter] -= uint256(commitData.quantity);
         reservedSupply -= uint256(commitData.quantity);
 
-        emit MintCommitExpired(minter, commitData.quantity, commitData.revealBlock, commitData.expiryBlock);
+        emit MintCommitExpired(minter, commitData.quantity, commitData.finalizeBlock, commitData.expiryBlock);
     }
 
     function _drawRandomTokenId(uint256 randomWord, uint256 remaining) internal returns (uint256) {

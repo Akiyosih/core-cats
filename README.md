@@ -64,7 +64,7 @@ This project is licensed under the MIT License.
 **Transparency Policy**: All contract code, generation logic, and deployment history will be publicly available on GitHub  
 
 **Technical Policy**:
-1. **Randomness Method**: `commit-reveal + future blockhash + lazy Fisher-Yates`  
+1. **Randomness Method**: `commit-finalize + future blockhash + lazy Fisher-Yates`  
    - Same algorithm on Sepolia rehearsal and Core production path  
    - Assignment process is designed to be replay-verifiable from on-chain data  
    - `RandomSource` abstraction keeps future VRF migration possible without NFT semantic changes  
@@ -75,10 +75,10 @@ This project is licensed under the MIT License.
 
 **Development Steps**:
 1. **MVP Smart Contract**:  
-   - Implement `commitMint()`, `revealMint()`, and `tokenURI()` around a transparent random assignment flow  
-   - Use `commit-reveal + future blockhash + lazy Fisher-Yates` randomness  
+   - Implement `commitMint()`, `finalizeMint()`, and `tokenURI()` around a transparent random assignment flow  
+   - Use `commit-finalize + future blockhash + lazy Fisher-Yates` randomness  
 2. **Testnet Verification**:  
-   - Deploy, commit, reveal, and inspect tokenURI on Core testnet  
+   - Deploy, commit, finalize, and inspect tokenURI on Core testnet  
 3. **Mainnet Deployment**:  
    - Store all data fully on-chain  
    - Publish code, parts, and hashes on GitHub  
@@ -103,7 +103,7 @@ This project is licensed under the MIT License.
 **公開方針**: コントラクト、生成ロジック、デプロイ履歴をGitHubで全公開  
 
 **技術方針**:
-1. **乱数生成方式**: `commit-reveal + future blockhash + lazy Fisher-Yates`  
+1. **乱数生成方式**: `commit-finalize + future blockhash + lazy Fisher-Yates`  
    - SepoliaリハーサルとCore本番で同一アルゴリズムを採用  
    - オンチェーンデータから第三者が再計算・検証できる設計  
    - 将来VRFが確定した場合は`RandomSource`抽象で差し替え可能（NFT意味論は維持）  
@@ -114,10 +114,10 @@ This project is licensed under the MIT License.
 
 **開発ステップ**:
 1. **MVPスマートコントラクト作成**:  
-   - `commitMint()`・`revealMint()`・`tokenURI()` を、透明なランダム割当フローとして実装  
-   - 乱数生成は`commit-reveal + future blockhash + lazy Fisher-Yates`  
+   - `commitMint()`・`finalizeMint()`・`tokenURI()` を、透明なランダム割当フローとして実装  
+   - 乱数生成は`commit-finalize + future blockhash + lazy Fisher-Yates`  
 2. **テストネット検証**:  
-   - Core testnetでデプロイ、commit、reveal、tokenURI確認  
+   - Core testnetでデプロイ、commit、finalize、tokenURI確認  
 3. **本番デプロイ**:  
    - 全データをオンチェーンに書き込み  
    - コード・パーツ・ハッシュをGitHubで公開  

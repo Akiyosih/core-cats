@@ -33,15 +33,16 @@ contract CoreCatsTest is Test {
     function testMintWithValidSignature() public {
         uint256 nonce = 1;
         uint256 expiry = block.timestamp + 1 days;
-        bytes32 secret = keccak256("secret-1");
+        bytes32 seed = keccak256("seed-1");
         bytes memory sig = _mintSignature(_minter, 1, nonce, expiry, _signerKey);
+        address relayer = makeAddr("relayer");
 
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secret)), nonce, expiry, sig);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seed)), nonce, expiry, sig);
 
-        vm.roll(block.number + _coreCats.REVEAL_DELAY_BLOCKS() + 1);
-        vm.prank(_minter);
-        _coreCats.revealMint(secret);
+        vm.roll(block.number + _coreCats.FINALIZE_DELAY_BLOCKS() + 1);
+        vm.prank(relayer);
+        _coreCats.finalizeMint(_minter);
 
         assertEq(_coreCats.totalSupply(), 1);
         assertEq(_coreCats.mintedPerAddress(_minter), 1);
@@ -51,55 +52,55 @@ contract CoreCatsTest is Test {
     function testCommitReplayReverts() public {
         uint256 nonce = 7;
         uint256 expiry = block.timestamp + 1 days;
-        bytes32 secret = keccak256("secret-2");
+        bytes32 seed = keccak256("seed-2");
         bytes memory sig = _mintSignature(_minter, 1, nonce, expiry, _signerKey);
 
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secret)), nonce, expiry, sig);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seed)), nonce, expiry, sig);
 
-        vm.roll(block.number + _coreCats.REVEAL_DELAY_BLOCKS() + 1);
-        vm.prank(_minter);
-        _coreCats.revealMint(secret);
+        vm.roll(block.number + _coreCats.FINALIZE_DELAY_BLOCKS() + 1);
+        vm.prank(makeAddr("finalizer"));
+        _coreCats.finalizeMint(_minter);
 
         vm.expectRevert(bytes("nonce used"));
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secret)), nonce, expiry, sig);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seed)), nonce, expiry, sig);
     }
 
     function testCommitExpiredSignatureReverts() public {
         uint256 nonce = 11;
         uint256 expiry = block.timestamp - 1;
-        bytes32 secret = keccak256("secret-3");
+        bytes32 seed = keccak256("seed-3");
         bytes memory sig = _mintSignature(_minter, 1, nonce, expiry, _signerKey);
 
         vm.expectRevert(bytes("signature expired"));
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secret)), nonce, expiry, sig);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seed)), nonce, expiry, sig);
     }
 
     function testCommitInvalidSignatureReverts() public {
         (, string memory wrongKey) = makeAddrAndKey("wrong-signer");
         uint256 nonce = 15;
         uint256 expiry = block.timestamp + 1 days;
-        bytes32 secret = keccak256("secret-4");
+        bytes32 seed = keccak256("seed-4");
         bytes memory sig = _mintSignature(_minter, 1, nonce, expiry, wrongKey);
 
         vm.expectRevert(bytes("invalid signature"));
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secret)), nonce, expiry, sig);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seed)), nonce, expiry, sig);
     }
 
-    function testQuantityMintRevealsThreeTokens() public {
+    function testQuantityMintFinalizesThreeTokens() public {
         uint256 expiry = block.timestamp + 1 days;
-        bytes32 secret = keccak256("secret-qty3");
+        bytes32 seed = keccak256("seed-qty3");
         bytes memory sig = _mintSignature(_minter, 3, 31, expiry, _signerKey);
 
         vm.prank(_minter);
-        _coreCats.commitMint(3, keccak256(abi.encodePacked(secret)), 31, expiry, sig);
+        _coreCats.commitMint(3, keccak256(abi.encodePacked(seed)), 31, expiry, sig);
 
-        vm.roll(block.number + _coreCats.REVEAL_DELAY_BLOCKS() + 1);
-        vm.prank(_minter);
-        _coreCats.revealMint(secret);
+        vm.roll(block.number + _coreCats.FINALIZE_DELAY_BLOCKS() + 1);
+        vm.prank(makeAddr("finalizer"));
+        _coreCats.finalizeMint(_minter);
 
         assertEq(_coreCats.totalSupply(), 3);
         assertEq(_coreCats.mintedPerAddress(_minter), 3);
@@ -107,7 +108,7 @@ contract CoreCatsTest is Test {
     }
 
     function testPerAddressLimitRevertsOnSecondCommitWhenReservedWouldExceedLimit() public {
-        _commitAndReveal(_minter, 2, 40, keccak256("secret-limit"));
+        _commitAndFinalize(_minter, makeAddr("relayer-a"), 2, 40, keccak256("seed-limit"));
 
         uint256 expiry = block.timestamp + 1 days;
         bytes memory sigB = _mintSignature(_minter, 2, 41, expiry, _signerKey);
@@ -117,7 +118,7 @@ contract CoreCatsTest is Test {
     }
 
     function testTokenURIRevertsWhenRendererUnset() public {
-        _commitAndReveal(_minter, 1, 21, keccak256("secret-uri-unset"));
+        _commitAndFinalize(_minter, makeAddr("relayer-b"), 1, 21, keccak256("seed-uri-unset"));
         uint256 tokenId = _ownedTokenId(_minter);
 
         vm.expectRevert(bytes("renderer not set"));
@@ -129,7 +130,7 @@ contract CoreCatsTest is Test {
         MockMetadataRenderer renderer = new MockMetadataRenderer(expected);
         _coreCats.setMetadataRenderer(address(renderer));
 
-        _commitAndReveal(_minter, 1, 22, keccak256("secret-uri-set"));
+        _commitAndFinalize(_minter, makeAddr("relayer-c"), 1, 22, keccak256("seed-uri-set"));
 
         string memory actual = _coreCats.tokenURI(_ownedTokenId(_minter));
         assertEq(actual, expected);
@@ -154,68 +155,72 @@ contract CoreCatsTest is Test {
         _coreCats.setMetadataRenderer(address(renderer));
     }
 
-    function testRevealTooEarlyReverts() public {
+    function testFinalizeTooEarlyReverts() public {
         uint256 expiry = block.timestamp + 1 days;
-        bytes32 secret = keccak256("secret-early");
+        bytes32 seed = keccak256("seed-early");
         bytes memory sig = _mintSignature(_minter, 1, 51, expiry, _signerKey);
 
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secret)), 51, expiry, sig);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seed)), 51, expiry, sig);
 
-        vm.expectRevert(bytes("reveal too early"));
-        vm.prank(_minter);
-        _coreCats.revealMint(secret);
+        vm.expectRevert(bytes("finalize too early"));
+        vm.prank(makeAddr("relayer-d"));
+        _coreCats.finalizeMint(_minter);
     }
 
-    function testRevealWrongSecretReverts() public {
+    function testAnyoneCanFinalizeForMinter() public {
         uint256 expiry = block.timestamp + 1 days;
-        bytes32 secret = keccak256("secret-correct");
+        bytes32 seed = keccak256("seed-third-party");
         bytes memory sig = _mintSignature(_minter, 1, 52, expiry, _signerKey);
+        address relayer = makeAddr("third-party-finalizer");
 
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secret)), 52, expiry, sig);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seed)), 52, expiry, sig);
 
-        vm.roll(block.number + _coreCats.REVEAL_DELAY_BLOCKS() + 1);
-        vm.expectRevert(bytes("invalid reveal"));
-        vm.prank(_minter);
-        _coreCats.revealMint(keccak256("secret-wrong"));
+        vm.roll(block.number + _coreCats.FINALIZE_DELAY_BLOCKS() + 1);
+        vm.prank(relayer);
+        _coreCats.finalizeMint(_minter);
+
+        uint256 tokenId = _ownedTokenId(_minter);
+        assertEq(_coreCats.ownerOf(tokenId), _minter);
+        assertEq(_coreCats.balanceOf(relayer), 0);
     }
 
     function testExpiredCommitCanBeClearedAndRecommitted() public {
         uint256 expiry = block.timestamp + 1 days;
-        bytes32 secretA = keccak256("secret-expired-a");
-        bytes32 secretB = keccak256("secret-expired-b");
+        bytes32 seedA = keccak256("seed-expired-a");
+        bytes32 seedB = keccak256("seed-expired-b");
         bytes memory sigA = _mintSignature(_minter, 1, 60, expiry, _signerKey);
         bytes memory sigB = _mintSignature(_minter, 1, 61, expiry, _signerKey);
 
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secretA)), 60, expiry, sigA);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seedA)), 60, expiry, sigA);
 
-        vm.roll(block.number + _coreCats.REVEAL_DELAY_BLOCKS() + _coreCats.REVEAL_WINDOW_BLOCKS() + 2);
+        vm.roll(block.number + _coreCats.FINALIZE_DELAY_BLOCKS() + _coreCats.FINALIZE_WINDOW_BLOCKS() + 2);
 
-        vm.prank(_minter);
+        vm.prank(makeAddr("cleanup-relayer"));
         _coreCats.clearExpiredCommit(_minter);
 
         assertEq(_coreCats.reservedSupply(), 0);
         assertEq(_coreCats.reservedPerAddress(_minter), 0);
 
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secretB)), 61, expiry, sigB);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seedB)), 61, expiry, sigB);
     }
 
-    function testRevealExpiredReverts() public {
+    function testFinalizeExpiredReverts() public {
         uint256 expiry = block.timestamp + 1 days;
-        bytes32 secret = keccak256("secret-expired");
+        bytes32 seed = keccak256("seed-expired");
         bytes memory sig = _mintSignature(_minter, 1, 62, expiry, _signerKey);
 
         vm.prank(_minter);
-        _coreCats.commitMint(1, keccak256(abi.encodePacked(secret)), 62, expiry, sig);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seed)), 62, expiry, sig);
 
-        vm.roll(block.number + _coreCats.REVEAL_DELAY_BLOCKS() + _coreCats.REVEAL_WINDOW_BLOCKS() + 2);
+        vm.roll(block.number + _coreCats.FINALIZE_DELAY_BLOCKS() + _coreCats.FINALIZE_WINDOW_BLOCKS() + 2);
 
-        vm.expectRevert(bytes("reveal expired"));
-        vm.prank(_minter);
-        _coreCats.revealMint(secret);
+        vm.expectRevert(bytes("finalize expired"));
+        vm.prank(makeAddr("late-relayer"));
+        _coreCats.finalizeMint(_minter);
     }
 
     function testRandomAssignmentDoesNotRepeatTokenIdsAcrossWallets() public {
@@ -223,9 +228,9 @@ contract CoreCatsTest is Test {
         address bob = makeAddr("bob");
         address carol = makeAddr("carol");
 
-        _commitAndReveal(alice, 2, 71, keccak256("secret-alice"));
-        _commitAndReveal(bob, 2, 72, keccak256("secret-bob"));
-        _commitAndReveal(carol, 2, 73, keccak256("secret-carol"));
+        _commitAndFinalize(alice, makeAddr("relayer-e"), 2, 71, keccak256("seed-alice"));
+        _commitAndFinalize(bob, makeAddr("relayer-f"), 2, 72, keccak256("seed-bob"));
+        _commitAndFinalize(carol, makeAddr("relayer-g"), 2, 73, keccak256("seed-carol"));
 
         uint256[6] memory tokenIds = [
             _ownedTokenIdAt(alice, 0),
@@ -257,16 +262,16 @@ contract CoreCatsTest is Test {
         _coreCats.commitMint(1, bytes32(0), 80, expiry, sig);
     }
 
-    function _commitAndReveal(address to, uint8 quantity, uint256 nonce, bytes32 secret) internal {
+    function _commitAndFinalize(address to, address finalizer, uint8 quantity, uint256 nonce, bytes32 seed) internal {
         uint256 expiry = block.timestamp + 1 days;
         bytes memory sig = _mintSignature(to, quantity, nonce, expiry, _signerKey);
 
         vm.prank(to);
-        _coreCats.commitMint(quantity, keccak256(abi.encodePacked(secret)), nonce, expiry, sig);
+        _coreCats.commitMint(quantity, keccak256(abi.encodePacked(seed)), nonce, expiry, sig);
 
-        vm.roll(block.number + _coreCats.REVEAL_DELAY_BLOCKS() + 1);
-        vm.prank(to);
-        _coreCats.revealMint(secret);
+        vm.roll(block.number + _coreCats.FINALIZE_DELAY_BLOCKS() + 1);
+        vm.prank(finalizer);
+        _coreCats.finalizeMint(to);
     }
 
     function _mintSignature(address to, uint256 quantity, uint256 nonce, uint256 expiry, string memory key)

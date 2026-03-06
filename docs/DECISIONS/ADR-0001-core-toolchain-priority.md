@@ -40,7 +40,7 @@ Do not start from B or C unless the previous step is explicitly documented as bl
 - Keep NFT semantics unchanged across A/B/C:
   - same final 1000 manifest interpretation
   - same tokenURI/on-chain SVG output expectations
-  - same randomness policy (`commit-reveal + future blockhash + lazy Fisher-Yates`)
+  - same randomness policy (`commit-finalize + future blockhash + lazy Fisher-Yates`)
 - Keep external interfaces stable where possible (`mint`, `tokenURI`, ownership behavior, events).
 - Record any unavoidable drift with explicit rationale and test impact.
 

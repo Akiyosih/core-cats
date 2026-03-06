@@ -72,7 +72,7 @@ Without it, signing may fail with `Invalid network id prefix in address`.
 ## 7. Post-Deploy Checks
 1. Confirm `CoreCats.metadataRenderer()` equals deployed renderer address.
 2. Confirm `CoreCats.signer()` equals the intended mint signer address.
-3. Run one commit/reveal mint rehearsal.
+3. Run one commit/finalize mint rehearsal.
 4. Confirm `tokenURI(tokenId)` returns `data:application/json;base64,...`.
 5. Decode metadata and confirm `image` is `data:image/svg+xml;base64,...`.
 
@@ -89,10 +89,10 @@ spark script script/CoreCatsPostDeployCheck.s.sol:CoreCatsPostDeployCheckScript 
 
 ### 7.2 Commit Mint Rehearsal
 
-Set a local reveal secret once for the rehearsal:
+Set a local commit seed once for the rehearsal:
 
 ```bash
-export MINT_SECRET="<32-byte-secret-as-bytes32>"
+export MINT_SEED="<32-byte-seed-as-bytes32>"
 export MINT_QUANTITY=1
 ```
 
@@ -116,21 +116,23 @@ spark script script/CoreCatsCommitMint.s.sol:CoreCatsCommitMintScript \
   --broadcast
 ```
 
-Wait until the commit reveal block has passed, then reveal:
+Wait until the commit finalize block has passed, then finalize:
 
 ```bash
 CORECATS_ADDRESS="<deployed-corecats-address>" \
-spark script script/CoreCatsRevealMint.s.sol:CoreCatsRevealMintScript \
+MINTER_ADDRESS="<committed-minter-address>" \
+spark script script/CoreCatsFinalizeMint.s.sol:CoreCatsFinalizeMintScript \
   --fork-url "$CORE_TESTNET_RPC_URL" \
   --network-id 3 \
   --broadcast
 ```
 
-If reveal fails with `status=0` and `energyUsed` matches the tx energy limit, retry with a higher multiplier:
+If finalize fails with `status=0` and `energyUsed` matches the tx energy limit, retry with a higher multiplier:
 
 ```bash
 CORECATS_ADDRESS="<deployed-corecats-address>" \
-spark script script/CoreCatsRevealMint.s.sol:CoreCatsRevealMintScript \
+MINTER_ADDRESS="<committed-minter-address>" \
+spark script script/CoreCatsFinalizeMint.s.sol:CoreCatsFinalizeMintScript \
   --fork-url "$CORE_TESTNET_RPC_URL" \
   --network-id 3 \
   --energy-estimate-multiplier 250 \
@@ -152,7 +154,7 @@ Then decode the returned `data:application/json;base64,...` and confirm:
 2. `image` starts with `data:image/svg+xml;base64,`
 3. decoded SVG renders correctly
 
-The assigned token id is available from the `TokenAssigned` event emitted during reveal.
+The assigned token id is available from the `TokenAssigned` event emitted during finalize.
 
 ## 8. Verification
 Verify each deployed contract (example uses blockscout-compatible verifier):
@@ -196,7 +198,7 @@ Record in `docs/worklogs/` after each rehearsal:
 3. verifier links
 4. mint/tokenURI check result
 5. signer mode (`deployer` or dedicated signer)
-6. whether reveal required a higher energy multiplier
+6. whether finalize required a higher energy multiplier
 7. pass/fail and next action
 
 ## 10. Rollback Rule
@@ -209,11 +211,11 @@ If any check fails:
 1. `spark` may not be on `PATH`; if needed, use full path (example: `/home/<user>/.foxar/bin/spark`).
 2. Core Devin script execution requires explicit `--network-id 3`.
 3. `DEPLOYER_PRIVATE_KEY` must be Core/Foxar format (57-byte key; 114 hex chars, `0x` optional).
-4. Commit/reveal mint is a two-step flow; do not expect a usable `tokenId` until reveal succeeds.
+4. Commit/finalize mint is a two-step flow; do not expect a usable `tokenId` until finalize succeeds.
 5. `run-latest.json` includes energy usage but not reliable fee totals in XAB; capture fee from explorer for final reporting.
 6. Writing files from script via cheatcodes may require allowed paths; prefer stdout + shell decode for portability.
 7. `script/CoreCatsCommitMint.s.sol` must hash `quantity` as `uint256`; a `uint8`-encoded signer payload will fail on-chain.
-8. `revealMint` may need a higher `--energy-estimate-multiplier` on Core Devin even when simulation succeeds.
+8. `finalizeMint` may need a higher `--energy-estimate-multiplier` on Core Devin even when simulation succeeds.
 
 ## 12. Recorded Rehearsal Snapshot (2026-03-05)
 1. Block hash: `0x2a3a34da50127b9899e7d4f7ef7d838a736a01094cf3abce5a17fb1316fb5f83`
@@ -225,3 +227,27 @@ If any check fails:
 4. Fee summary:
    - deploy total: `0.007050933 XAB`
    - first mint: `0.000129074 XAB`
+
+## 13. Recorded Rehearsal Snapshot (2026-03-06, Commit-Finalize)
+1. Deployed:
+   - `CoreCatsOnchainData`: `ab61bc332a3cafa28c5359587c438f087d99a24938b9`
+   - `CoreCatsMetadataRenderer`: `ab6204d634c05880e35ea2c9c7cb03c9aa0a87f5c510`
+   - `CoreCats`: `ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba`
+2. Deploy txs:
+   - data: `0xa24773c70deb0d706e3202583991e5110c7eae51529221e3bb5c2dcd9f2b7959`
+   - renderer: `0xb1e08f207d68afb31dcc551119c99492bc77e905586b939b447dc73e3243b2cd`
+   - corecats: `0x4f037b590a133f6e4c54de50f805d7c2485ef7bf192c7855fc2f012cbac0cb60`
+   - set renderer: `0xe8ff9dca18cf56f5c9de5cf9f2cc364a18898625a6d6c8894748ddd0684cf0fc`
+3. Commit/finalize:
+   - commit tx: `0x96d4d0c304df9bf7b912888859c03833dc2ed5dd0e69bb189d8afcbd6938b182`
+   - finalize tx: `0xe47050c84f3f8ce7e00ade68848a5cca4a01d3784d11fb3943b075ac1bb5d262`
+   - assigned token: `#492`
+4. Readback:
+   - `totalSupply = 1`
+   - `availableSupply = 999`
+   - `reservedSupply = 0`
+   - `tokenURI(492)` decoded successfully to on-chain JSON + SVG
+5. Notes:
+   - signer mode: deployer
+   - finalize was broadcast with `--energy-estimate-multiplier 250`
+   - decoded traits: `tortoiseshell / orange_white / without_collar / common`
