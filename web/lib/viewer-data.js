@@ -4,6 +4,7 @@ import { cache } from "react";
 
 const ROOT_DIR = path.resolve(process.cwd(), "..");
 const VIEWER_DIR = path.join(ROOT_DIR, "manifests", "viewer_v1");
+export const FILTER_KEYS = ["pattern", "palette_id", "category", "collar", "collar_type", "rarity_tier", "rarity_type"];
 
 async function readJson(fileName) {
   const filePath = path.join(VIEWER_DIR, fileName);
@@ -20,25 +21,31 @@ export async function getCollectionItem(tokenId) {
   return collection.items.find((item) => item.token_id === tokenId) || null;
 }
 
-function normalizeMultiValue(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) return value.flatMap((entry) => String(entry).split(",")).filter(Boolean);
-  return String(value).split(",").filter(Boolean);
+function normalizeSingleValue(value) {
+  if (!value) return null;
+  const raw = Array.isArray(value) ? String(value[0] || "") : String(value);
+  const first = raw.split(",").find(Boolean);
+  return first || null;
 }
 
-export function applyCollectionFilters(items, searchParams) {
-  const active = {
-    pattern: normalizeMultiValue(searchParams.pattern),
-    palette_id: normalizeMultiValue(searchParams.palette_id),
-    category: normalizeMultiValue(searchParams.category),
-    collar: normalizeMultiValue(searchParams.collar),
-    collar_type: normalizeMultiValue(searchParams.collar_type),
-    rarity_tier: normalizeMultiValue(searchParams.rarity_tier),
-    rarity_type: normalizeMultiValue(searchParams.rarity_type),
+export function normalizeFilterState(searchParams = {}) {
+  return {
+    pattern: normalizeSingleValue(searchParams.pattern),
+    palette_id: normalizeSingleValue(searchParams.palette_id),
+    category: normalizeSingleValue(searchParams.category),
+    collar: normalizeSingleValue(searchParams.collar),
+    collar_type: normalizeSingleValue(searchParams.collar_type),
+    rarity_tier: normalizeSingleValue(searchParams.rarity_tier),
+    rarity_type: normalizeSingleValue(searchParams.rarity_type),
   };
+}
+
+export function applyCollectionFilters(items, searchParams, options = {}) {
+  const active = normalizeFilterState(searchParams);
+  const excludeKeys = new Set(options.excludeKeys || []);
 
   return items.filter((item) =>
-    Object.entries(active).every(([key, values]) => values.length === 0 || values.includes(item.trait_values[key])),
+    Object.entries(active).every(([key, value]) => excludeKeys.has(key) || value == null || item.trait_values[key] === value),
   );
 }
 
@@ -81,7 +88,7 @@ export function buildSearchHref(params, overrides = {}) {
     if (value == null || value === "" || (Array.isArray(value) && value.length === 0)) {
       continue;
     }
-    next.set(key, Array.isArray(value) ? value.join(",") : String(value));
+    next.set(key, Array.isArray(value) ? String(value[0]) : String(value));
   }
 
   const query = next.toString();
