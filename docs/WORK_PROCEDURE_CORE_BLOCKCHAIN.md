@@ -91,6 +91,27 @@ Compile/deploy production-shape contract on Core toolchain using CoreZeppelin-co
    - finalize was broadcast with `--energy-estimate-multiplier 250`
    - assigned token `#492` decoded to `tortoiseshell / orange_white / without_collar / common`
 
+## 2.3 External Wallet Dependency Snapshot (2026-03-06)
+1. CorePass-first mint UX is implemented in `web/` using QR/app-link protocol requests.
+2. Current local user environment exposes only a mainnet `cb...` CorePass account.
+3. A Devin testnet `ab...` CorePass account is not currently available in that environment.
+4. Therefore:
+   - Core Devin contract/randomness/relayer validation is still valid
+   - CorePass mobile/desktop E2E on Devin remains pending
+5. Operational consequence:
+   - do not block remaining contract/UI work on CorePass testnet uncertainty
+   - keep CorePass as the production-target mint UX
+   - treat first real CorePass transaction validation as either:
+     - a confirmed testnet-capable CorePass path, or
+     - a controlled mainnet canary launch
+6. Supporting references:
+   - CorePass deployment info: https://docs.corepass.net/corepass-connector/deployment-info/
+   - CorePass authorization docs: https://docs.corepass.net/corepass-connector/authorization/
+   - CorePass protocol: https://docs.corepass.net/corepass-protocol/
+   - Core Blockchain `AB = testnet`, `CB = mainnet`: https://github.com/core-coin/go-core
+   - `network id 3 = Devin`: https://github.com/core-coin/wallet-generator/blob/master/main.go
+   - TestFlight builds expire after 90 days: https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview
+
 ### A Blocker Criteria (required to move A -> B)
 1. Reproducible compiler/runtime incompatibility that cannot be resolved with acceptable code changes.
 2. Evidence committed (command logs, error signatures, attempted fixes).
@@ -140,9 +161,18 @@ Ship a safe minimal ERC-721-compatible implementation without library dependency
 
 ## 7. Mainnet Deployment
 1. Deploy and verify on Core mainnet.
-2. Execute first controlled mint.
-3. Publish contract addresses, verification links, and reproducibility artifacts.
-4. Tag release commit and freeze public release notes.
+2. Keep public mint logically closed until first controlled validation is complete.
+   - do not open general signature issuance yet
+3. Execute first controlled canary mint with the intended production wallet flow.
+4. Confirm:
+   - CorePass/app-link/QR behavior
+   - commit/finalize success
+   - explorer visibility
+   - tokenURI/on-chain SVG readback
+5. Only after canary success:
+   - open broader signature issuance
+   - publish contract addresses, verification links, and reproducibility artifacts
+6. Tag release commit and freeze public release notes.
 
 ## 8. Worklog Requirement (For Cross-Session Handoff)
 For every major step, commit a short machine-readable note including:

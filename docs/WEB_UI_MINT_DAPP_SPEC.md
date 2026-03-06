@@ -55,11 +55,11 @@ This document corrects the external Web UI / Mint DApp draft against the current
 ## Current Confirmed Core Devin Randomness Checkpoint
 1. Commit/finalize rehearsal succeeded on 2026-03-06.
 2. Deployed addresses:
-   - `CoreCatsOnchainData`: `ab60028cb94c79e1a3d9b70c9bf2ba956dfe88c84f5a`
-   - `CoreCatsMetadataRenderer`: `ab8567f269cf0b17f2035662a292ed56d4e906ad8037`
-   - `CoreCats`: `ab892c04158cf0194cdf18e82910fc131b8199c7612e`
+   - `CoreCatsOnchainData`: `ab61bc332a3cafa28c5359587c438f087d99a24938b9`
+   - `CoreCatsMetadataRenderer`: `ab6204d634c05880e35ea2c9c7cb03c9aa0a87f5c510`
+   - `CoreCats`: `ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba`
 3. `commitMint -> finalizeMint` succeeded on Core Devin.
-4. Randomly assigned token `#423` was minted and `tokenURI(423)` was decoded to on-chain JSON with on-chain Base64 SVG.
+4. Randomly assigned token `#492` was minted and `tokenURI(492)` was decoded to on-chain JSON with on-chain Base64 SVG.
 
 ## Initial Public UI Goals
 The external draft direction is broadly correct. The initial public UI should still aim for:
@@ -97,16 +97,35 @@ The external draft needs these corrections:
    - `commitMint(...)`
    - `finalizeMint(minter)`
 3. `finalizeMint(minter)` is permissionless by design.
-   - the UI may call it directly
-   - or a relayer/service may finalize pending commits
+   - a relayer/service may finalize pending commits
+   - the manual fallback path may still ask CorePass to send `finalizeMint(minter)`
 4. Current mint depends on an off-chain signer producing:
    - `nonce`
    - `expiry`
    - `signature`
-5. `/get-signature` is currently a planned API, not an existing implementation in this repo.
-6. UI must explain the two-step flow clearly enough that users understand:
+5. Active web implementation no longer treats an injected browser wallet as the primary Core path.
+6. `/mint` now uses CorePass protocol requests directly:
+   - `corepass:sign` to bind a concrete `coreID` to the mint session
+   - `corepass:tx` for `commitMint(...)`
+   - relayer-assisted `finalizeMint(minter)` as the primary convenience path
+   - `corepass:tx` for manual `finalizeMint(minter)` only if relayer finalize is unavailable
+7. The Next.js app now exposes CorePass session routes:
+   - `/api/mint/corepass/session`
+   - `/api/mint/corepass/session/finalize`
+   - `/api/mint/corepass/callback`
+8. These routes still use `spark` scripts on the server side to preserve the current Core signing path.
+9. UI must explain the two-step mint clearly enough that users understand:
    - commit does not immediately reveal the assigned cat
    - finalize happens after the required future block boundary
+   - desktop and mobile use different CorePass transports (`QR + callback` vs `app-link`)
+10. Current implementation detail:
+   - CorePass mint session state is stored in-memory in the Next.js server runtime
+   - that is acceptable for local/testnet iteration
+   - production should replace it with a durable shared store before public launch
+11. Current local validation status:
+   - the available CorePass app in the active user environment exposes only mainnet `cb...` accounts
+   - it does not currently expose Devin testnet `ab...` accounts
+   - therefore live CorePass E2E on Devin remains unverified even though the CorePass-first mint UI is now implemented
 
 ### `/collection`
 This is a good early UI target because the static collection data already exists.
@@ -188,18 +207,26 @@ UI rule:
 Initial public UI should not be blocked on CorePass/KYC integration.
 
 Current policy:
-1. initial public path: normal wallet + signature-gated free mint
-2. future extension: CorePass / KYC gating
-3. UI may show CorePass as `coming later`, but must not pretend it is already active
+1. initial public path: CorePass QR / app-link mint using protocol-level `sign` and `tx` requests
+2. future extension: CorePass Authorization / KYC gating
+3. do not block the public mint flow on full Connector/Auth integration before the rest of the system is proven
+4. if KYC gating is added later, it should extend the existing CorePass-first mint session rather than replace it with an unrelated wallet flow
+5. CorePass testnet wallet availability must be confirmed before treating Devin/mobile E2E as complete
 
 ## Security Notes for UI/API
 1. signer key must be separate from the deployment owner key in production
 2. `.env` must never be tracked
-3. signature API must enforce:
+3. CorePass session handling must enforce:
+   - short session TTL
+   - callback/session binding
+   - durable storage before public production use
+4. signature issuance must enforce:
    - short expiry
    - one-time nonce usage
    - rate limiting
-4. frontend restrictions alone are never sufficient
+5. frontend restrictions alone are never sufficient
+6. relayer finalize is an operational convenience only
+   - the contract remains permissionless, so manual finalize must stay possible even if the relayer is unavailable
 
 ## Recommended UI Implementation Order
 1. Extend the existing `web/` Next.js foundation
@@ -208,9 +235,10 @@ Current policy:
 4. Refine `/about`
 5. Refine `/transparency`
 6. Decide owner-indexing approach for `/my-cats`
-7. Implement signature API for `commitMint(...)`
-8. Build `/mint` around `commitMint + finalizeMint`
-9. Add any final landing page visual refinements
+7. Replace the temporary in-memory CorePass mint session store with a durable production store
+8. Harden the CorePass callback/finalize routes for production operation
+9. Refine `/mint` around `sign -> commitMint -> auto-finalize -> manual finalize fallback`
+10. Add any final landing page visual refinements
 
 ## Non-Goals for the First Public UI
 1. mandatory CorePass / KYC gating
@@ -224,4 +252,5 @@ Current policy:
 2. Random assignment policy is implemented and documented as `commit-finalize + future blockhash + lazy Fisher-Yates`
 3. Signature API contract compatibility is tested
 4. Owner indexing method for `/my-cats` is explicitly chosen
-5. Transparency page links are real and reproducible
+5. CorePass callback/app-link behavior is tested on both desktop and mobile paths with a wallet that can actually transact on the target network
+6. Transparency page links are real and reproducible
