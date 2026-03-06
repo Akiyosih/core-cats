@@ -140,11 +140,17 @@ Important:
 3. frontend work must generate or import public preview assets explicitly
 
 ### Derived frontend data (recommended)
-These files do not exist yet, but they are good targets for frontend build outputs:
-1. `public/data/collection.json`
-2. `public/data/traits-index.json`
-3. `public/data/rarity-summary.json`
-4. `public/previews/<id>.png` or another explicit preview asset directory
+Current repo support:
+1. `scripts/ui/generate_viewer_data.mjs`
+2. `manifests/viewer_v1/collection.json`
+3. `manifests/viewer_v1/filters.json`
+4. `manifests/viewer_v1/summary.json`
+5. optional `manifests/viewer_v1/svg/<id>.svg`
+6. local renderer source for this step: `foxar/src/CoreCatsOnchainData.sol` + JS port of current renderer logic
+
+Frontend build target later:
+1. copy these into `public/data/...` when the frontend scaffold is created
+2. or regenerate into a frontend-owned `public/` directory
 
 ### Runtime data
 These should be resolved at runtime or through a lightweight backend:
