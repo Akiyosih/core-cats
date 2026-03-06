@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { getCollection, getSummary } from "../lib/viewer-data";
 
-const HOME_NATURAL_IDS = [28, 70, 107, 125, 174, 246, 329, 388, 470, 565];
-const HOME_SPECIAL_IDS = [603, 663, 666, 903, 934, 941, 993, 998, 999, 1000];
+const HOME_NATURAL_IDS = [272, 241, 690, 647, 322, 818, 515, 102, 922, 415];
+const HOME_SPECIAL_IDS = [48, 305, 714, 25, 903, 939, 479, 489, 1000, 999];
 
 function Metric({ value, label }) {
   return (
