@@ -1,6 +1,6 @@
 {
   "version": "viewer_filters_v1",
-  "generated_at": "2026-03-06T11:48:07.914Z",
+  "generated_at": "2026-03-06T15:42:27.819Z",
   "source_manifest": "manifests/final_1000_manifest_v1.json",
   "source_trait_labels": "manifests/trait_display_labels_v1.json",
   "source_trait_summary": "manifests/final_1000_trait_summary_v1.json",
@@ -12,11 +12,6 @@
       "trait_type_label": "Coat Pattern",
       "source": "onchain-attributes",
       "values": [
-        {
-          "id": "calico",
-          "label": "calico",
-          "count": 159
-        },
         {
           "id": "classic_tabby",
           "label": "classic_tabby",
@@ -38,9 +33,19 @@
           "count": 123
         },
         {
+          "id": "patched",
+          "label": "patched",
+          "count": 106
+        },
+        {
           "id": "pointed",
           "label": "pointed",
           "count": 118
+        },
+        {
+          "id": "socks",
+          "label": "socks",
+          "count": 53
         },
         {
           "id": "solid",
@@ -77,7 +82,7 @@
         {
           "id": "black_white",
           "label": "black_white",
-          "count": 24
+          "count": 21
         },
         {
           "id": "cyberpunk",
@@ -87,7 +92,7 @@
         {
           "id": "earth_tone",
           "label": "earth_tone",
-          "count": 190
+          "count": 191
         },
         {
           "id": "gray_soft",
@@ -97,7 +102,7 @@
         {
           "id": "ivory_brown",
           "label": "ivory_brown",
-          "count": 7
+          "count": 8
         },
         {
           "id": "orange_warm",
@@ -117,7 +122,7 @@
         {
           "id": "space_nebula",
           "label": "space_nebula",
-          "count": 81
+          "count": 82
         },
         {
           "id": "tricolor_soft",
@@ -149,12 +154,12 @@
         {
           "id": "natural",
           "label": "natural",
-          "count": 541
+          "count": 540
         },
         {
           "id": "special",
           "label": "special",
-          "count": 457
+          "count": 458
         },
         {
           "id": "superrare",

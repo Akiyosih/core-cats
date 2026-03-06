@@ -14,7 +14,7 @@ const TRAIT_FILTER_ORDER = [
   ["rarity_type", "Rarity Type"],
 ];
 
-const PATTERN_SUPERRARE = 9;
+const PATTERN_SUPERRARE = 10;
 const COLLAR_NONE = 0;
 const COLLAR_CHECKERED = 1;
 const COLLAR_CLASSIC_RED = 2;
@@ -361,7 +361,7 @@ function buildSvg(data, rec) {
 }
 
 function traitNamesFromRecord(rec) {
-  const patternNames = ["calico", "classic_tabby", "hachiware", "mackerel_tabby", "masked", "pointed", "solid", "tortoiseshell", "tuxedo", "superrare"];
+  const patternNames = ["solid", "socks", "pointed", "patched", "hachiware", "tuxedo", "masked", "classic_tabby", "mackerel_tabby", "tortoiseshell", "superrare"];
   const paletteNames = ["black_white", "cyberpunk", "earth_tone", "gray_soft", "orange_warm", "orange_white", "psychedelic", "space_nebula", "tricolor_soft", "tropical_fever", "zombie", "ivory_brown", "black_solid", "superrare"];
   const collarTypeNames = ["none", "checkered_collar", "classic_red_collar"];
   const rarityTierNames = ["common", "rare", "superrare"];
