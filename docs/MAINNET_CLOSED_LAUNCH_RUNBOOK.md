@@ -1,10 +1,19 @@
 # Core Cats Mainnet Closed Launch Runbook
 
-Last updated: 2026-03-06
+Last updated: 2026-03-07
 Status: Draft for the current `main` branch
 
 ## Purpose
 Provide the operational sequence from "web is publicly reachable" to "mint is publicly open" without skipping a controlled mainnet canary.
+
+## Path Selection
+1. Default path:
+   - use the official CoreCats contract for `closed -> canary -> public`
+2. Optional fallback:
+   - insert a separate self-only mainnet pilot before the official closed launch
+   - then still run an official final canary on the real CoreCats contract
+
+Use the fallback only under the conditions documented in `docs/MAINNET_PILOT_FALLBACK.md`.
 
 ## 1. Launch Model
 The project should use three operational states for mint:
@@ -40,6 +49,7 @@ Before mainnet launch work begins:
    - worklog template
 5. CorePass callback/app-link base URL is fixed for the production site.
 6. CorePass mint session storage is durable enough for real mainnet use.
+7. If the optional pilot fallback is chosen, pilot-specific release labeling/configuration is prepared before deploy.
 
 ## 3. Web Publication Before Mint
 Publish the public web app first.
@@ -57,6 +67,22 @@ The point of this step is to stabilize:
 2. callback routes
 3. CorePass QR/app-link behavior
 4. public copy and transparency links
+
+## 3A. Optional Self-Only Pilot Fallback
+Use this section only if the project explicitly chooses the pilot fallback.
+
+1. Deploy a separate pilot contract with logic as close as possible to the official CoreCats contract.
+2. Keep the pilot self-only and clearly labeled as non-official.
+3. Validate the real mainnet wallet flow there first:
+   - CorePass sign
+   - CorePass commit tx
+   - relayer finalize or manual finalize fallback
+   - callback/app-link return behavior
+   - `tokenURI` readback
+4. Record pilot tx hashes, addresses, token ids, and decoded `tokenURI` evidence separately from the official release.
+5. After pilot success, return to the official path below.
+
+Pilot success reduces risk, but it does not replace the official final canary because the official contract address and signing domain still differ.
 
 ## 4. Mainnet Closed Launch Checklist
 Run these steps in order.

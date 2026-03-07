@@ -1,7 +1,7 @@
 # Core Cats Work Procedure (Mainnet Closed Launch Path)
 
-Last updated: 2026-03-06
-Version: v3.0
+Last updated: 2026-03-07
+Version: v3.1
 
 ## 0. Non-negotiable Rules
 1. Final target chain is Core Blockchain mainnet.
@@ -9,6 +9,7 @@ Version: v3.0
 3. Public website publication and public mint opening are separate events.
 4. Mainnet launch must follow `closed -> canary -> public`, not immediate open mint.
 5. Historical fallback phases B/C are retired from the active plan unless a new blocker is discovered and documented.
+6. The default launch path is the official CoreCats contract itself. A separate self-only mainnet pilot is optional fallback only, not the default path.
 
 ## 1. Product Invariants (Must Not Change)
 1. Total supply: 1000 fixed.
@@ -62,13 +63,23 @@ Version: v3.0
 4. Therefore:
    - Core Devin contract/randomness validation remains valid
    - CorePass E2E on Devin remains unverified
-   - the first real CorePass transaction validation may need to happen during a controlled mainnet canary
+   - the first real CorePass transaction validation may need to happen on mainnet
+   - default mainnet path is a controlled canary on the official contract
+   - optional fallback path is a self-only mainnet pilot followed by an official final canary
 5. Supporting references:
    - CorePass deployment info: https://docs.corepass.net/corepass-connector/deployment-info/
    - CorePass authorization docs: https://docs.corepass.net/corepass-connector/authorization/
    - CorePass protocol: https://docs.corepass.net/corepass-protocol/
    - Core Blockchain `AB = testnet`, `CB = mainnet`: https://github.com/core-coin/go-core
    - `network id 3 = Devin`: https://github.com/core-coin/wallet-generator/blob/master/main.go
+
+## 2.4 Optional Pilot Fallback
+1. If CorePass testnet remains unavailable and preserving the official contract history matters, the project may insert a separate self-only mainnet pilot before the official launch.
+2. That pilot is optional fallback, not the default launch path.
+3. The pilot should keep mint/security/randomness logic as close as possible to the official CoreCats contract.
+4. The pilot must remain clearly distinguishable from the official release in human-facing labels and documentation.
+5. Pilot success does not remove the need for an official final canary on the real CoreCats contract.
+6. See `docs/MAINNET_PILOT_FALLBACK.md` for the exact conditions and constraints.
 
 ## 3. Historical Note on Phase B / C
 1. ADR-0001 recorded an earlier fallback order: `A -> B -> C`.
@@ -102,12 +113,17 @@ Tasks:
 7. Decide quantity exposure policy for day-one launch:
    - if `1 / 2 / 3` will all be exposed immediately, canary must validate more than a single-quantity flow
    - otherwise temporarily constrain the public UI to `1` until multi-quantity is confirmed
+8. Decide launch path:
+   - default official-contract canary, or
+   - optional self-only pilot fallback, then official final canary
+9. If pilot fallback is chosen, prepare pilot-specific labeling/configuration work without changing core mint/security logic.
 
 Exit criteria:
 1. Production env model is defined.
 2. Durable session storage plan is implemented or scheduled as the immediate next code task before canary.
 3. Web launch-state behavior is specified.
 4. Mainnet deploy/verify inputs are assembled.
+5. Launch path selection is explicit.
 
 ### 4.2 Step 2: Web Publication Before Mint Opening
 Objective:
@@ -208,6 +224,8 @@ Exit criteria:
    - `docs/verify_inputs/devin/`
 2. Mainnet closed-launch operations:
    - `docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md`
-3. Worklog requirement:
+3. Optional pilot fallback:
+   - `docs/MAINNET_PILOT_FALLBACK.md`
+4. Worklog requirement:
    - every major step must write a short note in `docs/worklogs/`
    - include command summary, result, and next action

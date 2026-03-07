@@ -1,6 +1,6 @@
 # CorePass Testnet Status
 
-Last updated: 2026-03-06
+Last updated: 2026-03-07
 Status: Working conclusion for Core Cats execution planning
 
 ## Short Conclusion
@@ -41,6 +41,7 @@ Status: Working conclusion for Core Cats execution planning
 2. Keep the CorePass-first `/mint` implementation as the production-target UX.
 3. Do not claim CorePass Devin E2E is complete until a testnet-capable CorePass path is demonstrated.
 4. Plan for a controlled mainnet canary if CorePass testnet remains unavailable.
+5. If preserving the official contract history matters, an optional self-only mainnet pilot may be inserted before the official final canary.
 
 ## TestFlight Note
 1. An old TestFlight build from years ago should not be assumed to be recoverable.
@@ -53,6 +54,7 @@ Status: Working conclusion for Core Cats execution planning
 ## Operational Decision
 1. Do not wait on CorePass testnet certainty before continuing contract and transparency work.
 2. Keep CorePass inquiry open as an external dependency.
-3. Before public launch, choose one of two paths:
+3. Before public launch, choose one of three paths:
    - confirmed CorePass testnet path, then full Devin E2E
-   - or controlled mainnet canary, then broader public mint
+   - or official mainnet `closed -> canary -> public`
+   - or self-only mainnet pilot, then official final canary, then broader public mint
