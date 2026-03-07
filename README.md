@@ -7,7 +7,7 @@ A fully on-chain NFT project on Core Blockchain.
 
 ## Preview
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid.png)
-Representative sample grid from the current 1,000-cat artwork review set.
+Representative random sample grid from the current 1,000-cat artwork review set.
 
 ## Project Docs
 - [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
