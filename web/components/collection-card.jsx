@@ -7,6 +7,7 @@ export default function CollectionCard({ item, detailHref }) {
   const mintStatus = item.mint_status;
   const tierLabel = item.display_attributes.find((attr) => attr.trait_type_id === "Rarity Tier")?.value_label;
   const targetHref = detailHref || `/cats/${item.token_id}`;
+  const previewSrc = item.image_preview_src || item.image_src || item.image_data_uri;
 
   function handleCardClick(event) {
     if (event.target.closest("a")) {
@@ -40,7 +41,7 @@ export default function CollectionCard({ item, detailHref }) {
           </span>
         ) : null}
         <img
-          src={item.image_src || item.image_data_uri}
+          src={previewSrc}
           alt={item.name}
           width="192"
           height="192"

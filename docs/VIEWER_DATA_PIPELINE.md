@@ -24,6 +24,12 @@ Run from the `core-cats` repository root:
 node scripts/ui/generate_viewer_data.mjs
 ```
 
+Then run from `core-cats/web`:
+
+```bash
+npm run build:viewer-previews
+```
+
 Optional:
 
 ```bash
@@ -42,7 +48,8 @@ Default public preview directory:
 Generated files:
 1. `collection.json`
    - UI-ready 1000 item dataset
-   - includes `image_src` pointing at static preview SVG files under `web/public/viewer_v1/svg/`
+   - includes `image_svg_src` pointing at static preview SVG files under `web/public/viewer_v1/svg/`
+   - includes `image_preview_src` pointing at static preview PNG files under `web/public/viewer_v1/png/`
    - includes exact on-chain attributes and UI display labels
    - does not embed large `data:` URIs by default
 2. `filters.json`
@@ -53,6 +60,8 @@ Generated files:
 Default preview output:
 1. `web/public/viewer_v1/svg/*.svg`
    - one renderer-derived SVG preview per token
+2. `web/public/viewer_v1/png/*.png`
+   - one rasterized preview per token for the homepage and collection grid
 
 Optional:
 1. `--embed-data-uri`
@@ -62,5 +71,5 @@ Optional:
 1. The script does not use Core testnet/mainnet RPC.
 2. It reads the packed on-chain data constants from `foxar/src/CoreCatsOnchainData.sol` directly.
 3. It ports the current renderer logic into JS and verifies decoded traits against `final_1000_manifest_v1.json` before writing outputs.
-4. The current web UI uses static preview SVGs for browsing performance while preserving the same renderer-derived image content.
+4. The current web UI uses static PNG previews for browsing performance while preserving the same renderer-derived SVG for detail views and verification.
 5. This is the current source for `/collection`, `/about`, and `/transparency`, and it remains compatible with the live `commit-finalize` mint flow.

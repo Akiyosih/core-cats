@@ -51,6 +51,8 @@ export default async function CatDetailPage({ params, searchParams }) {
     notFound();
   }
 
+  const detailImageSrc = item.image_svg_src || item.image_src || item.image_data_uri;
+
   let previousItem = null;
   let nextItem = null;
 
@@ -76,7 +78,7 @@ export default async function CatDetailPage({ params, searchParams }) {
     <div className="detail-layout">
       <section className="detail-art">
         <div className="detail-art__frame">
-          <img src={item.image_src || item.image_data_uri} alt={item.name} width="480" height="480" className="pixel-art" />
+          <img src={detailImageSrc} alt={item.name} width="480" height="480" className="pixel-art" />
         </div>
       </section>
 
@@ -129,8 +131,8 @@ export default async function CatDetailPage({ params, searchParams }) {
           <p><strong>PNG24 SHA256:</strong> {item.integrity.final_png_24_sha256}</p>
           <p>
             <strong>Preview SVG:</strong>{" "}
-            {item.image_src ? (
-              <a href={item.image_src} target="_blank" rel="noreferrer" className="detail-external-link">
+            {detailImageSrc ? (
+              <a href={detailImageSrc} target="_blank" rel="noreferrer" className="detail-external-link">
                 Open preview SVG
               </a>
             ) : (

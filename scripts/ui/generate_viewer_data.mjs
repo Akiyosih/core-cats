@@ -4,6 +4,7 @@ import { Buffer } from "node:buffer";
 
 const DEFAULT_OUT_DIR = "manifests/viewer_v1";
 const DEFAULT_PUBLIC_SVG_DIR = "web/public/viewer_v1/svg";
+const DEFAULT_PUBLIC_PNG_DIR = "web/public/viewer_v1/png";
 const TRAIT_FILTER_ORDER = [
   ["pattern", "Pattern"],
   ["palette_id", "Color Variation"],
@@ -41,6 +42,7 @@ function parseArgs(argv) {
     outDir: DEFAULT_OUT_DIR,
     emitSvgFiles: true,
     publicSvgDir: DEFAULT_PUBLIC_SVG_DIR,
+    publicPngDir: DEFAULT_PUBLIC_PNG_DIR,
     embedDataUri: false,
   };
 
@@ -55,6 +57,11 @@ function parseArgs(argv) {
       opts.publicSvgDir = argv[++i];
       if (!opts.publicSvgDir) {
         throw new Error("--public-svg-dir requires a value");
+      }
+    } else if (arg === "--public-png-dir") {
+      opts.publicPngDir = argv[++i];
+      if (!opts.publicPngDir) {
+        throw new Error("--public-png-dir requires a value");
       }
     } else if (arg === "--emit-svg-files") {
       opts.emitSvgFiles = true;
@@ -381,6 +388,7 @@ function main() {
   const root = process.cwd();
   const outDir = path.resolve(root, opts.outDir);
   const publicSvgDir = path.resolve(root, opts.publicSvgDir);
+  const publicPngDir = path.resolve(root, opts.publicPngDir);
 
   ensureDir(outDir);
   if (opts.emitSvgFiles) {
@@ -427,6 +435,8 @@ function main() {
     const svg = buildSvg(data, rec);
     const imageSvgFile = opts.emitSvgFiles ? `${String(tokenId).padStart(4, "0")}.svg` : null;
     const imageSvgPublicPath = imageSvgFile ? `/viewer_v1/svg/${imageSvgFile}` : null;
+    const imagePngFile = `${String(tokenId).padStart(4, "0")}.png`;
+    const imagePngPublicPath = `/viewer_v1/png/${imagePngFile}`;
     if (imageSvgFile) {
       fs.writeFileSync(path.join(publicSvgDir, imageSvgFile), svg);
     }
@@ -436,7 +446,10 @@ function main() {
       name: `CoreCats #${tokenId}`,
       description: "CoreCats fully on-chain 24x24 SVG.",
       image_src: imageSvgPublicPath,
+      image_svg_src: imageSvgPublicPath,
       image_svg_file: imageSvgFile ? normalizeRel(root, path.join(publicSvgDir, imageSvgFile)) : null,
+      image_preview_src: imagePngPublicPath,
+      image_preview_file: normalizeRel(root, path.join(publicPngDir, imagePngFile)),
       trait_values: buildTraitValues(manifestItem),
       attributes: manifestItem.attributes,
       display_attributes: buildDisplayAttributes(manifestItem.attributes, labelsDoc),

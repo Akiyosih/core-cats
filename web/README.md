@@ -10,6 +10,7 @@ From `core-cats/web`:
 npm install
 npm run dev
 npm run build
+npm run build:viewer-previews
 ```
 
 ## Current Scope
@@ -35,11 +36,18 @@ If the collection viewer data needs regeneration, run from the repository root:
 node scripts/ui/generate_viewer_data.mjs
 ```
 
-This generation step now writes:
+Then generate raster previews from `core-cats/web`:
+
+```bash
+npm run build:viewer-previews
+```
+
+This pipeline now writes:
 1. lightweight viewer metadata to `../manifests/viewer_v1/collection.json`
 2. static preview SVGs to `./public/viewer_v1/svg/`
+3. static preview PNGs to `./public/viewer_v1/png/`
 
-The collection and homepage use those static preview SVGs instead of embedding large inline `data:` images for all 1,000 cats at once.
+The collection and homepage use the static PNG previews for browsing speed, while the detail page keeps the renderer-derived SVG.
 
 ## Mint Environment
 

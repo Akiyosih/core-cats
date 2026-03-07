@@ -19,15 +19,19 @@ export default async function HomePage() {
   const naturalPreview = HOME_NATURAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
   const specialPreview = HOME_SPECIAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
 
+  function previewSrc(item) {
+    return item.image_preview_src || item.image_src || item.image_data_uri;
+  }
+
   return (
     <div className="page-stack">
       <section className="hero-panel">
         <div className="hero-panel__copy">
           <p className="eyebrow">Public code, on-chain art</p>
           <h1>
-            <span className="hero-title-line">1,000 cats,</span>
-            <span className="hero-title-line">24x24 pixels,</span>
-            <span className="hero-title-line">full on-chain rendering.</span>
+            <span className="hero-title-line">1,000 cats.</span>
+            <span className="hero-title-line">24×24 pixels.</span>
+            <span className="hero-title-line">Fully on-chain.</span>
           </h1>
           <p className="hero-panel__lede">
             Core Cats is a free-mint, zero-royalty collection built around a public repository, fixed manifests,
@@ -55,7 +59,7 @@ export default async function HomePage() {
             <div className="curated-gallery__grid">
               {naturalPreview.map((item) => (
                 <Link key={item.token_id} href={`/cats/${item.token_id}`} className="hero-grid__item">
-                  <img src={item.image_src || item.image_data_uri} alt={item.name} width="160" height="160" className="pixel-art" />
+                  <img src={previewSrc(item)} alt={item.name} width="160" height="160" className="pixel-art" />
                 </Link>
               ))}
             </div>
@@ -69,7 +73,7 @@ export default async function HomePage() {
             <div className="curated-gallery__grid">
               {specialPreview.map((item) => (
                 <Link key={item.token_id} href={`/cats/${item.token_id}`} className="hero-grid__item">
-                  <img src={item.image_src || item.image_data_uri} alt={item.name} width="160" height="160" className="pixel-art" />
+                  <img src={previewSrc(item)} alt={item.name} width="160" height="160" className="pixel-art" />
                 </Link>
               ))}
             </div>
