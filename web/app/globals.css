@@ -121,6 +121,26 @@ main {
   box-shadow: var(--shadow-hover);
 }
 
+.site-notice {
+  position: relative;
+  z-index: 1;
+  width: min(1440px, 100%);
+  margin: -16px auto 28px;
+  padding: 13px 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(207, 156, 49, 0.26);
+  background: linear-gradient(135deg, rgba(207, 156, 49, 0.14), rgba(224, 94, 67, 0.08));
+  box-shadow: 0 16px 40px rgba(41, 36, 31, 0.05);
+  color: rgba(71, 50, 16, 0.9);
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  text-align: center;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
 .brand-mark {
   display: grid;
   gap: 4px;
@@ -1057,6 +1077,13 @@ main {
 @media (max-width: 720px) {
   .page-shell {
     padding: 14px;
+  }
+
+  .site-notice {
+    margin: -22px auto 22px;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    border-radius: 18px;
   }
 
   .hero-panel,
