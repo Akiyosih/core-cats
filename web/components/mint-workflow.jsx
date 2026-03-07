@@ -184,6 +184,8 @@ export default function MintWorkflow({ config }) {
 
   const currentState = session?.status || "idle";
   const minter = session?.minter || "not selected";
+  const showTestnetNotice =
+    (config.networkName || "").toLowerCase() === "devin" || Number(config.chainId || 0) === 3;
   const relayerNote =
     autoFinalizeState === "trying"
       ? "Relayer is attempting finalize."
@@ -202,14 +204,14 @@ export default function MintWorkflow({ config }) {
       <section className="mint-grid">
         <article className="mint-card">
           <h2>Session</h2>
-          <p>This mint flow now uses CorePass protocol links, not an injected browser wallet.</p>
-          <p className="mint-warning">
-            Current local validation status: the available CorePass app in this environment exposes only a mainnet
-            <span className="mono-wrap"> cb... </span>
-            account. Devin testnet live E2E still requires a CorePass path that can sign and send from an
-            <span className="mono-wrap"> ab... </span>
-            address.
-          </p>
+          <p>This mint flow uses CorePass for both the short signature step and the on-chain transaction step.</p>
+          {showTestnetNotice ? (
+            <p className="mint-warning">
+              In this Devin testnet environment, the available CorePass path still needs support for
+              <span className="mono-wrap"> ab... </span>
+              addresses to complete live wallet checks.
+            </p>
+          ) : null}
           <StatusLine label="Network" value={config.networkName} />
           <StatusLine label="Expected chain id" value={String(config.chainId)} />
           <StatusLine label="Contract" value={config.coreCatsAddress} mono />
@@ -220,7 +222,7 @@ export default function MintWorkflow({ config }) {
 
         <article className="mint-card">
           <h2>Mint quantity</h2>
-          <p>Choose 1 to 3 cats, then start a CorePass session. The session first binds a CoreID, then prepares the commit transaction.</p>
+          <p>Choose 1 to 3 cats, then start a CorePass session. The session first confirms a CoreID and then prepares the commit transaction.</p>
           <div className="quantity-row" role="group" aria-label="Mint quantity">
             {[1, 2, 3].map((value) => (
               <button
@@ -236,7 +238,7 @@ export default function MintWorkflow({ config }) {
           <button type="button" className="button button--primary button--wide" onClick={handleBegin} disabled={loading}>
             {loading ? "Preparing CorePass session..." : "Start with CorePass"}
           </button>
-          <p className="mint-meta">Desktop path: scan QR with CorePass on your phone. Mobile path: open the CorePass app-link directly.</p>
+          <p className="mint-meta">On desktop, scan the QR with CorePass on your phone. On mobile, open the CorePass app-link directly.</p>
         </article>
       </section>
 
@@ -251,7 +253,7 @@ export default function MintWorkflow({ config }) {
         <SessionAction
           eyebrow="Step 1"
           title="Bind the mint session to a CorePass wallet"
-          copy="CorePass signs a short random challenge so the server can bind this mint session to a concrete CoreID before issuing the free-mint authorization."
+          copy="CorePass signs a short challenge so this mint session can be tied to a specific CoreID before the free-mint authorization is issued. This step does not move funds."
           request={session.identify}
           buttonLabel="Open CorePass Sign"
           completedLabel={`CoreID confirmed: ${session.identify.coreId}`}
@@ -262,7 +264,7 @@ export default function MintWorkflow({ config }) {
         <SessionAction
           eyebrow="Step 2"
           title="Commit the mint transaction"
-          copy="Once the CoreID is known, the server builds the signed commitMint calldata and hands it to CorePass as a transaction request."
+          copy="Once the CoreID is known, the server prepares the signed commitMint call and hands it to CorePass as a transaction request. This is the step that actually records your mint request on-chain."
           request={session.commit}
           buttonLabel="Open CorePass Commit"
           completedLabel="Commit transaction confirmed."
@@ -274,15 +276,16 @@ export default function MintWorkflow({ config }) {
           <p className="eyebrow">Step 3</p>
           <h2>Finalize the random assignment</h2>
           <p>
-            After commit confirmation, the contract waits for the future block boundary. The page keeps trying relayer finalize when available.
-            If that path is unavailable, use the CorePass finalize request below.
+            After the commit is confirmed, the contract waits for the future block boundary. This page keeps trying
+            the relayer path when available. This is the step that draws from the fixed set of 1,000 cats. If that
+            path is unavailable, use the CorePass finalize request below.
           </p>
           <p className="mint-meta">{relayerNote}</p>
           <div className="mint-action-grid">
             <div className="mint-action-panel">
               <p className="mint-action-title">Automatic path</p>
               <p className="mint-state">{autoFinalizeState}</p>
-              <p className="mint-meta">Primary path: server-side relayer retries until the future block becomes valid.</p>
+              <p className="mint-meta">Primary path: the relayer retries until the future block becomes valid.</p>
             </div>
             <div className="mint-action-panel">
               <p className="mint-action-title">Manual CorePass fallback</p>

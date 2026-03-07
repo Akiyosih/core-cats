@@ -1,6 +1,6 @@
 {
   "version": "viewer_filters_v1",
-  "generated_at": "2026-03-06T15:42:27.819Z",
+  "generated_at": "2026-03-07T03:45:34.353Z",
   "source_manifest": "manifests/final_1000_manifest_v1.json",
   "source_trait_labels": "manifests/trait_display_labels_v1.json",
   "source_trait_summary": "manifests/final_1000_trait_summary_v1.json",
@@ -171,23 +171,6 @@
     "collar": {
       "trait_type_id": "Collar",
       "trait_type_label": "Collar",
-      "source": "onchain-attributes",
-      "values": [
-        {
-          "id": "with_collar",
-          "label": "With Collar",
-          "count": 400
-        },
-        {
-          "id": "without_collar",
-          "label": "Without Collar",
-          "count": 600
-        }
-      ]
-    },
-    "collar_type": {
-      "trait_type_id": "Collar Type",
-      "trait_type_label": "Collar Style",
       "source": "onchain-attributes",
       "values": [
         {

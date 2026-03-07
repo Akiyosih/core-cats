@@ -21,7 +21,7 @@ contract CoreCatsMetadataRenderer {
     uint256 public constant MAX_SUPPLY = 1000;
 
     // pattern ids
-    uint8 private constant PATTERN_SUPERRARE = 9;
+    uint8 private constant PATTERN_SUPERRARE = 10;
 
     // collar type ids
     uint8 private constant COLLAR_NONE = 0;
@@ -257,8 +257,7 @@ contract CoreCatsMetadataRenderer {
     function _buildAttributes(TokenRecord memory rec) internal pure returns (string memory) {
         string memory pattern = _patternName(rec.patternId);
         string memory palette = _paletteName(rec.paletteId);
-        string memory collar = rec.collarTypeId == COLLAR_NONE ? "without_collar" : "with_collar";
-        string memory collarType = _collarTypeName(rec.collarTypeId);
+        string memory collar = _collarTypeName(rec.collarTypeId);
         string memory tier = _rarityTierName(rec.rarityTierId);
         string memory rtype = _rarityTypeName(rec.rarityTypeId);
 
@@ -269,8 +268,6 @@ contract CoreCatsMetadataRenderer {
             palette,
             '"},{"trait_type":"Collar","value":"',
             collar,
-            '"},{"trait_type":"Collar Type","value":"',
-            collarType,
             '"},{"trait_type":"Rarity Tier","value":"',
             tier,
             '"},{"trait_type":"Rarity Type","value":"',
@@ -350,16 +347,17 @@ contract CoreCatsMetadataRenderer {
     }
 
     function _patternName(uint8 id) internal pure returns (string memory) {
-        if (id == 0) return "calico";
-        if (id == 1) return "classic_tabby";
-        if (id == 2) return "hachiware";
-        if (id == 3) return "mackerel_tabby";
-        if (id == 4) return "masked";
-        if (id == 5) return "pointed";
-        if (id == 6) return "solid";
-        if (id == 7) return "tortoiseshell";
-        if (id == 8) return "tuxedo";
-        if (id == 9) return "superrare";
+        if (id == 0) return "solid";
+        if (id == 1) return "socks";
+        if (id == 2) return "pointed";
+        if (id == 3) return "patched";
+        if (id == 4) return "hachiware";
+        if (id == 5) return "tuxedo";
+        if (id == 6) return "masked";
+        if (id == 7) return "classic_tabby";
+        if (id == 8) return "mackerel_tabby";
+        if (id == 9) return "tortoiseshell";
+        if (id == 10) return "superrare";
         return "unknown";
     }
 

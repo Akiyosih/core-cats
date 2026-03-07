@@ -5,8 +5,9 @@ export default function AboutPage() {
         <p className="eyebrow">About</p>
         <h1>Why Core Cats exists</h1>
         <p>
-          Core Cats is being built as a careful, public, full on-chain NFT project. The aim is not extraction. The
-          aim is to make something technically rigorous, visually coherent, and easy for third parties to inspect.
+          Core Cats is a careful full on-chain NFT project built to be easy to inspect and enjoyable to own. The
+          aim is to create something the early Core community can enjoy with confidence, and to build a collection
+          of cat art that could become part of Core's early NFT history as the ecosystem grows.
         </p>
       </section>
 
@@ -14,22 +15,23 @@ export default function AboutPage() {
         <article className="copy-card">
           <h2>24x24 by design</h2>
           <p>
-            The collection is small in canvas size on purpose. The work is in composition, palettes, trait balance,
-            and on-chain reproducibility rather than inflated asset weight.
+            The collection uses a 24x24 canvas in the tradition of early pixel-art collections such as CryptoPunks.
+            The constraint keeps the focus on composition, palettes, trait balance, and on-chain reproducibility
+            rather than on asset bulk.
           </p>
         </article>
         <article className="copy-card">
           <h2>Full on-chain rendering</h2>
           <p>
-            Metadata and SVG are generated from packed on-chain data structures. The current viewer pipeline mirrors
-            that logic so the repository can expose the collection clearly before final mint UX is complete.
+            Each token returns its metadata and SVG from packed on-chain records. The collection page follows the
+            same structure so what you browse matches what the contract describes.
           </p>
         </article>
         <article className="copy-card">
           <h2>Transparent operations</h2>
           <p>
-            Repository manifests, trait summaries, deploy notes, and runbooks are being kept alongside the
-            implementation so outside reviewers can inspect the process instead of trusting vague claims.
+            Manifests, trait summaries, deploy notes, and runbooks are published so the collection can be checked
+            from the outside instead of relying on vague promises.
           </p>
         </article>
       </section>

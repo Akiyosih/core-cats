@@ -1,12 +1,18 @@
 # Core Devin Manual Verify Submission
 
-Last updated: 2026-03-06
-Status: Prepared for manual explorer verification
+Last updated: 2026-03-07
+Status: Current-source packet prepared; fresh Devin redeploy required before submission
 
-## Deployment Being Verified
-1. `CoreCatsOnchainData`: `ab61bc332a3cafa28c5359587c438f087d99a24938b9`
-2. `CoreCatsMetadataRenderer`: `ab6204d634c05880e35ea2c9c7cb03c9aa0a87f5c510`
-3. `CoreCats`: `ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba`
+## Current State
+1. The standard-input JSON files in this directory were regenerated from the current source tree.
+2. The current source tree has moved since the 2026-03-06 Devin rehearsal:
+   - 11-pattern taxonomy is canonical
+   - token order is updated
+   - public metadata now uses 5 attributes
+3. As a result, the older Devin rehearsal deployment is no longer a valid target for the files in this directory.
+
+## Deployment Addresses
+Populate this section after the next Devin redeploy of the current source revision.
 
 ## Compiler Settings
 1. Compiler: `1.1.2+commit.cb4b093a`
@@ -20,11 +26,8 @@ Status: Prepared for manual explorer verification
 4. `CoreCatsMetadataRenderer.constructor-args.txt`
 
 ## Renderer Constructor Args
-The renderer constructor was deployed with the data contract address:
-- `ab61bc332a3cafa28c5359587c438f087d99a24938b9`
-
-ABI-encoded constructor args file:
-- `CoreCatsMetadataRenderer.constructor-args.txt`
+Populate `CoreCatsMetadataRenderer.constructor-args.txt` after the next Devin redeploy using the
+fresh `CoreCatsOnchainData` address from that deployment.
 
 ## Automated Verify Attempt Result
 Automated submission through `spark verify-contract` was attempted against:
@@ -46,7 +49,7 @@ Send the following together:
 4. optimizer settings
 5. standard-input JSON
 6. renderer constructor args file
-7. deployment tx hashes from `docs/CORE_TESTNET_DEPLOY_RUNBOOK.md`
+7. deployment tx hashes from the current Devin redeploy run
 
 ## Relevant Explorer
 - https://xab.blockindex.net/

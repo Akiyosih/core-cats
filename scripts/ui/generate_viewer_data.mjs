@@ -9,7 +9,6 @@ const TRAIT_FILTER_ORDER = [
   ["palette_id", "Color Variation"],
   ["category", "Category"],
   ["collar", "Collar"],
-  ["collar_type", "Collar Type"],
   ["rarity_tier", "Rarity Tier"],
   ["rarity_type", "Rarity Type"],
 ];
@@ -120,8 +119,7 @@ function buildTraitValues(item) {
     pattern: item.pattern,
     palette_id: item.palette_id,
     category: item.category,
-    collar: item.collar ? "with_collar" : "without_collar",
-    collar_type: item.collar_type,
+    collar: item.collar_type,
     rarity_tier: item.rarity_tier,
     rarity_type: item.rarity_type,
   };
@@ -141,12 +139,10 @@ function buildFilterDoc(collectionItems, labelsDoc, summaryDoc, root, outDir) {
         : key === "category"
           ? "by_category"
           : key === "collar"
-            ? "by_collar"
-            : key === "collar_type"
-              ? "by_collar_type"
-              : key === "rarity_tier"
-                ? "by_rarity_tier"
-                : "by_rarity_type";
+            ? "by_collar_type"
+            : key === "rarity_tier"
+              ? "by_rarity_tier"
+              : "by_rarity_type";
 
     const counts = summaryCounts[countKey] || {};
     const values = Object.keys(counts)
@@ -370,8 +366,7 @@ function traitNamesFromRecord(rec) {
   return {
     Pattern: patternNames[rec.patternId] || "unknown",
     "Color Variation": paletteNames[rec.paletteId] || "unknown",
-    Collar: rec.collarTypeId === COLLAR_NONE ? "without_collar" : "with_collar",
-    "Collar Type": collarTypeNames[rec.collarTypeId] || "none",
+    Collar: collarTypeNames[rec.collarTypeId] || "none",
     "Rarity Tier": rarityTierNames[rec.rarityTierId] || "common",
     "Rarity Type": rarityTypeNames[rec.rarityTypeId] || "none",
   };
@@ -422,7 +417,6 @@ function main() {
         { trait_type: "Pattern", value: decodedTraits.Pattern },
         { trait_type: "Color Variation", value: decodedTraits["Color Variation"] },
         { trait_type: "Collar", value: decodedTraits.Collar },
-        { trait_type: "Collar Type", value: decodedTraits["Collar Type"] },
         { trait_type: "Rarity Tier", value: decodedTraits["Rarity Tier"] },
         { trait_type: "Rarity Type", value: decodedTraits["Rarity Type"] },
       ],

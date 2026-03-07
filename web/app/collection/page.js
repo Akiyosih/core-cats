@@ -12,6 +12,34 @@ import {
 } from "../../lib/viewer-data";
 
 const PAGE_SIZE = 30;
+const NATURAL_COLORWAYS = [
+  "black_solid",
+  "black_white",
+  "ivory_brown",
+  "gray_soft",
+  "orange_white",
+  "orange_warm",
+  "tricolor_soft",
+  "earth_tone",
+];
+const SPECIAL_COLORWAYS = [
+  "cyberpunk",
+  "psychedelic",
+  "tropical_fever",
+  "zombie",
+  "space_nebula",
+];
+const COLORWAY_GROUPS = [
+  { id: "natural", label: "Natural", values: NATURAL_COLORWAYS },
+  { id: "special", label: "Special", values: SPECIAL_COLORWAYS },
+];
+const DERIVED_COLLAR_OPTIONS = [
+  { id: "none", label: "No Collar" },
+  { id: "any_collar", label: "Any Collar" },
+  { id: "checkered_collar", label: "Checkered Collar" },
+  { id: "classic_red_collar", label: "Classic Red Collar" },
+];
+
 export const dynamic = "force-dynamic";
 
 function buildFacetCounts(items, filterKey) {
@@ -23,29 +51,141 @@ function buildFacetCounts(items, filterKey) {
   return counts;
 }
 
-function FilterBlock({ title, filterKey, values, searchParams, activeValue }) {
-  const active = activeValue;
+function FilterChip({ href, active, empty, label, count }) {
+  return (
+    <Link
+      href={href}
+      className={`filter-chip ${active ? "filter-chip--active" : ""} ${empty ? "filter-chip--empty" : ""}`}
+    >
+      <span>{label}</span>
+      <small>{count}</small>
+    </Link>
+  );
+}
 
+function FilterBlock({ title, filterKey, values, searchParams, activeValue }) {
   return (
     <section className="filter-block">
       <h2>{title}</h2>
       <div className="chip-wrap">
         {values.map((value) => {
           const href = buildSearchHref(searchParams, {
-            [filterKey]: active === value.id ? null : value.id,
+            [filterKey]: activeValue === value.id ? null : value.id,
             page: null,
           });
           const count = value.count ?? 0;
 
           return (
-            <Link
+            <FilterChip
               key={`${filterKey}-${value.id}`}
               href={href}
-              className={`filter-chip ${active === value.id ? "filter-chip--active" : ""} ${count === 0 ? "filter-chip--empty" : ""}`}
-            >
-              <span>{value.label}</span>
-              <small>{count}</small>
-            </Link>
+              active={activeValue === value.id}
+              empty={count === 0}
+              label={value.label}
+              count={count}
+            />
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function GroupedColorwayBlock({ paletteValues, categoryValues, searchParams, activeCategory, activePalette }) {
+  const paletteMap = new Map(paletteValues.map((value) => [value.id, value]));
+  const categoryMap = new Map(categoryValues.map((value) => [value.id, value]));
+  const superrareValue = paletteMap.get("superrare") || { id: "superrare", label: "Super Rare", count: 0 };
+  const superrareHref = buildSearchHref(searchParams, {
+    category: null,
+    palette_id: activePalette === "superrare" ? null : "superrare",
+    page: null,
+  });
+
+  return (
+    <section className="filter-block">
+      <h2>Colorway</h2>
+      <div className="filter-group-stack">
+        {COLORWAY_GROUPS.map((group) => {
+          const groupCount = categoryMap.get(group.id)?.count ?? 0;
+          const groupActive = activeCategory === group.id || (!activeCategory && group.values.includes(activePalette));
+          const groupHref = buildSearchHref(searchParams, {
+            category: activeCategory === group.id && !activePalette ? null : group.id,
+            palette_id: null,
+            page: null,
+          });
+
+          return (
+            <div key={group.id} className="filter-subgroup">
+              <FilterChip
+                href={groupHref}
+                active={groupActive}
+                empty={groupCount === 0}
+                label={group.label}
+                count={groupCount}
+              />
+              <div className="chip-wrap chip-wrap--nested">
+                {group.values.map((valueId) => {
+                  const value = paletteMap.get(valueId) || { id: valueId, label: valueId, count: 0 };
+                  const href = buildSearchHref(searchParams, {
+                    category: null,
+                    palette_id: activePalette === value.id ? null : value.id,
+                    page: null,
+                  });
+
+                  return (
+                    <FilterChip
+                      key={`palette-${value.id}`}
+                      href={href}
+                      active={activePalette === value.id}
+                      empty={(value.count ?? 0) === 0}
+                      label={value.label}
+                      count={value.count ?? 0}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+        <div className="filter-subgroup">
+          <FilterChip
+            href={superrareHref}
+            active={activePalette === "superrare"}
+            empty={(superrareValue.count ?? 0) === 0}
+            label="Super Rare"
+            count={superrareValue.count ?? 0}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DerivedCollarBlock({ searchParams, activeValue, contextualValues }) {
+  const counts = new Map(contextualValues.map((value) => [value.id, value.count ?? 0]));
+
+  return (
+    <section className="filter-block">
+      <h2>Collar</h2>
+      <div className="chip-wrap">
+        {DERIVED_COLLAR_OPTIONS.map((option) => {
+          const count = option.id === "any_collar"
+            ? (counts.get("checkered_collar") || 0) + (counts.get("classic_red_collar") || 0)
+            : (counts.get(option.id) || 0);
+          const href = buildSearchHref(searchParams, {
+            collar: activeValue === option.id ? null : option.id,
+            page: null,
+          });
+
+          return (
+            <FilterChip
+              key={`collar-${option.id}`}
+              href={href}
+              active={activeValue === option.id}
+              empty={count === 0}
+              label={option.label}
+              count={count}
+            />
           );
         })}
       </div>
@@ -83,6 +223,7 @@ export default async function CollectionPage({ searchParams }) {
 
   const filtered = applyCollectionFilters(collection.items, params);
   const sorted = sortCollection(filtered, params.sort);
+  const resultsCount = filtered.length;
   const pagination = paginateItems(sorted, Number(params.page || 1), PAGE_SIZE);
   const contextualFilters = {};
 
@@ -102,11 +243,11 @@ export default async function CollectionPage({ searchParams }) {
     <div className="collection-layout">
       <aside className="filter-column">
         <div className="filter-card">
-          <p className="eyebrow">Collection filters</p>
+          <p className="eyebrow">Browse the collection</p>
           <h1>Browse the 1,000 finalized cats.</h1>
           <p>
-            These filters are backed by the finalized manifest and the renderer-derived viewer data. No separate UI
-            taxonomy is being invented here.
+            Filter by coat pattern, colorway, collar, and rarity to move through the finalized set from different
+            angles.
           </p>
           <div className="sort-row">
             <Link
@@ -125,10 +266,18 @@ export default async function CollectionPage({ searchParams }) {
         </div>
 
         <FilterBlock title="Coat Pattern" filterKey="pattern" values={contextualFilters.pattern.values} searchParams={params} activeValue={activeFilters.pattern} />
-        <FilterBlock title="Colorway" filterKey="palette_id" values={contextualFilters.palette_id.values} searchParams={params} activeValue={activeFilters.palette_id} />
-        <FilterBlock title="Category" filterKey="category" values={contextualFilters.category.values} searchParams={params} activeValue={activeFilters.category} />
-        <FilterBlock title="Collar" filterKey="collar" values={contextualFilters.collar.values} searchParams={params} activeValue={activeFilters.collar} />
-        <FilterBlock title="Collar Style" filterKey="collar_type" values={contextualFilters.collar_type.values} searchParams={params} activeValue={activeFilters.collar_type} />
+        <GroupedColorwayBlock
+          paletteValues={contextualFilters.palette_id.values}
+          categoryValues={contextualFilters.category.values}
+          searchParams={params}
+          activeCategory={activeFilters.category}
+          activePalette={activeFilters.palette_id}
+        />
+        <DerivedCollarBlock
+          searchParams={params}
+          activeValue={activeFilters.collar}
+          contextualValues={contextualFilters.collar.values}
+        />
         <FilterBlock title="Tier" filterKey="rarity_tier" values={contextualFilters.rarity_tier.values} searchParams={params} activeValue={activeFilters.rarity_tier} />
         <FilterBlock title="Special Trait" filterKey="rarity_type" values={contextualFilters.rarity_type.values} searchParams={params} activeValue={activeFilters.rarity_type} />
       </aside>
@@ -137,7 +286,7 @@ export default async function CollectionPage({ searchParams }) {
         <div className="results-header">
           <div>
             <p className="eyebrow">Results</p>
-            <h2>{pagination.totalItems} cats match the current filter.</h2>
+            <h2>{resultsCount} cats match this view.</h2>
           </div>
           <Pagination page={pagination.page} totalPages={pagination.totalPages} searchParams={params} />
         </div>

@@ -23,11 +23,15 @@ export default async function HomePage() {
     <div className="page-stack">
       <section className="hero-panel">
         <div className="hero-panel__copy">
-          <p className="eyebrow">Transparent by default</p>
-          <h1>1,000 cats, 24x24 pixels, full on-chain rendering.</h1>
+          <p className="eyebrow">Public code, on-chain art</p>
+          <h1>
+            <span className="hero-title-line">1,000 cats,</span>
+            <span className="hero-title-line">24x24 pixels,</span>
+            <span className="hero-title-line">full on-chain rendering.</span>
+          </h1>
           <p className="hero-panel__lede">
-            Core Cats is being built as a free-mint, zero-royalty collection with reproducible art data,
-            inspectable traits, and a public repository.
+            Core Cats is a free-mint, zero-royalty collection built around a public repository, fixed manifests,
+            and fully on-chain SVG metadata.
           </p>
           <div className="cta-row">
             <Link href="/collection" className="button button--primary">
@@ -45,8 +49,8 @@ export default async function HomePage() {
         <div className="curated-gallery">
           <section className="curated-gallery__band curated-gallery__band--natural">
             <header className="curated-gallery__header">
-              <p className="eyebrow">Natural tone picks</p>
-              <h2>Cats chosen for a grounded first impression.</h2>
+              <p className="eyebrow">Natural colorways</p>
+              <h2>Grounded coats and familiar tones from the quieter side of the collection.</h2>
             </header>
             <div className="curated-gallery__grid">
               {naturalPreview.map((item) => (
@@ -59,8 +63,8 @@ export default async function HomePage() {
 
           <section className="curated-gallery__band curated-gallery__band--special">
             <header className="curated-gallery__header">
-              <p className="eyebrow">Rare and signal picks</p>
-              <h2>Special traits, vivid palettes, and logo pieces anchor the lower field.</h2>
+              <p className="eyebrow">Rare traits and vivid palettes</p>
+              <h2>Odd eyes, colored noses, eyewear, and the two logo cats sit on the sharper side of Core Cats.</h2>
             </header>
             <div className="curated-gallery__grid">
               {specialPreview.map((item) => (
@@ -75,27 +79,18 @@ export default async function HomePage() {
 
       <section className="metric-strip">
         <Metric value={summary.total} label="Final Supply" />
+        <Metric value={summary.counts.by_collar.with_collar} label="With Collar" />
         <Metric value={summary.counts.by_rarity_tier.rare} label="Rare" />
         <Metric value={summary.counts.by_rarity_tier.superrare} label="Super Rare" />
-        <Metric value={summary.counts.by_collar.with_collar} label="With Collar" />
       </section>
 
-      <section className="content-grid">
+      <section className="content-grid content-grid--single">
         <article className="info-panel">
-          <p className="eyebrow">Art logic</p>
-          <h2>Viewer data is derived from the same packed records used by the on-chain renderer.</h2>
+          <p className="eyebrow">On-chain structure</p>
+          <h2>The same records that define each cat also shape the collection view here.</h2>
           <p>
-            The web layer currently reads repository manifests and renderer-derived collection data. It does not
-            invent traits or maintain a separate art database.
-          </p>
-        </article>
-
-        <article className="info-panel">
-          <p className="eyebrow">Current status</p>
-          <h2>Collection browsing is ready first. Mint UX follows after final mint flow is fixed.</h2>
-          <p>
-            Quantity mint, transparent random assignment, and owner indexing are still under active contract-side
-            work. The UI foundation is being built around the finalized 1,000-cat manifest now.
+            The cats shown here follow the same finalized data that defines them on-chain. Traits, palettes,
+            collars, and rarity are not being rewritten into a separate web-only catalog.
           </p>
         </article>
       </section>

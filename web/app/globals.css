@@ -246,7 +246,11 @@ main {
 }
 
 .hero-panel h1 {
-  font-size: clamp(2.6rem, 7vw, 5.8rem);
+  font-size: clamp(2.5rem, 6.8vw, 5.6rem);
+}
+
+.hero-title-line {
+  display: block;
 }
 
 .hero-panel__copy {
@@ -415,6 +419,10 @@ main {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.content-grid--single {
+  grid-template-columns: 1fr;
+}
+
 .info-panel,
 .copy-panel,
 .copy-card,
@@ -428,6 +436,10 @@ main {
 
 .copy-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.copy-grid.copy-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .collection-layout {
@@ -445,18 +457,34 @@ main {
 .results-column {
   display: grid;
   gap: 18px;
+  align-content: start;
 }
 
 .results-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
+  align-self: start;
 }
 
 .chip-wrap {
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip-wrap--nested {
+  padding-left: 14px;
+}
+
+.filter-group-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.filter-subgroup {
+  display: grid;
   gap: 10px;
 }
 
@@ -485,8 +513,10 @@ main {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
   gap: 18px;
+  justify-content: start;
+  align-items: start;
 }
 
 .cat-card {
@@ -613,10 +643,46 @@ main {
   overflow-wrap: anywhere;
 }
 
+.my-cats-panel {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.my-cats-eyebrow {
+  justify-content: center;
+}
+
+.my-cats-copy {
+  max-width: 500px;
+  margin: 16px auto 0;
+}
+
+.my-cats-grid {
+  grid-template-columns: 1fr;
+}
+
+.my-cats-card {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
 .plain-list {
   margin: 0;
   padding-left: 18px;
   line-height: 1.75;
+}
+
+.resource-link {
+  color: var(--teal);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+}
+
+.resource-link:hover {
+  color: #0f6d69;
 }
 
 .mono-wrap {
@@ -782,10 +848,6 @@ main {
   .mint-grid,
   .mint-action-grid {
     grid-template-columns: 1fr;
-  }
-
-  .card-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .results-header,

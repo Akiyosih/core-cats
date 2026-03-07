@@ -6,8 +6,6 @@ export const dynamic = "force-dynamic";
 export default function MintPage() {
   const config = getCorePublicConfig();
 
-  // Stub launch state to show the UI affordance.
-  // The actual state will be provided by backend/env later as requested.
   const launchState = "canary"; // "closed" | "canary" | "public"
 
   return (
@@ -16,13 +14,13 @@ export default function MintPage() {
       {launchState === "closed" && (
         <div className="launch-banner launch-banner--closed">
           <span className="launch-badge">Closed</span>
-          <p>Public mint is not open yet. Contract is deployed but signature issuance is paused.</p>
+          <p>Mint is not open yet. Collection pages are public, but new mints are still paused.</p>
         </div>
       )}
       {launchState === "canary" && (
         <div className="launch-banner launch-banner--canary">
           <span className="launch-badge">Canary Live</span>
-          <p>Mint is live for the operator allowlist to validate the mainnet random assignment flow.</p>
+          <p>Mint is currently open only for launch checks before the public opening.</p>
         </div>
       )}
       {launchState === "public" && (
@@ -34,23 +32,27 @@ export default function MintPage() {
 
       <section className="copy-grid">
         <article className="copy-card">
-          <h2>Proven Architecture</h2>
+          <h2>How mint works</h2>
           <p>
-            Core mainnet/testnet flow is highly tested. The <code>commitMint -&gt; finalizeMint</code> phase introduces verifiably fair random assignment with on-chain JSON processing.
+            Choose 1 to 3 cats, start with CorePass, sign the session message, approve the commit transaction, and
+            let finalize assign cats at random from the fixed set of 1,000.
           </p>
         </article>
 
         <article className="copy-card">
-          <h2>CorePass Protocol</h2>
+          <h2>What you sign</h2>
           <p>
-            This page utilizes CorePass QR and app-link requests. This provides a direct path to bind session metadata with a verified CoreID transaction.
+            The first CorePass step is only a short signature that links this mint session to your wallet. It does
+            not move funds or grant token approvals.
           </p>
         </article>
 
         <article className="copy-card">
-          <h2>Current Environment Limit</h2>
+          <h2>What the transaction does</h2>
           <p>
-            If testing locally on Devin testnet, ensure your CorePass wallet supports <code>ab...</code> (testnet) addresses signing before continuing.
+            After the signature, CorePass shows the actual commit transaction. That transaction records your mint
+            request on-chain. You do not choose a cat yourself: the finalize step assigns from the fixed set of
+            1,000 at random.
           </p>
         </article>
       </section>

@@ -4,7 +4,7 @@ import { cache } from "react";
 
 const ROOT_DIR = path.resolve(process.cwd(), "..");
 const VIEWER_DIR = path.join(ROOT_DIR, "manifests", "viewer_v1");
-export const FILTER_KEYS = ["pattern", "palette_id", "category", "collar", "collar_type", "rarity_tier", "rarity_type"];
+export const FILTER_KEYS = ["pattern", "category", "palette_id", "collar", "rarity_tier", "rarity_type"];
 
 async function readJson(fileName) {
   const filePath = path.join(VIEWER_DIR, fileName);
@@ -29,12 +29,22 @@ function normalizeSingleValue(value) {
 }
 
 export function normalizeFilterState(searchParams = {}) {
+  const legacyCollarType = normalizeSingleValue(searchParams.collar_type);
+  let collar = normalizeSingleValue(searchParams.collar);
+  if (!collar && legacyCollarType) {
+    collar = legacyCollarType;
+  }
+  if (collar === "with_collar") {
+    collar = "any_collar";
+  } else if (collar === "without_collar") {
+    collar = "none";
+  }
+
   return {
     pattern: normalizeSingleValue(searchParams.pattern),
-    palette_id: normalizeSingleValue(searchParams.palette_id),
     category: normalizeSingleValue(searchParams.category),
-    collar: normalizeSingleValue(searchParams.collar),
-    collar_type: normalizeSingleValue(searchParams.collar_type),
+    palette_id: normalizeSingleValue(searchParams.palette_id),
+    collar,
     rarity_tier: normalizeSingleValue(searchParams.rarity_tier),
     rarity_type: normalizeSingleValue(searchParams.rarity_type),
   };
@@ -44,9 +54,18 @@ export function applyCollectionFilters(items, searchParams, options = {}) {
   const active = normalizeFilterState(searchParams);
   const excludeKeys = new Set(options.excludeKeys || []);
 
-  return items.filter((item) =>
-    Object.entries(active).every(([key, value]) => excludeKeys.has(key) || value == null || item.trait_values[key] === value),
-  );
+  return items.filter((item) => Object.entries(active).every(([key, value]) => {
+    if (excludeKeys.has(key) || value == null) {
+      return true;
+    }
+    if (key === "collar") {
+      if (value === "any_collar") {
+        return item.trait_values.collar !== "none";
+      }
+      return item.trait_values.collar === value;
+    }
+    return item.trait_values[key] === value;
+  }));
 }
 
 export function sortCollection(items, sortKey) {

@@ -268,7 +268,7 @@ If any check fails:
 5. Notes:
    - signer mode: deployer
    - finalize was broadcast with `--energy-estimate-multiplier 250`
-   - decoded traits: `tortoiseshell / orange_white / without_collar / common`
+   - decoded traits: `tortoiseshell / orange_white / none / common`
 6. Verify status:
    - automated explorer verify attempted
    - public explorer endpoints did not behave as Blockscout-compatible verifier endpoints

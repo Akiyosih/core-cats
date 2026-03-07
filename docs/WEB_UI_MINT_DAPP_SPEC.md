@@ -157,9 +157,8 @@ Recommended filter source of truth:
 1. `Pattern`
 2. `Color Variation`
 3. `Collar`
-4. `Collar Type`
-5. `Rarity Tier`
-6. `Rarity Type`
+4. `Rarity Tier`
+5. `Rarity Type`
 
 Optional extra filter:
 1. `category`
