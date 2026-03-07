@@ -18,6 +18,16 @@ The production mint path will be split into:
 
 This is the selected path because it preserves the current Core signing/finalization workflow while keeping secrets off Vercel.
 
+Current CorePass scope for this architecture:
+1. Protocol-direct mint flow only
+   - `corepass:sign`
+   - `corepass:tx`
+2. No Connector Authorization / KYC-transfer dependency in the current launch target
+3. Operational funding assumption for current launch: XCB, not CTN
+
+Reference:
+1. `docs/COREPASS_PROTOCOL_AND_CONNECTOR_NOTES.md`
+
 ## Why This Split Was Chosen
 The current mint implementation is not only a browser-facing Next.js app. It also depends on:
 

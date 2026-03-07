@@ -80,6 +80,15 @@ Version: v3.1
 5. Pilot success does not remove the need for an official final canary on the real CoreCats contract.
 6. See `docs/MAINNET_PILOT_FALLBACK.md` for the exact conditions and constraints.
 
+## 2.5 CorePass Scope For The Current Release
+1. The current release target is the CorePass **Protocol-direct** path:
+   - `corepass:sign`
+   - `corepass:tx`
+2. The current release target does **not** depend on Connector Authorization / KYC-transfer.
+3. Therefore the current launch path should be planned around **XCB**, not CTN.
+4. CTN should be revisited only if the project later adopts Connector-based Authorization / KYC-transfer for KYC-gated mint.
+5. See `docs/COREPASS_PROTOCOL_AND_CONNECTOR_NOTES.md`.
+
 ## 3. Historical Note on Phase B / C
 1. ADR-0001 recorded an earlier fallback order: `A -> B -> C`.
 2. That fallback order was useful while direct Core viability was still uncertain.
