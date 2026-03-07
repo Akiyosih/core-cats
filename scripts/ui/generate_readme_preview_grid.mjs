@@ -10,8 +10,8 @@ const RESVG_PATH = path.join(CORE_CATS_ROOT, "web", "node_modules", "@resvg", "r
 const VIEWER_COLLECTION_PATH = path.join(CORE_CATS_ROOT, "manifests", "viewer_v1", "collection.json");
 const PREVIEW_PNG_DIR = path.join(CORE_CATS_ROOT, "web", "public", "viewer_v1", "png");
 const OUTPUTS = [
-  path.join(CORE_CATS_ROOT, "docs", "assets", "core_cats_preview_grid.png"),
-  path.join(PROJECT_ROOT, "core-cats-eth", "docs", "assets", "core_cats_preview_grid.png"),
+  path.join(CORE_CATS_ROOT, "docs", "assets", "core_cats_preview_grid_teaser.png"),
+  path.join(PROJECT_ROOT, "core-cats-eth", "docs", "assets", "core_cats_preview_grid_teaser.png"),
 ];
 
 const WIDTH = 958;

@@ -6,7 +6,7 @@ A fully on-chain NFT project on Core Blockchain.
 - Reference archive repository: `core-cats-eth` (frozen reference track)
 
 ## Preview
-![Core Cats Preview Grid](docs/assets/core_cats_preview_grid.png)
+![Core Cats Preview Grid](docs/assets/core_cats_preview_grid_teaser.png)
 Representative random sample grid from the current 1,000-cat artwork review set.
 
 ## Project Docs
