@@ -137,6 +137,7 @@ Tasks:
    - `public`: mint is open
 4. Ensure the site can be updated with mainnet contract addresses without changing the mint flow structure.
 5. Keep GitHub, manifest, and transparency links live before mint opens.
+6. Follow `docs/WEB_PUBLICATION_POLICY.md` for teaser/publication constraints, including stable origin and teaser-facing logo-art handling.
 
 Exit criteria:
 1. Website is publicly reachable.
@@ -225,6 +226,8 @@ Exit criteria:
    - `docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md`
 3. Optional pilot fallback:
    - `docs/MAINNET_PILOT_FALLBACK.md`
-4. Worklog requirement:
+4. Web publication policy:
+   - `docs/WEB_PUBLICATION_POLICY.md`
+5. Worklog requirement:
    - every major step must write a short note in `docs/worklogs/`
    - include command summary, result, and next action

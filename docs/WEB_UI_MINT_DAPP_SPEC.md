@@ -146,6 +146,7 @@ Implications:
 2. `/mint` must not assume that page visibility means public mint is open.
 3. The production web app should switch between `closed`, `canary`, and `public` without redesigning the mint flow.
 4. If quantity `2 / 3` is not yet canary-validated on mainnet, the public UI should temporarily expose only quantity `1`.
+5. See `docs/WEB_PUBLICATION_POLICY.md` for publication/hosting/origin policy around these states.
 
 ### `/collection`
 This is a good early UI target because the static collection data already exists.
@@ -259,6 +260,15 @@ Current policy:
 9. Harden the CorePass callback/finalize routes for production operation
 10. Refine `/mint` around `sign -> commitMint -> auto-finalize -> manual finalize fallback`
 11. Add any final landing page visual refinements
+
+## Publication / Hosting Constraint
+The current `web/` should be treated as the long-lived public app.
+
+Implications:
+1. teaser publication should generally use the same app/origin that later serves public mint
+2. the default deployment target should support the current Next.js server-side routes
+3. `github.io`-style static-only publication is not the default for the current app shape
+4. teaser-facing visual curation may exclude the logo-bearing superrare cats until branding permission is settled
 
 ## Non-Goals for the First Public UI
 1. mandatory CorePass / KYC gating
