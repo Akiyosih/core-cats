@@ -56,6 +56,8 @@ The mint routes use:
 2. local server-side execution of `spark` scripts to preserve the current Core signing path
 3. an in-memory session store for CorePass callback state during local/testnet iteration
 
+The `web/` app can also be switched into proxy mode so that these mint routes forward to an external Linux backend.
+
 Server runtime looks for values in this order:
 1. `web` process environment
 2. `../foxar/.env`
@@ -67,6 +69,8 @@ Important variables:
 4. `FINALIZER_PRIVATE_KEY` (optional, defaults to deployer key)
 5. `NEXT_PUBLIC_CORECATS_ADDRESS` (optional, defaults to the latest Devin rehearsal address)
 6. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
+7. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
+8. `CORECATS_BACKEND_BASE_URL` (required when `CORECATS_BACKEND_MODE=proxy`)
 
 ## Current Mint Flow
 
@@ -79,6 +83,24 @@ Important variables:
 ## Production Note
 
 The current CorePass session store is in-memory. That is acceptable for local development and testnet rehearsal, but it is not the final production storage design.
+
+The current production direction is:
+1. Vercel for the public website
+2. Contabo Linux for the mint backend
+3. SQLite for the first durable session store
+
+The Vercel app keeps:
+1. QR / app-link generation
+2. CorePass callback redirects
+3. session state transitions
+
+The external mint backend owns:
+1. durable session persistence
+2. nonce / expiry / signature issuance
+3. finalize relayer execution
+4. `spark` / `foxar` execution
+
+See `../docs/MINT_BACKEND_ARCHITECTURE.md`.
 
 ## Current Local Validation Limit
 

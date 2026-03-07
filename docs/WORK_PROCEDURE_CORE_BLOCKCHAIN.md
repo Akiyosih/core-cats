@@ -210,8 +210,8 @@ Exit criteria:
 3. Operational monitoring is in place.
 
 ## 5. Immediate Next Actions From The Current State
-1. Implement launch-state handling in `web/` (`closed`, `canary`, `public`).
-2. Replace the temporary in-memory CorePass mint session store with a durable production store.
+1. Keep the public site on Vercel and implement the separate Contabo mint backend path documented in `docs/MINT_BACKEND_ARCHITECTURE.md`.
+2. Replace the temporary in-memory CorePass mint session store with SQLite on the backend.
 3. Prepare a mainnet closed-launch runbook and operator checklist.
 4. Assemble mainnet deploy/verify input files alongside the existing Devin packet.
 5. Decide day-one quantity exposure:
@@ -228,6 +228,8 @@ Exit criteria:
    - `docs/MAINNET_PILOT_FALLBACK.md`
 4. Web publication policy:
    - `docs/WEB_PUBLICATION_POLICY.md`
-5. Worklog requirement:
+5. Mint backend architecture:
+   - `docs/MINT_BACKEND_ARCHITECTURE.md`
+6. Worklog requirement:
    - every major step must write a short note in `docs/worklogs/`
    - include command summary, result, and next action

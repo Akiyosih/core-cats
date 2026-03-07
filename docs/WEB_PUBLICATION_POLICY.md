@@ -124,6 +124,21 @@ Therefore:
 2. live mint requires a real backend path
 3. post-mint viewing can disable or remove general mint issuance again
 
+## Current Chosen Deployment Shape
+The current chosen operational split is:
+
+1. public site on Vercel
+2. mint backend on the Contabo Linux server
+3. SQLite as the first durable session store
+
+This lets the project keep:
+
+1. one stable public origin for the website
+2. secrets and CLI execution off Vercel
+3. the current Core signing/finalization path with minimal redesign
+
+See `docs/MINT_BACKEND_ARCHITECTURE.md` for the backend-specific details.
+
 ## Logo-Bearing Superrare Policy
 Until branding permission is clearly settled, the two logo-bearing cats should not be used in public teaser-facing materials.
 

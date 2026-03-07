@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 
 import { getCorePublicConfig } from "../../../../lib/server/core-env.js";
 import { issueMintAuthorization } from "../../../../lib/server/core-spark.js";
+import { isExternalMintBackendEnabled, proxyMintBackendRequest } from "../../../../lib/server/mint-backend-proxy.js";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,10 @@ function buildNonce() {
 }
 
 export async function POST(request) {
+  if (isExternalMintBackendEnabled()) {
+    return proxyMintBackendRequest(request, "/api/mint/authorize");
+  }
+
   try {
     const body = await request.json();
     const minter = String(body?.minter || "").trim();

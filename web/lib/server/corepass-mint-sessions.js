@@ -6,6 +6,14 @@ import { Interface } from "ethers";
 import { CORECATS_MINT_ABI } from "../corecats-abi.js";
 import { getCorePublicConfig } from "./core-env.js";
 import { issueMintAuthorization, relayFinalizeMint } from "./core-spark.js";
+import {
+  deleteRemoteMintSession,
+  fetchFinalizeRelay,
+  fetchMintAuthorization,
+  isExternalMintBackendEnabled,
+  readRemoteMintSession,
+  writeRemoteMintSession,
+} from "./mint-backend-proxy.js";
 
 const mintInterface = new Interface(CORECATS_MINT_ABI);
 const SESSION_TTL_MS = Number(process.env.COREPASS_SESSION_TTL_SECONDS || 20 * 60) * 1000;
@@ -18,6 +26,9 @@ function nowIso() {
 }
 
 function cleanupExpiredSessions() {
+  if (isExternalMintBackendEnabled()) {
+    return;
+  }
   const now = Date.now();
   for (const [sessionId, session] of store.entries()) {
     if (session.expiresAtMs <= now) {
@@ -26,14 +37,45 @@ function cleanupExpiredSessions() {
   }
 }
 
-function getRequiredSession(sessionId) {
+async function persistSession(request, session) {
+  if (isExternalMintBackendEnabled()) {
+    await writeRemoteMintSession(request, session);
+  } else {
+    store.set(session.id, session);
+  }
+}
+
+async function removeSession(request, sessionId) {
+  if (isExternalMintBackendEnabled()) {
+    await deleteRemoteMintSession(request, sessionId);
+  } else {
+    store.delete(sessionId);
+  }
+}
+
+async function getRequiredSession(request, sessionId) {
   cleanupExpiredSessions();
-  const session = store.get(sessionId);
+
+  let session = null;
+  if (isExternalMintBackendEnabled()) {
+    session = await readRemoteMintSession(request, sessionId);
+  } else {
+    session = store.get(sessionId);
+  }
+
   if (!session) {
     const error = new Error("mint session not found or expired");
     error.code = "session_not_found";
     throw error;
   }
+
+  if (Number(session.expiresAtMs || 0) <= Date.now()) {
+    await removeSession(request, sessionId);
+    const error = new Error("mint session not found or expired");
+    error.code = "session_not_found";
+    throw error;
+  }
+
   return session;
 }
 
@@ -107,17 +149,25 @@ async function buildCommitRequest(request, session) {
   const nonce = BigInt(`0x${crypto.randomBytes(32).toString("hex")}`).toString(10);
   const expiry = Math.floor(Date.now() / 1000) + 10 * 60;
   const commitHash = `0x${crypto.randomBytes(32).toString("hex")}`;
-  const authorization = await issueMintAuthorization({
-    minter: session.minter,
-    quantity: session.quantity,
-    nonce,
-    expiry,
-  });
+  const authorization = isExternalMintBackendEnabled()
+    ? await fetchMintAuthorization(request, {
+        minter: session.minter,
+        quantity: session.quantity,
+      })
+    : await issueMintAuthorization({
+        minter: session.minter,
+        quantity: session.quantity,
+        nonce,
+        expiry,
+      });
+
+  const resolvedNonce = authorization.nonce || nonce;
+  const resolvedExpiry = authorization.expiry || expiry;
   const data = mintInterface.encodeFunctionData("commitMint", [
     session.quantity,
     commitHash,
-    authorization.nonce,
-    authorization.expiry,
+    resolvedNonce,
+    resolvedExpiry,
     authorization.signature,
   ]);
   const callbackConn = buildCallbackUrl(request, session.id, "commit");
@@ -141,8 +191,8 @@ async function buildCommitRequest(request, session) {
 
   session.commit = {
     status: "awaiting_commit",
-    nonce: authorization.nonce,
-    expiry: authorization.expiry,
+    nonce: resolvedNonce,
+    expiry: resolvedExpiry,
     messageHash: authorization.messageHash,
     commitHash,
     data,
@@ -282,12 +332,12 @@ export async function createMintSession(request, { quantity }) {
 
   await buildSignRequest(request, session);
   appendHistory(session, { step: "identify", event: "session_created" });
-  store.set(session.id, session);
+  await persistSession(request, session);
   return serializeSession(session);
 }
 
-export function readMintSession(sessionId) {
-  return serializeSession(getRequiredSession(sessionId));
+export async function readMintSession(request, sessionId) {
+  return serializeSession(await getRequiredSession(request, sessionId));
 }
 
 function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
@@ -306,7 +356,7 @@ function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
 export async function applyCorePassCallback(request, payload) {
   const url = new URL(request.url);
   const parsed = parseCallbackPayload(request.url, payload, url.searchParams);
-  const session = getRequiredSession(parsed.sessionId);
+  const session = await getRequiredSession(request, parsed.sessionId);
 
   if (parsed.step === "identify") {
     if (!parsed.coreId) {
@@ -320,6 +370,7 @@ export async function applyCorePassCallback(request, payload) {
     session.identify.completedAt = nowIso();
     appendHistory(session, { step: "identify", event: "completed", coreId: parsed.coreId });
     await buildCommitRequest(request, session);
+    await persistSession(request, session);
     return serializeSession(session);
   }
 
@@ -339,6 +390,7 @@ export async function applyCorePassCallback(request, payload) {
     session.status = "commit_confirmed";
     appendHistory(session, { step: "commit", event: "confirmed", txHash: parsed.txHash || null });
     await buildFinalizeRequest(request, session);
+    await persistSession(request, session);
     return serializeSession(session);
   }
 
@@ -354,6 +406,7 @@ export async function applyCorePassCallback(request, payload) {
     session.finalize.mode = "corepass";
     session.status = "finalized";
     appendHistory(session, { step: "finalize", event: "confirmed", txHash: parsed.txHash || null });
+    await persistSession(request, session);
     return serializeSession(session);
   }
 
@@ -363,7 +416,8 @@ export async function applyCorePassCallback(request, payload) {
 }
 
 export async function attemptSessionFinalize(sessionId) {
-  const session = getRequiredSession(sessionId);
+  const request = new Request("https://placeholder.local/");
+  const session = await getRequiredSession(request, sessionId);
   if (!session.minter) {
     const error = new Error("mint session has no CorePass minter yet");
     error.code = "missing_minter";
@@ -379,7 +433,9 @@ export async function attemptSessionFinalize(sessionId) {
   }
 
   try {
-    const result = await relayFinalizeMint({ minter: session.minter });
+    const result = isExternalMintBackendEnabled()
+      ? await fetchFinalizeRelay(request, { minter: session.minter })
+      : await relayFinalizeMint({ minter: session.minter });
     session.finalize.txHash = result.txHash;
     session.finalize.submittedAt = nowIso();
     session.finalize.status = "submitted";
@@ -387,11 +443,13 @@ export async function attemptSessionFinalize(sessionId) {
     session.status = "finalize_submitted";
     session.updatedAt = nowIso();
     appendHistory(session, { step: "finalize", event: "submitted_by_relayer", txHash: result.txHash });
+    await persistSession(request, session);
     return serializeSession(session);
   } catch (error) {
     session.finalize.lastError = error.message;
     session.updatedAt = nowIso();
     appendHistory(session, { step: "finalize", event: "relayer_error", detail: error.message });
+    await persistSession(request, session);
     throw error;
   }
 }

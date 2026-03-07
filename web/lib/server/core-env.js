@@ -12,6 +12,9 @@ const DEFAULTS = {
   launchState: "closed",
   coreCatsAddress: "ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba",
   explorerBaseUrl: "https://xab.blockindex.net",
+  backendMode: "local",
+  backendBaseUrl: "",
+  backendSharedSecret: "",
 };
 
 function normalizeLaunchState(value) {
@@ -19,6 +22,13 @@ function normalizeLaunchState(value) {
     return value;
   }
   return DEFAULTS.launchState;
+}
+
+function normalizeBackendMode(value) {
+  if (value === "proxy" || value === "local") {
+    return value;
+  }
+  return DEFAULTS.backendMode;
 }
 
 function parseEnvFile(filePath) {
@@ -64,6 +74,9 @@ export function getCoreServerEnv() {
     launchState: normalizeLaunchState(
       process.env.NEXT_PUBLIC_LAUNCH_STATE || process.env.CORECATS_LAUNCH_STATE || DEFAULTS.launchState,
     ),
+    backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
+    backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
+    backendSharedSecret: (process.env.CORECATS_BACKEND_SHARED_SECRET || DEFAULTS.backendSharedSecret).trim(),
     coreCatsAddress:
       process.env.NEXT_PUBLIC_CORECATS_ADDRESS ||
       process.env.CORECATS_ADDRESS ||
@@ -78,12 +91,14 @@ export function getCoreServerEnv() {
 
 export function getCorePublicConfig() {
   const env = getCoreServerEnv();
+  const relayerEnabled =
+    env.backendMode === "proxy" ? process.env.CORECATS_RELAYER_ENABLED !== "false" : Boolean(env.finalizerPrivateKey);
   return {
     chainId: env.chainId,
     networkName: env.networkName,
     launchState: env.launchState,
     coreCatsAddress: env.coreCatsAddress,
     explorerBaseUrl: env.explorerBaseUrl,
-    relayerEnabled: Boolean(env.finalizerPrivateKey),
+    relayerEnabled,
   };
 }

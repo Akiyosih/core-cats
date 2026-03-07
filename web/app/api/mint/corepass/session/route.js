@@ -32,7 +32,7 @@ export async function GET(request) {
       return Response.json({ error: "sessionId is required" }, { status: 400 });
     }
 
-    const session = readMintSession(sessionId);
+    const session = await readMintSession(request, sessionId);
     return Response.json(session);
   } catch (error) {
     const status = error.code === "session_not_found" ? 404 : 500;
