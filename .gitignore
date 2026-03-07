@@ -35,3 +35,8 @@ ignition/deployments/chain-31337
 /art/review/devin_token*/
 /web/.next/
 /web/node_modules/
+
+# Python mint backend
+/mint-backend/corecats_mint_backend/__pycache__/
+*.py[cod]
+/mint-backend/data/*.db
