@@ -1,6 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { cache } from "react";
+import {
+  applyTeaserPresentationToCollection,
+  applyTeaserPresentationToFilters,
+  sanitizeTeaserSearchParams,
+} from "./server/teaser-display.js";
+
+export { sanitizeTeaserSearchParams } from "./server/teaser-display.js";
 
 const ROOT_DIR = path.resolve(process.cwd(), "..");
 const VIEWER_DIR = path.join(ROOT_DIR, "manifests", "viewer_v1");
@@ -12,8 +19,8 @@ async function readJson(fileName) {
   return JSON.parse(text);
 }
 
-export const getCollection = cache(async () => readJson("collection.json"));
-export const getFilters = cache(async () => readJson("filters.json"));
+export const getCollection = cache(async () => applyTeaserPresentationToCollection(await readJson("collection.json")));
+export const getFilters = cache(async () => applyTeaserPresentationToFilters(await readJson("filters.json")));
 export const getSummary = cache(async () => readJson("summary.json"));
 
 export async function getCollectionItem(tokenId) {
@@ -29,8 +36,9 @@ function normalizeSingleValue(value) {
 }
 
 export function normalizeFilterState(searchParams = {}) {
-  const legacyCollarType = normalizeSingleValue(searchParams.collar_type);
-  let collar = normalizeSingleValue(searchParams.collar);
+  const params = sanitizeTeaserSearchParams(searchParams);
+  const legacyCollarType = normalizeSingleValue(params.collar_type);
+  let collar = normalizeSingleValue(params.collar);
   if (!collar && legacyCollarType) {
     collar = legacyCollarType;
   }
@@ -41,12 +49,12 @@ export function normalizeFilterState(searchParams = {}) {
   }
 
   return {
-    pattern: normalizeSingleValue(searchParams.pattern),
-    category: normalizeSingleValue(searchParams.category),
-    palette_id: normalizeSingleValue(searchParams.palette_id),
+    pattern: normalizeSingleValue(params.pattern),
+    category: normalizeSingleValue(params.category),
+    palette_id: normalizeSingleValue(params.palette_id),
     collar,
-    rarity_tier: normalizeSingleValue(searchParams.rarity_tier),
-    rarity_type: normalizeSingleValue(searchParams.rarity_type),
+    rarity_tier: normalizeSingleValue(params.rarity_tier),
+    rarity_type: normalizeSingleValue(params.rarity_type),
   };
 }
 
@@ -101,7 +109,7 @@ export function paginateItems(items, page, pageSize) {
 
 export function buildSearchHref(params, overrides = {}) {
   const next = new URLSearchParams();
-  const merged = { ...params, ...overrides };
+  const merged = { ...sanitizeTeaserSearchParams(params), ...overrides };
 
   for (const [key, value] of Object.entries(merged)) {
     if (value == null || value === "" || (Array.isArray(value) && value.length === 0)) {

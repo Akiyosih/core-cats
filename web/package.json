@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "build:viewer-previews": "node ./scripts/generate-raster-previews.mjs"
+    "build:viewer-previews": "node ./scripts/generate-raster-previews.mjs",
+    "build:teaser-placeholders": "node ./scripts/generate-teaser-placeholders.mjs"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",

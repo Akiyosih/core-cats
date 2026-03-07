@@ -145,6 +145,27 @@ main {
   gap: 10px;
 }
 
+.main-nav__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.main-nav__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(20, 143, 138, 0.12);
+  border: 1px solid rgba(20, 143, 138, 0.2);
+  color: var(--teal);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .main-nav a,
 .button,
 .filter-chip,
@@ -259,6 +280,24 @@ main {
   gap: 18px;
 }
 
+.hero-panel__lede-block {
+  display: grid;
+  gap: 8px;
+}
+
+.hero-panel__supporting-link {
+  width: fit-content;
+  color: var(--teal);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  font-weight: 600;
+}
+
+.hero-panel__supporting-link:hover {
+  color: var(--teal-deep);
+}
+
 .hero-panel__lede,
 .copy-panel p,
 .copy-card p,
@@ -267,6 +306,12 @@ main {
 .filter-card p {
   color: var(--ink-soft);
   line-height: 1.6;
+}
+
+.copy-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .curated-gallery {

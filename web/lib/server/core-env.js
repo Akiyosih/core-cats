@@ -9,9 +9,17 @@ const DEFAULTS = {
   chainId: 3,
   networkId: 3,
   networkName: "devin",
+  launchState: "closed",
   coreCatsAddress: "ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba",
   explorerBaseUrl: "https://xab.blockindex.net",
 };
+
+function normalizeLaunchState(value) {
+  if (value === "canary" || value === "public" || value === "closed") {
+    return value;
+  }
+  return DEFAULTS.launchState;
+}
 
 function parseEnvFile(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -53,6 +61,9 @@ export function getCoreServerEnv() {
     chainId: Number(process.env.NEXT_PUBLIC_CORE_CHAIN_ID || process.env.CORE_CHAIN_ID || DEFAULTS.chainId),
     networkId: Number(process.env.CORE_NETWORK_ID || DEFAULTS.networkId),
     networkName: process.env.CORE_NETWORK_NAME || DEFAULTS.networkName,
+    launchState: normalizeLaunchState(
+      process.env.NEXT_PUBLIC_LAUNCH_STATE || process.env.CORECATS_LAUNCH_STATE || DEFAULTS.launchState,
+    ),
     coreCatsAddress:
       process.env.NEXT_PUBLIC_CORECATS_ADDRESS ||
       process.env.CORECATS_ADDRESS ||
@@ -70,6 +81,7 @@ export function getCorePublicConfig() {
   return {
     chainId: env.chainId,
     networkName: env.networkName,
+    launchState: env.launchState,
     coreCatsAddress: env.coreCatsAddress,
     explorerBaseUrl: env.explorerBaseUrl,
     relayerEnabled: Boolean(env.finalizerPrivateKey),

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="384" viewBox="0 0 384 384" shape-rendering="crispEdges">
+  <rect width="384" height="384" fill="#0c1117"/>
+  <rect x="24" y="24" width="336" height="336" rx="24" fill="#111923" stroke="#243343" stroke-width="8"/>
+  <g fill="#22303e">
+    <rect x="128" y="96" width="32" height="32"/>
+    <rect x="224" y="96" width="32" height="32"/>
+    <rect x="112" y="112" width="32" height="32"/>
+    <rect x="240" y="112" width="32" height="32"/>
+    <rect x="96" y="128" width="192" height="128"/>
+    <rect x="112" y="256" width="160" height="48"/>
+  </g>
+  <g fill="#7de1cc">
+    <rect x="160" y="160" width="16" height="16"/>
+    <rect x="208" y="160" width="16" height="16"/>
+    <rect x="176" y="192" width="32" height="16"/>
+  </g>
+  <rect x="56" y="248" width="272" height="52" rx="14" fill="#102229" stroke="#7de1cc" stroke-width="4"/>
+  <text x="192" y="281" text-anchor="middle" fill="#e8fff8" font-family="system-ui, sans-serif" font-size="22" font-weight="700" letter-spacing="1.2">UNDER REVISION</text>
+  <text x="192" y="326" text-anchor="middle" fill="#7de1cc" font-family="system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="2.4">SUPER RARE I</text>
+</svg>

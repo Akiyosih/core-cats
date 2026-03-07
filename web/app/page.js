@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCollection, getSummary } from "../lib/viewer-data";
+import { isTeaserDisplayEnabled } from "../lib/server/teaser-display.js";
 
 const HOME_NATURAL_IDS = [272, 241, 690, 647, 322, 818, 515, 102, 922, 415];
 const HOME_SPECIAL_IDS = [48, 305, 714, 25, 903, 939, 479, 489, 1000, 999];
@@ -15,6 +16,7 @@ function Metric({ value, label }) {
 
 export default async function HomePage() {
   const [collection, summary] = await Promise.all([getCollection(), getSummary()]);
+  const teaserMode = isTeaserDisplayEnabled();
   const itemById = new Map(collection.items.map((item) => [item.token_id, item]));
   const naturalPreview = HOME_NATURAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
   const specialPreview = HOME_SPECIAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
@@ -33,10 +35,20 @@ export default async function HomePage() {
             <span className="hero-title-line">24×24 pixels.</span>
             <span className="hero-title-line">Fully on-chain.</span>
           </h1>
-          <p className="hero-panel__lede">
-            Core Cats is a free-mint, zero-royalty collection built around a public repository, fixed manifests,
-            and fully on-chain SVG metadata.
-          </p>
+          <div className="hero-panel__lede-block">
+            <p className="hero-panel__lede">
+              Core Cats is a free-mint, zero-royalty NFT collection for Core Blockchain, built around public code,
+              fixed manifests, and fully on-chain SVG metadata.
+            </p>
+            <a
+              href="https://coreblockchain.net/"
+              target="_blank"
+              rel="noreferrer"
+              className="hero-panel__supporting-link"
+            >
+              About Core Blockchain
+            </a>
+          </div>
           <div className="cta-row">
             <Link href="/collection" className="button button--primary">
               View Collection
@@ -68,7 +80,11 @@ export default async function HomePage() {
           <section className="curated-gallery__band curated-gallery__band--special">
             <header className="curated-gallery__header">
               <p className="eyebrow">Rare traits and vivid palettes</p>
-              <h2>Odd eyes, colored noses, eyewear, and the two logo cats sit on the sharper side of Core Cats.</h2>
+              <h2>
+                {teaserMode
+                  ? "Odd eyes, colored noses, eyewear, and two reserved super rares sit on the sharper side of Core Cats."
+                  : "Odd eyes, colored noses, eyewear, and the two logo cats sit on the sharper side of Core Cats."}
+              </h2>
             </header>
             <div className="curated-gallery__grid">
               {specialPreview.map((item) => (

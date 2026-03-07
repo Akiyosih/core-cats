@@ -8,6 +8,7 @@ import {
   getFilters,
   normalizeFilterState,
   paginateItems,
+  sanitizeTeaserSearchParams,
   sortCollection,
 } from "../../lib/viewer-data";
 import { attachStatusToItem, getStatusSnapshot } from "../../lib/server/corecats-status";
@@ -258,7 +259,7 @@ function applyMintStateFilter(items, statusSnapshot, mintState) {
 }
 
 export default async function CollectionPage({ searchParams }) {
-  const params = (await searchParams) || {};
+  const params = sanitizeTeaserSearchParams((await searchParams) || {});
   const [collection, filtersDoc, statusSnapshot] = await Promise.all([getCollection(), getFilters(), getStatusSnapshot()]);
   const activeFilters = normalizeFilterState(params);
   const mintState = Array.isArray(params.mint_state) ? String(params.mint_state[0] || "") : String(params.mint_state || "");

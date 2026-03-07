@@ -5,12 +5,48 @@ export const dynamic = "force-dynamic";
 
 export default function MintPage() {
   const config = getCorePublicConfig();
+  const launchState = config.launchState;
 
-  const launchState = "canary"; // "closed" | "canary" | "public"
+  if (launchState === "closed") {
+    return (
+      <div className="page-stack narrow-stack">
+        <section className="copy-panel">
+          <p className="eyebrow">Mint</p>
+          <h1>Mint opens soon.</h1>
+          <p>
+            The collection can already be explored, but CorePass minting stays closed until the mainnet launch path
+            is ready. This page will become the live mint entry once the site moves beyond the closed stage.
+          </p>
+          <div className="copy-panel__actions">
+            <a href="https://coreblockchain.net/" target="_blank" rel="noreferrer" className="button button--ghost">
+              About Core Blockchain
+            </a>
+          </div>
+        </section>
+
+        <section className="copy-grid copy-grid--two">
+          <article className="copy-card">
+            <h2>What will happen here</h2>
+            <p>
+              Minting will use CorePass, a short session signature, and an on-chain commit/finalize flow that assigns
+              cats at random from the fixed set of 1,000.
+            </p>
+          </article>
+
+          <article className="copy-card">
+            <h2>Why it is still closed</h2>
+            <p>
+              The public site is already live for browsing and transparency, while the actual mint flow stays shut
+              until the launch state advances from closed to canary and then public.
+            </p>
+          </article>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="page-stack narrow-stack">
-      
       {launchState === "closed" && (
         <div className="launch-banner launch-banner--closed">
           <span className="launch-badge">Closed</span>

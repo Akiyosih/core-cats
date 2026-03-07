@@ -1,15 +1,18 @@
 import Link from "next/link";
+import { getCorePublicConfig } from "../lib/server/core-env";
 
 const links = [
   { href: "/", label: "Home" },
   { href: "/collection", label: "Collection" },
-  { href: "/my-cats", label: "My Cats" },
+  { href: "/my-cats", label: "My Cats", soonInClosed: true },
   { href: "/about", label: "About" },
   { href: "/transparency", label: "Transparency" },
-  { href: "/mint", label: "Mint" },
+  { href: "/mint", label: "Mint", soonInClosed: true },
 ];
 
 export default function SiteHeader() {
+  const { launchState } = getCorePublicConfig();
+
   return (
     <header className="site-header">
       <Link href="/" className="brand-mark">
@@ -19,8 +22,11 @@ export default function SiteHeader() {
 
       <nav className="main-nav" aria-label="Primary">
         {links.map((link) => (
-          <Link key={link.href} href={link.href}>
-            {link.label}
+          <Link key={link.href} href={link.href} className="main-nav__item">
+            <span>{link.label}</span>
+            {launchState === "closed" && link.soonInClosed ? (
+              <span className="main-nav__badge">Soon</span>
+            ) : null}
           </Link>
         ))}
       </nav>
