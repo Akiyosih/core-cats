@@ -1,6 +1,5 @@
 # Viewer Data Pipeline
 
-Last updated: 2026-03-06
 
 ## Purpose
 Generate UI-ready collection data from the current Core on-chain renderer without depending on missing local PNG preview files.

@@ -1,6 +1,5 @@
 # Core Cats Mainnet Closed Launch Runbook
 
-Last updated: 2026-03-07
 Status: Draft for the current `main` branch
 
 ## Purpose

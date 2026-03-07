@@ -1,6 +1,5 @@
 # Core Cats Work Procedure (Mainnet Closed Launch Path)
 
-Last updated: 2026-03-07
 Version: v3.1
 
 ## 0. Non-negotiable Rules

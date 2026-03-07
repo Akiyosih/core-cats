@@ -1,6 +1,5 @@
 # Core Cats Mainnet Pilot Fallback
 
-Last updated: 2026-03-07
 Status: Optional fallback if CorePass testnet validation is still unavailable
 
 ## Purpose

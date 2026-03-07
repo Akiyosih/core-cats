@@ -1,6 +1,5 @@
 # Core Testnet Deploy Runbook (Phase A)
 
-Last updated: 2026-03-06
 Status: Rehearsed once on Core Devin (verify pending)
 
 ## 1. Purpose

@@ -1,6 +1,5 @@
 # Core Cats Web UI / Mint DApp Spec (Core-First Draft)
 
-Last updated: 2026-03-06
 Status: Draft aligned to current `core-cats` repository state
 
 ## Purpose

@@ -1,6 +1,5 @@
 # CorePass Contact Draft
 
-Last updated: 2026-03-06
 Purpose: External confirmation request about CorePass mobile app support for Core Blockchain Devin testnet.
 
 ## English Draft
