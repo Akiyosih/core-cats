@@ -10,6 +10,7 @@ import {
   paginateItems,
   sortCollection,
 } from "../../lib/viewer-data";
+import { attachStatusToItem, getStatusSnapshot } from "../../lib/server/corecats-status";
 
 const PAGE_SIZE = 30;
 const NATURAL_COLORWAYS = [
@@ -38,6 +39,10 @@ const DERIVED_COLLAR_OPTIONS = [
   { id: "any_collar", label: "Any Collar" },
   { id: "checkered_collar", label: "Checkered Collar" },
   { id: "classic_red_collar", label: "Classic Red Collar" },
+];
+const MINT_STATE_OPTIONS = [
+  { id: "minted", label: "Minted" },
+  { id: "unminted", label: "Unminted" },
 ];
 
 export const dynamic = "force-dynamic";
@@ -216,20 +221,64 @@ function Pagination({ page, totalPages, searchParams }) {
   );
 }
 
+function MintStateBlock({ searchParams, activeValue, counts }) {
+  return (
+    <section className="filter-block">
+      <h2>Mint Status</h2>
+      <div className="chip-wrap">
+        {MINT_STATE_OPTIONS.map((option) => {
+          const href = buildSearchHref(searchParams, {
+            mint_state: activeValue === option.id ? null : option.id,
+            page: null,
+          });
+          const count = counts[option.id] || 0;
+
+          return (
+            <FilterChip
+              key={`mint-${option.id}`}
+              href={href}
+              active={activeValue === option.id}
+              empty={count === 0}
+              label={option.label}
+              count={count}
+            />
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function applyMintStateFilter(items, statusSnapshot, mintState) {
+  return items.filter((item) => {
+    if (mintState === "minted") return Boolean(statusSnapshot.byToken[item.token_id]?.minted);
+    if (mintState === "unminted") return !statusSnapshot.byToken[item.token_id]?.minted;
+    return true;
+  });
+}
+
 export default async function CollectionPage({ searchParams }) {
   const params = (await searchParams) || {};
-  const [collection, filtersDoc] = await Promise.all([getCollection(), getFilters()]);
+  const [collection, filtersDoc, statusSnapshot] = await Promise.all([getCollection(), getFilters(), getStatusSnapshot()]);
   const activeFilters = normalizeFilterState(params);
+  const mintState = Array.isArray(params.mint_state) ? String(params.mint_state[0] || "") : String(params.mint_state || "");
 
-  const filtered = applyCollectionFilters(collection.items, params);
+  const baseFiltered = applyCollectionFilters(collection.items, params);
+  const mintStateCounts = {
+    minted: baseFiltered.filter((item) => Boolean(statusSnapshot.byToken[item.token_id]?.minted)).length,
+    unminted: baseFiltered.filter((item) => !statusSnapshot.byToken[item.token_id]?.minted).length,
+  };
+  const filtered = applyMintStateFilter(baseFiltered, statusSnapshot, mintState);
   const sorted = sortCollection(filtered, params.sort);
   const resultsCount = filtered.length;
   const pagination = paginateItems(sorted, Number(params.page || 1), PAGE_SIZE);
   const contextualFilters = {};
+  const returnTo = buildSearchHref(params);
 
   for (const filterKey of FILTER_KEYS) {
     const baseItems = applyCollectionFilters(collection.items, activeFilters, { excludeKeys: [filterKey] });
-    const counts = buildFacetCounts(baseItems, filterKey);
+    const contextualBaseItems = applyMintStateFilter(baseItems, statusSnapshot, mintState);
+    const counts = buildFacetCounts(contextualBaseItems, filterKey);
     contextualFilters[filterKey] = {
       ...filtersDoc.filters[filterKey],
       values: filtersDoc.filters[filterKey].values.map((value) => ({
@@ -262,6 +311,12 @@ export default async function CollectionPage({ searchParams }) {
             >
               Rarity
             </Link>
+            <Link
+              href="/collection"
+              className="sort-pill"
+            >
+              Clear all
+            </Link>
           </div>
         </div>
 
@@ -278,6 +333,7 @@ export default async function CollectionPage({ searchParams }) {
           activeValue={activeFilters.collar}
           contextualValues={contextualFilters.collar.values}
         />
+        <MintStateBlock searchParams={params} activeValue={mintState || null} counts={mintStateCounts} />
         <FilterBlock title="Tier" filterKey="rarity_tier" values={contextualFilters.rarity_tier.values} searchParams={params} activeValue={activeFilters.rarity_tier} />
         <FilterBlock title="Special Trait" filterKey="rarity_type" values={contextualFilters.rarity_type.values} searchParams={params} activeValue={activeFilters.rarity_type} />
       </aside>
@@ -293,7 +349,11 @@ export default async function CollectionPage({ searchParams }) {
 
         <div className="card-grid">
           {pagination.items.map((item) => (
-            <CollectionCard key={item.token_id} item={item} />
+            <CollectionCard
+              key={item.token_id}
+              item={attachStatusToItem(item, statusSnapshot.byToken[item.token_id] || null)}
+              detailHref={`/cats/${item.token_id}?from=${encodeURIComponent(returnTo)}`}
+            />
           ))}
         </div>
 

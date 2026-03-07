@@ -1,9 +1,44 @@
-import Link from "next/link";
+"use client";
 
-export default function CollectionCard({ item }) {
+import { useRouter } from "next/navigation";
+
+export default function CollectionCard({ item, detailHref }) {
+  const router = useRouter();
+  const mintStatus = item.mint_status;
+  const tierLabel = item.display_attributes.find((attr) => attr.trait_type_id === "Rarity Tier")?.value_label;
+  const targetHref = detailHref || `/cats/${item.token_id}`;
+
+  function handleCardClick(event) {
+    if (event.target.closest("a")) {
+      return;
+    }
+    router.push(targetHref);
+  }
+
+  function handleCardKeyDown(event) {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+    event.preventDefault();
+    router.push(targetHref);
+  }
+
   return (
-    <article className="cat-card">
-      <Link href={`/cats/${item.token_id}`} className="cat-card__image-frame">
+    <article
+      className="cat-card"
+      role="link"
+      tabIndex={0}
+      aria-label={`View details for ${item.name}`}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+    >
+      <div className="cat-card__image-frame">
+        {mintStatus?.minted ? (
+          <span className="mint-badge" aria-label="Minted">
+            <span className="mint-badge__check">✓</span>
+            Minted
+          </span>
+        ) : null}
         <img
           src={item.image_src || item.image_data_uri}
           alt={item.name}
@@ -13,17 +48,33 @@ export default function CollectionCard({ item }) {
           loading="lazy"
           decoding="async"
         />
-      </Link>
+      </div>
 
       <div className="cat-card__body">
         <div className="cat-card__title-row">
-          <Link href={`/cats/${item.token_id}`} className="cat-card__title">
+          <span className="cat-card__title">
             {item.name}
-          </Link>
+          </span>
           <span className={`tier-badge tier-badge--${item.trait_values.rarity_tier}`}>
-            {item.display_attributes.find((attr) => attr.trait_type_id === "Rarity Tier")?.value_label}
+            {tierLabel}
           </span>
         </div>
+
+        {mintStatus?.minted ? (
+          <div className="cat-card__status-row">
+            <span className="cat-card__status-label">Live on-chain</span>
+            {mintStatus.explorer?.mintTx ? (
+              <a
+                href={mintStatus.explorer.mintTx}
+                target="_blank"
+                rel="noreferrer"
+                className="card-inline-link"
+              >
+                Mint tx
+              </a>
+            ) : null}
+          </div>
+        ) : null}
 
         <dl className="trait-list">
           {item.display_attributes.map((attr) => (
