@@ -7,6 +7,7 @@ A fully on-chain NFT project on Core Blockchain.
 - Active contract workspace: `foxar/`
 - Active backend workspace: `mint-backend/`
 - Active web workspace: `web/`
+- Contract build/test CI runs from `foxar/`
 
 ## Preview
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid_teaser.png)

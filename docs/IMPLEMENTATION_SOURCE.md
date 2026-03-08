@@ -54,6 +54,7 @@ Default recommendation:
 - Active contract source/build/deploy workspace: `foxar/`
 - Active mint backend workspace: `mint-backend/`
 - Active web/publication workspace: `web/`
+- Contract CI should execute from `foxar/`, not from the repository root.
 - Direct Core implementation has already succeeded on the active path.
 - Current remaining work is:
   - mainnet readiness
@@ -73,6 +74,7 @@ Therefore:
 1. active Core launch code should live under the documented workspaces above
 2. archive/reference imports may remain when they are explicitly labeled
 3. obsolete legacy deploy scripts and starter-template files should be removed once they are no longer part of the active path
+4. duplicate root-level toolchain configs should also be removed once the active workspace is explicit
 
 ## Mirrored Artifact Snapshot (from `core-cats-eth`)
 - Local path: `manifests/`
