@@ -207,7 +207,11 @@ Tasks:
 2. Enable general signature issuance with rate limits and nonce/expiry enforcement.
 3. Keep finalize monitoring active.
 4. Publish the mainnet contract addresses, verify links or manual-verify status, and reproducibility artifacts.
-5. Monitor:
+5. Execute the repository-clarity pass for public readers:
+   - `core-cats` remains the only production-facing implementation repository
+   - `core-cats-eth` is presented only as a historical archive
+   - public navigation should not make the archive look like a second current mint path
+6. Monitor:
    - mint success rate
    - finalize backlog
    - session failures
@@ -217,15 +221,23 @@ Exit criteria:
 1. Public mint is open on the intended path.
 2. Transparency artifacts are published.
 3. Operational monitoring is in place.
+4. Repository roles are unambiguous to outside readers.
 
 ## 5. Immediate Next Actions From The Current State
-1. Keep the public site on Vercel and implement the separate Contabo mint backend path documented in `docs/MINT_BACKEND_ARCHITECTURE.md`.
-2. Replace the temporary in-memory CorePass mint session store with SQLite on the backend.
-3. Prepare a mainnet closed-launch runbook and operator checklist.
-4. Assemble mainnet deploy/verify input files alongside the existing Devin packet.
+1. Keep the public site on Vercel in `closed` mode while finishing the separate Contabo mint backend path documented in `docs/MINT_BACKEND_ARCHITECTURE.md`.
+2. Stage the production wallet split for mainnet:
+   - Wallet 3 signer secret to Contabo
+   - Wallet 4 finalizer keystore/password to Contabo
+   - Wallet 2 deployer keystore only during the actual deploy window
+3. Replace the temporary in-memory CorePass mint session store with SQLite on the backend before the first real mainnet canary.
+4. Execute the official mainnet closed deploy sequence and record deploy/verify evidence.
 5. Decide day-one quantity exposure:
    - all `1 / 2 / 3`, or
    - temporary `1`-only until mainnet multi-quantity canary is complete
+6. Before switching to `public`, perform the release-clarity pass for `core-cats-eth`:
+   - all active launch docs live in `core-cats`
+   - `core-cats-eth` top-level messaging is archive-only
+   - no public-facing copy implies two active repositories
 
 ## 6. Runbooks and Evidence
 1. Testnet rehearsal and verification notes:

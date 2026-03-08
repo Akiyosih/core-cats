@@ -44,6 +44,47 @@ export CORECATS_BACKEND_SHARED_SECRET=dev-only-secret
 python3 -m corecats_mint_backend.server
 ```
 
+For local development, the backend keeps the current Devin defaults unless you override them.
+
+## Production / Contabo shape
+
+Use the provided examples:
+
+1. env file:
+   - `systemd/corecats-mint-backend.env.example`
+2. systemd unit:
+   - `systemd/corecats-mint-backend.service.example`
+
+The intended production pattern is:
+
+1. copy the env example to `/etc/corecats-mint-backend.env`
+2. fill in the real mainnet values and secrets there
+3. install the systemd unit
+4. keep the unit file itself free of secret values
+
+For mainnet deployment, prefer `CORE_RPC_URL`.
+
+`CORE_TESTNET_RPC_URL` still works as a legacy alias, but it is semantically the wrong name for the final mainnet service.
+
+The current production shape still expects:
+
+1. `MINT_SIGNER_PRIVATE_KEY` as a raw key
+2. `FINALIZER_PRIVATE_KEY` as a raw key, or
+3. `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` as the official Foxar keystore alternative for Wallet 4
+
+Source reference for the keystore path:
+1. https://foxar.dev/reference/cli/spark/script/
+
+When `CORECATS_BACKEND_PROFILE=production` is set, the backend now fails closed on startup if:
+
+1. it is still pointing at Devin defaults
+2. the shared secret is missing
+3. `MINT_SIGNER_PRIVATE_KEY` is not explicitly set
+4. neither `FINALIZER_PRIVATE_KEY` nor the `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` pair is explicitly set
+5. `spark` or `foxar` paths do not exist
+
+This is intentional. The goal is to prevent a Contabo service from silently starting in a misconfigured Devin-like state.
+
 ## Expected production placement
 
 1. Contabo Linux host

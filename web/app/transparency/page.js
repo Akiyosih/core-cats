@@ -1,13 +1,27 @@
 import Link from "next/link";
+import {
+  DEFAULT_DEVIN_CORECATS_ADDRESS,
+  getCorePublicConfig,
+  looksLikePlaceholder,
+} from "../../lib/server/core-env";
 
-const publicLinks = [
-  { href: "https://github.com/Akiyosih/core-cats", label: "GitHub Repository" },
-  { href: "https://xab.blockindex.net/address/ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba", label: "CoreCats Contract (Devin rehearsal)" },
-  {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/CORE_TESTNET_DEPLOY_RUNBOOK.md",
-    label: "Core Devin deploy runbook",
-  },
-];
+function normalize(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function isCoreAddress(value) {
+  return /^(ab|cb)[0-9a-f]{42}$/i.test(String(value || "").trim());
+}
+
+function titleCase(value) {
+  const text = String(value || "").trim();
+  return text ? `${text.slice(0, 1).toUpperCase()}${text.slice(1)}` : "Unknown";
+}
+
+function buildExplorerAddressUrl(explorerBaseUrl, address) {
+  if (!address) return "";
+  return `${String(explorerBaseUrl || "").replace(/\/$/, "")}/address/${address}`;
+}
 
 const repositoryFiles = [
   {
@@ -30,9 +44,43 @@ const repositoryFiles = [
     href: "https://github.com/Akiyosih/core-cats/blob/main/manifests/viewer_v1/summary.json",
     label: "Viewer summary",
   },
+  {
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/TRUST_AND_PRIVACY_SURFACE.md",
+    label: "Trust + privacy notes",
+  },
+  {
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/FREEZE_AND_RENOUNCE_POLICY.md",
+    label: "Freeze / renounce policy",
+  },
+  {
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/MINTER_PRIVACY_NOTE.md",
+    label: "Minter privacy note",
+  },
+  {
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/PUBLIC_DOCUMENT_LANGUAGE_POLICY.md",
+    label: "Public document language policy",
+  },
 ];
 
 export default function TransparencyPage() {
+  const config = getCorePublicConfig();
+  const networkName = normalize(config.networkName);
+  const contractAddress = String(config.coreCatsAddress || "").trim();
+  const explorerBaseUrl = String(config.explorerBaseUrl || "").trim();
+  const usesDevinDefault = normalize(contractAddress) === DEFAULT_DEVIN_CORECATS_ADDRESS;
+  const contractPending =
+    networkName === "mainnet" && (!isCoreAddress(contractAddress) || usesDevinDefault || looksLikePlaceholder(contractAddress));
+  const contractHref = contractPending ? "" : buildExplorerAddressUrl(explorerBaseUrl, contractAddress);
+
+  const publicLinks = [
+    { href: "https://github.com/Akiyosih/core-cats", label: "GitHub Repository" },
+    { href: explorerBaseUrl, label: "Configured explorer" },
+    {
+      href: "https://github.com/Akiyosih/core-cats/blob/main/docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md",
+      label: "Vercel mainnet cutover checklist",
+    },
+  ];
+
   return (
     <div className="page-stack narrow-stack">
       <section className="copy-panel">
@@ -59,6 +107,36 @@ export default function TransparencyPage() {
         </article>
 
         <article className="copy-card">
+          <h2>Current chain surface</h2>
+          <ul className="plain-list">
+            <li>
+              <strong>Network:</strong> {titleCase(config.networkName)}
+            </li>
+            <li>
+              <strong>Launch state:</strong> {titleCase(config.launchState)}
+            </li>
+            <li>
+              <strong>Contract status:</strong>{" "}
+              {contractPending
+                ? "Mainnet deployment pending"
+                : networkName === "mainnet"
+                  ? "Mainnet contract configured"
+                  : "Devin rehearsal contract configured"}
+            </li>
+            <li>
+              <strong>Contract:</strong>{" "}
+              {contractPending ? (
+                "The public site is live, but the final mainnet contract address has not been published here yet."
+              ) : (
+                <Link href={contractHref} target="_blank" rel="noreferrer" className="resource-link">
+                  {contractAddress}
+                </Link>
+              )}
+            </li>
+          </ul>
+        </article>
+
+        <article className="copy-card">
           <h2>Key repository files</h2>
           <ul className="plain-list">
             {repositoryFiles.map((item) => (
@@ -68,6 +146,42 @@ export default function TransparencyPage() {
                 </Link>
               </li>
             ))}
+          </ul>
+        </article>
+
+        <article className="copy-card">
+          <h2>Current trust surface</h2>
+          <ul className="plain-list">
+            <li>
+              <strong>Fixed in contract:</strong> supply `1000`, per-address limit `3`, and the commit/finalize random
+              assignment path.
+            </li>
+            <li>
+              <strong>Owner powers:</strong> the current contract shape still allows owner-controlled signer rotation
+              and metadata-renderer rotation.
+            </li>
+            <li>
+              <strong>Backend role:</strong> mint authorization is currently issued off-chain, and relayer finalize is
+              a convenience path rather than the only way to finish a mint.
+            </li>
+          </ul>
+        </article>
+
+        <article className="copy-card">
+          <h2>Privacy notes</h2>
+          <ul className="plain-list">
+            <li>
+              <strong>Current path:</strong> CorePass protocol transport only. Connector/KYC-transfer is not required
+              for the present launch target.
+            </li>
+            <li>
+              <strong>Session handling:</strong> the mint flow uses server-side session coordination and operator
+              recovery logs.
+            </li>
+            <li>
+              <strong>Do not assume anonymity:</strong> on-chain transactions are public, and the current web/backend
+              architecture is operational rather than privacy-preserving.
+            </li>
           </ul>
         </article>
       </section>

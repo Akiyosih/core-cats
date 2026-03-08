@@ -163,6 +163,10 @@ After canary success:
    - verify links or verify status
    - GitHub repository links
    - reproducibility docs
+6. Perform the repository clarity pass:
+   - `core-cats` is the production-facing repo
+   - `core-cats-eth` is labeled as historical archive only
+   - public readers are not routed into the archive as if it were an active mint repo
 
 ## 8. Evidence To Save
 For closed launch and canary:

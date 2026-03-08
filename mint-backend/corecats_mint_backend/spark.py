@@ -28,6 +28,8 @@ def run_spark_script(
     env_overrides: dict[str, str] | None = None,
     broadcast: bool = False,
     energy_estimate_multiplier: int | None = None,
+    keystore_path: str | None = None,
+    password_file: str | None = None,
 ) -> SparkResult:
     env = os.environ.copy()
     env.update(
@@ -58,6 +60,10 @@ def run_spark_script(
         command.extend(["--energy-estimate-multiplier", str(energy_estimate_multiplier)])
     if broadcast:
         command.append("--broadcast")
+    if keystore_path:
+        command.extend(["--keystore", keystore_path])
+    if password_file:
+        command.extend(["--password-file", password_file])
 
     completed = subprocess.run(
         command,
@@ -103,18 +109,23 @@ def issue_mint_authorization(config: Config, *, minter: str, quantity: int, nonc
 
 
 def relay_finalize_mint(config: Config, *, minter: str, energy_estimate_multiplier: int = 250) -> dict[str, str]:
-    if not config.finalizer_private_key:
+    if not config.finalizer_private_key and not config.finalizer_keystore_path:
         raise RuntimeError("Finalizer key is not configured")
+
+    env_overrides = {
+        "MINTER_ADDRESS": minter,
+    }
+    if config.finalizer_private_key:
+        env_overrides["DEPLOYER_PRIVATE_KEY"] = config.finalizer_private_key
 
     result = run_spark_script(
         config,
         "script/CoreCatsFinalizeMint.s.sol:CoreCatsFinalizeMintScript",
-        env_overrides={
-            "DEPLOYER_PRIVATE_KEY": config.finalizer_private_key,
-            "MINTER_ADDRESS": minter,
-        },
+        env_overrides=env_overrides,
         broadcast=True,
         energy_estimate_multiplier=energy_estimate_multiplier,
+        keystore_path=str(config.finalizer_keystore_path) if config.finalizer_keystore_path else None,
+        password_file=str(config.finalizer_password_file) if config.finalizer_password_file else None,
     )
 
     stdout = result.stdout

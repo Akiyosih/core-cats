@@ -118,8 +118,12 @@ The first SQLite schema should cover:
 3. relayer/finalize attempts
 
 ## Immediate Next Tasks
-1. define the internal backend API contract used by Vercel
-2. implement the Contabo backend service
-3. replace the in-memory session store with SQLite-backed remote persistence
-4. wire Vercel production env to external backend mode for canary/public mint
-5. keep teaser publication on Vercel with no production mint secrets
+1. stage Contabo production secrets:
+   - Wallet 3 raw signer secret
+   - Wallet 4 finalizer keystore + password file
+2. finalize the HTTPS exposure method for the Contabo backend
+3. deploy the Contabo backend with the production env file and systemd unit
+4. wire Vercel production env to external backend mode for `closed` mainnet publication
+5. inject the real mainnet CoreCats contract address into Vercel after deploy
+6. promote `closed -> canary -> public` only after the intended mainnet checks succeed
+7. keep public browsing on Vercel with no production mint secrets

@@ -7,20 +7,8 @@ Wants=network-online.target
 Type=simple
 User=root
 WorkingDirectory=/root/core-cats/mint-backend
-Environment=CORECATS_BACKEND_BIND=127.0.0.1
-Environment=CORECATS_BACKEND_PORT=8787
-Environment=CORECATS_BACKEND_DB_PATH=/var/lib/corecats-mint-backend/corecats-mint.db
-Environment=CORECATS_BACKEND_SHARED_SECRET=replace-me
-Environment=CORE_TESTNET_RPC_URL=http://127.0.0.1:8545
-Environment=CORE_CHAIN_ID=3
-Environment=CORE_NETWORK_ID=3
-Environment=CORE_NETWORK_NAME=devin
-Environment=CORE_EXPLORER_BASE_URL=https://xab.blockindex.net
-Environment=CORECATS_ADDRESS=replace-me
-Environment=CORECATS_FOXAR_DIR=/root/core-cats/foxar
-Environment=SPARK_PATH=/root/.foxar/bin/spark
-Environment=MINT_SIGNER_PRIVATE_KEY=replace-me
-Environment=FINALIZER_PRIVATE_KEY=replace-me
+EnvironmentFile=/etc/corecats-mint-backend.env
+Environment=PYTHONUNBUFFERED=1
 ExecStart=/usr/bin/python3 -m corecats_mint_backend.server
 Restart=always
 RestartSec=3

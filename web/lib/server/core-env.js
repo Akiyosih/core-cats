@@ -4,14 +4,18 @@ import path from "node:path";
 const ROOT_DIR = path.resolve(process.cwd(), "..");
 const FOXAR_ENV_PATH = path.join(ROOT_DIR, "foxar", ".env");
 
+export const DEFAULT_DEVIN_RPC_URL = "https://xcbapi-arch-devin.coreblockchain.net/";
+export const DEFAULT_DEVIN_CORECATS_ADDRESS = "ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba";
+export const DEFAULT_DEVIN_EXPLORER_BASE_URL = "https://xab.blockindex.net";
+
 const DEFAULTS = {
-  rpcUrl: "https://xcbapi-arch-devin.coreblockchain.net/",
+  rpcUrl: DEFAULT_DEVIN_RPC_URL,
   chainId: 3,
   networkId: 3,
   networkName: "devin",
   launchState: "closed",
-  coreCatsAddress: "ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba",
-  explorerBaseUrl: "https://xab.blockindex.net",
+  coreCatsAddress: DEFAULT_DEVIN_CORECATS_ADDRESS,
+  explorerBaseUrl: DEFAULT_DEVIN_EXPLORER_BASE_URL,
   backendMode: "local",
   backendBaseUrl: "",
   backendSharedSecret: "",
@@ -29,6 +33,10 @@ function normalizeBackendMode(value) {
     return value;
   }
   return DEFAULTS.backendMode;
+}
+
+export function looksLikePlaceholder(value) {
+  return /replace-with/i.test(String(value || "").trim());
 }
 
 function parseEnvFile(filePath) {
@@ -67,7 +75,12 @@ export function getCoreServerEnv() {
     rootDir: ROOT_DIR,
     foxarDir: path.join(ROOT_DIR, "foxar"),
     sparkPath: process.env.SPARK_PATH || path.join(process.env.HOME || "", ".foxar", "bin", "spark"),
-    rpcUrl: process.env.CORE_TESTNET_RPC_URL || fileEnv.CORE_TESTNET_RPC_URL || DEFAULTS.rpcUrl,
+    rpcUrl:
+      process.env.CORE_RPC_URL ||
+      process.env.CORE_TESTNET_RPC_URL ||
+      fileEnv.CORE_RPC_URL ||
+      fileEnv.CORE_TESTNET_RPC_URL ||
+      DEFAULTS.rpcUrl,
     chainId: Number(process.env.NEXT_PUBLIC_CORE_CHAIN_ID || process.env.CORE_CHAIN_ID || DEFAULTS.chainId),
     networkId: Number(process.env.CORE_NETWORK_ID || DEFAULTS.networkId),
     networkName: process.env.CORE_NETWORK_NAME || DEFAULTS.networkName,
@@ -85,7 +98,10 @@ export function getCoreServerEnv() {
     deployerPrivateKey,
     signerPrivateKey,
     finalizerPrivateKey,
-    explorerBaseUrl: process.env.NEXT_PUBLIC_CORE_EXPLORER_BASE_URL || DEFAULTS.explorerBaseUrl,
+    explorerBaseUrl:
+      process.env.NEXT_PUBLIC_CORE_EXPLORER_BASE_URL ||
+      process.env.CORE_EXPLORER_BASE_URL ||
+      DEFAULTS.explorerBaseUrl,
   };
 }
 

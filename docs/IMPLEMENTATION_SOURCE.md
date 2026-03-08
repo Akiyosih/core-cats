@@ -16,6 +16,30 @@ Clarify where active implementation and migration planning are maintained.
 - Local path: `C:\Users\b8_q6\myproject\core-cats-eth`
 - Latest reference commit: `cae76d3`
 
+## Mainnet Release Clarity Policy
+The project should keep `core-cats-eth` as a historical archive by default, not silently delete it.
+
+Reason:
+1. it preserves the ETH rehearsal and migration history
+2. it explains how the project arrived at the current Core-first implementation
+3. it is more transparent than pretending the detour never existed
+
+However, public readers should not be asked to guess which repository is current.
+
+Before or at the first real public mainnet release:
+1. ensure all production-facing docs, runbooks, and transparency notes needed for outside review exist in `core-cats`
+2. reduce `core-cats` public navigation so `core-cats-eth` is presented only as an archive/historical reference, not a parallel active repo
+3. update the top-level `core-cats-eth` GitHub-facing messaging so the first screen clearly says:
+   - historical ETH rehearsal archive
+   - not the active implementation
+   - current production path is `core-cats`
+4. if no further updates are expected, consider GitHub archive mode for `core-cats-eth` after the above messaging is in place
+
+Default recommendation:
+1. keep the history
+2. demote it operationally
+3. avoid deleting it unless there is a separate legal/security reason
+
 ## Reference Documents (core-cats-eth)
 - `docs/PROJECT_STATUS.md`
 - `docs/ROADMAP_CORE_MIGRATION.md`

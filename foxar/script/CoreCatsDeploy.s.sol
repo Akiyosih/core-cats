@@ -8,9 +8,13 @@ import "../src/CoreCatsMetadataRenderer.sol";
 
 contract CoreCatsDeployScript is Script {
     function run() external returns (CoreCats coreCats, CoreCatsOnchainData data, CoreCatsMetadataRenderer renderer) {
-        string memory deployerPrivateKey = vm.envString("DEPLOYER_PRIVATE_KEY");
+        string memory deployerPrivateKey = vm.envOr("DEPLOYER_PRIVATE_KEY", string(""));
 
-        vm.startBroadcast(deployerPrivateKey);
+        if (bytes(deployerPrivateKey).length != 0) {
+            vm.startBroadcast(deployerPrivateKey);
+        } else {
+            vm.startBroadcast();
+        }
 
         data = new CoreCatsOnchainData();
         renderer = new CoreCatsMetadataRenderer(address(data));

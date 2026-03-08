@@ -63,14 +63,16 @@ Server runtime looks for values in this order:
 2. `../foxar/.env`
 
 Important variables:
-1. `CORE_TESTNET_RPC_URL`
-2. `DEPLOYER_PRIVATE_KEY`
-3. `MINT_SIGNER_PRIVATE_KEY` (optional, defaults to deployer key)
-4. `FINALIZER_PRIVATE_KEY` (optional, defaults to deployer key)
-5. `NEXT_PUBLIC_CORECATS_ADDRESS` (optional, defaults to the latest Devin rehearsal address)
-6. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
-7. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
-8. `CORECATS_BACKEND_BASE_URL` (required when `CORECATS_BACKEND_MODE=proxy`)
+1. `CORE_RPC_URL` (preferred when local backend mode is used)
+2. `CORE_TESTNET_RPC_URL` (legacy alias still passed through to `spark`)
+3. `DEPLOYER_PRIVATE_KEY`
+4. `MINT_SIGNER_PRIVATE_KEY` (optional, defaults to deployer key)
+5. `FINALIZER_PRIVATE_KEY` (optional, defaults to deployer key)
+6. `NEXT_PUBLIC_CORECATS_ADDRESS` (optional, defaults to the latest Devin rehearsal address)
+7. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
+8. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
+9. `CORECATS_BACKEND_BASE_URL` (required when `CORECATS_BACKEND_MODE=proxy`)
+10. `CORECATS_BACKEND_SHARED_SECRET` (required when `CORECATS_BACKEND_MODE=proxy`)
 
 ## Current Mint Flow
 
@@ -101,6 +103,7 @@ The external mint backend owns:
 4. `spark` / `foxar` execution
 
 See `../docs/MINT_BACKEND_ARCHITECTURE.md`.
+Use `./.env.production.example` and `../docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md` for the Vercel-side mainnet switch.
 
 ## Current Local Validation Limit
 
