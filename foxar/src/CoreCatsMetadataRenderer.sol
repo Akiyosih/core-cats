@@ -56,6 +56,9 @@ contract CoreCatsMetadataRenderer {
     uint8 private constant LAYER_SUPERRARE_PING = 9;
 
     ICoreCatsOnchainData public immutable data;
+    string public tokenNamePrefix;
+    string public tokenDescription;
+    bool public superrarePlaceholderEnabled;
 
     struct DataBundle {
         bytes tokenRecords;
@@ -77,9 +80,19 @@ contract CoreCatsMetadataRenderer {
         uint16 colorTupleIndex;
     }
 
-    constructor(address dataAddress) {
+    constructor(
+        address dataAddress,
+        string memory tokenNamePrefix_,
+        string memory tokenDescription_,
+        bool superrarePlaceholderEnabled_
+    ) {
         require(dataAddress != address(0), "data address is zero");
+        require(bytes(tokenNamePrefix_).length != 0, "token name prefix is empty");
+        require(bytes(tokenDescription_).length != 0, "token description is empty");
         data = ICoreCatsOnchainData(dataAddress);
+        tokenNamePrefix = tokenNamePrefix_;
+        tokenDescription = tokenDescription_;
+        superrarePlaceholderEnabled = superrarePlaceholderEnabled_;
     }
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
@@ -90,8 +103,8 @@ contract CoreCatsMetadataRenderer {
 
         string memory image = _buildImageData(d, rec);
         string memory attributes = _buildAttributes(rec);
-        string memory name = string(abi.encodePacked("CoreCats #", tokenId.toString()));
-        string memory description = "CoreCats fully on-chain 24x24 SVG.";
+        string memory name = string(abi.encodePacked(tokenNamePrefix, " #", tokenId.toString()));
+        string memory description = tokenDescription;
 
         bytes memory json = abi.encodePacked(
             '{"name":"',
@@ -134,12 +147,16 @@ contract CoreCatsMetadataRenderer {
         rec.colorTupleIndex = uint16((packed >> 16) & 0x1FF);
     }
 
-    function _buildImageData(DataBundle memory d, TokenRecord memory rec) internal pure returns (string memory) {
+    function _buildImageData(DataBundle memory d, TokenRecord memory rec) internal view returns (string memory) {
         string memory body = "";
 
         if (rec.rarityTierId == RARITY_SUPERRARE) {
-            uint8 layerId = rec.rarityTypeId == RARITY_TYPE_CORELOGO ? LAYER_SUPERRARE_CORE : LAYER_SUPERRARE_PING;
-            body = _renderFixedLayer(d, layerId, body);
+            if (superrarePlaceholderEnabled) {
+                body = _renderSuperrarePlaceholder(rec.rarityTypeId, body);
+            } else {
+                uint8 layerId = rec.rarityTypeId == RARITY_TYPE_CORELOGO ? LAYER_SUPERRARE_CORE : LAYER_SUPERRARE_PING;
+                body = _renderFixedLayer(d, layerId, body);
+            }
         } else {
             body = _renderPatternLayer(d, rec, body);
             body = _renderFixedLayer(d, LAYER_BASE, body);
@@ -324,6 +341,52 @@ contract CoreCatsMetadataRenderer {
                 '"/>'
             )
         );
+    }
+
+    function _appendBlock(string memory svg, uint8 x, uint8 y, uint8 w, uint8 h, bytes3 color)
+        internal
+        pure
+        returns (string memory)
+    {
+        return string(
+            abi.encodePacked(
+                svg,
+                '<rect x="',
+                uint256(x).toString(),
+                '" y="',
+                uint256(y).toString(),
+                '" width="',
+                uint256(w).toString(),
+                '" height="',
+                uint256(h).toString(),
+                '" fill="',
+                _hexColor(color),
+                '"/>'
+            )
+        );
+    }
+
+    // Neutral placeholder art for pilot/test deployments that should avoid showing the logo-bearing superrare visuals.
+    function _renderSuperrarePlaceholder(uint8 rarityTypeId, string memory svg)
+        internal
+        pure
+        returns (string memory)
+    {
+        bytes3 background = bytes3(uint24(0x181820));
+        bytes3 shell = bytes3(uint24(0xEBEBEB));
+        bytes3 accent = rarityTypeId == RARITY_TYPE_PINGLOGO ? bytes3(uint24(0x44AD4D)) : bytes3(uint24(0x3B49DE));
+
+        svg = _appendBlock(svg, 0, 0, 24, 24, background);
+        svg = _appendBlock(svg, 6, 3, 4, 4, shell);
+        svg = _appendBlock(svg, 14, 3, 4, 4, shell);
+        svg = _appendBlock(svg, 4, 6, 16, 13, shell);
+        svg = _appendBlock(svg, 6, 11, 12, 5, accent);
+        svg = _appendBlock(svg, 8, 9, 2, 2, background);
+        svg = _appendBlock(svg, 14, 9, 2, 2, background);
+        svg = _appendBlock(svg, 11, 12, 2, 1, background);
+        svg = _appendBlock(svg, 10, 15, 4, 1, background);
+
+        return svg;
     }
 
     function _hexColor(bytes3 color) internal pure returns (string memory) {

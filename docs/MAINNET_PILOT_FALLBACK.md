@@ -64,16 +64,30 @@ The pilot must be unmistakably non-official in wallets, explorers, and repositor
 This preserves realism without exposing the pilot as a public collection.
 
 ## Current Repository Implication
-The current `main` branch does not yet expose pilot-specific labels as runtime configuration.
+The current `main` branch now supports pilot-specific human-facing labels through deploy-time configuration.
 
-At the moment:
-1. `CoreCats.sol` hard-codes `CoreCats` / `CCAT`
-2. `CoreCatsMetadataRenderer.sol` hard-codes `CoreCats #` and `CoreCats fully on-chain 24x24 SVG.`
+Pilot-specific deploy knobs:
+1. `CORECATS_COLLECTION_NAME`
+2. `CORECATS_SYMBOL`
+3. `CORECATS_TOKEN_NAME_PREFIX`
+4. `CORECATS_TOKEN_DESCRIPTION`
+5. `CORECATS_SUPERRARE_PLACEHOLDER=1`
 
-If the project chooses this fallback path, a small implementation pass is required to make those human-facing labels configurable without changing the mint/security logic.
+These values are consumed by `foxar/script/CoreCatsDeploy.s.sol`.
+
+The intended use is:
+1. keep mint/security/randomness/supply logic unchanged
+2. change only pilot-facing labels and description
+3. optionally replace the two logo-bearing superrare visuals with neutral placeholder art during the pilot
 
 ## Recommended Sequence If Fallback Is Used
-1. Add pilot-specific label configurability only where needed.
+1. Set pilot-specific deploy env values only where needed.
+   - example:
+     - `CORECATS_COLLECTION_NAME=CCATTEST`
+     - `CORECATS_SYMBOL=CCATTEST`
+     - `CORECATS_TOKEN_NAME_PREFIX=CCATTEST`
+     - `CORECATS_TOKEN_DESCRIPTION=CCATTEST pilot for self-only CorePass mainnet validation. Non-official release.`
+     - `CORECATS_SUPERRARE_PLACEHOLDER=1`
 2. Deploy the self-only pilot contract on mainnet.
 3. Validate:
    - CorePass sign

@@ -45,7 +45,9 @@ contract CoreCats is CRC721, Ownable {
     event MintFinalized(address indexed minter, address indexed finalizer, uint8 quantity, bytes32 entropy);
     event TokenAssigned(address indexed minter, uint256 indexed tokenId, uint256 indexed drawIndex, bytes32 entropy);
 
-    constructor() CRC721("CoreCats", "CCAT") {
+    constructor(string memory collectionName_, string memory collectionSymbol_) CRC721(collectionName_, collectionSymbol_) {
+        require(bytes(collectionName_).length != 0, "name required");
+        require(bytes(collectionSymbol_).length != 0, "symbol required");
         signer = msg.sender;
     }
 

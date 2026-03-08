@@ -24,7 +24,7 @@ contract CoreCatsTest is Test {
     address private _minter;
 
     function setUp() public {
-        _coreCats = new CoreCats();
+        _coreCats = new CoreCats("CoreCats", "CCAT");
         (_signer, _signerKey) = makeAddrAndKey("signer");
         _minter = makeAddr("minter");
         _coreCats.setSigner(_signer);
@@ -260,6 +260,13 @@ contract CoreCatsTest is Test {
         vm.expectRevert(bytes("commit hash required"));
         vm.prank(_minter);
         _coreCats.commitMint(1, bytes32(0), 80, expiry, sig);
+    }
+
+    function testConstructorSupportsCustomCollectionLabels() public {
+        CoreCats custom = new CoreCats("CCATTEST", "CCATTEST");
+
+        assertEq(custom.name(), "CCATTEST");
+        assertEq(custom.symbol(), "CCATTEST");
     }
 
     function _commitAndFinalize(address to, address finalizer, uint8 quantity, uint256 nonce, bytes32 seed) internal {
