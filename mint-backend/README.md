@@ -103,6 +103,13 @@ bash /root/core-cats/mint-backend/systemd/contabo-mainnet-smoke.sh
 
 This smoke check verifies `healthz`, shared-secret auth, and SQLite-backed session CRUD without issuing mint signatures or broadcasting finalize transactions.
 
+For the public HTTPS frontend, the recommended default is Caddy:
+
+1. reverse-proxy example:
+   - `reverse-proxy/Caddyfile.example`
+2. public origin check:
+   - `bash /root/core-cats/mint-backend/systemd/contabo-public-origin-check.sh https://<backend-origin>`
+
 ## Expected production placement
 
 1. Contabo Linux host

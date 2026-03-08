@@ -121,9 +121,11 @@ The first SQLite schema should cover:
 1. stage Contabo production secrets:
    - Wallet 3 raw signer secret
    - Wallet 4 finalizer keystore + password file
-2. finalize the HTTPS exposure method for the Contabo backend
+2. expose the backend through HTTPS on Contabo
+   - recommended default: Caddy with `mint-backend/reverse-proxy/Caddyfile.example`
 3. deploy the Contabo backend with the production env file and systemd unit
-4. wire Vercel production env to external backend mode for `closed` mainnet publication
-5. inject the real mainnet CoreCats contract address into Vercel after deploy
-6. promote `closed -> canary -> public` only after the intended mainnet checks succeed
-7. keep public browsing on Vercel with no production mint secrets
+4. verify both the local backend and the public HTTPS origin
+5. wire Vercel production env to external backend mode for `closed` mainnet publication
+6. inject the real mainnet CoreCats contract address into Vercel after deploy
+7. promote `closed -> canary -> public` only after the intended mainnet checks succeed
+8. keep public browsing on Vercel with no production mint secrets

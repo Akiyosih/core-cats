@@ -51,6 +51,7 @@ Run these steps in order.
 1. Keep `NEXT_PUBLIC_LAUNCH_STATE=closed`.
 2. Set `CORECATS_BACKEND_MODE=proxy`.
 3. Set `CORECATS_BACKEND_BASE_URL` to the HTTPS Contabo backend origin.
+   - confirm first that `bash /root/core-cats/mint-backend/systemd/contabo-public-origin-check.sh https://<backend-origin>` succeeds on the Contabo host
 4. Set `CORECATS_BACKEND_SHARED_SECRET` to the same random secret used by Contabo.
 5. Set `NEXT_PUBLIC_CORE_CHAIN_ID=1`, `CORE_NETWORK_ID=1`, and `CORE_NETWORK_NAME=mainnet`.
 6. Set `NEXT_PUBLIC_CORE_EXPLORER_BASE_URL=https://blockindex.net`.

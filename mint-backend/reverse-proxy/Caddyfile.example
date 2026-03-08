@@ -1,0 +1,23 @@
+# Recommended Contabo HTTPS frontend for the Core Cats mint backend.
+#
+# Replace `mint-backend.example.com` with the real backend subdomain before use.
+# Source references:
+# - reverse_proxy: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy
+# - automatic HTTPS: https://caddyserver.com/docs/caddyfile/options
+
+mint-backend.example.com {
+  encode zstd gzip
+
+  header {
+    Strict-Transport-Security "max-age=31536000"
+    X-Content-Type-Options "nosniff"
+  }
+
+  @backend_api path /api/*
+  reverse_proxy @backend_api 127.0.0.1:8787
+
+  @healthz path /healthz
+  reverse_proxy @healthz 127.0.0.1:8787
+
+  respond 404
+}

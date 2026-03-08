@@ -42,6 +42,8 @@ This avoids introducing extra framework/runtime complexity before mainnet canary
 3. env example: `mint-backend/systemd/corecats-mint-backend.env.example`
 4. preflight checker: `mint-backend/systemd/contabo-mainnet-preflight.sh`
 5. post-start smoke checker: `mint-backend/systemd/contabo-mainnet-smoke.sh`
+6. Caddy example: `mint-backend/reverse-proxy/Caddyfile.example`
+7. public origin checker: `mint-backend/systemd/contabo-public-origin-check.sh`
 
 ## Vercel-side inputs for proxy/storage mode
 
@@ -55,6 +57,26 @@ This avoids introducing extra framework/runtime complexity before mainnet canary
 The external backend must be reachable from Vercel through HTTPS.
 
 Using a plain HTTP IP endpoint on the public internet is not acceptable for production mint operations.
+
+## Recommended HTTPS Exposure Method
+
+Recommended default:
+
+1. assign a dedicated backend subdomain such as `mint-backend.<your-domain>`
+2. point that DNS record at the Contabo host
+3. front the local backend with Caddy on ports `80/443`
+4. keep the Python backend bound to `127.0.0.1:8787`
+
+Recommended repo-side example:
+
+1. `mint-backend/reverse-proxy/Caddyfile.example`
+
+Source references:
+
+1. Caddy `reverse_proxy` directive:
+   - https://caddyserver.com/docs/caddyfile/directives/reverse_proxy
+2. Caddy automatic HTTPS behavior:
+   - https://caddyserver.com/docs/caddyfile/options
 
 ## Next deployment tasks
 
@@ -94,8 +116,16 @@ Using a plain HTTP IP endpoint on the public internet is not acceptable for prod
    - `journalctl -u corecats-mint-backend -n 100 --no-pager`
    - `curl -sS http://127.0.0.1:8787/healthz`
    - `bash /root/core-cats/mint-backend/systemd/contabo-mainnet-smoke.sh`
-12. point Vercel server routes to backend proxy mode
-13. test `closed -> canary` before any public mint
+12. expose the backend through HTTPS:
+   - choose a dedicated backend subdomain and point it at Contabo
+   - install Caddy on the Contabo host
+   - copy `mint-backend/reverse-proxy/Caddyfile.example` to `/etc/caddy/Caddyfile`
+   - replace `mint-backend.example.com` with the real backend subdomain
+   - `systemctl reload caddy`
+13. verify the public backend origin:
+   - `bash /root/core-cats/mint-backend/systemd/contabo-public-origin-check.sh https://<backend-origin>`
+14. point Vercel server routes to backend proxy mode
+15. test `closed -> canary` before any public mint
 
 ## Preflight checker behavior
 
@@ -121,6 +151,16 @@ The checker in `mint-backend/systemd/contabo-mainnet-smoke.sh` verifies:
 3. internal session `PUT -> GET -> DELETE` works against SQLite
 
 This script does not issue mint signatures or submit on-chain finalize transactions.
+
+## Public origin checker behavior
+
+The checker in `mint-backend/systemd/contabo-public-origin-check.sh` verifies:
+
+1. the backend origin is HTTPS, not plain HTTP
+2. `GET /healthz` succeeds through the public reverse proxy
+3. the returned values still show `mainnet` and chain id `1`
+
+This script does not require the backend shared secret.
 
 ## Startup guard
 
