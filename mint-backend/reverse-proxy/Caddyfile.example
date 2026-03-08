@@ -13,11 +13,15 @@ mint-backend.example.com {
     X-Content-Type-Options "nosniff"
   }
 
-  @backend_api path /api/*
-  reverse_proxy @backend_api 127.0.0.1:8787
+  handle /healthz {
+    reverse_proxy 127.0.0.1:8787
+  }
 
-  @healthz path /healthz
-  reverse_proxy @healthz 127.0.0.1:8787
+  handle /api/* {
+    reverse_proxy 127.0.0.1:8787
+  }
 
-  respond 404
+  handle {
+    respond 404
+  }
 }
