@@ -1,0 +1,46 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+
+import { validateProductionEnv } from "./check-production-env-lib.mjs";
+
+function buildBaseEnv(overrides = {}) {
+  return {
+    NEXT_PUBLIC_LAUNCH_STATE: "closed",
+    NEXT_PUBLIC_CORE_CHAIN_ID: "1",
+    CORE_NETWORK_ID: "1",
+    CORE_NETWORK_NAME: "mainnet",
+    NEXT_PUBLIC_CORE_EXPLORER_BASE_URL: "https://blockindex.net",
+    NEXT_PUBLIC_CORECATS_ADDRESS: "replace-with-mainnet-corecats-address",
+    CORECATS_BACKEND_MODE: "proxy",
+    CORECATS_BACKEND_BASE_URL: "https://backend.example.com",
+    CORECATS_BACKEND_SHARED_SECRET: "super-secret-value",
+    CORECATS_RELAYER_ENABLED: "true",
+    ...overrides,
+  };
+}
+
+test("closed launch accepts placeholder contract address", () => {
+  const result = validateProductionEnv(buildBaseEnv());
+  assert.deepEqual(result.errors, []);
+});
+
+test("canary launch rejects placeholder contract address", () => {
+  const result = validateProductionEnv(buildBaseEnv({ NEXT_PUBLIC_LAUNCH_STATE: "canary" }));
+  assert.match(result.errors.join("\n"), /real mainnet contract address/);
+});
+
+test("rejects missing backend https origin", () => {
+  const result = validateProductionEnv(buildBaseEnv({ CORECATS_BACKEND_BASE_URL: "http://backend.example.com" }));
+  assert.match(result.errors.join("\n"), /must start with https:\/\//);
+});
+
+test("rejects private keys in Vercel env", () => {
+  const result = validateProductionEnv(buildBaseEnv({ MINT_SIGNER_PRIVATE_KEY: "deadbeef" }));
+  assert.match(result.errors.join("\n"), /MINT_SIGNER_PRIVATE_KEY must not be present/);
+});
+
+test("warns when relayer flag is not true", () => {
+  const result = validateProductionEnv(buildBaseEnv({ CORECATS_RELAYER_ENABLED: "false" }));
+  assert.equal(result.errors.length, 0);
+  assert.match(result.warnings.join("\n"), /manual finalize fallback/);
+});

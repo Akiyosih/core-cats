@@ -28,6 +28,10 @@ It assumes:
 ## Recommended Vercel Environment
 Use `web/.env.production.example` as the template.
 
+Before copying the values into Vercel, stage them locally and run:
+
+`node ./scripts/check-production-env.mjs ./.env.production.local`
+
 Required values:
 1. `NEXT_PUBLIC_LAUNCH_STATE=closed`
 2. `NEXT_PUBLIC_CORE_CHAIN_ID=1`

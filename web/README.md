@@ -105,6 +105,18 @@ The external mint backend owns:
 See `../docs/MINT_BACKEND_ARCHITECTURE.md`.
 Use `./.env.production.example` and `../docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md` for the Vercel-side mainnet switch.
 
+Before copying the final values into Vercel, stage them in a local file such as `.env.production.local` and run:
+
+```bash
+node ./scripts/check-production-env.mjs ./.env.production.local
+```
+
+This catches obvious mainnet cutover mistakes such as:
+1. Devin fallback addresses
+2. non-HTTPS backend origin
+3. placeholder shared secret values
+4. accidental private key placement in the Vercel env
+
 ## Current Local Validation Limit
 
 In the active local user environment, the available CorePass app exposes only a mainnet `cb...` account and does not expose a Devin testnet `ab...` account. That means:
