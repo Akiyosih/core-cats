@@ -41,7 +41,7 @@ is_placeholder() {
   [[ -z "${value}" || "${value}" == "replace-me" || "${value}" == replace-with-* ]]
 }
 
-if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
+if [[ "${ALLOW_NON_ROOT_FOR_TESTS:-0}" != "1" && "${EUID:-$(id -u)}" -ne 0 ]]; then
   fail "Run as root on the Contabo host"
 fi
 

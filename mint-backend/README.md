@@ -85,6 +85,16 @@ When `CORECATS_BACKEND_PROFILE=production` is set, the backend now fails closed 
 
 This is intentional. The goal is to prevent a Contabo service from silently starting in a misconfigured Devin-like state.
 
+## Verification
+
+From `mint-backend/`, run:
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+This covers the production config guardrails and the Contabo preflight checker with repo-local fixtures.
+
 ## Expected production placement
 
 1. Contabo Linux host
