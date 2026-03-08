@@ -4,6 +4,9 @@ A fully on-chain NFT project on Core Blockchain.
 ## Repository Role
 - Active implementation source of truth: this repository (`core-cats`)
 - Reference archive repository: `core-cats-eth` (frozen reference track)
+- Active contract workspace: `foxar/`
+- Active backend workspace: `mint-backend/`
+- Active web workspace: `web/`
 
 ## Preview
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid_teaser.png)
@@ -34,13 +37,16 @@ Representative random sample grid from the current 1,000-cat artwork review set.
 - `manifests/final_1000_preview_consistency_v1.json`
 - `manifests/trait_display_labels_v1.json`
 
-## Imported Reference Implementation (from `core-cats-eth`)
+## Imported Reference Implementation (archive-only, from `core-cats-eth`)
 - `contracts/reference_eth/CoreCats.sol`
 - `contracts/reference_eth/CoreCatsMetadataRenderer.sol`
 - `contracts/reference_eth/CoreCatsOnchainData.sol`
 - `scripts/reference_eth/generate_onchain_data.py`
 - `scripts/reference_eth/verify_renderer_manifest_match.mjs`
 - `scripts/reference_eth/verify_renderer_pixels.mjs`
+
+Root-level legacy scaffolding that could be mistaken for the active Core launch path has been removed.
+Public readers should treat `foxar/` as the contract source/build/deploy workspace.
 
 - 🧱 Built with Solidity for the Core ecosystem
 - 🎨 Features 100% on-chain SVG artwork

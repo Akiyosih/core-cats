@@ -51,6 +51,9 @@ Default recommendation:
 ## Role of This Repository (`core-cats`)
 - Core production-facing repository and active implementation track.
 - Core testnet and mainnet deployment work is executed here.
+- Active contract source/build/deploy workspace: `foxar/`
+- Active mint backend workspace: `mint-backend/`
+- Active web/publication workspace: `web/`
 - Direct Core implementation has already succeeded on the active path.
 - Current remaining work is:
   - mainnet readiness
@@ -58,9 +61,18 @@ Default recommendation:
   - mainnet closed launch
   - canary validation
   - public launch
-- Includes imported reference implementation snippets under:
+- Root-level `contracts/` no longer carries a parallel legacy launch implementation.
+- Imported archive/reference snippets remain under:
   - `contracts/reference_eth/`
   - `scripts/reference_eth/`
+
+## Repository Clarity Rule
+Public readers should not be asked to guess between multiple deploy paths in the same repository.
+
+Therefore:
+1. active Core launch code should live under the documented workspaces above
+2. archive/reference imports may remain when they are explicitly labeled
+3. obsolete legacy deploy scripts and starter-template files should be removed once they are no longer part of the active path
 
 ## Mirrored Artifact Snapshot (from `core-cats-eth`)
 - Local path: `manifests/`
