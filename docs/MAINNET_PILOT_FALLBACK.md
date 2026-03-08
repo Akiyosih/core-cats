@@ -101,6 +101,8 @@ The intended use is:
 6. Run one official final canary on the official contract.
 7. Open public mint only after that official canary succeeds.
 
+For the exact operator sequence, use `docs/MAINNET_PILOT_DEPLOY_RUNBOOK.md`.
+
 ## Decision Rule
 Use this fallback only if all of the following are true:
 1. CorePass testnet validation is still unavailable in time.

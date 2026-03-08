@@ -7,12 +7,18 @@ import "corezeppelin-contracts/utils/cryptography/EDDSA.sol";
 
 contract CoreCatsCommitMintScript is Script {
     function run() external returns (bytes32 commitHash, uint256 nonce, uint256 expiry) {
-        string memory deployerPrivateKey = vm.envString("DEPLOYER_PRIVATE_KEY");
-        address minter = vm.rememberKey(deployerPrivateKey);
+        string memory deployerPrivateKey = vm.envOr("DEPLOYER_PRIVATE_KEY", string(""));
+        address minter;
 
         address coreCatsAddress = vm.envAddress("CORECATS_ADDRESS");
         uint256 quantity = vm.envOr("MINT_QUANTITY", uint256(1));
         uint8 quantityUint8 = uint8(quantity);
+
+        if (bytes(deployerPrivateKey).length != 0) {
+            minter = vm.rememberKey(deployerPrivateKey);
+        } else {
+            minter = vm.envAddress("MINTER_ADDRESS");
+        }
 
         nonce = vm.envOr("MINT_NONCE", uint256(keccak256(abi.encodePacked(block.timestamp, minter, quantity))));
         expiry = vm.envOr("MINT_EXPIRY", block.timestamp + 1 days);
@@ -22,7 +28,11 @@ contract CoreCatsCommitMintScript is Script {
         bytes32 message = keccak256(abi.encodePacked(minter, quantity, nonce, expiry, signingChainId, coreCatsAddress));
         bytes memory signature = _resolveSignature(deployerPrivateKey, message);
 
-        vm.startBroadcast(deployerPrivateKey);
+        if (bytes(deployerPrivateKey).length != 0) {
+            vm.startBroadcast(deployerPrivateKey);
+        } else {
+            vm.startBroadcast();
+        }
         CoreCats(coreCatsAddress).commitMint(quantityUint8, commitHash, nonce, expiry, signature);
         vm.stopBroadcast();
     }

@@ -79,6 +79,7 @@ Version: v3.1
 4. The pilot must remain clearly distinguishable from the official release in human-facing labels and documentation.
 5. Pilot success does not remove the need for an official final canary on the real CoreCats contract.
 6. See `docs/MAINNET_PILOT_FALLBACK.md` for the exact conditions and constraints.
+7. If chosen, execute the operator steps from `docs/MAINNET_PILOT_DEPLOY_RUNBOOK.md`.
 
 ## 2.5 CorePass Scope For The Current Release
 1. The current release target is the CorePass **Protocol-direct** path:

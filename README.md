@@ -19,6 +19,7 @@ Representative random sample grid from the current 1,000-cat artwork review set.
 - [Web UI / Mint DApp Spec](docs/WEB_UI_MINT_DAPP_SPEC.md)
 - [Core Blockchain Work Procedure / Launch Path](docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
 - [Mainnet Closed Launch Runbook](docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md)
+- [Mainnet Pilot Deploy Runbook](docs/MAINNET_PILOT_DEPLOY_RUNBOOK.md)
 - [Core Testnet Deploy Runbook](docs/CORE_TESTNET_DEPLOY_RUNBOOK.md)
 - [Public Trust + Privacy Notes](docs/TRUST_AND_PRIVACY_SURFACE.md)
 - [Freeze / Renounce Policy](docs/FREEZE_AND_RENOUNCE_POLICY.md)
