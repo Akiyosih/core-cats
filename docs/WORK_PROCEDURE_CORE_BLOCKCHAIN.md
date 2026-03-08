@@ -254,3 +254,6 @@ Exit criteria:
 6. Worklog requirement:
    - every major step must write a short note in `docs/worklogs/`
    - include command summary, result, and next action
+7. Direct Contabo runtime changes:
+   - after any direct change on the Contabo host, refresh the timestamped live-state snapshot in `.private/core-cats-mainnet-ops.md`
+   - record the active commit SHA, service state, backend origin, `healthz` summary, wallet staging state, and current blockers
