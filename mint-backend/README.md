@@ -95,6 +95,14 @@ python3 -m unittest discover -s tests
 
 This covers the production config guardrails and the Contabo preflight checker with repo-local fixtures.
 
+On the Contabo host after `systemctl enable --now corecats-mint-backend`, run:
+
+```bash
+bash /root/core-cats/mint-backend/systemd/contabo-mainnet-smoke.sh
+```
+
+This smoke check verifies `healthz`, shared-secret auth, and SQLite-backed session CRUD without issuing mint signatures or broadcasting finalize transactions.
+
 ## Expected production placement
 
 1. Contabo Linux host

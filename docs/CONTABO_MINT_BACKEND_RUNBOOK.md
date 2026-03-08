@@ -41,6 +41,7 @@ This avoids introducing extra framework/runtime complexity before mainnet canary
 2. service example: `mint-backend/systemd/corecats-mint-backend.service.example`
 3. env example: `mint-backend/systemd/corecats-mint-backend.env.example`
 4. preflight checker: `mint-backend/systemd/contabo-mainnet-preflight.sh`
+5. post-start smoke checker: `mint-backend/systemd/contabo-mainnet-smoke.sh`
 
 ## Vercel-side inputs for proxy/storage mode
 
@@ -92,6 +93,7 @@ Using a plain HTTP IP endpoint on the public internet is not acceptable for prod
    - `systemctl enable --now corecats-mint-backend`
    - `journalctl -u corecats-mint-backend -n 100 --no-pager`
    - `curl -sS http://127.0.0.1:8787/healthz`
+   - `bash /root/core-cats/mint-backend/systemd/contabo-mainnet-smoke.sh`
 12. point Vercel server routes to backend proxy mode
 13. test `closed -> canary` before any public mint
 
@@ -109,6 +111,16 @@ The checker in `mint-backend/systemd/contabo-mainnet-preflight.sh` fails with no
 8. backend `load_config()` validation fails
 
 This script does not print raw secret values.
+
+## Post-start smoke checker behavior
+
+The checker in `mint-backend/systemd/contabo-mainnet-smoke.sh` verifies:
+
+1. `/healthz` reports `mainnet` and chain id `1`
+2. the backend accepts the shared secret from `/etc/corecats-mint-backend.env`
+3. internal session `PUT -> GET -> DELETE` works against SQLite
+
+This script does not issue mint signatures or submit on-chain finalize transactions.
 
 ## Startup guard
 
