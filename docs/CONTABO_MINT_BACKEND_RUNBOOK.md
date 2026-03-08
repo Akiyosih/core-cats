@@ -40,6 +40,7 @@ This avoids introducing extra framework/runtime complexity before mainnet canary
 1. backend code: `mint-backend/`
 2. service example: `mint-backend/systemd/corecats-mint-backend.service.example`
 3. env example: `mint-backend/systemd/corecats-mint-backend.env.example`
+4. preflight checker: `mint-backend/systemd/contabo-mainnet-preflight.sh`
 
 ## Vercel-side inputs for proxy/storage mode
 
@@ -58,8 +59,16 @@ Using a plain HTTP IP endpoint on the public internet is not acceptable for prod
 
 1. choose the HTTPS exposure method for Contabo backend
 2. copy `core-cats` to Contabo
-3. copy `mint-backend/systemd/corecats-mint-backend.env.example` to `/etc/corecats-mint-backend.env`
-4. fill the env file with the real mainnet values:
+3. create target secret directories:
+   - `mkdir -p /root/corecats-keystores /root/.secrets /var/lib/corecats-mint-backend`
+4. copy Wallet 4 files to Contabo:
+   - `wallet4_finalizer_mainnet.json -> /root/corecats-keystores/wallet4_finalizer_mainnet.json`
+   - `wallet4_finalizer_mainnet.password -> /root/.secrets/wallet4_finalizer_mainnet.password`
+5. lock down secret file permissions:
+   - `chmod 600 /root/corecats-keystores/wallet4_finalizer_mainnet.json`
+   - `chmod 600 /root/.secrets/wallet4_finalizer_mainnet.password`
+6. copy `mint-backend/systemd/corecats-mint-backend.env.example` to `/etc/corecats-mint-backend.env`
+7. fill the env file with the real mainnet values:
    - `CORECATS_BACKEND_PROFILE=production`
    - `CORE_RPC_URL=https://xcbapi-arch-mainnet.coreblockchain.net/`
    - `CORE_CHAIN_ID=1`
@@ -70,13 +79,36 @@ Using a plain HTTP IP endpoint on the public internet is not acceptable for prod
    - `MINT_SIGNER_PRIVATE_KEY=<wallet3-private-key>`
    - either `FINALIZER_PRIVATE_KEY=<wallet4-private-key>`
    - or:
-     - `FINALIZER_KEYSTORE_PATH=<wallet4-utc-file>`
-     - `FINALIZER_PASSWORD_FILE=<wallet4-password-file>`
-5. install the systemd unit
-6. start backend locally on Contabo
-7. confirm `GET /healthz` reports mainnet values, not devin values
-8. point Vercel server routes to backend proxy mode
-9. test `closed -> canary` before any public mint
+     - `FINALIZER_KEYSTORE_PATH=/root/corecats-keystores/wallet4_finalizer_mainnet.json`
+     - `FINALIZER_PASSWORD_FILE=/root/.secrets/wallet4_finalizer_mainnet.password`
+8. set env-file permission:
+   - `chmod 600 /etc/corecats-mint-backend.env`
+9. install the systemd unit:
+   - `cp /root/core-cats/mint-backend/systemd/corecats-mint-backend.service.example /etc/systemd/system/corecats-mint-backend.service`
+   - `systemctl daemon-reload`
+10. run preflight before service start:
+   - `bash /root/core-cats/mint-backend/systemd/contabo-mainnet-preflight.sh`
+11. start backend and verify health:
+   - `systemctl enable --now corecats-mint-backend`
+   - `journalctl -u corecats-mint-backend -n 100 --no-pager`
+   - `curl -sS http://127.0.0.1:8787/healthz`
+12. point Vercel server routes to backend proxy mode
+13. test `closed -> canary` before any public mint
+
+## Preflight checker behavior
+
+The checker in `mint-backend/systemd/contabo-mainnet-preflight.sh` fails with non-zero status if:
+
+1. `/etc/corecats-mint-backend.env` or systemd unit is missing
+2. env file permission is not `600`
+3. mainnet constraints are not met (`network/chain/rpc/explorer`)
+4. `CORECATS_BACKEND_SHARED_SECRET`, `CORECATS_ADDRESS`, or `MINT_SIGNER_PRIVATE_KEY` is missing/placeholder
+5. Wallet 4 keystore mode is selected but keystore/password files are missing or not `600`
+6. neither finalizer raw key mode nor keystore mode is configured
+7. `SPARK_PATH` / `CORECATS_FOXAR_DIR` / DB directory is invalid
+8. backend `load_config()` validation fails
+
+This script does not print raw secret values.
 
 ## Startup guard
 
