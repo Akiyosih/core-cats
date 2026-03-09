@@ -68,6 +68,9 @@ export DEPLOYER_ADDRESS="<deployer-address>"
 export SIGNER_ADDRESS="<signer-address>"
 ```
 
+`DEPLOYER_ADDRESS` must match the keystore-resolved deployer address when using `--keystore` / `--password-file`.
+Otherwise Foxar will fall back to its default broadcast sender instead of the intended deployer.
+
 Before any simulation or broadcast, record:
 
 ```bash
@@ -281,3 +284,5 @@ Record separately from the official release:
    - https://github.com/core-coin/foxar/blob/master/utils/src/rpc.rs
 3. Blockindex mainnet base URL family:
    - https://github.com/core-coin/corebc-rs/blob/master/corebc-core/src/types/network.rs
+4. `spark-std` broadcast overloads:
+   - https://github.com/foundry-rs/forge-std/blob/master/src/Vm.sol

@@ -8,6 +8,7 @@ import "corezeppelin-contracts/utils/cryptography/EDDSA.sol";
 contract CoreCatsCommitMintScript is Script {
     function run() external returns (bytes32 commitHash, uint256 nonce, uint256 expiry) {
         string memory deployerPrivateKey = vm.envOr("DEPLOYER_PRIVATE_KEY", string(""));
+        address deployerAddress = vm.envOr("DEPLOYER_ADDRESS", address(0));
         address minter;
 
         address coreCatsAddress = vm.envAddress("CORECATS_ADDRESS");
@@ -16,6 +17,8 @@ contract CoreCatsCommitMintScript is Script {
 
         if (bytes(deployerPrivateKey).length != 0) {
             minter = vm.rememberKey(deployerPrivateKey);
+        } else if (deployerAddress != address(0)) {
+            minter = vm.envOr("MINTER_ADDRESS", deployerAddress);
         } else {
             minter = vm.envAddress("MINTER_ADDRESS");
         }
@@ -30,6 +33,8 @@ contract CoreCatsCommitMintScript is Script {
 
         if (bytes(deployerPrivateKey).length != 0) {
             vm.startBroadcast(deployerPrivateKey);
+        } else if (deployerAddress != address(0)) {
+            vm.startBroadcast(deployerAddress);
         } else {
             vm.startBroadcast();
         }

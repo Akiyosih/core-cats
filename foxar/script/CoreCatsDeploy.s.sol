@@ -9,6 +9,7 @@ import "../src/CoreCatsMetadataRenderer.sol";
 contract CoreCatsDeployScript is Script {
     function run() external returns (CoreCats coreCats, CoreCatsOnchainData data, CoreCatsMetadataRenderer renderer) {
         string memory deployerPrivateKey = vm.envOr("DEPLOYER_PRIVATE_KEY", string(""));
+        address deployerAddress = vm.envOr("DEPLOYER_ADDRESS", address(0));
         string memory collectionName = vm.envOr("CORECATS_COLLECTION_NAME", string("CoreCats"));
         string memory collectionSymbol = vm.envOr("CORECATS_SYMBOL", string("CCAT"));
         string memory tokenNamePrefix = vm.envOr("CORECATS_TOKEN_NAME_PREFIX", collectionName);
@@ -18,6 +19,8 @@ contract CoreCatsDeployScript is Script {
 
         if (bytes(deployerPrivateKey).length != 0) {
             vm.startBroadcast(deployerPrivateKey);
+        } else if (deployerAddress != address(0)) {
+            vm.startBroadcast(deployerAddress);
         } else {
             vm.startBroadcast();
         }

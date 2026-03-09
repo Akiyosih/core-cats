@@ -7,6 +7,7 @@ import "../src/CoreCats.sol";
 contract CoreCatsFinalizeMintScript is Script {
     function run() external {
         string memory deployerPrivateKey = vm.envOr("DEPLOYER_PRIVATE_KEY", string(""));
+        address deployerAddress = vm.envOr("DEPLOYER_ADDRESS", address(0));
         address coreCatsAddress = vm.envAddress("CORECATS_ADDRESS");
         address minter;
 
@@ -14,6 +15,9 @@ contract CoreCatsFinalizeMintScript is Script {
             address defaultMinter = vm.rememberKey(deployerPrivateKey);
             minter = vm.envOr("MINTER_ADDRESS", defaultMinter);
             vm.startBroadcast(deployerPrivateKey);
+        } else if (deployerAddress != address(0)) {
+            minter = vm.envOr("MINTER_ADDRESS", deployerAddress);
+            vm.startBroadcast(deployerAddress);
         } else {
             minter = vm.envAddress("MINTER_ADDRESS");
             vm.startBroadcast();
