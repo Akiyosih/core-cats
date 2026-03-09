@@ -49,9 +49,9 @@ These preserve mint/security/randomness/supply while making the pilot visibly no
 
 If using the real backend path, do not put Wallet 3 raw signer material into this repository.
 
-## PC2 Readiness Gate
-Use the Windows PC2 path only after all of the following are true:
-1. `core-cats` is a clean clone on PC2 and `git status` is clean.
+## Operator Readiness Gate
+Use the dedicated deploy workstation path only after all of the following are true:
+1. `core-cats` is a clean clone on the deploy workstation and `git status` is clean.
 2. `git submodule update --init --recursive` has completed successfully.
 3. `foxar/` has passed:
 
@@ -61,14 +61,14 @@ spark build
 spark test
 ```
 
-4. Wallet 2 is present on PC2 only as:
+4. Wallet 2 is present on the deploy workstation only as:
    - keystore file
    - password file
-5. Wallet 3 raw signer material is not present on PC2.
+5. Wallet 3 raw signer material is not present on the deploy workstation.
 
 This gate is important because the pilot deploy should fail only on real mainnet conditions, not on a half-prepared local workspace.
 
-## Recommended PC2 Session Setup
+## Recommended Session Setup
 From `core-cats/foxar`, load the non-secret pilot labels first:
 
 ```bash
@@ -77,12 +77,12 @@ source ./.env.mainnet-pilot.example
 set +a
 ```
 
-Then export the PC2-local deploy inputs:
+Then export the local deploy inputs:
 
 ```bash
 export CORE_MAINNET_RPC_URL="<mainnet-rpc-url>"
-export WALLET2_KEYSTORE_PATH="/c/corecats-pc2/secrets/<wallet2-keystore-file>"
-export WALLET2_PASSWORD_FILE="/c/corecats-pc2/secrets/<wallet2-password-file>"
+export WALLET2_KEYSTORE_PATH="<local-path-to-wallet2-keystore>"
+export WALLET2_PASSWORD_FILE="<local-path-to-wallet2-password-file>"
 export WALLET2_DEPLOYER_ADDRESS="<wallet2-address>"
 export WALLET3_SIGNER_ADDRESS="<wallet3-address>"
 ```
