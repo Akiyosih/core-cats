@@ -49,25 +49,6 @@ These preserve mint/security/randomness/supply while making the pilot visibly no
 
 If using the real backend path, do not put Wallet 3 raw signer material into this repository.
 
-## Operator Readiness Gate
-Use the dedicated deploy workstation path only after all of the following are true:
-1. `core-cats` is a clean clone on the deploy workstation and `git status` is clean.
-2. `git submodule update --init --recursive` has completed successfully.
-3. `foxar/` has passed:
-
-```bash
-spark clean
-spark build
-spark test
-```
-
-4. Wallet 2 is present on the deploy workstation only as:
-   - keystore file
-   - password file
-5. Wallet 3 raw signer material is not present on the deploy workstation.
-
-This gate is important because the pilot deploy should fail only on real mainnet conditions, not on a half-prepared local workspace.
-
 ## Recommended Session Setup
 From `core-cats/foxar`, load the non-secret pilot labels first:
 
@@ -107,8 +88,6 @@ spark test
 ```
 
 Expected: tests pass before any mainnet simulation or broadcast.
-
-At this point, the next operator step is the dry run itself, not more local setup.
 
 ## Dry Run (No Broadcast)
 Run the pilot deploy script once without `--broadcast`.
