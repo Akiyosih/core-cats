@@ -1,6 +1,18 @@
 [profile.default]
 src = "src"
+test = "test"
+script = "script"
 out = "out"
 libs = ["lib"]
+remappings = [
+    "corezeppelin-contracts/=lib/corezeppelin-contracts/src/",
+    "ds-test/=lib/spark-std/lib/ds-test/src/",
+    "erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+    "forge-std/=lib/openzeppelin-contracts/lib/forge-std/src/",
+    "halmos-cheatcodes/=lib/openzeppelin-contracts/lib/halmos-cheatcodes/src/",
+    "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+    "solmate/=lib/solmate/src/",
+    "spark-std/=lib/spark-std/src/",
+]
 
 # See more config options https://github.com/foxar-rs/foxar/tree/master/config
