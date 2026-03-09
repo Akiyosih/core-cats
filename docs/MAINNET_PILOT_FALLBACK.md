@@ -86,7 +86,7 @@ The intended use is:
      - `CORECATS_COLLECTION_NAME=CCATTEST`
      - `CORECATS_SYMBOL=CCATTEST`
      - `CORECATS_TOKEN_NAME_PREFIX=CCATTEST`
-     - `CORECATS_TOKEN_DESCRIPTION=CCATTEST pilot for self-only CorePass mainnet validation. Non-official release.`
+     - `CORECATS_TOKEN_DESCRIPTION="CCATTEST pilot for self-only CorePass mainnet validation. Non-official release."`
      - `CORECATS_SUPERRARE_PLACEHOLDER=1`
 2. Deploy the self-only pilot contract on mainnet.
 3. Validate:
