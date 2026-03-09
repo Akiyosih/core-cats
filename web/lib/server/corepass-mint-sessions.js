@@ -207,9 +207,65 @@ async function buildCommitRequest(request, session) {
   session.updatedAt = nowIso();
 }
 
+function createFinalizeState(previous = {}) {
+  return {
+    status: previous.status || "awaiting_finalize",
+    data: previous.data || "",
+    desktopUri: previous.desktopUri || "",
+    mobileUri: previous.mobileUri || "",
+    qrDataUrl: previous.qrDataUrl || "",
+    txHash: previous.txHash || "",
+    submittedAt: previous.submittedAt || "",
+    confirmedAt: previous.confirmedAt || "",
+    mode: previous.mode || "manual",
+    lastError: previous.lastError || "",
+  };
+}
+
+function isFinalizeAddressEncodingError(error) {
+  const message = String(error?.message || "").toLowerCase();
+  return error?.code === "INVALID_ARGUMENT" || message.includes("invalid address");
+}
+
+export function tryEncodeFinalizeMintData(minter) {
+  try {
+    return {
+      data: mintInterface.encodeFunctionData("finalizeMint", [minter]),
+      manualAvailable: true,
+      error: "",
+    };
+  } catch (error) {
+    if (isFinalizeAddressEncodingError(error)) {
+      return {
+        data: "",
+        manualAvailable: false,
+        error: error.message,
+      };
+    }
+    throw error;
+  }
+}
+
 async function buildFinalizeRequest(request, session) {
   const meta = sessionPublicMeta();
-  const data = mintInterface.encodeFunctionData("finalizeMint", [session.minter]);
+  const finalize = createFinalizeState(session.finalize);
+  const encoded = tryEncodeFinalizeMintData(session.minter);
+
+  if (!encoded.manualAvailable) {
+    session.finalize = {
+      ...finalize,
+      mode: meta.relayerEnabled ? "relayer" : finalize.mode,
+    };
+    session.updatedAt = nowIso();
+    appendHistory(session, {
+      step: "finalize",
+      event: "manual_request_unavailable",
+      detail: encoded.error,
+    });
+    return;
+  }
+
+  const data = encoded.data;
   const deadline = Math.floor(session.expiresAtMs / 1000);
   const callbackConn = buildCallbackUrl(request, session.id, "finalize");
   const desktopUri = buildCorePassUri("tx", session.minter, {
@@ -230,16 +286,13 @@ async function buildFinalizeRequest(request, session) {
   });
 
   session.finalize = {
-    status: session.finalize?.status || "awaiting_finalize",
+    ...finalize,
+    status: finalize.status || "awaiting_finalize",
     data,
     desktopUri,
     mobileUri,
     qrDataUrl: await toQrDataUrl(desktopUri),
-    txHash: session.finalize?.txHash || "",
-    submittedAt: session.finalize?.submittedAt || "",
-    confirmedAt: session.finalize?.confirmedAt || "",
-    mode: session.finalize?.mode || "manual",
-    lastError: session.finalize?.lastError || "",
+    mode: finalize.mode === "relayer" ? "manual" : finalize.mode,
   };
   session.updatedAt = nowIso();
 }
@@ -349,6 +402,7 @@ function serializeSession(session) {
           desktopUri: session.finalize.desktopUri,
           mobileUri: session.finalize.mobileUri,
           qrDataUrl: session.finalize.qrDataUrl,
+          manualAvailable: Boolean(session.finalize.desktopUri || session.finalize.mobileUri),
           txHash: session.finalize.txHash || null,
           submittedAt: session.finalize.submittedAt || null,
           confirmedAt: session.finalize.confirmedAt || null,

@@ -289,15 +289,21 @@ export default function MintWorkflow({ config }) {
             </div>
             <div className="mint-action-panel">
               <p className="mint-action-title">Manual CorePass fallback</p>
-              <a className="button button--primary button--wide" href={session.finalize.mobileUri}>
-                Open CorePass Finalize
-              </a>
-              {session.finalize.qrDataUrl ? (
-                <img src={session.finalize.qrDataUrl} alt="Finalize QR" className="mint-qr" />
-              ) : null}
-              <a className="inline-link mono-wrap" href={session.finalize.desktopUri}>
-                Open raw CorePass URI
-              </a>
+              {session.finalize.manualAvailable ? (
+                <>
+                  <a className="button button--primary button--wide" href={session.finalize.mobileUri}>
+                    Open CorePass Finalize
+                  </a>
+                  {session.finalize.qrDataUrl ? (
+                    <img src={session.finalize.qrDataUrl} alt="Finalize QR" className="mint-qr" />
+                  ) : null}
+                  <a className="inline-link mono-wrap" href={session.finalize.desktopUri}>
+                    Open raw CorePass URI
+                  </a>
+                </>
+              ) : (
+                <p className="mint-meta">Manual CorePass finalize is not available for this session. The relayer path remains primary.</p>
+              )}
             </div>
           </div>
         </article>
