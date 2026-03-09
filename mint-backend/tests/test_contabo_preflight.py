@@ -7,6 +7,8 @@ import textwrap
 import unittest
 from pathlib import Path
 
+DUMMY_MAINNET_CORECATS_ADDRESS = "cb111111111111111111111111111111111111111111"
+
 
 class ContaboPreflightTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -53,7 +55,7 @@ class ContaboPreflightTests(unittest.TestCase):
             CORE_NETWORK_ID=1
             CORE_NETWORK_NAME=mainnet
             CORE_EXPLORER_BASE_URL=https://blockindex.net
-            CORECATS_ADDRESS=cb0549f48c325f06bf2be3cfc5d4a94fb402662dbc23
+            CORECATS_ADDRESS={DUMMY_MAINNET_CORECATS_ADDRESS}
             CORECATS_FOXAR_DIR={self.foxar_dir}
             SPARK_PATH={self.spark_path}
             MINT_SIGNER_PRIVATE_KEY={"2" * 114}

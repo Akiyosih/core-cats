@@ -8,6 +8,8 @@ from unittest.mock import patch
 
 from corecats_mint_backend.config import load_config
 
+DUMMY_MAINNET_CORECATS_ADDRESS = "cb111111111111111111111111111111111111111111"
+
 
 class ConfigValidationTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -60,7 +62,7 @@ class ConfigValidationTests(unittest.TestCase):
                 "CORE_NETWORK_ID": "1",
                 "CORE_NETWORK_NAME": "mainnet",
                 "CORE_EXPLORER_BASE_URL": "https://blockindex.net",
-                "CORECATS_ADDRESS": "cb0549f48c325f06bf2be3cfc5d4a94fb402662dbc23",
+                "CORECATS_ADDRESS": DUMMY_MAINNET_CORECATS_ADDRESS,
                 "MINT_SIGNER_PRIVATE_KEY": "2" * 114,
                 "FINALIZER_PRIVATE_KEY": "3" * 114,
             }
@@ -82,7 +84,7 @@ class ConfigValidationTests(unittest.TestCase):
                 "CORE_NETWORK_ID": "1",
                 "CORE_NETWORK_NAME": "mainnet",
                 "CORE_EXPLORER_BASE_URL": "https://blockindex.net",
-                "CORECATS_ADDRESS": "cb0549f48c325f06bf2be3cfc5d4a94fb402662dbc23",
+                "CORECATS_ADDRESS": DUMMY_MAINNET_CORECATS_ADDRESS,
                 "MINT_SIGNER_PRIVATE_KEY": "2" * 114,
                 "FINALIZER_KEYSTORE_PATH": str(self.finalizer_keystore),
                 "FINALIZER_PASSWORD_FILE": str(self.finalizer_password_file),
