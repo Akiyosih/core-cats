@@ -226,10 +226,7 @@ Exit criteria:
 
 ## 5. Immediate Next Actions From The Current State
 1. Keep the public site on Vercel in `closed` mode while finishing the separate Contabo mint backend path documented in `docs/MINT_BACKEND_ARCHITECTURE.md`.
-2. Stage the production wallet split for mainnet:
-   - Wallet 3 signer secret to Contabo
-   - Wallet 4 finalizer keystore/password to Contabo
-   - Wallet 2 deployer keystore only during the actual deploy window
+2. Stage the production signing/finalization material on the backend host and keep deployer material off the backend until the actual deploy window.
 3. Replace the temporary in-memory CorePass mint session store with SQLite on the backend before the first real mainnet canary.
 4. Execute the official mainnet closed deploy sequence and record deploy/verify evidence.
 5. Decide day-one quantity exposure:

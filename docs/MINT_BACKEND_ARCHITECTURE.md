@@ -119,8 +119,8 @@ The first SQLite schema should cover:
 
 ## Immediate Next Tasks
 1. stage Contabo production secrets:
-   - Wallet 3 raw signer secret
-   - Wallet 4 finalizer keystore + password file
+   - signer material
+   - finalizer material
 2. expose the backend through HTTPS on Contabo
    - recommended default: Caddy with `mint-backend/reverse-proxy/Caddyfile.example`
 3. deploy the Contabo backend with the production env file and systemd unit

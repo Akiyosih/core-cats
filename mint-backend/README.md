@@ -70,7 +70,7 @@ The current production shape still expects:
 
 1. `MINT_SIGNER_PRIVATE_KEY` as a raw key
 2. `FINALIZER_PRIVATE_KEY` as a raw key, or
-3. `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` as the official Foxar keystore alternative for Wallet 4
+3. `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` as the official Foxar keystore alternative for the dedicated finalizer role
 
 Source reference for the keystore path:
 1. https://foxar.dev/reference/cli/spark/script/

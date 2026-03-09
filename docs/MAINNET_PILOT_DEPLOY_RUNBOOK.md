@@ -13,9 +13,9 @@ It is not the official `CCAT` release runbook.
 1. The project has explicitly chosen the optional pilot fallback.
 2. The pilot remains self-only and clearly non-official.
 3. The active contract workspace is `core-cats/foxar`.
-4. Wallet 2 remains on the Foxar keystore path for deploy/admin transactions.
-5. Wallet 3 remains the dedicated mint signer for any backend-backed pilot validation.
-6. If the full web/backend/CorePass path will be tested, Wallet 3 and Wallet 4 are already staged on Contabo.
+4. A dedicated deployer account is available on the Foxar keystore path for deploy/admin transactions.
+5. A dedicated mint signer account is available for any backend-backed pilot validation.
+6. If the full web/backend/CorePass path will be tested, the signer/finalizer material is already staged on the backend host.
 
 ## Pilot Labels
 Use these values unless there is a specific reason to change them:
@@ -33,21 +33,21 @@ These preserve mint/security/randomness/supply while making the pilot visibly no
 ## Required Inputs
 1. Mainnet RPC URL:
    - `CORE_MAINNET_RPC_URL`
-2. Wallet 2 deployer keystore path:
-   - `WALLET2_KEYSTORE_PATH`
-3. Wallet 2 password file:
-   - `WALLET2_PASSWORD_FILE`
-4. Wallet 2 deployer address for recordkeeping:
-   - `WALLET2_DEPLOYER_ADDRESS`
-5. Wallet 3 signer address:
-   - `WALLET3_SIGNER_ADDRESS`
+2. Deployer keystore path:
+   - `DEPLOYER_KEYSTORE_PATH`
+3. Deployer password file:
+   - `DEPLOYER_PASSWORD_FILE`
+4. Deployer address for recordkeeping:
+   - `DEPLOYER_ADDRESS`
+5. Signer address:
+   - `SIGNER_ADDRESS`
 6. Optional script-only mint path inputs:
    - `MINT_SIGNER_PRIVATE_KEY`
    - `MINT_TO`
    - `MINTER_ADDRESS`
    - `MINT_SECRET` or `MINT_SEED`
 
-If using the real backend path, do not put Wallet 3 raw signer material into this repository.
+If using the real backend path, do not put signer raw material into this repository.
 
 ## Recommended Session Setup
 From `core-cats/foxar`, load the non-secret pilot labels first:
@@ -62,10 +62,10 @@ Then export the local deploy inputs:
 
 ```bash
 export CORE_MAINNET_RPC_URL="<mainnet-rpc-url>"
-export WALLET2_KEYSTORE_PATH="<local-path-to-wallet2-keystore>"
-export WALLET2_PASSWORD_FILE="<local-path-to-wallet2-password-file>"
-export WALLET2_DEPLOYER_ADDRESS="<wallet2-address>"
-export WALLET3_SIGNER_ADDRESS="<wallet3-address>"
+export DEPLOYER_KEYSTORE_PATH="<local-path-to-deployer-keystore>"
+export DEPLOYER_PASSWORD_FILE="<local-path-to-deployer-password-file>"
+export DEPLOYER_ADDRESS="<deployer-address>"
+export SIGNER_ADDRESS="<signer-address>"
 ```
 
 Before any simulation or broadcast, record:
@@ -96,15 +96,15 @@ Run the pilot deploy script once without `--broadcast`.
 spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
-  --keystore "$WALLET2_KEYSTORE_PATH" \
-  --password-file "$WALLET2_PASSWORD_FILE"
+  --keystore "$DEPLOYER_KEYSTORE_PATH" \
+  --password-file "$DEPLOYER_PASSWORD_FILE"
 ```
 
 Expected: the script simulation succeeds with the pilot labels.
 
 Record at minimum:
 1. git commit SHA
-2. Wallet 2 deployer address
+2. deployer address
 3. the exact pilot label values loaded from env
 4. whether the dry run completed without revert
 
@@ -115,8 +115,8 @@ Run the real pilot deploy:
 spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
-  --keystore "$WALLET2_KEYSTORE_PATH" \
-  --password-file "$WALLET2_PASSWORD_FILE" \
+  --keystore "$DEPLOYER_KEYSTORE_PATH" \
+  --password-file "$DEPLOYER_PASSWORD_FILE" \
   --broadcast
 ```
 
@@ -128,16 +128,16 @@ Record the deployed addresses:
 Also record:
 1. deploy tx hashes
 2. git commit SHA
-3. Wallet 2 deployer address
+3. deployer address
 4. the exact pilot label values used
 
 ## Post-Deploy Check Before Signer Rotation
-Immediately confirm the deployed state while the contract signer is still Wallet 2:
+Immediately confirm the deployed state while the contract signer is still the deployer:
 
 ```bash
 export CORECATS_ADDRESS="<pilot-corecats-address>"
 export EXPECTED_RENDERER_ADDRESS="<pilot-renderer-address>"
-export EXPECTED_SIGNER_ADDRESS="$WALLET2_DEPLOYER_ADDRESS"
+export EXPECTED_SIGNER_ADDRESS="$DEPLOYER_ADDRESS"
 export EXPECTED_COLLECTION_NAME=CCATTEST
 export EXPECTED_COLLECTION_SYMBOL=CCATTEST
 
@@ -148,35 +148,35 @@ spark script script/CoreCatsPostDeployCheck.s.sol:CoreCatsPostDeployCheckScript 
 
 Expected:
 1. renderer matches
-2. signer is still Wallet 2
+2. signer is still the deployer
 3. collection name/symbol are `CCATTEST`
 4. total supply is `0`
 
-## Signer Rotation To Wallet 3
-For any backend-backed pilot validation, rotate the contract signer to Wallet 3:
+## Signer Rotation
+For any backend-backed pilot validation, rotate the contract signer to the dedicated signer:
 
 ```bash
-export NEW_SIGNER_ADDRESS="$WALLET3_SIGNER_ADDRESS"
+export NEW_SIGNER_ADDRESS="$SIGNER_ADDRESS"
 
 spark script script/CoreCatsSetSigner.s.sol:CoreCatsSetSignerScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
-  --keystore "$WALLET2_KEYSTORE_PATH" \
-  --password-file "$WALLET2_PASSWORD_FILE" \
+  --keystore "$DEPLOYER_KEYSTORE_PATH" \
+  --password-file "$DEPLOYER_PASSWORD_FILE" \
   --broadcast
 ```
 
 Then re-run the post-deploy check:
 
 ```bash
-export EXPECTED_SIGNER_ADDRESS="$WALLET3_SIGNER_ADDRESS"
+export EXPECTED_SIGNER_ADDRESS="$SIGNER_ADDRESS"
 
 spark script script/CoreCatsPostDeployCheck.s.sol:CoreCatsPostDeployCheckScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1
 ```
 
-Expected: signer now matches Wallet 3.
+Expected: signer now matches the dedicated signer.
 
 ## Preferred Validation Path: Backend + Closed Site
 Use this when the goal is to validate the real Contabo/Vercel/CorePass path on mainnet.
@@ -227,8 +227,8 @@ Then commit:
 spark script script/CoreCatsCommitMint.s.sol:CoreCatsCommitMintScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
-  --keystore "$WALLET2_KEYSTORE_PATH" \
-  --password-file "$WALLET2_PASSWORD_FILE" \
+  --keystore "$DEPLOYER_KEYSTORE_PATH" \
+  --password-file "$DEPLOYER_PASSWORD_FILE" \
   --broadcast
 ```
 
@@ -240,8 +240,8 @@ export MINTER_ADDRESS="$MINT_TO"
 spark script script/CoreCatsFinalizeMint.s.sol:CoreCatsFinalizeMintScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
-  --keystore "$WALLET2_KEYSTORE_PATH" \
-  --password-file "$WALLET2_PASSWORD_FILE" \
+  --keystore "$DEPLOYER_KEYSTORE_PATH" \
+  --password-file "$DEPLOYER_PASSWORD_FILE" \
   --broadcast
 ```
 

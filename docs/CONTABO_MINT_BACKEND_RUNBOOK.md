@@ -82,14 +82,9 @@ Source references:
 
 1. choose the HTTPS exposure method for Contabo backend
 2. copy `core-cats` to Contabo
-3. create target secret directories:
-   - `mkdir -p /root/corecats-keystores /root/.secrets /var/lib/corecats-mint-backend`
-4. copy Wallet 4 files to Contabo:
-   - `wallet4_finalizer_mainnet.json -> /root/corecats-keystores/wallet4_finalizer_mainnet.json`
-   - `wallet4_finalizer_mainnet.password -> /root/.secrets/wallet4_finalizer_mainnet.password`
-5. lock down secret file permissions:
-   - `chmod 600 /root/corecats-keystores/wallet4_finalizer_mainnet.json`
-   - `chmod 600 /root/.secrets/wallet4_finalizer_mainnet.password`
+3. create the required root-owned secret and state directories on the backend host
+4. stage the finalizer keystore/password pair on the backend host if keystore mode will be used
+5. ensure secret file permissions are `600`
 6. copy `mint-backend/systemd/corecats-mint-backend.env.example` to `/etc/corecats-mint-backend.env`
 7. fill the env file with the real mainnet values:
    - `CORECATS_BACKEND_PROFILE=production`
@@ -99,11 +94,11 @@ Source references:
    - `CORE_NETWORK_NAME=mainnet`
    - `CORE_EXPLORER_BASE_URL=https://blockindex.net`
    - `CORECATS_ADDRESS=<real-mainnet-corecats-address>`
-   - `MINT_SIGNER_PRIVATE_KEY=<wallet3-private-key>`
-   - either `FINALIZER_PRIVATE_KEY=<wallet4-private-key>`
+   - `MINT_SIGNER_PRIVATE_KEY=<signer-private-key>`
+   - either `FINALIZER_PRIVATE_KEY=<finalizer-private-key>`
    - or:
-     - `FINALIZER_KEYSTORE_PATH=/root/corecats-keystores/wallet4_finalizer_mainnet.json`
-     - `FINALIZER_PASSWORD_FILE=/root/.secrets/wallet4_finalizer_mainnet.password`
+     - `FINALIZER_KEYSTORE_PATH=<root-owned-path-to-finalizer-keystore>`
+     - `FINALIZER_PASSWORD_FILE=<root-owned-path-to-finalizer-password-file>`
 8. set env-file permission:
    - `chmod 600 /etc/corecats-mint-backend.env`
 9. install the systemd unit:
@@ -135,7 +130,7 @@ The checker in `mint-backend/systemd/contabo-mainnet-preflight.sh` fails with no
 2. env file permission is not `600`
 3. mainnet constraints are not met (`network/chain/rpc/explorer`)
 4. `CORECATS_BACKEND_SHARED_SECRET`, `CORECATS_ADDRESS`, or `MINT_SIGNER_PRIVATE_KEY` is missing/placeholder
-5. Wallet 4 keystore mode is selected but keystore/password files are missing or not `600`
+5. finalizer keystore mode is selected but keystore/password files are missing or not `600`
 6. neither finalizer raw key mode nor keystore mode is configured
 7. `SPARK_PATH` / `CORECATS_FOXAR_DIR` / DB directory is invalid
 8. backend `load_config()` validation fails
