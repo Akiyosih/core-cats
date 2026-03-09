@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import { Interface } from "ethers";
 
 import { CORECATS_MINT_ABI } from "../corecats-abi.js";
+import { encodeCoreCatsCommitMintData } from "./core-calldata.js";
 import { getCorePublicConfig, getCoreServerEnv } from "./core-env.js";
 import { issueMintAuthorization, relayFinalizeMint } from "./core-spark.js";
 import {
@@ -164,13 +165,13 @@ async function buildCommitRequest(request, session) {
 
   const resolvedNonce = authorization.nonce || nonce;
   const resolvedExpiry = authorization.expiry || expiry;
-  const data = mintInterface.encodeFunctionData("commitMint", [
-    session.quantity,
+  const data = encodeCoreCatsCommitMintData({
+    quantity: session.quantity,
     commitHash,
-    resolvedNonce,
-    resolvedExpiry,
-    authorization.signature,
-  ]);
+    nonce: resolvedNonce,
+    expiry: resolvedExpiry,
+    signature: authorization.signature,
+  });
   const callbackConn = buildCallbackUrl(request, session.id, "commit");
 
   const desktopUri = buildCorePassUri("tx", session.minter, {
