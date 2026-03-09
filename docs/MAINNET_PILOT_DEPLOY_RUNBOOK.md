@@ -49,6 +49,55 @@ These preserve mint/security/randomness/supply while making the pilot visibly no
 
 If using the real backend path, do not put Wallet 3 raw signer material into this repository.
 
+## PC2 Readiness Gate
+Use the Windows PC2 path only after all of the following are true:
+1. `core-cats` is a clean clone on PC2 and `git status` is clean.
+2. `git submodule update --init --recursive` has completed successfully.
+3. `foxar/` has passed:
+
+```bash
+spark clean
+spark build
+spark test
+```
+
+4. Wallet 2 is present on PC2 only as:
+   - keystore file
+   - password file
+5. Wallet 3 raw signer material is not present on PC2.
+
+This gate is important because the pilot deploy should fail only on real mainnet conditions, not on a half-prepared local workspace.
+
+## Recommended PC2 Session Setup
+From `core-cats/foxar`, load the non-secret pilot labels first:
+
+```bash
+set -a
+source ./.env.mainnet-pilot.example
+set +a
+```
+
+Then export the PC2-local deploy inputs:
+
+```bash
+export CORE_MAINNET_RPC_URL="<mainnet-rpc-url>"
+export WALLET2_KEYSTORE_PATH="/c/corecats-pc2/secrets/<wallet2-keystore-file>"
+export WALLET2_PASSWORD_FILE="/c/corecats-pc2/secrets/<wallet2-password-file>"
+export WALLET2_DEPLOYER_ADDRESS="<wallet2-address>"
+export WALLET3_SIGNER_ADDRESS="<wallet3-address>"
+```
+
+Before any simulation or broadcast, record:
+
+```bash
+git rev-parse --short HEAD
+git status --short --branch
+```
+
+Expected:
+1. `HEAD` matches the intended deploy commit.
+2. the working tree is clean.
+
 ## Build and Test Gate
 From `core-cats/foxar`:
 
@@ -58,6 +107,8 @@ spark test
 ```
 
 Expected: tests pass before any mainnet simulation or broadcast.
+
+At this point, the next operator step is the dry run itself, not more local setup.
 
 ## Dry Run (No Broadcast)
 Run the pilot deploy script once without `--broadcast`.
@@ -71,6 +122,12 @@ spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript \
 ```
 
 Expected: the script simulation succeeds with the pilot labels.
+
+Record at minimum:
+1. git commit SHA
+2. Wallet 2 deployer address
+3. the exact pilot label values loaded from env
+4. whether the dry run completed without revert
 
 ## Broadcast Deploy
 Run the real pilot deploy:
