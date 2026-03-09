@@ -121,6 +121,9 @@ if [[ -n "${FINALIZER_KEYSTORE_PATH:-}" || -n "${FINALIZER_PASSWORD_FILE:-}" ]];
   if [[ -z "${FINALIZER_KEYSTORE_PATH:-}" || -z "${FINALIZER_PASSWORD_FILE:-}" ]]; then
     fail "FINALIZER_KEYSTORE_PATH and FINALIZER_PASSWORD_FILE must be set together"
   fi
+  if [[ -z "${FINALIZER_ADDRESS:-}" ]]; then
+    fail "FINALIZER_ADDRESS must be set when FINALIZER_KEYSTORE_PATH is used"
+  fi
   HAS_FINALIZER_KEYSTORE=1
   require_file "${FINALIZER_KEYSTORE_PATH}"
   require_file "${FINALIZER_PASSWORD_FILE}"

@@ -28,6 +28,7 @@ class Config:
     deployer_private_key: str
     mint_signer_private_key: str
     finalizer_private_key: str
+    finalizer_address: str
     finalizer_keystore_path: Optional[Path]
     finalizer_password_file: Optional[Path]
 
@@ -76,6 +77,8 @@ def validate_config(config: Config) -> None:
         errors.append(f"FINALIZER_PASSWORD_FILE does not point to a file: {config.finalizer_password_file}")
     if bool(config.finalizer_keystore_path) != bool(config.finalizer_password_file):
         errors.append("FINALIZER_KEYSTORE_PATH and FINALIZER_PASSWORD_FILE must be set together")
+    if config.finalizer_address and len(config.finalizer_address) != 44:
+        errors.append("FINALIZER_ADDRESS must be a 44-character Core address when set")
 
     if config.profile == "production":
         if config.network_name.lower() != "mainnet":
@@ -101,6 +104,8 @@ def validate_config(config: Config) -> None:
                 "Either FINALIZER_PRIVATE_KEY or the FINALIZER_KEYSTORE_PATH + FINALIZER_PASSWORD_FILE pair "
                 "must be explicitly set in production"
             )
+        if has_finalizer_keystore and not config.finalizer_address:
+            errors.append("FINALIZER_ADDRESS must be explicitly set when FINALIZER_KEYSTORE_PATH is used in production")
 
     if errors:
         detail = "\n".join(f"- {item}" for item in errors)
@@ -119,6 +124,7 @@ def load_config() -> Config:
     finalizer_keystore_raw = os.environ.get("FINALIZER_KEYSTORE_PATH", "").strip()
     finalizer_password_file_raw = os.environ.get("FINALIZER_PASSWORD_FILE", "").strip()
     finalizer_private_key = os.environ.get("FINALIZER_PRIVATE_KEY", "").strip()
+    finalizer_address = os.environ.get("FINALIZER_ADDRESS", "").strip() or os.environ.get("DEPLOYER_ADDRESS", "").strip()
     if not finalizer_private_key and not finalizer_keystore_raw:
         finalizer_private_key = deployer_private_key
 
@@ -139,6 +145,7 @@ def load_config() -> Config:
         deployer_private_key=deployer_private_key,
         mint_signer_private_key=mint_signer_private_key,
         finalizer_private_key=finalizer_private_key,
+        finalizer_address=finalizer_address,
         finalizer_keystore_path=Path(finalizer_keystore_raw).expanduser() if finalizer_keystore_raw else None,
         finalizer_password_file=Path(finalizer_password_file_raw).expanduser() if finalizer_password_file_raw else None,
     )

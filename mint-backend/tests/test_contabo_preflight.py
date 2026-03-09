@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 DUMMY_MAINNET_CORECATS_ADDRESS = "cb111111111111111111111111111111111111111111"
+DUMMY_FINALIZER_ADDRESS = "cb222222222222222222222222222222222222222222"
 
 
 class ContaboPreflightTests(unittest.TestCase):
@@ -64,6 +65,7 @@ class ContaboPreflightTests(unittest.TestCase):
         if include_finalizer_keystore:
             body += textwrap.dedent(
                 f"""\
+                FINALIZER_ADDRESS={DUMMY_FINALIZER_ADDRESS}
                 FINALIZER_KEYSTORE_PATH={self.keystore_path}
                 FINALIZER_PASSWORD_FILE={self.password_file}
                 """
@@ -124,6 +126,16 @@ class ContaboPreflightTests(unittest.TestCase):
             "Set FINALIZER_PRIVATE_KEY or FINALIZER_KEYSTORE_PATH + FINALIZER_PASSWORD_FILE",
             result.stderr,
         )
+
+    def test_preflight_requires_finalizer_address_in_keystore_mode(self) -> None:
+        env_file = self._write_env_file()
+        body = env_file.read_text(encoding="utf-8").replace(f"FINALIZER_ADDRESS={DUMMY_FINALIZER_ADDRESS}\n", "")
+        env_file.write_text(body, encoding="utf-8")
+
+        result = self._run_preflight(env_file)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("FINALIZER_ADDRESS must be set when FINALIZER_KEYSTORE_PATH is used", result.stderr)
 
 
 if __name__ == "__main__":

@@ -122,7 +122,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
                     **payload,
                     "coreCatsAddress": self.config.corecats_address,
                     "networkName": self.config.network_name,
-                    "relayerEnabled": bool(self.config.finalizer_private_key),
+                    "relayerEnabled": bool(self.config.finalizer_private_key or self.config.finalizer_keystore_path),
                 },
             )
         except Exception as error:  # noqa: BLE001

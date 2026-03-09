@@ -61,6 +61,8 @@ def run_spark_script(
     if broadcast:
         command.append("--broadcast")
     if keystore_path:
+        if config.network_name.lower() == "mainnet":
+            command.extend(["--wallet-network", "mainnet"])
         command.extend(["--keystore", keystore_path])
     if password_file:
         command.extend(["--password-file", password_file])
@@ -117,6 +119,8 @@ def relay_finalize_mint(config: Config, *, minter: str, energy_estimate_multipli
     }
     if config.finalizer_private_key:
         env_overrides["DEPLOYER_PRIVATE_KEY"] = config.finalizer_private_key
+    elif config.finalizer_keystore_path and config.finalizer_address:
+        env_overrides["DEPLOYER_ADDRESS"] = config.finalizer_address
 
     result = run_spark_script(
         config,

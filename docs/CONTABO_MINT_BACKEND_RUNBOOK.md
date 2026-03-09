@@ -25,6 +25,7 @@ This avoids introducing extra framework/runtime complexity before mainnet canary
 2. `CORECATS_ADDRESS`
 3. `MINT_SIGNER_PRIVATE_KEY`
 4. either `FINALIZER_PRIVATE_KEY`, or:
+   - `FINALIZER_ADDRESS`
    - `FINALIZER_KEYSTORE_PATH`
    - `FINALIZER_PASSWORD_FILE`
 5. `CORE_RPC_URL` (preferred) or `CORE_TESTNET_RPC_URL` as a legacy alias
@@ -97,6 +98,7 @@ Source references:
    - `MINT_SIGNER_PRIVATE_KEY=<signer-private-key>`
    - either `FINALIZER_PRIVATE_KEY=<finalizer-private-key>`
    - or:
+     - `FINALIZER_ADDRESS=<wallet4-cb-address>`
      - `FINALIZER_KEYSTORE_PATH=<root-owned-path-to-finalizer-keystore>`
      - `FINALIZER_PASSWORD_FILE=<root-owned-path-to-finalizer-password-file>`
 8. set env-file permission:
@@ -130,10 +132,11 @@ The checker in `mint-backend/systemd/contabo-mainnet-preflight.sh` fails with no
 2. env file permission is not `600`
 3. mainnet constraints are not met (`network/chain/rpc/explorer`)
 4. `CORECATS_BACKEND_SHARED_SECRET`, `CORECATS_ADDRESS`, or `MINT_SIGNER_PRIVATE_KEY` is missing/placeholder
-5. finalizer keystore mode is selected but keystore/password files are missing or not `600`
-6. neither finalizer raw key mode nor keystore mode is configured
-7. `SPARK_PATH` / `CORECATS_FOXAR_DIR` / DB directory is invalid
-8. backend `load_config()` validation fails
+5. finalizer keystore mode is selected but `FINALIZER_ADDRESS` is missing
+6. finalizer keystore mode is selected but keystore/password files are missing or not `600`
+7. neither finalizer raw key mode nor keystore mode is configured
+8. `SPARK_PATH` / `CORECATS_FOXAR_DIR` / DB directory is invalid
+9. backend `load_config()` validation fails
 
 This script does not print raw secret values.
 
@@ -177,4 +180,6 @@ This is intentional and should be treated as a deployment safety feature, not as
 2. Blockindex mainnet base URL family:
    - https://github.com/core-coin/corebc-rs/blob/master/corebc-core/src/types/network.rs
 3. Foxar `spark script` keystore wallet options:
+   - https://foxar.dev/reference/cli/spark/script/
+4. Core mainnet keystore broadcasts also require `--wallet-network mainnet`:
    - https://foxar.dev/reference/cli/spark/script/

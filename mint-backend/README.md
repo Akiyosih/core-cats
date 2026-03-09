@@ -71,9 +71,12 @@ The current production shape still expects:
 1. `MINT_SIGNER_PRIVATE_KEY` as a raw key
 2. `FINALIZER_PRIVATE_KEY` as a raw key, or
 3. `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` as the official Foxar keystore alternative for the dedicated finalizer role
+4. when keystore mode is used on Core mainnet, also set `FINALIZER_ADDRESS=<cb...>` so the backend can broadcast with the explicit sender address
 
 Source reference for the keystore path:
 1. https://foxar.dev/reference/cli/spark/script/
+2. Core mainnet keystore broadcasts also require `--wallet-network mainnet`:
+   - https://foxar.dev/reference/cli/spark/script/
 
 When `CORECATS_BACKEND_PROFILE=production` is set, the backend now fails closed on startup if:
 

@@ -9,6 +9,7 @@ from unittest.mock import patch
 from corecats_mint_backend.config import load_config
 
 DUMMY_MAINNET_CORECATS_ADDRESS = "cb111111111111111111111111111111111111111111"
+DUMMY_FINALIZER_ADDRESS = "cb222222222222222222222222222222222222222222"
 
 
 class ConfigValidationTests(unittest.TestCase):
@@ -86,6 +87,7 @@ class ConfigValidationTests(unittest.TestCase):
                 "CORE_EXPLORER_BASE_URL": "https://blockindex.net",
                 "CORECATS_ADDRESS": DUMMY_MAINNET_CORECATS_ADDRESS,
                 "MINT_SIGNER_PRIVATE_KEY": "2" * 114,
+                "FINALIZER_ADDRESS": DUMMY_FINALIZER_ADDRESS,
                 "FINALIZER_KEYSTORE_PATH": str(self.finalizer_keystore),
                 "FINALIZER_PASSWORD_FILE": str(self.finalizer_password_file),
             }
@@ -95,7 +97,30 @@ class ConfigValidationTests(unittest.TestCase):
             config = load_config()
         self.assertEqual(config.profile, "production")
         self.assertEqual(config.finalizer_private_key, "")
+        self.assertEqual(config.finalizer_address, DUMMY_FINALIZER_ADDRESS)
         self.assertEqual(config.finalizer_keystore_path, self.finalizer_keystore)
+
+    def test_production_profile_requires_finalizer_address_for_keystore_mode(self) -> None:
+        env = self._base_env()
+        env.update(
+            {
+                "CORECATS_BACKEND_PROFILE": "production",
+                "CORECATS_BACKEND_SHARED_SECRET": "super-secret-value",
+                "CORE_RPC_URL": "https://xcbapi-arch-mainnet.coreblockchain.net/",
+                "CORE_CHAIN_ID": "1",
+                "CORE_NETWORK_ID": "1",
+                "CORE_NETWORK_NAME": "mainnet",
+                "CORE_EXPLORER_BASE_URL": "https://blockindex.net",
+                "CORECATS_ADDRESS": DUMMY_MAINNET_CORECATS_ADDRESS,
+                "MINT_SIGNER_PRIVATE_KEY": "2" * 114,
+                "FINALIZER_KEYSTORE_PATH": str(self.finalizer_keystore),
+                "FINALIZER_PASSWORD_FILE": str(self.finalizer_password_file),
+            }
+        )
+
+        with patch.dict(os.environ, env, clear=True):
+            with self.assertRaisesRegex(ValueError, "FINALIZER_ADDRESS must be explicitly set"):
+                load_config()
 
 
 if __name__ == "__main__":
