@@ -44,10 +44,14 @@ Required values:
 9. `CORECATS_BACKEND_SHARED_SECRET=replace-with-the-same-random-secret-as-contabo`
 10. `CORECATS_RELAYER_ENABLED=true`
 
+Optional self-only pilot value:
+11. `COREPASS_EXPECTED_CORE_ID=replace-with-the-self-only-pilot-wallet-coreid`
+
 Notes:
 1. Vercel should not hold deployer, signer, or finalizer private keys.
 2. Vercel does not need `CORE_RPC_URL` for the intended proxy production path.
 3. The site can stay in `closed` even before `NEXT_PUBLIC_CORECATS_ADDRESS` is replaced with the real mainnet address.
+4. `COREPASS_EXPECTED_CORE_ID` is only for a closed self-only pilot where the operator intentionally pins identify requests to one known wallet. Do not use it as a public-launch shortcut.
 
 ## Closed-State Cutover
 Run these steps in order.

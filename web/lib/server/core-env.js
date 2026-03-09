@@ -90,6 +90,7 @@ export function getCoreServerEnv() {
     backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
     backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
     backendSharedSecret: (process.env.CORECATS_BACKEND_SHARED_SECRET || DEFAULTS.backendSharedSecret).trim(),
+    corePassExpectedCoreId: (process.env.COREPASS_EXPECTED_CORE_ID || "").trim(),
     coreCatsAddress:
       process.env.NEXT_PUBLIC_CORECATS_ADDRESS ||
       process.env.CORECATS_ADDRESS ||

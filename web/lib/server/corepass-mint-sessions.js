@@ -4,7 +4,7 @@ import QRCode from "qrcode";
 import { Interface } from "ethers";
 
 import { CORECATS_MINT_ABI } from "../corecats-abi.js";
-import { getCorePublicConfig } from "./core-env.js";
+import { getCorePublicConfig, getCoreServerEnv } from "./core-env.js";
 import { issueMintAuthorization, relayFinalizeMint } from "./core-spark.js";
 import {
   deleteRemoteMintSession,
@@ -126,13 +126,14 @@ function buildCallbackUrl(request, sessionId, step) {
 async function buildSignRequest(request, session) {
   const deadline = Math.floor(session.expiresAtMs / 1000);
   const callbackConn = buildCallbackUrl(request, session.id, "identify");
-  const desktopUri = buildCorePassUri("sign", "", {
+  const requestedCoreId = normalizeCoreId(session.identify.expectedCoreId);
+  const desktopUri = buildCorePassUri("sign", requestedCoreId, {
     data: session.identify.challengeHex,
     conn: callbackConn,
     dl: deadline,
     type: "callback",
   });
-  const mobileUri = buildCorePassUri("sign", "", {
+  const mobileUri = buildCorePassUri("sign", requestedCoreId, {
     data: session.identify.challengeHex,
     conn: callbackConn,
     dl: deadline,
@@ -361,6 +362,7 @@ function serializeSession(session) {
 
 export async function createMintSession(request, { quantity }) {
   cleanupExpiredSessions();
+  const env = getCoreServerEnv();
 
   const session = {
     id: crypto.randomUUID(),
@@ -376,6 +378,7 @@ export async function createMintSession(request, { quantity }) {
       mobileUri: "",
       qrDataUrl: "",
       coreId: "",
+      expectedCoreId: normalizeCoreId(env.corePassExpectedCoreId),
       completedAt: "",
     },
     commit: null,
@@ -409,22 +412,38 @@ export function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
   };
 }
 
+export function resolveIdentifyCoreId(parsedCoreId, expectedCoreId) {
+  const callbackCoreId = normalizeCoreId(parsedCoreId);
+  if (callbackCoreId) {
+    return callbackCoreId;
+  }
+  return normalizeCoreId(expectedCoreId);
+}
+
 export async function applyCorePassCallback(request, payload) {
   const url = new URL(request.url);
   const parsed = parseCallbackPayload(request.url, payload, url.searchParams);
   const session = await getRequiredSession(request, parsed.sessionId);
 
   if (parsed.step === "identify") {
-    if (!parsed.coreId) {
+    const resolvedCoreId = resolveIdentifyCoreId(parsed.coreId, session.identify.expectedCoreId);
+
+    if (!resolvedCoreId) {
       const error = new Error("CorePass identify callback did not include coreID");
       error.code = "missing_coreid";
       throw error;
     }
 
-    session.minter = parsed.coreId;
-    session.identify.coreId = parsed.coreId;
+    session.minter = resolvedCoreId;
+    session.identify.coreId = resolvedCoreId;
     session.identify.completedAt = nowIso();
-    appendHistory(session, { step: "identify", event: "completed", coreId: parsed.coreId });
+    appendHistory(session, {
+      step: "identify",
+      event: "completed",
+      coreId: resolvedCoreId,
+      callbackCoreId: parsed.coreId || null,
+      expectedCoreId: session.identify.expectedCoreId || null,
+    });
     await buildCommitRequest(request, session);
     await persistSession(request, session);
     return serializeSession(session);
