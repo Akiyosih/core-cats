@@ -10,6 +10,11 @@ contract CoreCatsProbeCommitScript is Script {
         address minter = vm.envAddress("MINTER_ADDRESS");
         bytes memory callData = vm.envBytes("MINT_CALLDATA");
         bytes memory result;
+        uint256 warpTimestamp = vm.envOr("MINT_WARP_TIMESTAMP", uint256(0));
+
+        if (warpTimestamp != 0) {
+            vm.warp(warpTimestamp);
+        }
 
         vm.prank(minter);
         (ok, result) = coreCatsAddress.call(callData);
