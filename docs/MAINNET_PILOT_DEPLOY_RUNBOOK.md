@@ -71,6 +71,8 @@ export SIGNER_ADDRESS="<signer-address>"
 `DEPLOYER_ADDRESS` must match the keystore-resolved deployer address when using `--keystore` / `--password-file`.
 Otherwise Foxar will fall back to its default broadcast sender instead of the intended deployer.
 
+For Core mainnet keystore broadcasts, also pass `--wallet-network mainnet` so the keystore-derived sender address uses the mainnet `cb...` form accepted by the RPC.
+
 Before any simulation or broadcast, record:
 
 ```bash
@@ -99,6 +101,7 @@ Run the pilot deploy script once without `--broadcast`.
 spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
+  --wallet-network mainnet \
   --keystore "$DEPLOYER_KEYSTORE_PATH" \
   --password-file "$DEPLOYER_PASSWORD_FILE"
 ```
@@ -118,6 +121,7 @@ Run the real pilot deploy:
 spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
+  --wallet-network mainnet \
   --keystore "$DEPLOYER_KEYSTORE_PATH" \
   --password-file "$DEPLOYER_PASSWORD_FILE" \
   --broadcast
@@ -164,6 +168,7 @@ export NEW_SIGNER_ADDRESS="$SIGNER_ADDRESS"
 spark script script/CoreCatsSetSigner.s.sol:CoreCatsSetSignerScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
+  --wallet-network mainnet \
   --keystore "$DEPLOYER_KEYSTORE_PATH" \
   --password-file "$DEPLOYER_PASSWORD_FILE" \
   --broadcast
@@ -230,6 +235,7 @@ Then commit:
 spark script script/CoreCatsCommitMint.s.sol:CoreCatsCommitMintScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
+  --wallet-network mainnet \
   --keystore "$DEPLOYER_KEYSTORE_PATH" \
   --password-file "$DEPLOYER_PASSWORD_FILE" \
   --broadcast
@@ -243,6 +249,7 @@ export MINTER_ADDRESS="$MINT_TO"
 spark script script/CoreCatsFinalizeMint.s.sol:CoreCatsFinalizeMintScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1 \
+  --wallet-network mainnet \
   --keystore "$DEPLOYER_KEYSTORE_PATH" \
   --password-file "$DEPLOYER_PASSWORD_FILE" \
   --broadcast
