@@ -25,6 +25,10 @@ def json_response(handler: BaseHTTPRequestHandler, status: int, payload: dict) -
     handler.wfile.write(data)
 
 
+def normalized_path(value: str) -> str:
+    return urlparse(value).path
+
+
 class MintBackendHandler(BaseHTTPRequestHandler):
     server_version = "CoreCatsMintBackend/0.1"
 
@@ -37,7 +41,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         return self.server.store  # type: ignore[attr-defined]
 
     def _require_auth(self) -> bool:
-        if self.path == "/healthz":
+        if normalized_path(self.path) == "/healthz":
             return True
 
         expected = self.config.shared_secret
@@ -64,9 +68,10 @@ class MintBackendHandler(BaseHTTPRequestHandler):
 
     def _session_id_from_path(self) -> str:
         prefix = "/api/internal/sessions/"
-        if not self.path.startswith(prefix):
+        path = normalized_path(self.path)
+        if not path.startswith(prefix):
             return ""
-        return urlparse(self.path).path[len(prefix) :].strip()
+        return path[len(prefix) :].strip()
 
     def _handle_healthz(self) -> None:
         json_response(
@@ -188,7 +193,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         json_response(self, 200, {"ok": True, "deleted": deleted})
 
     def do_GET(self) -> None:  # noqa: N802
-        if self.path == "/healthz":
+        if normalized_path(self.path) == "/healthz":
             return self._handle_healthz()
         if not self._require_auth():
             return
@@ -203,9 +208,11 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         if not self._require_auth():
             return
 
-        if self.path == "/api/mint/authorize":
+        path = normalized_path(self.path)
+
+        if path == "/api/mint/authorize":
             return self._handle_authorize()
-        if self.path == "/api/mint/finalize":
+        if path == "/api/mint/finalize":
             return self._handle_finalize()
 
         json_response(self, 404, {"error": "not_found"})
