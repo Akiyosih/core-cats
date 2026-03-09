@@ -125,6 +125,16 @@ This is the first real production-path mint.
    - collection/transparency pages point at the correct mainnet data
 5. Write a worklog with the canary result.
 
+If the assigned token id is not obvious from the wallet/explorer view, use:
+
+```bash
+OWNER_ADDRESS="<canary-minter-address>" \
+CORECATS_ADDRESS="<deployed-corecats-address>" \
+spark script script/CoreCatsListOwnerTokens.s.sol:CoreCatsListOwnerTokensScript \
+  --fork-url "$CORE_MAINNET_RPC_URL" \
+  --network-id 1
+```
+
 ### Quantity policy
 1. If the first public launch will expose quantity `1 / 2 / 3`, do not assume quantity `1` is enough.
 2. Either:

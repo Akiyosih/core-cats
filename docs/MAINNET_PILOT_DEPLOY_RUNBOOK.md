@@ -255,6 +255,16 @@ spark script script/CoreCatsFinalizeMint.s.sol:CoreCatsFinalizeMintScript \
   --broadcast
 ```
 
+Then identify the assigned token id for the self-only minter:
+
+```bash
+export OWNER_ADDRESS="$MINT_TO"
+
+spark script script/CoreCatsListOwnerTokens.s.sol:CoreCatsListOwnerTokensScript \
+  --fork-url "$CORE_MAINNET_RPC_URL" \
+  --network-id 1
+```
+
 Finally export and decode `tokenURI`:
 
 ```bash

@@ -65,6 +65,10 @@ Run these steps in order.
    - `/transparency` shows `Mainnet deployment pending` until the real contract address is supplied
    - the public site is still reachable on the intended origin
 
+Optional terminal-side probe after redeploy:
+
+`node ./scripts/probe-public-origin.mjs https://<public-origin> --expected-chain-id 1 --expected-network mainnet --expected-contract <cb...>`
+
 ## Post-Deploy Address Injection
 After the mainnet `CoreCats` contract exists:
 
@@ -84,6 +88,10 @@ Move to `canary` only after the Contabo backend and contract address are both co
    - `/mint` shows the canary banner
    - mint session creation works from the production origin
    - proxy traffic reaches the Contabo backend successfully
+
+If a self-only pilot must still keep the public page visually `closed`, the terminal-side session probe can drive the CorePass session API without exposing the mint UI:
+
+`node ./scripts/probe-public-origin.mjs https://<public-origin> --expected-chain-id 1 --expected-network mainnet --expected-contract <pilot-cb...> --expect-relayer true --watch`
 
 ## Public Switch
 Move to `public` only after at least one successful canary mint.

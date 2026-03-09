@@ -86,8 +86,8 @@ function buildAbsoluteUrl(request, pathname, search = "") {
   return `${protocol}://${host}${pathname}${search}`;
 }
 
-function buildCorePassUri(action, pathValue, params) {
-  const base = pathValue ? `corepass:${action}/${pathValue}` : `corepass:${action}`;
+export function buildCorePassUri(action, pathValue, params) {
+  const base = pathValue ? `corepass:${action}/${pathValue}` : `corepass:${action}/`;
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params || {})) {
     if (value === undefined || value === null || value === "") continue;
