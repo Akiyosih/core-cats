@@ -141,7 +141,35 @@ spark script script/CoreCatsListOwnerTokens.s.sol:CoreCatsListOwnerTokensScript 
    - run an additional canary for multi-quantity mint, or
    - temporarily expose only quantity `1` on the public site until multi-quantity is confirmed
 
-## 6. Go / No-Go Rules
+## 6. Post-Pilot Release Requirements
+Before the official canary/public launch, apply the lessons from any self-only pilot.
+
+1. Remove any self-only wallet pinning such as `COREPASS_EXPECTED_CORE_ID`.
+   - official canary/public launch must not depend on one operator wallet
+2. Keep wallet-limit enforcement in the contract as the canonical rule.
+   - the contract remains the final authority for quantity and cumulative per-address limits
+   - backend/UI should still refuse over-limit attempts before commit authorization so users do not send gas-spending failures
+3. Run at least one generic-wallet canary after any self-only fallback is removed.
+4. If the public UI exposes quantity `1 / 2 / 3`, run real canaries for each exposed quantity or temporarily hide unvalidated quantities.
+5. Treat both QR entry paths as release checks:
+   - device standard camera -> CorePass launch
+   - CorePass in-app QR scanner
+   - if either path is unsupported or unreliable, disclose that clearly in the live web UI before release
+6. Keep finalize as a first-class production concern.
+   - `commitMint(...)` success only proves that a pending commit was recorded
+   - NFT delivery is complete only after `finalizeMint(minter)` succeeds
+7. Production automation should therefore include:
+   - relayer retry behavior
+   - stuck-session monitoring/alerting
+   - a user-facing manual finalize fallback
+   - UI copy that distinguishes `commit confirmed` from `finalize pending`
+8. After mint success, provide a smoother ownership handoff:
+   - CTA to `My Cats`
+   - wallet-prefilled lookup when practical
+   - clear contract/explorer copy surface in the success state
+9. Non-critical product additions such as a support/donation link should stay outside the mint-critical path until mint reliability work is finished.
+
+## 7. Go / No-Go Rules
 Move from `closed` to `canary` only if:
 1. mainnet contracts are deployed
 2. contract addresses are recorded
@@ -161,7 +189,7 @@ Do not move to `public` if:
 3. signer issuance is misconfigured
 4. site is still pointing at Devin/testnet data anywhere important
 
-## 7. Public Launch Checklist
+## 8. Public Launch Checklist
 After canary success:
 
 1. Change launch state to `public`.
@@ -178,7 +206,7 @@ After canary success:
    - `core-cats-eth` is labeled as historical archive only
    - public readers are not routed into the archive as if it were an active mint repo
 
-## 8. Evidence To Save
+## 9. Evidence To Save
 For closed launch and canary:
 
 1. deploy tx hashes

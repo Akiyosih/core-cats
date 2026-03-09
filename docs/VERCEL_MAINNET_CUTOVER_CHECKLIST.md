@@ -107,6 +107,22 @@ Move to `public` only after at least one successful canary mint.
    - relayer status shown to users matches actual backend behavior
    - transparency and explorer links still point at mainnet
 
+## Mint UX Readiness Checks
+Before treating a Vercel deployment as release-ready, confirm:
+
+1. any self-only `COREPASS_EXPECTED_CORE_ID` value has been removed unless the deployment is explicitly a self-only pilot
+2. the visible quantity choices match the quantities that have actually been canaried
+3. the site either supports both QR entry paths or clearly discloses any limitation:
+   - device standard camera -> CorePass launch
+   - CorePass in-app QR scanner
+4. the mint UI distinguishes:
+   - commit confirmed / finalize pending
+   - mint completed after finalize
+5. the success state offers:
+   - transaction/explorer links
+   - a clear contract address or contract explorer surface
+   - a next step to `My Cats`
+
 ## Rollback Levers
 If something is wrong on the public site:
 
