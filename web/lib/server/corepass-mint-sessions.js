@@ -207,18 +207,19 @@ async function buildCommitRequest(request, session) {
   session.updatedAt = nowIso();
 }
 
-function createFinalizeState(previous = {}) {
+export function createFinalizeState(previous) {
+  const source = previous && typeof previous === "object" ? previous : {};
   return {
-    status: previous.status || "awaiting_finalize",
-    data: previous.data || "",
-    desktopUri: previous.desktopUri || "",
-    mobileUri: previous.mobileUri || "",
-    qrDataUrl: previous.qrDataUrl || "",
-    txHash: previous.txHash || "",
-    submittedAt: previous.submittedAt || "",
-    confirmedAt: previous.confirmedAt || "",
-    mode: previous.mode || "manual",
-    lastError: previous.lastError || "",
+    status: source.status || "awaiting_finalize",
+    data: source.data || "",
+    desktopUri: source.desktopUri || "",
+    mobileUri: source.mobileUri || "",
+    qrDataUrl: source.qrDataUrl || "",
+    txHash: source.txHash || "",
+    submittedAt: source.submittedAt || "",
+    confirmedAt: source.confirmedAt || "",
+    mode: source.mode || "manual",
+    lastError: source.lastError || "",
   };
 }
 

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildCorePassUri, tryEncodeFinalizeMintData } from "../lib/server/corepass-mint-sessions.js";
+import { buildCorePassUri, createFinalizeState, tryEncodeFinalizeMintData } from "../lib/server/corepass-mint-sessions.js";
 
 test("sign URI keeps a slash when coreId is omitted", () => {
   const uri = buildCorePassUri("sign", "", {
@@ -32,4 +32,12 @@ test("finalize calldata builder leaves manual finalize unavailable for Core cb a
   assert.equal(encoded.manualAvailable, false);
   assert.equal(encoded.data, "");
   assert.match(encoded.error, /invalid address/i);
+});
+
+test("createFinalizeState tolerates a null prior finalize state", () => {
+  const state = createFinalizeState(null);
+
+  assert.equal(state.status, "awaiting_finalize");
+  assert.equal(state.desktopUri, "");
+  assert.equal(state.txHash, "");
 });
