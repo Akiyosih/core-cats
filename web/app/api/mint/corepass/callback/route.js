@@ -4,6 +4,37 @@ import { applyCorePassCallback } from "../../../../../lib/server/corepass-mint-s
 
 export const runtime = "nodejs";
 
+async function readCallbackBody(request) {
+  const contentType = String(request.headers.get("content-type") || "").toLowerCase();
+
+  if (contentType.includes("application/json")) {
+    return request.json();
+  }
+
+  if (contentType.includes("multipart/form-data") || contentType.includes("application/x-www-form-urlencoded")) {
+    const formData = await request.formData();
+    return Object.fromEntries(
+      Array.from(formData.entries(), ([key, value]) => [key, typeof value === "string" ? value : String(value)]),
+    );
+  }
+
+  const raw = await request.text();
+  if (!raw.trim()) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(raw);
+  } catch {}
+
+  const searchParams = new URLSearchParams(raw);
+  if (Array.from(searchParams.keys()).length > 0) {
+    return Object.fromEntries(searchParams.entries());
+  }
+
+  return { raw };
+}
+
 function redirectToMint(request, sessionId, errorCode = "") {
   const target = new URL("/mint", request.url);
   if (sessionId) {
@@ -28,7 +59,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    const body = await request.json();
+    const body = await readCallbackBody(request);
     const session = await applyCorePassCallback(request, body);
     return Response.json({ ok: true, session });
   } catch (error) {

@@ -247,6 +247,59 @@ function normalizeCoreId(value) {
   return String(value || "").trim();
 }
 
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function normalizeCallbackKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function collectCallbackFields(source, target = new Map()) {
+  if (!isPlainObject(source)) {
+    return target;
+  }
+
+  for (const [key, value] of Object.entries(source)) {
+    const normalizedKey = normalizeCallbackKey(key);
+    if (!target.has(normalizedKey)) {
+      target.set(normalizedKey, value);
+    }
+    if (isPlainObject(value)) {
+      collectCallbackFields(value, target);
+    }
+  }
+
+  return target;
+}
+
+function pickCallbackField(fields, searchParams, aliases) {
+  for (const alias of aliases) {
+    const normalizedAlias = normalizeCallbackKey(alias);
+    if (fields.has(normalizedAlias)) {
+      const value = fields.get(normalizedAlias);
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        return String(value).trim();
+      }
+    }
+  }
+
+  for (const [key, value] of searchParams.entries()) {
+    const normalizedKey = normalizeCallbackKey(key);
+    if (!aliases.some((alias) => normalizeCallbackKey(alias) === normalizedKey)) {
+      continue;
+    }
+    if (String(value || "").trim() !== "") {
+      return String(value).trim();
+    }
+  }
+
+  return "";
+}
+
 function appendHistory(session, entry) {
   const item = { at: nowIso(), ...entry };
   session.history.push(item);
@@ -340,15 +393,18 @@ export async function readMintSession(request, sessionId) {
   return serializeSession(await getRequiredSession(request, sessionId));
 }
 
-function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
+export function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
   const source = payload && typeof payload === "object" ? payload : {};
+  const fields = collectCallbackFields(source);
   return {
-    sessionId: String(source.sessionId || searchParams.get("sessionId") || "").trim(),
-    step: String(source.step || searchParams.get("step") || "").trim(),
-    coreId: normalizeCoreId(source.coreID || source.coreId || searchParams.get("coreID") || searchParams.get("coreId")),
-    signature: String(source.signature || searchParams.get("signature") || "").trim(),
-    txHash: String(source.txHash || searchParams.get("txHash") || "").trim(),
-    message: String(source.message || searchParams.get("message") || "").trim(),
+    sessionId: pickCallbackField(fields, searchParams, ["sessionId", "session_id", "session"]),
+    step: pickCallbackField(fields, searchParams, ["step"]),
+    coreId: normalizeCoreId(
+      pickCallbackField(fields, searchParams, ["coreID", "coreId", "coreid", "core_id", "user", "from", "minter"]),
+    ),
+    signature: pickCallbackField(fields, searchParams, ["signature", "sig"]),
+    txHash: pickCallbackField(fields, searchParams, ["txHash", "tx_hash", "transactionHash", "transaction_hash", "hash"]),
+    message: pickCallbackField(fields, searchParams, ["message", "detail", "msg"]),
     requestUrl,
   };
 }
