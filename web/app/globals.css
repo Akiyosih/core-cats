@@ -128,10 +128,7 @@ main {
   margin: -16px auto 28px;
   padding: 13px 18px;
   border-radius: 22px;
-  border: 1px solid rgba(207, 156, 49, 0.26);
-  background: linear-gradient(135deg, rgba(207, 156, 49, 0.14), rgba(224, 94, 67, 0.08));
   box-shadow: 0 16px 40px rgba(41, 36, 31, 0.05);
-  color: rgba(71, 50, 16, 0.9);
   font-size: 0.94rem;
   font-weight: 600;
   line-height: 1.45;
@@ -139,6 +136,18 @@ main {
   text-align: center;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+}
+
+.site-notice--closed {
+  border: 1px solid rgba(207, 156, 49, 0.26);
+  background: linear-gradient(135deg, rgba(207, 156, 49, 0.14), rgba(224, 94, 67, 0.08));
+  color: rgba(71, 50, 16, 0.9);
+}
+
+.site-notice--canary {
+  border: 1px solid rgba(20, 143, 138, 0.26);
+  background: linear-gradient(135deg, rgba(20, 143, 138, 0.14), rgba(207, 156, 49, 0.12));
+  color: rgba(26, 72, 68, 0.96);
 }
 
 .brand-mark {

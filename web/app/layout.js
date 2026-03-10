@@ -10,6 +10,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   const { launchState } = getCorePublicConfig();
+  const siteNotice =
+    launchState === "closed"
+      ? "Pre-mainnet teaser. Core Cats is still in final preparation. Mainnet deployment and public mint are not live yet."
+      : launchState === "canary"
+        ? "Official release is not live yet. Thanks for visiting early. The mainnet rehearsal canary is open, and you can already enjoy the art and collection while the final public launch is still being prepared."
+        : "";
 
   return (
     <html lang="en">
@@ -18,10 +24,13 @@ export default function RootLayout({ children }) {
           <div className="ambient ambient--left" />
           <div className="ambient ambient--right" />
           <SiteHeader />
-          {launchState === "closed" ? (
-            <div className="site-notice" role="status" aria-live="polite">
-              Pre-mainnet teaser. Core Cats is still in final preparation. Mainnet deployment and public mint are
-              not live yet.
+          {siteNotice ? (
+            <div
+              className={`site-notice ${launchState === "canary" ? "site-notice--canary" : "site-notice--closed"}`}
+              role="status"
+              aria-live="polite"
+            >
+              {siteNotice}
             </div>
           ) : null}
           <main>{children}</main>
