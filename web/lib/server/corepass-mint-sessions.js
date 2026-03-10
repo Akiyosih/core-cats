@@ -319,6 +319,58 @@ function normalizeCallbackKey(value) {
     .replace(/[^a-z0-9]/g, "");
 }
 
+function parseStructuredCallbackValue(value) {
+  const raw = String(value || "").trim();
+  if (!raw) {
+    return null;
+  }
+
+  const candidates = [raw];
+  if (/%[0-9a-f]{2}/i.test(raw)) {
+    try {
+      const decoded = decodeURIComponent(raw);
+      if (decoded && decoded !== raw) {
+        candidates.push(decoded);
+      }
+    } catch {}
+  }
+
+  for (const candidate of candidates) {
+    const trimmed = String(candidate || "").trim();
+    if (!trimmed) {
+      continue;
+    }
+
+    if (
+      (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
+      (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+      (trimmed.startsWith('"') && trimmed.endsWith('"'))
+    ) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (isPlainObject(parsed)) {
+          return parsed;
+        }
+        if (typeof parsed === "string" && parsed.trim() && parsed !== trimmed) {
+          const nested = parseStructuredCallbackValue(parsed);
+          if (nested) {
+            return nested;
+          }
+        }
+      } catch {}
+    }
+
+    if (trimmed.includes("=")) {
+      const searchParams = new URLSearchParams(trimmed);
+      if (Array.from(searchParams.keys()).length > 0) {
+        return Object.fromEntries(searchParams.entries());
+      }
+    }
+  }
+
+  return null;
+}
+
 function collectCallbackFields(source, target = new Map()) {
   if (!isPlainObject(source)) {
     return target;
@@ -331,13 +383,33 @@ function collectCallbackFields(source, target = new Map()) {
     }
     if (isPlainObject(value)) {
       collectCallbackFields(value, target);
+      continue;
+    }
+    const structuredValue = parseStructuredCallbackValue(value);
+    if (structuredValue) {
+      collectCallbackFields(structuredValue, target);
     }
   }
 
   return target;
 }
 
-function pickCallbackField(fields, searchParams, aliases) {
+function collectCallbackSearchParams(searchParams, target = new Map()) {
+  for (const [key, value] of searchParams.entries()) {
+    const normalizedKey = normalizeCallbackKey(key);
+    if (!target.has(normalizedKey)) {
+      target.set(normalizedKey, value);
+    }
+    const structuredValue = parseStructuredCallbackValue(value);
+    if (structuredValue) {
+      collectCallbackFields(structuredValue, target);
+    }
+  }
+
+  return target;
+}
+
+function pickCallbackField(fields, aliases) {
   for (const alias of aliases) {
     const normalizedAlias = normalizeCallbackKey(alias);
     if (fields.has(normalizedAlias)) {
@@ -348,17 +420,15 @@ function pickCallbackField(fields, searchParams, aliases) {
     }
   }
 
-  for (const [key, value] of searchParams.entries()) {
-    const normalizedKey = normalizeCallbackKey(key);
-    if (!aliases.some((alias) => normalizeCallbackKey(alias) === normalizedKey)) {
-      continue;
-    }
-    if (String(value || "").trim() !== "") {
-      return String(value).trim();
-    }
-  }
-
   return "";
+}
+
+function summarizeCallbackPayload(payload, searchParams, fields) {
+  return {
+    payloadKeys: Object.keys(payload || {}).slice(0, 12),
+    searchParamKeys: Array.from(new Set(Array.from(searchParams.keys()))).slice(0, 12),
+    fieldKeys: Array.from(fields.keys()).slice(0, 20),
+  };
 }
 
 function appendHistory(session, entry) {
@@ -473,16 +543,17 @@ export async function readMintSession(request, sessionId) {
 
 export function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
   const source = payload && typeof payload === "object" ? payload : {};
-  const fields = collectCallbackFields(source);
+  const fields = collectCallbackSearchParams(searchParams, collectCallbackFields(source));
   return {
-    sessionId: pickCallbackField(fields, searchParams, ["sessionId", "session_id", "session"]),
-    step: pickCallbackField(fields, searchParams, ["step"]),
+    sessionId: pickCallbackField(fields, ["sessionId", "session_id", "session"]),
+    step: pickCallbackField(fields, ["step"]),
     coreId: normalizeCoreId(
-      pickCallbackField(fields, searchParams, ["coreID", "coreId", "coreid", "core_id", "user", "from", "minter"]),
+      pickCallbackField(fields, ["coreID", "coreId", "coreid", "core_id", "user", "from", "minter"]),
     ),
-    signature: pickCallbackField(fields, searchParams, ["signature", "sig"]),
-    txHash: pickCallbackField(fields, searchParams, ["txHash", "tx_hash", "transactionHash", "transaction_hash", "hash"]),
-    message: pickCallbackField(fields, searchParams, ["message", "detail", "msg"]),
+    signature: pickCallbackField(fields, ["signature", "sig"]),
+    txHash: pickCallbackField(fields, ["txHash", "tx_hash", "transactionHash", "transaction_hash", "hash"]),
+    message: pickCallbackField(fields, ["message", "detail", "msg"]),
+    debug: summarizeCallbackPayload(source, searchParams, fields),
     requestUrl,
   };
 }
@@ -506,6 +577,19 @@ export async function applyCorePassCallback(request, payload) {
     if (!resolvedCoreId) {
       const error = new Error("CorePass identify callback did not include coreID");
       error.code = "missing_coreid";
+      session.error = {
+        code: error.code,
+        message: error.message,
+      };
+      session.updatedAt = nowIso();
+      appendHistory(session, {
+        step: "identify",
+        event: "callback_missing_coreid",
+        payloadKeys: parsed.debug.payloadKeys,
+        searchParamKeys: parsed.debug.searchParamKeys,
+        fieldKeys: parsed.debug.fieldKeys,
+      });
+      await persistSession(request, session);
       throw error;
     }
 

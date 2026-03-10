@@ -34,3 +34,31 @@ test("parseCallbackPayload falls back to user for identify callbacks", () => {
 
   assert.equal(parsed.coreId, "cb5678");
 });
+
+test("parseCallbackPayload unwraps stringified JSON callback envelopes", () => {
+  const searchParams = new URLSearchParams("sessionId=session-3&step=identify");
+  const parsed = parseCallbackPayload(
+    "https://core-cats.vercel.app/api/mint/corepass/callback?sessionId=session-3&step=identify",
+    {
+      result: "{\"coreID\":\"cb9abc\",\"signature\":\"0xsig\"}",
+    },
+    searchParams,
+  );
+
+  assert.equal(parsed.coreId, "cb9abc");
+  assert.equal(parsed.signature, "0xsig");
+});
+
+test("parseCallbackPayload unwraps nested urlencoded callback envelopes", () => {
+  const searchParams = new URLSearchParams(
+    "sessionId=session-4&step=identify&payload=coreID%3Dcbdef0%26signature%3D0xform",
+  );
+  const parsed = parseCallbackPayload(
+    "https://core-cats.vercel.app/api/mint/corepass/callback?sessionId=session-4&step=identify&payload=coreID%3Dcbdef0%26signature%3D0xform",
+    {},
+    searchParams,
+  );
+
+  assert.equal(parsed.coreId, "cbdef0");
+  assert.equal(parsed.signature, "0xform");
+});
