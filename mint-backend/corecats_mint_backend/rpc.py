@@ -76,6 +76,19 @@ def core_address_to_hex(value: str) -> str:
     raise ValueError(f"Unsupported Core address format: {value}")
 
 
+def core_address_to_xcb_rpc(value: str) -> str:
+    raw = str(value or "").strip().lower()
+    if raw.startswith("0x") and len(raw) == 46 and _ICAN_RE.fullmatch(raw[2:]):
+        return raw
+    if raw.startswith("0x") and len(raw) == 42 and _HEX_40_RE.fullmatch(raw[2:]):
+        return raw
+    if len(raw) == 44 and _ICAN_RE.fullmatch(raw):
+        return f"0x{raw}"
+    if len(raw) == 40 and _HEX_40_RE.fullmatch(raw):
+        return f"0x{raw}"
+    raise ValueError(f"Unsupported Core address format: {value}")
+
+
 def _parse_hex_int(value: object) -> int:
     if value is None:
         return 0
@@ -162,19 +175,30 @@ class CoreRpcClient:
         return _parse_hex_int(self._request(BLOCK_NUMBER_METHODS, []))
 
     def eth_call(self, contract_address: str, data: str, block_tag: str = "latest") -> str:
-        result = self._request(
-            CALL_METHODS,
-            [
-                {
-                    "to": core_address_to_hex(contract_address),
-                    "data": data,
-                },
-                block_tag,
-            ],
-        )
-        if not isinstance(result, str) or not result.startswith("0x"):
-            raise RpcError("eth_call did not return a hex payload")
-        return result
+        last_error: Exception | None = None
+
+        for method in CALL_METHODS:
+            to_address = core_address_to_xcb_rpc(contract_address) if method == "xcb_call" else core_address_to_hex(contract_address)
+            try:
+                result = self._request(
+                    (method,),
+                    [
+                        {
+                            "to": to_address,
+                            "data": data,
+                        },
+                        block_tag,
+                    ],
+                )
+            except Exception as error:  # noqa: BLE001
+                last_error = error
+                continue
+
+            if isinstance(result, str) and result.startswith("0x"):
+                return result
+            last_error = RpcError(f"{method} did not return a hex payload")
+
+        raise last_error or RpcError("contract call failed")
 
     def get_wallet_mint_state(self, contract_address: str, minter: str) -> WalletMintState:
         current_block = self.get_block_number()
