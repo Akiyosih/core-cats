@@ -93,6 +93,12 @@ Move to `canary` only after the Contabo backend and contract address are both co
    - mint session creation works from the production origin
    - proxy traffic reaches the Contabo backend successfully
 
+One valid use of this stage is the `CCATTEST rehearsal canary`:
+1. keep `NEXT_PUBLIC_CORECATS_ADDRESS` pointed at the mainnet `CCATTEST` contract
+2. keep `COREPASS_EXPECTED_CORE_ID` unset
+3. use the real public `/mint` UI rather than a hidden operator path under `closed`
+4. still run a later official `CCAT` canary after the final contract is deployed
+
 If a self-only pilot must still keep the public page visually `closed`, the terminal-side session probe can drive the CorePass session API without exposing the mint UI:
 
 `node ./scripts/probe-public-origin.mjs https://<public-origin> --expected-chain-id 1 --expected-network mainnet --expected-contract <pilot-cb...> --expect-relayer true --watch`

@@ -169,6 +169,19 @@ Before the official canary/public launch, apply the lessons from any self-only p
    - clear contract/explorer copy surface in the success state
 9. Non-critical product additions such as a support/donation link should stay outside the mint-critical path until mint reliability work is finished.
 
+### CCATTEST rehearsal canary before the official CCAT canary
+After a self-only pilot succeeds, the project may run a public-UI rehearsal against the mainnet `CCATTEST` contract before the official `CCAT` contract exists.
+
+Rules for that stage:
+1. use the real public `/mint` UI with `NEXT_PUBLIC_LAUNCH_STATE=canary`
+2. keep the configured contract on the mainnet `CCATTEST` address for that rehearsal stage
+3. keep `COREPASS_EXPECTED_CORE_ID` unset so the rehearsal remains generic-wallet
+4. do not add a hidden operator-only mint UI under `closed`
+5. still run a later official canary on the final `CCAT` contract after deploy
+
+Detailed rehearsal scope and test matrix:
+- `docs/CCATTEST_REHEARSAL_CANARY_PLAN.md`
+
 ## 7. Go / No-Go Rules
 Move from `closed` to `canary` only if:
 1. mainnet contracts are deployed
