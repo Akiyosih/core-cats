@@ -4,7 +4,7 @@ import { getCorePublicConfig } from "../lib/server/core-env";
 const links = [
   { href: "/", label: "Home" },
   { href: "/collection", label: "Collection" },
-  { href: "/my-cats", label: "My Cats", soonBeforePublic: true },
+  { href: "/my-cats", label: "My Cats" },
   { href: "/about", label: "About" },
   { href: "/transparency", label: "Transparency" },
   { href: "/mint", label: "Mint", soonBeforePublic: true },

@@ -33,10 +33,9 @@ export default async function MyCatsPage({ searchParams }) {
       <div className="page-stack">
         <section className="copy-panel my-cats-panel">
           <p className="eyebrow my-cats-eyebrow">My Cats</p>
-          <h1>Ownership search opens soon.</h1>
+          <h1>Ownership search is not available in this stage.</h1>
           <p className="my-cats-copy">
-            This page will become the wallet lookup for live Core Cats once the site moves beyond the closed launch
-            stage.
+            This page becomes the wallet lookup once the site moves beyond the closed launch stage.
           </p>
         </section>
 
@@ -78,7 +77,7 @@ export default async function MyCatsPage({ searchParams }) {
         <h1>Search by wallet address.</h1>
         <p className="my-cats-copy">
           {isCanary
-            ? "Use this page to confirm ownership after rehearsal mints. Enter a Core wallet address to inspect the cats currently held there while the broader public ownership release is still soon."
+            ? "Use this page to confirm ownership after rehearsal mints. Enter a Core wallet address to inspect the cats currently held there."
             : "Enter a Core wallet address to see the cats currently held there."}
         </p>
         {isCanary ? (
