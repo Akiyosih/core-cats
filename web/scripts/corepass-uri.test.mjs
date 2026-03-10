@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { CORECATS_METHOD_SELECTORS, encodeCoreCatsCommitMintData } from "../lib/server/core-calldata.js";
+import {
+  CORECATS_METHOD_SELECTORS,
+  encodeCoreCatsCommitMintData,
+  encodeCoreCatsFinalizeMintData,
+  normalizeCoreAddressToHex,
+} from "../lib/server/core-calldata.js";
 import { buildCorePassUri, createFinalizeState, tryEncodeFinalizeMintData } from "../lib/server/corepass-mint-sessions.js";
 
 test("sign URI keeps a slash when coreId is omitted", () => {
@@ -27,12 +32,26 @@ test("tx URI keeps the provided coreId path", () => {
   assert.match(uri, /type=app-link/);
 });
 
-test("finalize calldata builder leaves manual finalize unavailable for Core cb addresses", () => {
+test("finalize calldata builder supports Core cb addresses for manual fallback", () => {
   const encoded = tryEncodeFinalizeMintData("cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416");
 
-  assert.equal(encoded.manualAvailable, false);
-  assert.equal(encoded.data, "");
-  assert.match(encoded.error, /invalid address/i);
+  assert.equal(encoded.manualAvailable, true);
+  assert.equal(encoded.error, "");
+  assert.match(encoded.data, /^0x11709128/);
+});
+
+test("Core address normalization strips the ICAN prefix and check digits", () => {
+  assert.equal(normalizeCoreAddressToHex("cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416"), "0xcc64595127da8b1f7d4a03f7e0e1f4562409b416");
+});
+
+test("finalize calldata uses the Core/ylm selector and normalized address body", () => {
+  const data = encodeCoreCatsFinalizeMintData({ minter: "cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416" });
+
+  assert.equal(data.slice(0, 10), CORECATS_METHOD_SELECTORS.finalizeMint);
+  assert.equal(
+    data,
+    "0x11709128000000000000000000000000cc64595127da8b1f7d4a03f7e0e1f4562409b416",
+  );
 });
 
 test("createFinalizeState tolerates a null prior finalize state", () => {

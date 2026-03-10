@@ -73,6 +73,21 @@ function StatusLine({ label, value, mono = false }) {
   );
 }
 
+function describeCallbackError(code) {
+  switch (String(code || "").trim()) {
+    case "wallet_limit_reached":
+      return "This wallet is already at the 3-cat limit for the standard mint path, so no new commit transaction was prepared.";
+    case "pending_commit_exists":
+      return "This wallet already has a commit waiting for finalize. Finish that session before starting another one.";
+    case "wallet_state_unavailable":
+      return "Mint authorization is temporarily unavailable because the backend could not confirm the wallet state.";
+    case "authorize_failed":
+      return "Mint authorization failed after the wallet was identified.";
+    default:
+      return code ? `CorePass callback returned ${code}.` : "";
+  }
+}
+
 export default function MintWorkflow({ config }) {
   const searchParams = useSearchParams();
   const initialSessionId = searchParams.get("sessionId") || "";
@@ -83,7 +98,6 @@ export default function MintWorkflow({ config }) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [autoFinalizeState, setAutoFinalizeState] = useState("idle");
 
   const commitHref = useMemo(
     () => explorerTxUrl(session?.explorerBaseUrl || config.explorerBaseUrl, session?.commit?.txHash),
@@ -96,7 +110,7 @@ export default function MintWorkflow({ config }) {
 
   useEffect(() => {
     if (callbackError) {
-      setError(`CorePass callback returned ${callbackError}.`);
+      setError(describeCallbackError(callbackError));
     }
   }, [callbackError]);
 
@@ -110,7 +124,7 @@ export default function MintWorkflow({ config }) {
     try {
       const payload = await getJson(`/api/mint/corepass/session?sessionId=${encodeURIComponent(nextSessionId)}`);
       setSession(payload);
-      setError("");
+      setError(payload.error?.message || "");
     } catch (refreshError) {
       setError(refreshError.message || "Failed to refresh mint session");
     }
@@ -125,47 +139,6 @@ export default function MintWorkflow({ config }) {
     return () => clearInterval(timer);
   }, [sessionId]);
 
-  useEffect(() => {
-    if (!sessionId || !session?.relayerEnabled) return;
-    if (session.status !== "commit_confirmed") return;
-    if (session.finalize?.txHash) return;
-
-    let cancelled = false;
-    let running = false;
-
-    async function tryFinalize() {
-      if (running || cancelled) return;
-      running = true;
-      try {
-        setAutoFinalizeState("trying");
-        const payload = await postJson("/api/mint/corepass/session/finalize", { sessionId });
-        if (!cancelled) {
-          setSession(payload);
-          setAutoFinalizeState("submitted");
-        }
-      } catch (finalizeError) {
-        if (cancelled) return;
-        if (finalizeError.code === "too_early" || finalizeError.code === "no_pending_commit") {
-          setAutoFinalizeState("waiting");
-        } else if (finalizeError.code === "relayer_not_configured") {
-          setAutoFinalizeState("manual_only");
-        } else {
-          setAutoFinalizeState("manual_only");
-          setError(finalizeError.message || "Automatic finalize failed");
-        }
-      } finally {
-        running = false;
-      }
-    }
-
-    tryFinalize();
-    const timer = setInterval(tryFinalize, 5000);
-    return () => {
-      cancelled = true;
-      clearInterval(timer);
-    };
-  }, [sessionId, session?.relayerEnabled, session?.status, session?.finalize?.txHash]);
-
   async function handleBegin() {
     setLoading(true);
     setError("");
@@ -174,7 +147,6 @@ export default function MintWorkflow({ config }) {
       setSession(payload);
       setSessionId(payload.sessionId);
       window.history.replaceState({}, "", `/mint?sessionId=${encodeURIComponent(payload.sessionId)}`);
-      setAutoFinalizeState("idle");
     } catch (createError) {
       setError(createError.message || "Failed to create CorePass mint session");
     } finally {
@@ -186,18 +158,52 @@ export default function MintWorkflow({ config }) {
   const minter = session?.minter || "not selected";
   const showTestnetNotice =
     (config.networkName || "").toLowerCase() === "devin" || Number(config.chainId || 0) === 3;
-  const relayerNote =
-    autoFinalizeState === "trying"
-      ? "Relayer is attempting finalize."
-      : autoFinalizeState === "waiting"
-        ? "Waiting for the future block to pass before relayer finalize."
-        : autoFinalizeState === "submitted"
-          ? "Relayer submitted finalize. Explorer is the current source of truth."
-          : autoFinalizeState === "manual_only"
-            ? "Relayer is unavailable. Use the CorePass finalize step below."
+  const finalizeStatus = session?.finalize?.status || "awaiting_finalize";
+  const commitConfirmed = Boolean(session?.commit?.confirmedAt);
+  const finalizeConfirmed = Boolean(session?.finalize?.confirmedAt);
+  const finalizePending = commitConfirmed && !finalizeConfirmed;
+  const phaseCopy = finalizeConfirmed
+    ? "Mint completed after finalize."
+    : finalizePending
+      ? "Commit confirmed. Finalize is still pending."
+      : commitConfirmed
+        ? "Commit confirmed."
+        : session?.identify?.completedAt
+          ? "Wallet confirmed. Commit still needs approval."
+          : "Session not started.";
+  const relayerNote = finalizeConfirmed
+    ? "Finalize completed. The mint is now delivered."
+    : session?.finalize?.stuck
+      ? "Commit is confirmed, but finalize is taking longer than expected. The backend keeps checking, and the manual finalize fallback remains available."
+      : finalizeStatus === "submitted"
+        ? "Commit is confirmed. The backend relayer already sent finalize and is now waiting for chain confirmation."
+        : finalizeStatus === "retrying" || finalizeStatus === "awaiting_finalize"
+          ? session?.relayerEnabled
+            ? "Commit is confirmed. The backend relayer will keep retrying finalize until the eligible chain state is ready."
+            : "Relayer is not configured for this environment. Use the manual finalize fallback below."
+          : finalizeStatus === "manual_only"
+            ? "Relayer is unavailable for this session. Use the manual finalize fallback below."
+            : finalizeStatus === "expired"
+              ? "The finalize window expired before completion. This session now needs operator intervention."
+              : session?.relayerEnabled
+                ? "The backend relayer will handle finalize after commit confirmation."
+                : "Relayer is not configured for this environment.";
+  const automaticPathLabel = finalizeConfirmed
+    ? "completed"
+    : finalizeStatus === "submitted"
+      ? "submitted"
+      : session?.finalize?.stuck
+        ? "stuck"
+        : finalizeStatus === "manual_only"
+          ? "manual only"
+          : finalizeStatus === "expired"
+            ? "expired"
             : session?.relayerEnabled
-              ? "Relayer is available and will be tried after commit confirmation."
-              : "Relayer is not configured for this environment.";
+              ? "retrying"
+              : "unavailable";
+  const manualFinalizeAvailable = Boolean(
+    session?.finalize?.manualAvailable && session?.finalize?.status !== "expired" && !finalizeConfirmed,
+  );
 
   return (
     <div className="mint-stack">
@@ -216,6 +222,7 @@ export default function MintWorkflow({ config }) {
           <StatusLine label="Expected chain id" value={String(config.chainId)} />
           <StatusLine label="Contract" value={config.coreCatsAddress} mono />
           <StatusLine label="Current state" value={currentState} />
+          <StatusLine label="Mint progress" value={phaseCopy} />
           <StatusLine label="CoreID" value={minter} mono />
           <StatusLine label="Session" value={sessionId || "not started"} mono />
         </article>
@@ -264,10 +271,10 @@ export default function MintWorkflow({ config }) {
         <SessionAction
           eyebrow="Step 2"
           title="Commit the mint transaction"
-          copy="Once the CoreID is known, the server prepares the signed commitMint call and hands it to CorePass as a transaction request. This is the step that actually records your mint request on-chain."
+          copy="Once the CoreID is known, the server prepares the signed commitMint call and hands it to CorePass as a transaction request. This records the mint request on-chain, but delivery is not complete until finalize succeeds."
           request={session.commit}
           buttonLabel="Open CorePass Commit"
-          completedLabel="Commit transaction confirmed."
+          completedLabel="Commit confirmed. Finalize is still required before the cat is delivered."
         />
       ) : null}
 
@@ -276,20 +283,19 @@ export default function MintWorkflow({ config }) {
           <p className="eyebrow">Step 3</p>
           <h2>Finalize the random assignment</h2>
           <p>
-            After the commit is confirmed, the contract waits for the future block boundary. This page keeps trying
-            the relayer path when available. This is the step that draws from the fixed set of 1,000 cats. If that
-            path is unavailable, use the CorePass finalize request below.
+            Commit confirmation only records the pending mint. Your cat is delivered only after finalize succeeds and
+            the random assignment is completed on-chain.
           </p>
           <p className="mint-meta">{relayerNote}</p>
           <div className="mint-action-grid">
             <div className="mint-action-panel">
               <p className="mint-action-title">Automatic path</p>
-              <p className="mint-state">{autoFinalizeState}</p>
-              <p className="mint-meta">Primary path: the relayer retries until the future block becomes valid.</p>
+              <p className="mint-state">{automaticPathLabel}</p>
+              <p className="mint-meta">Primary path: the backend relayer keeps working even if this page is closed or refreshed.</p>
             </div>
             <div className="mint-action-panel">
               <p className="mint-action-title">Manual CorePass fallback</p>
-              {session.finalize.manualAvailable ? (
+              {manualFinalizeAvailable ? (
                 <>
                   <a className="button button--primary button--wide" href={session.finalize.mobileUri}>
                     Open CorePass Finalize
@@ -302,7 +308,13 @@ export default function MintWorkflow({ config }) {
                   </a>
                 </>
               ) : (
-                <p className="mint-meta">Manual CorePass finalize is not available for this session. The relayer path remains primary.</p>
+                <p className="mint-meta">
+                  {finalizeConfirmed
+                    ? "Finalize already completed for this session."
+                    : session.finalize.status === "expired"
+                      ? "Manual finalize is no longer safe for this session because the finalize window expired."
+                      : "Manual CorePass finalize is not available for this session. The relayer path remains primary."}
+                </p>
               )}
             </div>
           </div>
@@ -319,6 +331,7 @@ export default function MintWorkflow({ config }) {
                 Open commit tx
               </a>
             ) : null}
+            <StatusLine label="Finalize status" value={finalizeConfirmed ? "confirmed" : finalizeStatus} />
             <StatusLine label="Finalize tx" value={session.finalize?.txHash || "not sent yet"} mono />
             {finalizeHref ? (
               <a href={finalizeHref} target="_blank" rel="noreferrer" className="inline-link">

@@ -44,3 +44,20 @@ test("warns when relayer flag is not true", () => {
   assert.equal(result.errors.length, 0);
   assert.match(result.warnings.join("\n"), /manual finalize fallback/);
 });
+
+test("warns when self-only CoreID pinning is still present in closed state", () => {
+  const result = validateProductionEnv(buildBaseEnv({ COREPASS_EXPECTED_CORE_ID: "cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416" }));
+  assert.equal(result.errors.length, 0);
+  assert.match(result.warnings.join("\n"), /generic-wallet canary\/public redeploy/);
+});
+
+test("rejects self-only CoreID pinning for canary launch", () => {
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      COREPASS_EXPECTED_CORE_ID: "cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416",
+    }),
+  );
+  assert.match(result.errors.join("\n"), /COREPASS_EXPECTED_CORE_ID must be removed/);
+});

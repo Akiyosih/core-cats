@@ -31,6 +31,8 @@ class Config:
     finalizer_address: str
     finalizer_keystore_path: Optional[Path]
     finalizer_password_file: Optional[Path]
+    finalize_worker_interval_seconds: int
+    finalize_stuck_timeout_seconds: int
 
 
 def _read_int(name: str, default: int) -> int:
@@ -79,6 +81,10 @@ def validate_config(config: Config) -> None:
         errors.append("FINALIZER_KEYSTORE_PATH and FINALIZER_PASSWORD_FILE must be set together")
     if config.finalizer_address and len(config.finalizer_address) != 44:
         errors.append("FINALIZER_ADDRESS must be a 44-character Core address when set")
+    if config.finalize_worker_interval_seconds <= 0:
+        errors.append("CORECATS_FINALIZE_WORKER_INTERVAL_SECONDS must be greater than 0")
+    if config.finalize_stuck_timeout_seconds <= 0:
+        errors.append("CORECATS_FINALIZE_STUCK_TIMEOUT_SECONDS must be greater than 0")
 
     if config.profile == "production":
         if config.network_name.lower() != "mainnet":
@@ -148,6 +154,8 @@ def load_config() -> Config:
         finalizer_address=finalizer_address,
         finalizer_keystore_path=Path(finalizer_keystore_raw).expanduser() if finalizer_keystore_raw else None,
         finalizer_password_file=Path(finalizer_password_file_raw).expanduser() if finalizer_password_file_raw else None,
+        finalize_worker_interval_seconds=_read_int("CORECATS_FINALIZE_WORKER_INTERVAL_SECONDS", 5),
+        finalize_stuck_timeout_seconds=_read_int("CORECATS_FINALIZE_STUCK_TIMEOUT_SECONDS", 180),
     )
     validate_config(config)
     return config

@@ -10,6 +10,7 @@ It is designed to run on the Contabo Linux server alongside the existing Core fu
 2. mint authorization issuance through `spark`
 3. relayer-assisted `finalizeMint(minter)` through `spark`
 4. a small internal HTTP API consumed by the Vercel frontend
+5. backend-side finalize retry / receipt tracking / stuck-session detection
 
 The public browser should continue to use the Vercel origin. The Vercel app keeps the UI flow, CorePass callback URL, and QR/app-link generation. This backend only handles durable storage and privileged mint operations.
 
@@ -72,6 +73,9 @@ The current production shape still expects:
 2. `FINALIZER_PRIVATE_KEY` as a raw key, or
 3. `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` as the official Foxar keystore alternative for the dedicated finalizer role
 4. when keystore mode is used on Core mainnet, also set `FINALIZER_ADDRESS=<cb...>` so the backend can broadcast with the explicit sender address
+5. optional finalize worker tuning:
+   - `CORECATS_FINALIZE_WORKER_INTERVAL_SECONDS`
+   - `CORECATS_FINALIZE_STUCK_TIMEOUT_SECONDS`
 
 Source reference for the keystore path:
 1. https://foxar.dev/reference/cli/spark/script/
@@ -105,6 +109,11 @@ bash /root/core-cats/mint-backend/systemd/contabo-mainnet-smoke.sh
 ```
 
 This smoke check verifies `healthz`, shared-secret auth, and SQLite-backed session CRUD without issuing mint signatures or broadcasting finalize transactions.
+
+In production, `/healthz` also exposes finalize-worker summary fields so stuck-session monitoring can alert on:
+1. pending finalize backlog
+2. stuck finalize count
+3. oldest pending finalize age in seconds
 
 For the public HTTPS frontend, the recommended default is Caddy:
 

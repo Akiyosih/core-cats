@@ -106,6 +106,21 @@ class SessionStore:
             return None
         return json.loads(row["payload_json"])
 
+    def list_finalize_candidates(self, limit: int = 100) -> list[dict[str, Any]]:
+        self.cleanup_expired()
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT payload_json
+                FROM mint_sessions
+                WHERE status IN ('commit_confirmed', 'finalize_submitted')
+                ORDER BY updated_at ASC
+                LIMIT ?
+                """,
+                (limit,),
+            ).fetchall()
+        return [json.loads(row["payload_json"]) for row in rows]
+
     def delete_session(self, session_id: str) -> bool:
         with self._connect() as conn:
             result = conn.execute("DELETE FROM mint_sessions WHERE session_id = ?", (session_id,))

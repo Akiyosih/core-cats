@@ -1,10 +1,8 @@
 import crypto from "node:crypto";
 
 import QRCode from "qrcode";
-import { Interface } from "ethers";
 
-import { CORECATS_MINT_ABI } from "../corecats-abi.js";
-import { encodeCoreCatsCommitMintData } from "./core-calldata.js";
+import { encodeCoreCatsCommitMintData, encodeCoreCatsFinalizeMintData } from "./core-calldata.js";
 import { getCorePublicConfig, getCoreServerEnv } from "./core-env.js";
 import { issueMintAuthorization, relayFinalizeMint } from "./core-spark.js";
 import {
@@ -16,7 +14,6 @@ import {
   writeRemoteMintSession,
 } from "./mint-backend-proxy.js";
 
-const mintInterface = new Interface(CORECATS_MINT_ABI);
 const SESSION_TTL_MS = Number(process.env.COREPASS_SESSION_TTL_SECONDS || 20 * 60) * 1000;
 const store = globalThis.__coreCatsCorePassMintSessions || new Map();
 
@@ -196,6 +193,7 @@ async function buildCommitRequest(request, session) {
     nonce: resolvedNonce,
     expiry: resolvedExpiry,
     messageHash: authorization.messageHash,
+    walletState: authorization.walletState || null,
     commitHash,
     data,
     desktopUri,
@@ -205,6 +203,7 @@ async function buildCommitRequest(request, session) {
     confirmedAt: "",
   };
   session.status = "awaiting_commit";
+  session.error = null;
   session.updatedAt = nowIso();
 }
 
@@ -221,18 +220,24 @@ export function createFinalizeState(previous) {
     confirmedAt: source.confirmedAt || "",
     mode: source.mode || "manual",
     lastError: source.lastError || "",
+    lastErrorCode: source.lastErrorCode || "",
+    lastAttemptAt: source.lastAttemptAt || "",
+    retryCount: Number(source.retryCount || 0),
+    stuck: Boolean(source.stuck),
+    stuckSince: source.stuckSince || "",
+    confirmedBlockNumber: Number(source.confirmedBlockNumber || 0),
   };
 }
 
 function isFinalizeAddressEncodingError(error) {
   const message = String(error?.message || "").toLowerCase();
-  return error?.code === "INVALID_ARGUMENT" || message.includes("invalid address");
+  return error?.code === "INVALID_ARGUMENT" || message.includes("invalid address") || message.includes("unsupported core address");
 }
 
 export function tryEncodeFinalizeMintData(minter) {
   try {
     return {
-      data: mintInterface.encodeFunctionData("finalizeMint", [minter]),
+      data: encodeCoreCatsFinalizeMintData({ minter }),
       manualAvailable: true,
       error: "",
     };
@@ -379,6 +384,12 @@ function serializeSession(session) {
     coreCatsAddress: meta.coreCatsAddress,
     explorerBaseUrl: meta.explorerBaseUrl,
     relayerEnabled: meta.relayerEnabled,
+    error: session.error
+      ? {
+          code: session.error.code || null,
+          message: session.error.message || null,
+        }
+      : null,
     identify: {
       challengeHex: session.identify.challengeHex,
       desktopUri: session.identify.desktopUri,
@@ -410,6 +421,12 @@ function serializeSession(session) {
           confirmedAt: session.finalize.confirmedAt || null,
           mode: session.finalize.mode,
           lastError: session.finalize.lastError || null,
+          lastErrorCode: session.finalize.lastErrorCode || null,
+          lastAttemptAt: session.finalize.lastAttemptAt || null,
+          retryCount: Number(session.finalize.retryCount || 0),
+          stuck: Boolean(session.finalize.stuck),
+          stuckSince: session.finalize.stuckSince || null,
+          confirmedBlockNumber: Number(session.finalize.confirmedBlockNumber || 0) || null,
         }
       : null,
     history: session.history,
@@ -439,6 +456,7 @@ export async function createMintSession(request, { quantity }) {
     },
     commit: null,
     finalize: null,
+    error: null,
     history: [],
   };
 
@@ -493,6 +511,7 @@ export async function applyCorePassCallback(request, payload) {
     session.minter = resolvedCoreId;
     session.identify.coreId = resolvedCoreId;
     session.identify.completedAt = nowIso();
+    session.error = null;
     appendHistory(session, {
       step: "identify",
       event: "completed",
@@ -500,9 +519,25 @@ export async function applyCorePassCallback(request, payload) {
       callbackCoreId: parsed.coreId || null,
       expectedCoreId: session.identify.expectedCoreId || null,
     });
-    await buildCommitRequest(request, session);
-    await persistSession(request, session);
-    return serializeSession(session);
+    try {
+      await buildCommitRequest(request, session);
+      await persistSession(request, session);
+      return serializeSession(session);
+    } catch (error) {
+      session.status = "authorize_rejected";
+      session.error = {
+        code: error.code || "authorize_failed",
+        message: error.message || "Mint authorization failed",
+      };
+      session.updatedAt = nowIso();
+      appendHistory(session, {
+        step: "commit",
+        event: "authorization_rejected",
+        code: error.code || "authorize_failed",
+      });
+      await persistSession(request, session);
+      throw error;
+    }
   }
 
   if (parsed.step === "commit") {
@@ -519,6 +554,7 @@ export async function applyCorePassCallback(request, payload) {
     session.commit.txHash = parsed.txHash;
     session.commit.confirmedAt = nowIso();
     session.status = "commit_confirmed";
+    session.error = null;
     appendHistory(session, { step: "commit", event: "confirmed", txHash: parsed.txHash || null });
     await buildFinalizeRequest(request, session);
     await persistSession(request, session);
@@ -535,7 +571,12 @@ export async function applyCorePassCallback(request, payload) {
     session.finalize.confirmedAt = nowIso();
     session.finalize.status = "confirmed";
     session.finalize.mode = "corepass";
+    session.finalize.lastError = "";
+    session.finalize.lastErrorCode = "";
+    session.finalize.stuck = false;
+    session.finalize.stuckSince = "";
     session.status = "finalized";
+    session.error = null;
     appendHistory(session, { step: "finalize", event: "confirmed", txHash: parsed.txHash || null });
     await persistSession(request, session);
     return serializeSession(session);

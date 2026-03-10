@@ -7,7 +7,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 from .config import Config, load_config
-from .spark import issue_mint_authorization, relay_finalize_mint
+from .finalize_worker import FinalizeManager, FinalizeWorker
+from .policy import AuthorizationRejected, evaluate_authorization_precheck
+from .rpc import CoreRpcClient, RpcError
+from .spark import classify_finalize_error_detail, issue_mint_authorization, relay_finalize_mint
 from .storage import SessionStore
 
 
@@ -39,6 +42,14 @@ class MintBackendHandler(BaseHTTPRequestHandler):
     @property
     def store(self) -> SessionStore:
         return self.server.store  # type: ignore[attr-defined]
+
+    @property
+    def rpc(self) -> CoreRpcClient:
+        return self.server.rpc  # type: ignore[attr-defined]
+
+    @property
+    def finalize_manager(self) -> FinalizeManager:
+        return self.server.finalize_manager  # type: ignore[attr-defined]
 
     def _require_auth(self) -> bool:
         if normalized_path(self.path) == "/healthz":
@@ -81,6 +92,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
                 "ok": True,
                 "networkName": self.config.network_name,
                 "chainId": self.config.chain_id,
+                "finalizeWorker": self.finalize_manager.snapshot(),
             },
         )
 
@@ -99,6 +111,8 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         expiry = int(body.get("expiry") or (int(datetime.now(timezone.utc).timestamp()) + 10 * 60))
 
         try:
+            wallet_state = self.rpc.get_wallet_mint_state(self.config.corecats_address, minter=minter)
+            precheck = evaluate_authorization_precheck(wallet_state, quantity)
             payload = issue_mint_authorization(
                 self.config,
                 minter=minter,
@@ -123,8 +137,22 @@ class MintBackendHandler(BaseHTTPRequestHandler):
                     "coreCatsAddress": self.config.corecats_address,
                     "networkName": self.config.network_name,
                     "relayerEnabled": bool(self.config.finalizer_private_key or self.config.finalizer_keystore_path),
+                    "walletState": {
+                        "minted": precheck.minted,
+                        "reserved": precheck.reserved,
+                        "availableSlots": precheck.available_slots,
+                        "pendingCommitActive": precheck.pending_commit_active,
+                        "finalizeBlock": precheck.finalize_block,
+                        "expiryBlock": precheck.expiry_block,
+                        "currentBlock": precheck.current_block,
+                        "maxPerAddress": precheck.max_per_address,
+                    },
                 },
             )
+        except AuthorizationRejected as error:
+            json_response(self, 409, {"error": error.code, "detail": str(error)})
+        except RpcError as error:
+            json_response(self, 503, {"error": "wallet_state_unavailable", "detail": str(error)})
         except Exception as error:  # noqa: BLE001
             json_response(self, 500, {"error": "failed_to_issue_mint_authorization", "detail": str(error)})
 
@@ -146,19 +174,11 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             json_response(self, 200, {"txHash": payload["txHash"], "relayerEnabled": True})
         except Exception as error:  # noqa: BLE001
             detail = str(error)
-            code = "finalize_failed"
+            code = classify_finalize_error_detail(detail)
             status = 500
-            if "finalize too early" in detail:
-                code = "too_early"
+            if code in {"too_early", "no_pending_commit", "finalize_expired"}:
                 status = 409
-            elif "no pending commit" in detail:
-                code = "no_pending_commit"
-                status = 409
-            elif "finalize expired" in detail:
-                code = "finalize_expired"
-                status = 409
-            elif "Finalizer key is not configured" in detail:
-                code = "relayer_not_configured"
+            elif code == "relayer_not_configured":
                 status = 501
 
             self.store.record_finalize_attempt(
@@ -239,11 +259,23 @@ class MintBackendHandler(BaseHTTPRequestHandler):
 
 def main() -> None:
     config = load_config()
+    store = SessionStore(config.db_path)
+    rpc = CoreRpcClient(config.rpc_url)
+    finalize_manager = FinalizeManager(config, store, rpc_client=rpc)
+    finalize_worker = FinalizeWorker(finalize_manager, config.finalize_worker_interval_seconds)
+
     server = ThreadingHTTPServer((config.bind, config.port), MintBackendHandler)
     server.config = config  # type: ignore[attr-defined]
-    server.store = SessionStore(config.db_path)  # type: ignore[attr-defined]
+    server.store = store  # type: ignore[attr-defined]
+    server.rpc = rpc  # type: ignore[attr-defined]
+    server.finalize_manager = finalize_manager  # type: ignore[attr-defined]
+
+    finalize_worker.start()
     print(f"Core Cats mint backend listening on http://{config.bind}:{config.port}")
-    server.serve_forever()
+    try:
+        server.serve_forever()
+    finally:
+        finalize_worker.stop()
 
 
 if __name__ == "__main__":

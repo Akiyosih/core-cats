@@ -63,6 +63,7 @@ export function validateProductionEnv(env) {
   const backendBaseUrl = normalizedUrl(env.CORECATS_BACKEND_BASE_URL);
   const backendSharedSecret = normalized(env.CORECATS_BACKEND_SHARED_SECRET);
   const relayerEnabled = normalized(env.CORECATS_RELAYER_ENABLED || "true").toLowerCase();
+  const expectedCoreId = normalized(env.COREPASS_EXPECTED_CORE_ID);
 
   if (!VALID_LAUNCH_STATES.has(launchState)) {
     errors.push("NEXT_PUBLIC_LAUNCH_STATE must be one of: closed, canary, public");
@@ -108,6 +109,13 @@ export function validateProductionEnv(env) {
   if (relayerEnabled !== "true") {
     warnings.push("CORECATS_RELAYER_ENABLED is not true; the UI may expose manual finalize fallback instead of the intended relayer path");
   }
+  if (expectedCoreId) {
+    if (launchState === "closed") {
+      warnings.push("COREPASS_EXPECTED_CORE_ID is set; remove it before the generic-wallet canary/public redeploy");
+    } else {
+      errors.push("COREPASS_EXPECTED_CORE_ID must be removed before canary/public launch");
+    }
+  }
 
   for (const key of ["DEPLOYER_PRIVATE_KEY", "MINT_SIGNER_PRIVATE_KEY", "FINALIZER_PRIVATE_KEY"]) {
     if (hasValue(env, key)) {
@@ -134,6 +142,7 @@ export function validateProductionEnv(env) {
       backendMode,
       backendBaseUrl,
       relayerEnabled,
+      expectedCoreId,
     },
   };
 }

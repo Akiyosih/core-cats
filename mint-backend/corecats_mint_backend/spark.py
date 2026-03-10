@@ -14,6 +14,19 @@ class SparkResult:
     stderr: str
 
 
+def classify_finalize_error_detail(detail: str) -> str:
+    normalized = str(detail or "")
+    if "finalize too early" in normalized:
+        return "too_early"
+    if "no pending commit" in normalized:
+        return "no_pending_commit"
+    if "finalize expired" in normalized:
+        return "finalize_expired"
+    if "Finalizer key is not configured" in normalized:
+        return "relayer_not_configured"
+    return "finalize_failed"
+
+
 def _parse_required(name: str, pattern: str, text: str) -> str:
     match = re.search(pattern, text)
     if not match:
