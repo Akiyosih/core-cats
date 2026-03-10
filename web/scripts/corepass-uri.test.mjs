@@ -7,7 +7,12 @@ import {
   encodeCoreCatsFinalizeMintData,
   normalizeCoreAddressToHex,
 } from "../lib/server/core-calldata.js";
-import { buildCorePassUri, createFinalizeState, tryEncodeFinalizeMintData } from "../lib/server/corepass-mint-sessions.js";
+import {
+  buildCorePassUri,
+  createFinalizeState,
+  createMintSession,
+  tryEncodeFinalizeMintData,
+} from "../lib/server/corepass-mint-sessions.js";
 
 test("sign URI keeps a slash when coreId is omitted", () => {
   const uri = buildCorePassUri("sign", "", {
@@ -30,6 +35,20 @@ test("tx URI keeps the provided coreId path", () => {
   assert.match(uri, /^corepass:tx\/cb123\?/);
   assert.match(uri, /to=cb999/);
   assert.match(uri, /type=app-link/);
+});
+
+test("mint session uses app-link return semantics for QR identify", async () => {
+  const request = new Request("https://core-cats.vercel.app/api/mint/corepass/session", {
+    headers: {
+      host: "core-cats.vercel.app",
+      "x-forwarded-proto": "https",
+    },
+  });
+
+  const session = await createMintSession(request, { quantity: 1 });
+
+  assert.match(session.identify.desktopUri, /type=app-link/);
+  assert.equal(session.identify.desktopUri, session.identify.mobileUri);
 });
 
 test("finalize calldata builder supports Core cb addresses for manual fallback", () => {

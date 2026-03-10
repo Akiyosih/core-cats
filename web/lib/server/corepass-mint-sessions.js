@@ -121,21 +121,29 @@ function buildCallbackUrl(request, sessionId, step) {
   return buildAbsoluteUrl(request, "/api/mint/corepass/callback", `?sessionId=${encodeURIComponent(sessionId)}&step=${encodeURIComponent(step)}`);
 }
 
+function corePassBrowserReturnType() {
+  // CorePass app-link returns the signed data in query params, which matches the
+  // browser-driven QR flow used by `/mint`. The callback POST variant did not
+  // carry `coreID` on the real iPad standard-camera identify path.
+  return "app-link";
+}
+
 async function buildSignRequest(request, session) {
   const deadline = Math.floor(session.expiresAtMs / 1000);
   const callbackConn = buildCallbackUrl(request, session.id, "identify");
   const requestedCoreId = normalizeCoreId(session.identify.expectedCoreId);
+  const returnType = corePassBrowserReturnType();
   const desktopUri = buildCorePassUri("sign", requestedCoreId, {
     data: session.identify.challengeHex,
     conn: callbackConn,
     dl: deadline,
-    type: "callback",
+    type: returnType,
   });
   const mobileUri = buildCorePassUri("sign", requestedCoreId, {
     data: session.identify.challengeHex,
     conn: callbackConn,
     dl: deadline,
-    type: "app-link",
+    type: returnType,
   });
 
   session.identify.desktopUri = desktopUri;
@@ -170,6 +178,7 @@ async function buildCommitRequest(request, session) {
     signature: authorization.signature,
   });
   const callbackConn = buildCallbackUrl(request, session.id, "commit");
+  const returnType = corePassBrowserReturnType();
 
   const desktopUri = buildCorePassUri("tx", session.minter, {
     val: 0,
@@ -177,7 +186,7 @@ async function buildCommitRequest(request, session) {
     data,
     conn: callbackConn,
     dl: authorization.expiry,
-    type: "callback",
+    type: returnType,
   });
   const mobileUri = buildCorePassUri("tx", session.minter, {
     val: 0,
@@ -185,7 +194,7 @@ async function buildCommitRequest(request, session) {
     data,
     conn: callbackConn,
     dl: authorization.expiry,
-    type: "app-link",
+    type: returnType,
   });
 
   session.commit = {
@@ -275,13 +284,14 @@ async function buildFinalizeRequest(request, session) {
   const data = encoded.data;
   const deadline = Math.floor(session.expiresAtMs / 1000);
   const callbackConn = buildCallbackUrl(request, session.id, "finalize");
+  const returnType = corePassBrowserReturnType();
   const desktopUri = buildCorePassUri("tx", session.minter, {
     val: 0,
     to: meta.coreCatsAddress,
     data,
     conn: callbackConn,
     dl: deadline,
-    type: "callback",
+    type: returnType,
   });
   const mobileUri = buildCorePassUri("tx", session.minter, {
     val: 0,
@@ -289,7 +299,7 @@ async function buildFinalizeRequest(request, session) {
     data,
     conn: callbackConn,
     dl: deadline,
-    type: "app-link",
+    type: returnType,
   });
 
   session.finalize = {
