@@ -1041,6 +1041,17 @@ main {
   color: var(--ink);
 }
 
+.mint-scan-callout {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(224, 94, 67, 0.16), rgba(255, 244, 237, 0.92));
+  border: 1px solid rgba(224, 94, 67, 0.28);
+  color: var(--accent-deep);
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
 .mint-qr {
   width: min(100%, 240px);
   height: auto;
@@ -1145,6 +1156,11 @@ main {
   opacity: 0.9;
 }
 
+.mint-progress-item--blocked {
+  background: linear-gradient(135deg, rgba(228, 151, 62, 0.14), rgba(255, 255, 255, 0.78));
+  border-color: rgba(228, 151, 62, 0.28);
+}
+
 .mint-progress-dot {
   width: 14px;
   height: 14px;
@@ -1160,6 +1176,10 @@ main {
 
 .mint-progress-item--active .mint-progress-dot {
   background: var(--accent);
+}
+
+.mint-progress-item--blocked .mint-progress-dot {
+  background: #cf8b2f;
 }
 
 .mint-progress-copy {
@@ -1188,6 +1208,11 @@ main {
 
 .mint-step-summary--route {
   background: linear-gradient(135deg, rgba(224, 94, 67, 0.08), rgba(255, 255, 255, 0.78));
+}
+
+.mint-step-summary--blocked {
+  background: linear-gradient(135deg, rgba(228, 151, 62, 0.14), rgba(255, 248, 239, 0.9));
+  border-color: rgba(228, 151, 62, 0.28);
 }
 
 .mint-step-summary-title {

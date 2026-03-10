@@ -108,6 +108,8 @@ function DesktopQrAction({
   pendingNote,
   completedLabel,
   completedNote,
+  highlightedNotice,
+  completeTone = "done",
 }) {
   if (!request) return null;
   const complete = Boolean(request.completedAt || request.txHash);
@@ -121,7 +123,7 @@ function DesktopQrAction({
       <h2>{title}</h2>
       <p>{copy}</p>
       {complete ? (
-        <div className="mint-step-summary mint-step-summary--done">
+        <div className={`mint-step-summary mint-step-summary--${completeTone}`}>
           <p className="mint-step-summary-title">{completedLabel}</p>
           {completedNote ? <p className="mint-meta">{completedNote}</p> : null}
         </div>
@@ -129,6 +131,7 @@ function DesktopQrAction({
         <div className="mint-action-grid mint-action-grid--desktop">
           <div className="mint-action-panel mint-action-panel--desktop">
             <p className="mint-action-title">Desktop QR handoff</p>
+            {highlightedNotice ? <p className="mint-scan-callout">{highlightedNotice}</p> : null}
             {request.qrDataUrl ? <img src={request.qrDataUrl} alt={`${title} QR`} className="mint-qr" /> : null}
             {pendingNote ? <p className="mint-warning mint-warning--soft">{pendingNote}</p> : null}
             <p className="mint-meta">
@@ -182,6 +185,39 @@ function ProgressItem({ label, detail, tone }) {
       </div>
     </div>
   );
+}
+
+function describeRejectedSession(code) {
+  switch (String(code || "").trim()) {
+    case "wallet_limit_reached":
+      return {
+        phaseCopy: "Wallet confirmed, but this wallet is already at the 3-cat limit. QR 2 of 2 was not prepared.",
+        step1Label: "Wallet confirmed, but this wallet is already at the 3-cat limit.",
+        step1Note: "QR 2 of 2 was not prepared. No gas-spending mint transaction was created.",
+        commitDetail: "No commit transaction was prepared because this wallet is already at the standard 3-cat limit.",
+      };
+    case "pending_commit_exists":
+      return {
+        phaseCopy: "Wallet confirmed, but this wallet already has a pending commit. QR 2 of 2 was not prepared.",
+        step1Label: "Wallet confirmed, but this wallet already has a pending commit.",
+        step1Note: "QR 2 of 2 was not prepared. Finish finalize on the earlier session before starting another mint.",
+        commitDetail: "No new commit transaction was prepared because this wallet already has a pending commit waiting for finalize.",
+      };
+    case "canary_wallet_not_allowed":
+      return {
+        phaseCopy: "Wallet confirmed, but this wallet is not on the current rehearsal canary allowlist.",
+        step1Label: "Wallet confirmed, but this wallet is not on the current rehearsal canary allowlist.",
+        step1Note: "QR 2 of 2 was not prepared. No gas-spending mint transaction was created.",
+        commitDetail: "No commit transaction was prepared because this wallet is not allowed on the current rehearsal canary path.",
+      };
+    default:
+      return {
+        phaseCopy: "Wallet confirmed, but mint authorization was rejected before QR 2 of 2 could be prepared.",
+        step1Label: "Wallet confirmed, but mint authorization was rejected.",
+        step1Note: "QR 2 of 2 was not prepared. No gas-spending mint transaction was created.",
+        commitDetail: "No commit transaction was prepared because mint authorization failed after wallet confirmation.",
+      };
+  }
 }
 
 export default function MintWorkflow({ config }) {
@@ -278,12 +314,17 @@ export default function MintWorkflow({ config }) {
   const commitConfirmed = Boolean(session?.commit?.confirmedAt);
   const finalizeConfirmed = Boolean(session?.finalize?.confirmedAt);
   const finalizePending = commitConfirmed && !finalizeConfirmed;
+  const authorizeRejected = currentState === "authorize_rejected";
+  const rejectedSession = authorizeRejected ? describeRejectedSession(session?.error?.code || callbackError) : null;
   let phaseCopy = "Session not started.";
   if (session) {
     phaseCopy = "Session created. Confirm the wallet in CorePass.";
   }
   if (session?.identify?.completedAt) {
     phaseCopy = "Wallet confirmed. Waiting for mint authorization details.";
+  }
+  if (authorizeRejected && rejectedSession) {
+    phaseCopy = rejectedSession.phaseCopy;
   }
   if (session?.commit) {
     phaseCopy = "Wallet confirmed on desktop. QR 2 of 2 is now ready for the commit transaction.";
@@ -369,10 +410,12 @@ export default function MintWorkflow({ config }) {
         ? "The commit transaction is confirmed on-chain."
         : commitSubmitted
           ? "The commit transaction was submitted from CorePass and is still waiting for an on-chain receipt."
+        : authorizeRejected && rejectedSession
+          ? rejectedSession.commitDetail
         : session?.commit
           ? "Scan QR 2 of 2 to approve the commit transaction in CorePass."
           : "Commit is only prepared after wallet confirmation succeeds.",
-      tone: commitConfirmed ? "done" : session?.commit ? "active" : "waiting",
+      tone: commitConfirmed ? "done" : authorizeRejected ? "blocked" : session?.commit ? "active" : "waiting",
     },
     {
       label: "Finalize delivered",
@@ -382,8 +425,10 @@ export default function MintWorkflow({ config }) {
           ? "Finalize will only start after the commit transaction is confirmed on-chain."
         : commitConfirmed
           ? relayerNote
+          : authorizeRejected
+            ? "Finalize never started because no commit transaction was prepared for this session."
           : "Finalize starts only after the commit is confirmed.",
-      tone: finalizeConfirmed ? "done" : commitConfirmed ? "active" : "waiting",
+      tone: finalizeConfirmed ? "done" : authorizeRejected ? "blocked" : commitConfirmed ? "active" : "waiting",
     },
   ];
 
@@ -509,10 +554,12 @@ export default function MintWorkflow({ config }) {
           stepBadge="QR 1 of 2"
           title="Bind the mint session to a CorePass wallet"
           copy="CorePass signs a short challenge so this mint session can be tied to a specific CoreID before the free-mint authorization is issued. This step does not move funds."
+          highlightedNotice="QR 1 of 2: wallet bind only, no funds move."
           request={session.identify}
           pendingNote="Scan QR 1 of 2 with CorePass. The phone should stay inside CorePass after approval, while this desktop page waits for the callback."
-          completedLabel={`CoreID confirmed: ${session.identify.coreId}`}
-          completedNote="QR 1 of 2 is complete. Stay on this desktop page for QR 2 of 2."
+          completedLabel={authorizeRejected && rejectedSession ? rejectedSession.step1Label : `CoreID confirmed: ${session.identify.coreId}`}
+          completedNote={authorizeRejected && rejectedSession ? rejectedSession.step1Note : "QR 1 of 2 is complete. Stay on this desktop page for QR 2 of 2."}
+          completeTone={authorizeRejected ? "blocked" : "done"}
         />
       ) : null}
 
@@ -522,6 +569,7 @@ export default function MintWorkflow({ config }) {
           stepBadge="QR 2 of 2"
           title="Commit the mint transaction"
           copy="Once the CoreID is known, the server prepares the signed commitMint call and hands it to CorePass as a transaction request. This records the mint request on-chain, but delivery is not complete until finalize succeeds."
+          highlightedNotice="QR 2 of 2: real mint transaction, small XCB gas required."
           request={session.commit}
           pendingNote="Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass."
           completedLabel={commitCompletedLabel}
