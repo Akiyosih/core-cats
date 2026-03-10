@@ -46,9 +46,14 @@ test("mint session uses app-link return semantics for QR identify", async () => 
   });
 
   const session = await createMintSession(request, { quantity: 1 });
+  const uri = session.identify.desktopUri;
+  const query = uri.slice(uri.indexOf("?") + 1);
+  const conn = new URL(new URLSearchParams(query).get("conn"));
 
-  assert.match(session.identify.desktopUri, /type=app-link/);
-  assert.equal(session.identify.desktopUri, session.identify.mobileUri);
+  assert.match(uri, /type=app-link/);
+  assert.equal(uri, session.identify.mobileUri);
+  assert.match(conn.pathname, /^\/api\/mint\/corepass\/callback\/[0-9a-f-]+\/identify$/);
+  assert.equal(conn.search, "");
 });
 
 test("finalize calldata builder supports Core cb addresses for manual fallback", () => {

@@ -118,7 +118,8 @@ function sessionPublicMeta() {
 }
 
 function buildCallbackUrl(request, sessionId, step) {
-  return buildAbsoluteUrl(request, "/api/mint/corepass/callback", `?sessionId=${encodeURIComponent(sessionId)}&step=${encodeURIComponent(step)}`);
+  const pathname = `/api/mint/corepass/callback/${encodeURIComponent(sessionId)}/${encodeURIComponent(step)}`;
+  return buildAbsoluteUrl(request, pathname);
 }
 
 function corePassBrowserReturnType() {
