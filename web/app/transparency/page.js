@@ -33,6 +33,10 @@ const repositoryFiles = [
     label: "Mainnet closed launch runbook",
   },
   {
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/CCATTEST_REHEARSAL_CANARY_PLAN.md",
+    label: "CCATTEST rehearsal canary plan",
+  },
+  {
     href: "https://github.com/Akiyosih/core-cats/blob/main/docs/CORE_TESTNET_DEPLOY_RUNBOOK.md",
     label: "Core Devin deploy runbook",
   },
@@ -71,6 +75,19 @@ export default function TransparencyPage() {
   const contractPending =
     networkName === "mainnet" && (!isCoreAddress(contractAddress) || usesDevinDefault || looksLikePlaceholder(contractAddress));
   const contractHref = contractPending ? "" : buildExplorerAddressUrl(explorerBaseUrl, contractAddress);
+  const contractStatus = contractPending
+    ? "Mainnet deployment pending"
+    : networkName === "mainnet" && config.launchState === "canary"
+      ? "Mainnet canary contract configured"
+      : networkName === "mainnet"
+        ? "Mainnet contract configured"
+        : "Devin rehearsal contract configured";
+  const launchInterpretation =
+    config.launchState === "canary"
+      ? "The public mint UI is in validation mode. The currently configured contract may still be a rehearsal contract rather than the final public release contract."
+      : config.launchState === "public"
+        ? "The current contract surface is intended for the live public mint path."
+        : "The site is visible, but the public mint path is intentionally still closed.";
 
   const publicLinks = [
     { href: "https://github.com/Akiyosih/core-cats", label: "GitHub Repository" },
@@ -116,12 +133,7 @@ export default function TransparencyPage() {
               <strong>Launch state:</strong> {titleCase(config.launchState)}
             </li>
             <li>
-              <strong>Contract status:</strong>{" "}
-              {contractPending
-                ? "Mainnet deployment pending"
-                : networkName === "mainnet"
-                  ? "Mainnet contract configured"
-                  : "Devin rehearsal contract configured"}
+              <strong>Contract status:</strong> {contractStatus}
             </li>
             <li>
               <strong>Contract:</strong>{" "}
@@ -134,6 +146,15 @@ export default function TransparencyPage() {
               )}
             </li>
           </ul>
+        </article>
+
+        <article className="copy-card">
+          <h2>Current validation stage</h2>
+          <p>{launchInterpretation}</p>
+          <p>
+            Do not assume that a canary-stage contract is automatically the later official public contract. Verify the
+            address shown above and compare it against the runbook and rehearsal-plan documents.
+          </p>
         </article>
 
         <article className="copy-card">

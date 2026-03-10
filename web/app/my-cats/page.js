@@ -26,6 +26,7 @@ export default async function MyCatsPage({ searchParams }) {
   const ownerQuery = normalizeOwnerInput(params.owner);
   const hasSearch = ownerQuery.length > 0;
   const validOwner = hasSearch ? isCoreAddress(ownerQuery) : false;
+  const isCanary = launchState === "canary";
 
   if (launchState === "closed") {
     return (
@@ -76,8 +77,16 @@ export default async function MyCatsPage({ searchParams }) {
         <p className="eyebrow my-cats-eyebrow">My Cats</p>
         <h1>Search by wallet address.</h1>
         <p className="my-cats-copy">
-          Enter a Core wallet address to see the cats currently held there.
+          {isCanary
+            ? "Use this page to confirm ownership after rehearsal mints. Enter a Core wallet address to inspect the cats currently held there."
+            : "Enter a Core wallet address to see the cats currently held there."}
         </p>
+        {isCanary ? (
+          <p className="my-cats-copy">
+            Recent ownership changes may take a short cache interval to appear. Recheck after a brief wait before
+            treating a stale result as a failure.
+          </p>
+        ) : null}
 
         <form action="/my-cats" method="get" className="owner-search-form">
           <label className="owner-search-form__label" htmlFor="owner-address">
@@ -151,9 +160,11 @@ export default async function MyCatsPage({ searchParams }) {
       {!hasSearch ? (
         <section className="copy-grid my-cats-grid">
           <article className="copy-card my-cats-card">
-            <h2>Search any address</h2>
+            <h2>{isCanary ? "Use this after mint" : "Search any address"}</h2>
             <p>
-              This view uses the current on-chain ownership index instead of guessing from incomplete wallet data.
+              {isCanary
+                ? "For rehearsal-canary testing, this is the intended post-mint ownership check. Search the same wallet that completed the mint and confirm the expected cats appear here."
+                : "This view uses the current on-chain ownership index instead of guessing from incomplete wallet data."}
             </p>
           </article>
         </section>

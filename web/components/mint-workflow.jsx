@@ -3,9 +3,68 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
+import CopyButton from "./copy-button.jsx";
+
 function explorerTxUrl(explorerBaseUrl, txHash) {
   if (!explorerBaseUrl || !txHash) return null;
   return `${explorerBaseUrl.replace(/\/$/, "")}/tx/${txHash}`;
+}
+
+function explorerAddressUrl(explorerBaseUrl, address) {
+  if (!explorerBaseUrl || !address) return null;
+  return `${explorerBaseUrl.replace(/\/$/, "")}/address/${address}`;
+}
+
+function myCatsHref(owner) {
+  if (!owner) return "/my-cats";
+  return `/my-cats?owner=${encodeURIComponent(owner)}`;
+}
+
+function formatDateTime(value) {
+  if (!value) return "-";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+  return parsed.toLocaleString();
+}
+
+function formatSessionState(value) {
+  switch (String(value || "").trim()) {
+    case "awaiting_identity":
+      return "Awaiting wallet confirmation";
+    case "awaiting_commit":
+      return "Commit ready for approval";
+    case "authorize_rejected":
+      return "Authorization rejected before commit";
+    case "commit_confirmed":
+      return "Commit confirmed";
+    case "finalize_submitted":
+      return "Finalize submitted";
+    case "finalized":
+      return "Mint completed";
+    default:
+      return "Not started";
+  }
+}
+
+function formatFinalizeStatus(value) {
+  switch (String(value || "").trim()) {
+    case "awaiting_finalize":
+      return "Awaiting finalize";
+    case "retrying":
+      return "Retrying";
+    case "submitted":
+      return "Submitted";
+    case "confirmed":
+      return "Confirmed";
+    case "manual_only":
+      return "Manual finalize required";
+    case "expired":
+      return "Expired";
+    default:
+      return "Not started";
+  }
 }
 
 async function postJson(url, body) {
@@ -56,7 +115,9 @@ function SessionAction({ eyebrow, title, copy, request, buttonLabel, completedLa
           <a className="inline-link mono-wrap" href={request.desktopUri}>
             Open raw CorePass URI
           </a>
-          <p className="mint-meta">Scan the QR with CorePass on your phone. The callback updates this page after confirmation.</p>
+          <p className="mint-meta">
+            Scan the QR with your device camera or the CorePass in-app scanner, then return here after the callback.
+          </p>
         </div>
       </div>
       {request.completedAt ? <p className="mint-step-done">{completedLabel}</p> : null}
@@ -88,6 +149,18 @@ function describeCallbackError(code) {
   }
 }
 
+function ProgressItem({ label, detail, tone }) {
+  return (
+    <div className={`mint-progress-item mint-progress-item--${tone}`}>
+      <div className="mint-progress-dot" aria-hidden="true" />
+      <div className="mint-progress-copy">
+        <p className="mint-progress-label">{label}</p>
+        <p className="mint-meta">{detail}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function MintWorkflow({ config }) {
   const searchParams = useSearchParams();
   const initialSessionId = searchParams.get("sessionId") || "";
@@ -98,16 +171,21 @@ export default function MintWorkflow({ config }) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resumeHref, setResumeHref] = useState("");
 
   const commitHref = useMemo(
     () => explorerTxUrl(session?.explorerBaseUrl || config.explorerBaseUrl, session?.commit?.txHash),
     [config.explorerBaseUrl, session],
   );
-  const finalizeHref = useMemo(() => {
-    const txHash = session?.finalize?.txHash;
-    return explorerTxUrl(session?.explorerBaseUrl || config.explorerBaseUrl, txHash);
-  }, [config.explorerBaseUrl, session]);
-
+  const finalizeHref = useMemo(
+    () => explorerTxUrl(session?.explorerBaseUrl || config.explorerBaseUrl, session?.finalize?.txHash),
+    [config.explorerBaseUrl, session],
+  );
+  const contractHref = useMemo(
+    () => explorerAddressUrl(session?.explorerBaseUrl || config.explorerBaseUrl, session?.coreCatsAddress || config.coreCatsAddress),
+    [config.coreCatsAddress, config.explorerBaseUrl, session],
+  );
+  const ownerHref = useMemo(() => myCatsHref(session?.minter || ""), [session]);
   useEffect(() => {
     if (callbackError) {
       setError(describeCallbackError(callbackError));
@@ -118,6 +196,17 @@ export default function MintWorkflow({ config }) {
     if (!initialSessionId) return;
     setSessionId(initialSessionId);
   }, [initialSessionId]);
+
+  useEffect(() => {
+    if (!sessionId) {
+      setResumeHref("");
+      return;
+    }
+    const url = new URL(window.location.href);
+    url.pathname = "/mint";
+    url.search = `?sessionId=${encodeURIComponent(sessionId)}`;
+    setResumeHref(url.toString());
+  }, [sessionId]);
 
   async function refreshSession(nextSessionId = sessionId) {
     if (!nextSessionId) return;
@@ -155,22 +244,29 @@ export default function MintWorkflow({ config }) {
   }
 
   const currentState = session?.status || "idle";
+  const currentStateLabel = formatSessionState(currentState);
   const minter = session?.minter || "not selected";
+  const walletState = session?.commit?.walletState || null;
   const showTestnetNotice =
     (config.networkName || "").toLowerCase() === "devin" || Number(config.chainId || 0) === 3;
   const finalizeStatus = session?.finalize?.status || "awaiting_finalize";
+  const finalizeStatusLabel = formatFinalizeStatus(finalizeStatus);
   const commitConfirmed = Boolean(session?.commit?.confirmedAt);
   const finalizeConfirmed = Boolean(session?.finalize?.confirmedAt);
   const finalizePending = commitConfirmed && !finalizeConfirmed;
   const phaseCopy = finalizeConfirmed
-    ? "Mint completed after finalize."
+    ? "Mint completed after finalize. This session is done."
     : finalizePending
-      ? "Commit confirmed. Finalize is still pending."
+      ? "Commit confirmed. Finalize is still pending, so delivery is not complete yet."
       : commitConfirmed
         ? "Commit confirmed."
-        : session?.identify?.completedAt
-          ? "Wallet confirmed. Commit still needs approval."
-          : "Session not started.";
+        : session?.commit
+          ? "Wallet confirmed. Commit is now ready for CorePass approval."
+          : session?.identify?.completedAt
+            ? "Wallet confirmed. Waiting for mint authorization details."
+            : session
+              ? "Session created. Confirm the wallet in CorePass."
+              : "Session not started.";
   const relayerNote = finalizeConfirmed
     ? "Finalize completed. The mint is now delivered."
     : session?.finalize?.stuck
@@ -189,28 +285,61 @@ export default function MintWorkflow({ config }) {
                 ? "The backend relayer will handle finalize after commit confirmation."
                 : "Relayer is not configured for this environment.";
   const automaticPathLabel = finalizeConfirmed
-    ? "completed"
+    ? "Completed"
     : finalizeStatus === "submitted"
-      ? "submitted"
+      ? "Submitted"
       : session?.finalize?.stuck
-        ? "stuck"
+        ? "Stuck"
         : finalizeStatus === "manual_only"
-          ? "manual only"
+          ? "Manual only"
           : finalizeStatus === "expired"
-            ? "expired"
+            ? "Expired"
             : session?.relayerEnabled
-              ? "retrying"
-              : "unavailable";
+              ? "Retrying"
+              : "Unavailable";
   const manualFinalizeAvailable = Boolean(
     session?.finalize?.manualAvailable && session?.finalize?.status !== "expired" && !finalizeConfirmed,
   );
+  const progressItems = [
+    {
+      label: "Session created",
+      detail: session ? `Session ${session.sessionId} is active.` : "Start with CorePass to create a new session.",
+      tone: session ? "done" : "waiting",
+    },
+    {
+      label: "Wallet confirmed",
+      detail: session?.identify?.completedAt
+        ? `CoreID confirmed: ${session.identify.coreId}`
+        : "Sign the short CorePass message to bind this session to one wallet.",
+      tone: session?.identify?.completedAt ? "done" : session ? "active" : "waiting",
+    },
+    {
+      label: "Commit recorded",
+      detail: commitConfirmed
+        ? "The commit transaction is confirmed on-chain."
+        : session?.commit
+          ? "Approve the commit transaction in CorePass."
+          : "Commit is only prepared after wallet confirmation succeeds.",
+      tone: commitConfirmed ? "done" : session?.commit ? "active" : "waiting",
+    },
+    {
+      label: "Finalize delivered",
+      detail: finalizeConfirmed
+        ? "Finalize confirmed. The mint is complete."
+        : commitConfirmed
+          ? relayerNote
+          : "Finalize starts only after the commit is confirmed.",
+      tone: finalizeConfirmed ? "done" : commitConfirmed ? "active" : "waiting",
+    },
+  ];
 
   return (
     <div className="mint-stack">
       <section className="mint-grid">
         <article className="mint-card">
-          <h2>Session</h2>
-          <p>This mint flow uses CorePass for both the short signature step and the on-chain transaction step.</p>
+          <p className="eyebrow">Session</p>
+          <h2>Current mint session</h2>
+          <p>This flow uses CorePass for the wallet signature step and for any on-chain transactions that still need user approval.</p>
           {showTestnetNotice ? (
             <p className="mint-warning">
               In this Devin testnet environment, the available CorePass path still needs support for
@@ -218,18 +347,22 @@ export default function MintWorkflow({ config }) {
               addresses to complete live wallet checks.
             </p>
           ) : null}
-          <StatusLine label="Network" value={config.networkName} />
-          <StatusLine label="Expected chain id" value={String(config.chainId)} />
-          <StatusLine label="Contract" value={config.coreCatsAddress} mono />
-          <StatusLine label="Current state" value={currentState} />
-          <StatusLine label="Mint progress" value={phaseCopy} />
-          <StatusLine label="CoreID" value={minter} mono />
-          <StatusLine label="Session" value={sessionId || "not started"} mono />
+          <div className="mint-meta-group">
+            <StatusLine label="Network" value={config.networkName} />
+            <StatusLine label="Expected chain id" value={String(config.chainId)} />
+            <StatusLine label="Contract" value={config.coreCatsAddress} mono />
+            <StatusLine label="Session state" value={currentStateLabel} />
+            <StatusLine label="Mint progress" value={phaseCopy} />
+            <StatusLine label="CoreID" value={minter} mono />
+            <StatusLine label="Session id" value={sessionId || "not started"} mono />
+            <StatusLine label="Session expiry" value={formatDateTime(session?.expiresAt)} />
+          </div>
         </article>
 
         <article className="mint-card">
-          <h2>Mint quantity</h2>
-          <p>Choose 1 to 3 cats, then start a CorePass session. The session first confirms a CoreID and then prepares the commit transaction.</p>
+          <p className="eyebrow">Start</p>
+          <h2>Choose quantity and begin</h2>
+          <p>Pick 1 to 3 cats, then create a CorePass session. Wallet-limit checks happen before any gas-spending commit transaction is prepared.</p>
           <div className="quantity-row" role="group" aria-label="Mint quantity">
             {[1, 2, 3].map((value) => (
               <button
@@ -245,16 +378,67 @@ export default function MintWorkflow({ config }) {
           <button type="button" className="button button--primary button--wide" onClick={handleBegin} disabled={loading}>
             {loading ? "Preparing CorePass session..." : "Start with CorePass"}
           </button>
-          <p className="mint-meta">On desktop, scan the QR with CorePass on your phone. On mobile, open the CorePass app-link directly.</p>
+          <div className="mint-meta-group">
+            <p className="mint-meta">Desktop: scan the QR from your phone and continue in CorePass.</p>
+            <p className="mint-meta">Mobile: open the app-link directly in CorePass.</p>
+            <p className="mint-meta">Testing path: if you use the CorePass in-app QR scanner, record that result separately.</p>
+          </div>
+          {walletState ? (
+            <div className="mint-policy-box">
+              <p className="mint-policy-title">Wallet policy snapshot</p>
+              <div className="mint-policy-grid">
+                <StatusLine label="Already minted" value={String(walletState.minted)} />
+                <StatusLine label="Reserved now" value={String(walletState.reserved)} />
+                <StatusLine label="Available slots" value={String(walletState.availableSlots)} />
+                <StatusLine label="Pending commit" value={walletState.pendingCommitActive ? "yes" : "no"} />
+              </div>
+            </div>
+          ) : (
+            <p className="mint-meta">The wallet policy snapshot appears here after CorePass identify completes and authorization is prepared.</p>
+          )}
         </article>
       </section>
 
       {error ? (
         <section className="mint-card">
-          <h2>Issue</h2>
+          <p className="eyebrow">Issue</p>
+          <h2>Attention required</h2>
           <p className="mint-error">{error}</p>
         </section>
       ) : null}
+
+      <section className="mint-grid">
+        <article className="mint-card">
+          <p className="eyebrow">Progress</p>
+          <h2>What stage this mint is in</h2>
+          <div className="mint-progress">
+            {progressItems.map((item) => (
+              <ProgressItem key={item.label} label={item.label} detail={item.detail} tone={item.tone} />
+            ))}
+          </div>
+        </article>
+
+        <article className="mint-card">
+          <p className="eyebrow">Recovery</p>
+          <h2>Resume this session later</h2>
+          <p>If this page reloads or you need to come back later, reopen the same session link. The backend relayer keeps working even while the page is closed.</p>
+          {resumeHref ? (
+            <div className="mint-inline-actions">
+              <CopyButton value={resumeHref} idleLabel="Copy session link" doneLabel="Session link copied" />
+              <a href={resumeHref} className="button button--ghost button--inline">
+                Open session link
+              </a>
+            </div>
+          ) : (
+            <p className="mint-meta">A resume link appears here as soon as a session has been created.</p>
+          )}
+          <div className="mint-meta-group">
+            <StatusLine label="Finalize path" value={finalizeConfirmed ? `Completed via ${session?.finalize?.mode || "unknown"}` : relayerNote} />
+            <StatusLine label="Finalize state" value={finalizeStatusLabel} />
+            <StatusLine label="Last finalize attempt" value={formatDateTime(session?.finalize?.lastAttemptAt)} />
+          </div>
+        </article>
+      </section>
 
       {session ? (
         <SessionAction
@@ -287,6 +471,11 @@ export default function MintWorkflow({ config }) {
             the random assignment is completed on-chain.
           </p>
           <p className="mint-meta">{relayerNote}</p>
+          {session.finalize?.lastError && !finalizeConfirmed ? (
+            <p className="mint-warning">
+              Latest finalize note: <span className="mono-wrap">{session.finalize.lastError}</span>
+            </p>
+          ) : null}
           <div className="mint-action-grid">
             <div className="mint-action-panel">
               <p className="mint-action-title">Automatic path</p>
@@ -321,26 +510,76 @@ export default function MintWorkflow({ config }) {
         </article>
       ) : null}
 
-      {session ? (
-        <section className="mint-grid">
-          <article className="mint-card">
-            <h2>Transactions</h2>
-            <StatusLine label="Commit tx" value={session.commit?.txHash || "not confirmed yet"} mono />
-            {commitHref ? (
-              <a href={commitHref} target="_blank" rel="noreferrer" className="inline-link">
-                Open commit tx
-              </a>
-            ) : null}
-            <StatusLine label="Finalize status" value={finalizeConfirmed ? "confirmed" : finalizeStatus} />
-            <StatusLine label="Finalize tx" value={session.finalize?.txHash || "not sent yet"} mono />
+      {finalizeConfirmed ? (
+        <section className="mint-card mint-success-card">
+          <p className="eyebrow">Completed</p>
+          <h2>Mint completed after finalize</h2>
+          <p>
+            This session has reached the delivered state. Use the links below to verify the transactions, inspect the
+            configured contract, and continue to the ownership view for this wallet.
+          </p>
+          <div className="mint-link-grid">
+            <a href={ownerHref} className="button button--primary">
+              Open My Cats
+            </a>
             {finalizeHref ? (
-              <a href={finalizeHref} target="_blank" rel="noreferrer" className="inline-link">
+              <a href={finalizeHref} target="_blank" rel="noreferrer" className="button button--ghost">
                 Open finalize tx
               </a>
             ) : null}
+            {commitHref ? (
+              <a href={commitHref} target="_blank" rel="noreferrer" className="button button--ghost">
+                Open commit tx
+              </a>
+            ) : null}
+            {contractHref ? (
+              <a href={contractHref} target="_blank" rel="noreferrer" className="button button--ghost">
+                Open contract
+              </a>
+            ) : null}
+          </div>
+          <div className="mint-inline-actions">
+            {session?.minter ? <CopyButton value={session.minter} idleLabel="Copy wallet" doneLabel="Wallet copied" /> : null}
+            <a href="/transparency" className="button button--ghost button--inline">
+              Open transparency
+            </a>
+          </div>
+          <p className="mint-meta">
+            Token assignment may still need to be confirmed from explorer or readback tooling if the token id is not surfaced here yet.
+          </p>
+        </section>
+      ) : null}
+
+      {session ? (
+        <section className="mint-grid">
+          <article className="mint-card">
+            <p className="eyebrow">Transactions</p>
+            <h2>Explorer and session details</h2>
+            <div className="mint-meta-group">
+              <StatusLine label="Commit tx" value={session.commit?.txHash || "not confirmed yet"} mono />
+              {commitHref ? (
+                <a href={commitHref} target="_blank" rel="noreferrer" className="inline-link">
+                  Open commit tx
+                </a>
+              ) : null}
+              <StatusLine label="Finalize status" value={finalizeStatusLabel} />
+              <StatusLine label="Finalize tx" value={session.finalize?.txHash || "not sent yet"} mono />
+              {finalizeHref ? (
+                <a href={finalizeHref} target="_blank" rel="noreferrer" className="inline-link">
+                  Open finalize tx
+                </a>
+              ) : null}
+              <StatusLine label="Contract" value={session.coreCatsAddress || config.coreCatsAddress} mono />
+              {contractHref ? (
+                <a href={contractHref} target="_blank" rel="noreferrer" className="inline-link">
+                  Open contract
+                </a>
+              ) : null}
+            </div>
           </article>
 
           <article className="mint-card">
+            <p className="eyebrow">History</p>
             <h2>Session history</h2>
             <ul className="plain-list">
               {(session.history || []).map((item, index) => (
