@@ -12,9 +12,9 @@ CALL_METHODS = ("xcb_call", "eth_call")
 BLOCK_NUMBER_METHODS = ("xcb_blockNumber", "eth_blockNumber")
 RECEIPT_METHODS = ("xcb_getTransactionReceipt", "eth_getTransactionReceipt")
 
-MINTED_PER_ADDRESS_SELECTOR = "0x5539b96a"
-RESERVED_PER_ADDRESS_SELECTOR = "0xe64f7f28"
-PENDING_COMMIT_SELECTOR = "0xf622d4c8"
+MINTED_PER_ADDRESS_SELECTOR = "0xd445b978"
+RESERVED_PER_ADDRESS_SELECTOR = "0x8eb23fb7"
+PENDING_COMMIT_SELECTOR = "0x89f1e3f2"
 
 _REQUEST_IDS = count(1)
 _HEX_40_RE = re.compile(r"[0-9a-f]{40}")
