@@ -100,7 +100,7 @@ export default function MintPage() {
           <p>
             {isPublic
               ? "The first CorePass step is only a short signature that links this mint session to your wallet. It does not move funds or grant token approvals."
-              : "Desktop uses a QR handoff to CorePass. Mobile uses the app-link directly. If you test the CorePass in-app QR scanner path, record that result separately from the standard camera path."}
+              : "Use a desktop browser as the primary mint surface. QR 1 of 2 binds the wallet, QR 2 of 2 submits the commit transaction, and the phone should stay inside CorePass while the desktop page advances."}
           </p>
         </article>
 
@@ -121,6 +121,16 @@ export default function MintPage() {
               : "The success path should leave a visible explorer trail: commit tx, finalize tx, current contract, and the ownership view that reflects the wallet holding the cat."}
           </p>
         </article>
+
+        {!isPublic ? (
+          <article className="copy-card">
+            <h2>Current device policy</h2>
+            <p>
+              Same-device mobile mint is not supported in this stage. Keep the mint page open on desktop and use
+              CorePass on the phone only for scanning and confirming each QR approval.
+            </p>
+          </article>
+        ) : null}
       </section>
 
       <MintWorkflow config={config} />

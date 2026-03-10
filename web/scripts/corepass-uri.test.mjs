@@ -37,7 +37,7 @@ test("tx URI keeps the provided coreId path", () => {
   assert.match(uri, /type=app-link/);
 });
 
-test("mint session uses app-link return semantics for QR identify", async () => {
+test("mint session uses callback for desktop QR identify and app-link for same-device identify", async () => {
   const request = new Request("https://core-cats.vercel.app/api/mint/corepass/session", {
     headers: {
       host: "core-cats.vercel.app",
@@ -50,8 +50,9 @@ test("mint session uses app-link return semantics for QR identify", async () => 
   const query = uri.slice(uri.indexOf("?") + 1);
   const conn = new URL(new URLSearchParams(query).get("conn"));
 
-  assert.match(uri, /type=app-link/);
-  assert.equal(uri, session.identify.mobileUri);
+  assert.match(uri, /type=callback/);
+  assert.match(session.identify.mobileUri, /type=app-link/);
+  assert.notEqual(uri, session.identify.mobileUri);
   assert.match(conn.pathname, /^\/api\/mint\/corepass\/callback\/[0-9a-f-]+\/identify$/);
   assert.equal(conn.search, "");
 });

@@ -93,35 +93,48 @@ async function getJson(url) {
   return payload;
 }
 
-function SessionAction({ eyebrow, title, copy, request, buttonLabel, completedLabel }) {
+function DesktopQrAction({
+  eyebrow,
+  stepBadge,
+  title,
+  copy,
+  request,
+  pendingNote,
+  completedLabel,
+  completedNote,
+}) {
   if (!request) return null;
+  const complete = Boolean(request.completedAt || request.txHash);
 
   return (
     <article className="mint-card mint-step-card">
-      <p className="eyebrow">{eyebrow}</p>
+      <div className="mint-step-header">
+        <p className="eyebrow">{eyebrow}</p>
+        <p className="mint-step-pill">{stepBadge}</p>
+      </div>
       <h2>{title}</h2>
       <p>{copy}</p>
-      <div className="mint-action-grid">
-        <div className="mint-action-panel">
-          <p className="mint-action-title">On this device</p>
-          <a className="button button--primary button--wide" href={request.mobileUri}>
-            {buttonLabel}
-          </a>
-          <p className="mint-meta">Use this when CorePass is installed on the same phone or tablet as this browser.</p>
+      {complete ? (
+        <div className="mint-step-summary mint-step-summary--done">
+          <p className="mint-step-summary-title">{completedLabel}</p>
+          {completedNote ? <p className="mint-meta">{completedNote}</p> : null}
         </div>
-        <div className="mint-action-panel">
-          <p className="mint-action-title">From desktop</p>
-          {request.qrDataUrl ? <img src={request.qrDataUrl} alt={`${title} QR`} className="mint-qr" /> : null}
-          <a className="inline-link mono-wrap" href={request.desktopUri}>
-            Open raw CorePass URI
-          </a>
-          <p className="mint-meta">
-            Scan the QR with your device camera or the CorePass in-app scanner, then return here after the callback.
-          </p>
+      ) : (
+        <div className="mint-action-grid mint-action-grid--desktop">
+          <div className="mint-action-panel mint-action-panel--desktop">
+            <p className="mint-action-title">Desktop QR handoff</p>
+            {request.qrDataUrl ? <img src={request.qrDataUrl} alt={`${title} QR`} className="mint-qr" /> : null}
+            {pendingNote ? <p className="mint-warning mint-warning--soft">{pendingNote}</p> : null}
+            <p className="mint-meta">
+              Keep this desktop page open. Scan with the device camera or the CorePass in-app scanner, approve inside
+              CorePass, and then continue from this desktop browser.
+            </p>
+            <a className="inline-link mono-wrap" href={request.desktopUri}>
+              Open raw CorePass URI
+            </a>
+          </div>
         </div>
-      </div>
-      {request.completedAt ? <p className="mint-step-done">{completedLabel}</p> : null}
-      {request.txHash ? <p className="mint-step-done">Transaction captured for this step.</p> : null}
+      )}
     </article>
   );
 }
@@ -265,7 +278,7 @@ export default function MintWorkflow({ config }) {
       : commitConfirmed
         ? "Commit confirmed."
         : session?.commit
-          ? "Wallet confirmed. Commit is now ready for CorePass approval."
+          ? "Wallet confirmed on desktop. QR 2 of 2 is now ready for the commit transaction."
           : session?.identify?.completedAt
             ? "Wallet confirmed. Waiting for mint authorization details."
             : session
@@ -314,7 +327,7 @@ export default function MintWorkflow({ config }) {
       label: "Wallet confirmed",
       detail: session?.identify?.completedAt
         ? `CoreID confirmed: ${session.identify.coreId}`
-        : "Sign the short CorePass message to bind this session to one wallet.",
+        : "Scan QR 1 of 2 to sign the short CorePass message and bind this session to one wallet.",
       tone: session?.identify?.completedAt ? "done" : session ? "active" : "waiting",
     },
     {
@@ -322,7 +335,7 @@ export default function MintWorkflow({ config }) {
       detail: commitConfirmed
         ? "The commit transaction is confirmed on-chain."
         : session?.commit
-          ? "Approve the commit transaction in CorePass."
+          ? "Scan QR 2 of 2 to approve the commit transaction in CorePass."
           : "Commit is only prepared after wallet confirmation succeeds.",
       tone: commitConfirmed ? "done" : session?.commit ? "active" : "waiting",
     },
@@ -343,7 +356,10 @@ export default function MintWorkflow({ config }) {
         <article className="mint-card">
           <p className="eyebrow">Session</p>
           <h2>Current mint session</h2>
-          <p>This flow uses CorePass for the wallet signature step and for any on-chain transactions that still need user approval.</p>
+          <p>
+            This desktop-first flow uses two CorePass approvals. QR 1 of 2 binds the session to one wallet, then QR 2
+            of 2 submits the commit transaction from the same desktop page.
+          </p>
           {showTestnetNotice ? (
             <p className="mint-warning">
               In this Devin testnet environment, the available CorePass path still needs support for
@@ -365,8 +381,11 @@ export default function MintWorkflow({ config }) {
 
         <article className="mint-card">
           <p className="eyebrow">Start</p>
-          <h2>Choose quantity and begin</h2>
-          <p>Pick 1 to 3 cats, then create a CorePass session. Wallet-limit checks happen before any gas-spending commit transaction is prepared.</p>
+          <h2>Choose quantity and begin on desktop</h2>
+          <p>
+            Pick 1 to 3 cats, then create a CorePass session from this desktop browser. Wallet-limit checks happen
+            before any gas-spending commit transaction is prepared.
+          </p>
           <div className="quantity-row" role="group" aria-label="Mint quantity">
             {[1, 2, 3].map((value) => (
               <button
@@ -382,10 +401,11 @@ export default function MintWorkflow({ config }) {
           <button type="button" className="button button--primary button--wide" onClick={handleBegin} disabled={loading}>
             {loading ? "Preparing CorePass session..." : "Start with CorePass"}
           </button>
-          <div className="mint-meta-group">
-            <p className="mint-meta">Desktop: scan the QR from your phone and continue in CorePass.</p>
-            <p className="mint-meta">Mobile: open the app-link directly in CorePass.</p>
-            <p className="mint-meta">Testing path: if you use the CorePass in-app QR scanner, record that result separately.</p>
+          <div className="mint-step-summary mint-step-summary--route">
+            <p className="mint-step-summary-title">Desktop rehearsal path</p>
+            <p className="mint-meta">Use a desktop browser and keep this page open until mint completion.</p>
+            <p className="mint-meta">QR 1 of 2 binds the wallet. QR 2 of 2 submits the commit transaction.</p>
+            <p className="mint-meta">Same-device mobile mint is not supported in this stage.</p>
           </div>
           {walletState ? (
             <div className="mint-policy-box">
@@ -398,7 +418,9 @@ export default function MintWorkflow({ config }) {
               </div>
             </div>
           ) : (
-            <p className="mint-meta">The wallet policy snapshot appears here after CorePass identify completes and authorization is prepared.</p>
+            <p className="mint-meta">
+              The wallet policy snapshot appears here after QR 1 of 2 completes and authorization is prepared.
+            </p>
           )}
         </article>
       </section>
@@ -445,24 +467,28 @@ export default function MintWorkflow({ config }) {
       </section>
 
       {session ? (
-        <SessionAction
+        <DesktopQrAction
           eyebrow="Step 1"
+          stepBadge="QR 1 of 2"
           title="Bind the mint session to a CorePass wallet"
           copy="CorePass signs a short challenge so this mint session can be tied to a specific CoreID before the free-mint authorization is issued. This step does not move funds."
           request={session.identify}
-          buttonLabel="Open CorePass Sign"
+          pendingNote="Scan QR 1 of 2 with CorePass. The phone should stay inside CorePass after approval, while this desktop page waits for the callback."
           completedLabel={`CoreID confirmed: ${session.identify.coreId}`}
+          completedNote="QR 1 of 2 is complete. Stay on this desktop page for QR 2 of 2."
         />
       ) : null}
 
       {session?.commit ? (
-        <SessionAction
+        <DesktopQrAction
           eyebrow="Step 2"
+          stepBadge="QR 2 of 2"
           title="Commit the mint transaction"
           copy="Once the CoreID is known, the server prepares the signed commitMint call and hands it to CorePass as a transaction request. This records the mint request on-chain, but delivery is not complete until finalize succeeds."
           request={session.commit}
-          buttonLabel="Open CorePass Commit"
+          pendingNote="Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass."
           completedLabel="Commit confirmed. Finalize is still required before the cat is delivered."
+          completedNote="The commit is on-chain. Keep this desktop page open while the relayer finishes finalize, or use the manual finalize QR only if the session stalls."
         />
       ) : null}
 
@@ -487,12 +513,13 @@ export default function MintWorkflow({ config }) {
               <p className="mint-meta">Primary path: the backend relayer keeps working even if this page is closed or refreshed.</p>
             </div>
             <div className="mint-action-panel">
-              <p className="mint-action-title">Manual CorePass fallback</p>
+              <p className="mint-action-title">Manual desktop QR fallback</p>
               {manualFinalizeAvailable ? (
                 <>
-                  <a className="button button--primary button--wide" href={session.finalize.mobileUri}>
-                    Open CorePass Finalize
-                  </a>
+                  <p className="mint-warning mint-warning--soft">
+                    Only use this QR if automatic finalize stalls. Keep the desktop page open while CorePass signs the
+                    fallback finalize transaction.
+                  </p>
                   {session.finalize.qrDataUrl ? (
                     <img src={session.finalize.qrDataUrl} alt="Finalize QR" className="mint-qr" />
                   ) : null}

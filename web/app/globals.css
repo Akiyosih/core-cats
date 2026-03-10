@@ -994,6 +994,14 @@ main {
   overflow: hidden;
 }
 
+.mint-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .mint-step-card::before {
   content: '';
   position: absolute;
@@ -1009,11 +1017,21 @@ main {
   gap: 24px;
 }
 
+.mint-action-grid--desktop {
+  grid-template-columns: 1fr;
+}
+
 .mint-action-panel {
   display: grid;
   gap: 16px;
   padding: 24px;
   border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(41, 36, 31, 0.08);
+}
+
+.mint-action-panel--desktop {
+  justify-items: start;
 }
 
 .mint-action-title {
@@ -1036,6 +1054,22 @@ main {
   margin: 0;
   color: var(--teal);
   font-weight: 700;
+}
+
+.mint-step-pill {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(20, 143, 138, 0.12);
+  border: 1px solid rgba(20, 143, 138, 0.2);
+  color: var(--teal);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .mint-state {
@@ -1077,6 +1111,11 @@ main {
   border: 1px solid rgba(228, 151, 62, 0.3);
   color: var(--ink);
   font-size: 0.95rem;
+}
+
+.mint-warning--soft {
+  background: rgba(20, 143, 138, 0.08);
+  border-color: rgba(20, 143, 138, 0.2);
 }
 
 .mint-progress {
@@ -1129,6 +1168,29 @@ main {
 }
 
 .mint-progress-label {
+  margin: 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.mint-step-summary {
+  display: grid;
+  gap: 8px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(41, 36, 31, 0.08);
+}
+
+.mint-step-summary--done {
+  background: linear-gradient(135deg, rgba(20, 143, 138, 0.12), rgba(255, 255, 255, 0.8));
+}
+
+.mint-step-summary--route {
+  background: linear-gradient(135deg, rgba(224, 94, 67, 0.08), rgba(255, 255, 255, 0.78));
+}
+
+.mint-step-summary-title {
   margin: 0;
   font-weight: 800;
   color: var(--ink);
