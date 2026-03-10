@@ -41,3 +41,4 @@ ignition/deployments/chain-31337
 /mint-backend/corecats_mint_backend/__pycache__/
 *.py[cod]
 /mint-backend/data/*.db
+.vercel
