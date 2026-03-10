@@ -65,7 +65,7 @@ function formatFinalizeStatus(value) {
     case "confirmed":
       return "Confirmed";
     case "manual_only":
-      return "Manual finalize required";
+      return "Unavailable";
     case "expired":
       return "Expired";
     default:
@@ -230,7 +230,6 @@ export default function MintWorkflow({ config }) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [resumeHref, setResumeHref] = useState("");
 
   const commitHref = useMemo(
     () => explorerTxUrl(session?.explorerBaseUrl || config.explorerBaseUrl, session?.commit?.txHash),
@@ -255,17 +254,6 @@ export default function MintWorkflow({ config }) {
     if (!initialSessionId) return;
     setSessionId(initialSessionId);
   }, [initialSessionId]);
-
-  useEffect(() => {
-    if (!sessionId) {
-      setResumeHref("");
-      return;
-    }
-    const url = new URL(window.location.href);
-    url.pathname = "/mint";
-    url.search = `?sessionId=${encodeURIComponent(sessionId)}`;
-    setResumeHref(url.toString());
-  }, [sessionId]);
 
   async function refreshSession(nextSessionId = sessionId) {
     if (!nextSessionId) return;
@@ -333,7 +321,8 @@ export default function MintWorkflow({ config }) {
     phaseCopy = "The commit transaction did not confirm successfully.";
   }
   if (currentState === "finalize_expired") {
-    phaseCopy = "This session fell out of the finalize window and now needs operator intervention.";
+    phaseCopy =
+      "Finalize did not complete within the available window. If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.";
   }
   if (commitSubmitted) {
     phaseCopy = "Commit submitted. Waiting for on-chain confirmation before finalize can begin.";
@@ -345,34 +334,34 @@ export default function MintWorkflow({ config }) {
     phaseCopy = "Mint completed after finalize. This session is done.";
   }
   const commitCompletedLabel = commitConfirmed
-    ? "Commit confirmed. Finalize is still required before the cat is delivered."
+    ? "Commit confirmed. Automatic finalize is now in progress."
     : commitSubmitted
       ? "Commit submitted. Waiting for chain confirmation before finalize can begin."
       : "Commit approval is still required.";
   const commitCompletedNote = commitConfirmed
-    ? "The commit is on-chain. Keep this desktop page open while the relayer finishes finalize, or use the manual finalize QR only if the session stalls."
+    ? "Automatic finalize usually completes within a few minutes. Please wait."
     : commitSubmitted
       ? "CorePass returned the commit transaction. This desktop page is now waiting for the chain receipt."
       : "Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass.";
   const relayerNote = finalizeConfirmed
     ? "Finalize completed. The mint is now delivered."
     : commitSubmitted && !commitConfirmed
-      ? "CorePass returned the commit transaction, but the desktop session is still waiting for an on-chain receipt before finalize can begin."
+      ? "CorePass returned the commit transaction, but the desktop session is still waiting for an on-chain receipt before automatic finalize can begin."
     : session?.finalize?.stuck
-      ? "Commit is confirmed, but finalize is taking longer than expected. The backend keeps checking, and the manual finalize fallback remains available."
+      ? "Automatic finalize is taking longer than expected. Do not start a new mint or reuse any earlier QR within 30 minutes."
       : finalizeStatus === "submitted"
-        ? "Commit is confirmed. The backend relayer already sent finalize and is now waiting for chain confirmation."
+        ? "Automatic finalize was sent by the backend and is now waiting for chain confirmation."
         : finalizeStatus === "retrying" || finalizeStatus === "awaiting_finalize"
           ? session?.relayerEnabled
-            ? "Commit is confirmed. The backend relayer will keep retrying finalize until the eligible chain state is ready."
-            : "Relayer is not configured for this environment. Use the manual finalize fallback below."
+            ? "Automatic finalize is retrying in the background. This usually completes within a few minutes."
+            : "Automatic finalize is currently unavailable for this environment."
           : finalizeStatus === "manual_only"
-            ? "Relayer is unavailable for this session. Use the manual finalize fallback below."
+            ? "Automatic finalize is currently unavailable for this session."
             : finalizeStatus === "expired"
-              ? "The finalize window expired before completion. This session now needs operator intervention."
+              ? "Finalize did not complete within the available window. If your NFT still has not arrived after 30 minutes, start a new mint from the beginning."
               : session?.relayerEnabled
-                ? "The backend relayer will handle finalize after commit confirmation."
-                : "Relayer is not configured for this environment.";
+                ? "Automatic finalize will continue in the background after commit confirmation."
+                : "Automatic finalize is currently unavailable for this environment.";
   const automaticPathLabel = finalizeConfirmed
     ? "Completed"
     : commitSubmitted && !commitConfirmed
@@ -382,19 +371,16 @@ export default function MintWorkflow({ config }) {
       : session?.finalize?.stuck
         ? "Stuck"
         : finalizeStatus === "manual_only"
-          ? "Manual only"
+          ? "Unavailable"
           : finalizeStatus === "expired"
             ? "Expired"
             : session?.relayerEnabled
               ? "Retrying"
               : "Unavailable";
-  const manualFinalizeAvailable = Boolean(
-    commitConfirmed && session?.finalize?.manualAvailable && session?.finalize?.status !== "expired" && !finalizeConfirmed,
-  );
   const progressItems = [
     {
       label: "Session created",
-      detail: session ? `Session ${session.sessionId} is active.` : "Start with CorePass to create a new session.",
+      detail: session ? "A mint session is active." : "Start with CorePass to create a new session.",
       tone: session ? "done" : "waiting",
     },
     {
@@ -456,8 +442,6 @@ export default function MintWorkflow({ config }) {
             <StatusLine label="Session state" value={currentStateLabel} />
             <StatusLine label="Mint progress" value={phaseCopy} />
             <StatusLine label="CoreID" value={minter} mono />
-            <StatusLine label="Session id" value={sessionId || "not started"} mono />
-            <StatusLine label="Session expiry" value={formatDateTime(session?.expiresAt)} />
           </div>
         </article>
 
@@ -485,7 +469,7 @@ export default function MintWorkflow({ config }) {
           </button>
           <div className="mint-step-summary mint-step-summary--route">
             <p className="mint-step-summary-title">Desktop rehearsal path</p>
-            <p className="mint-meta">Use a desktop browser and keep this page open until mint completion.</p>
+            <p className="mint-meta">Use a desktop browser and wait here while the mint status updates.</p>
             <p className="mint-meta">QR 1 of 2 binds the wallet. QR 2 of 2 submits the commit transaction.</p>
             <p className="mint-meta">Same-device mobile mint is not supported in this stage.</p>
           </div>
@@ -527,21 +511,13 @@ export default function MintWorkflow({ config }) {
         </article>
 
         <article className="mint-card">
-          <p className="eyebrow">Recovery</p>
-          <h2>Resume this session later</h2>
-          <p>If this page reloads or you need to come back later, reopen the same session link. The backend relayer keeps working even while the page is closed.</p>
-          {resumeHref ? (
-            <div className="mint-inline-actions">
-              <CopyButton value={resumeHref} idleLabel="Copy session link" doneLabel="Session link copied" />
-              <a href={resumeHref} className="button button--ghost button--inline">
-                Open session link
-              </a>
-            </div>
-          ) : (
-            <p className="mint-meta">A resume link appears here as soon as a session has been created.</p>
-          )}
+          <p className="eyebrow">Waiting</p>
+          <h2>What to do while finalize runs</h2>
+          <p>Automatic finalize usually completes within a few minutes. Please wait.</p>
+          <p className="mint-meta">Do not start a new mint or reuse any earlier QR within 30 minutes.</p>
+          <p className="mint-meta">If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.</p>
           <div className="mint-meta-group">
-            <StatusLine label="Finalize path" value={finalizeConfirmed ? `Completed via ${session?.finalize?.mode || "unknown"}` : relayerNote} />
+            <StatusLine label="Finalize path" value={finalizeConfirmed ? `Completed via ${session?.finalize?.mode || "unknown"}` : "Automatic relayer"} />
             <StatusLine label="Finalize state" value={finalizeStatusLabel} />
             <StatusLine label="Last finalize attempt" value={formatDateTime(session?.finalize?.lastAttemptAt)} />
           </div>
@@ -585,7 +561,7 @@ export default function MintWorkflow({ config }) {
             Commit confirmation only records the pending mint. Your cat is delivered only after finalize succeeds and
             the random assignment is completed on-chain.
           </p>
-          <p className="mint-meta">{relayerNote}</p>
+          <p className="mint-meta">Automatic finalize usually completes within a few minutes. Please wait.</p>
           {session.finalize?.lastError && !finalizeConfirmed ? (
             <p className="mint-warning">
               Latest finalize note: <span className="mono-wrap">{session.finalize.lastError}</span>
@@ -593,36 +569,14 @@ export default function MintWorkflow({ config }) {
           ) : null}
           <div className="mint-action-grid">
             <div className="mint-action-panel">
-              <p className="mint-action-title">Automatic path</p>
+              <p className="mint-action-title">Automatic finalize</p>
               <p className="mint-state">{automaticPathLabel}</p>
-              <p className="mint-meta">Primary path: the backend relayer keeps working even if this page is closed or refreshed.</p>
+              <p className="mint-meta">{relayerNote}</p>
             </div>
             <div className="mint-action-panel">
-              <p className="mint-action-title">Manual desktop QR fallback</p>
-              {manualFinalizeAvailable ? (
-                <>
-                  <p className="mint-warning mint-warning--soft">
-                    Only use this QR if automatic finalize stalls. Keep the desktop page open while CorePass signs the
-                    fallback finalize transaction.
-                  </p>
-                  {session.finalize.qrDataUrl ? (
-                    <img src={session.finalize.qrDataUrl} alt="Finalize QR" className="mint-qr" />
-                  ) : null}
-                  <a className="inline-link mono-wrap" href={session.finalize.desktopUri}>
-                    Open raw CorePass URI
-                  </a>
-                </>
-              ) : (
-                <p className="mint-meta">
-                  {finalizeConfirmed
-                    ? "Finalize already completed for this session."
-                    : session.finalize.status === "expired"
-                      ? "Manual finalize is no longer safe for this session because the finalize window expired."
-                      : !commitConfirmed
-                        ? "Manual finalize stays disabled until the commit transaction is confirmed on-chain."
-                      : "Manual CorePass finalize is not available for this session. The relayer path remains primary."}
-                </p>
-              )}
+              <p className="mint-action-title">If it takes longer</p>
+              <p className="mint-meta">Do not start a new mint or reuse any earlier QR within 30 minutes.</p>
+              <p className="mint-meta">If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.</p>
             </div>
           </div>
         </article>
@@ -697,17 +651,6 @@ export default function MintWorkflow({ config }) {
             </div>
           </article>
 
-          <article className="mint-card">
-            <p className="eyebrow">History</p>
-            <h2>Session history</h2>
-            <ul className="plain-list">
-              {(session.history || []).map((item, index) => (
-                <li key={`${item.at}-${index}`}>
-                  <span className="mono-wrap">{item.at}</span> {item.step}: {item.event}
-                </li>
-              ))}
-            </ul>
-          </article>
         </section>
       ) : null}
     </div>

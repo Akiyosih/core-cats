@@ -124,10 +124,15 @@ Before treating a Vercel deployment as release-ready, confirm:
 4. the mint UI distinguishes:
    - commit confirmed / finalize pending
    - mint completed after finalize
-5. the success state offers:
+5. the finalize-waiting copy tells users:
+   - automatic finalize usually completes within a few minutes
+   - do not start a new mint or reuse any earlier QR within `30` minutes
+   - if the NFT still has not arrived after `30` minutes, start a new mint from the beginning
+6. the success state offers:
    - transaction/explorer links
    - a clear contract address or contract explorer surface
    - a next step to `My Cats`
+7. the public UI does not require a visible manual-finalize or third-QR recovery path
 
 ## Rollback Levers
 If something is wrong on the public site:

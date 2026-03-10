@@ -182,7 +182,7 @@ Run a controlled live mint on mainnet before public opening.
 Tasks:
 1. Allow only the intended operator wallet(s) to request signatures.
 2. Perform the first live canary mint through the intended production flow.
-   - preferred path: CorePass sign -> CorePass commit tx -> relayer finalize or manual finalize fallback
+   - preferred path: CorePass sign -> CorePass commit tx -> relayer finalize, with any manual/operator recovery kept internal-only
 3. Confirm end-to-end behavior:
    - CorePass callback/app-link behavior
    - commit tx visibility

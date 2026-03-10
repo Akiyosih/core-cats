@@ -75,7 +75,7 @@ Use this section only if the project explicitly chooses the pilot fallback.
 3. Validate the real mainnet wallet flow there first:
    - CorePass sign
    - CorePass commit tx
-   - relayer finalize or manual finalize fallback
+   - relayer finalize, with any manual/operator recovery kept internal-only
    - callback/app-link return behavior
    - `tokenURI` readback
 4. Record pilot tx hashes, addresses, token ids, and decoded `tokenURI` evidence separately from the official release.
@@ -115,7 +115,7 @@ This is the first real production-path mint.
 3. Run the intended wallet flow:
    - CorePass sign
    - CorePass commit tx
-   - relayer finalize or manual finalize fallback
+   - relayer finalize, with any manual/operator recovery kept internal-only
 4. Confirm:
    - callback/app-link returns correctly
    - commit tx is visible on explorer
@@ -161,8 +161,9 @@ Before the official canary/public launch, apply the lessons from any self-only p
 7. Production automation should therefore include:
    - relayer retry behavior
    - stuck-session monitoring/alerting
-   - a user-facing manual finalize fallback
+   - an internal operator/manual recovery path if needed, without requiring a public third-QR UX
    - UI copy that distinguishes `commit confirmed` from `finalize pending`
+   - UI copy that tells users not to start a new mint or reuse earlier QR codes during the active finalize window
 8. After mint success, provide a smoother ownership handoff:
    - CTA to `My Cats`
    - wallet-prefilled lookup when practical

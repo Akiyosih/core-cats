@@ -42,7 +42,7 @@ test("rejects private keys in Vercel env", () => {
 test("warns when relayer flag is not true", () => {
   const result = validateProductionEnv(buildBaseEnv({ CORECATS_RELAYER_ENABLED: "false" }));
   assert.equal(result.errors.length, 0);
-  assert.match(result.warnings.join("\n"), /manual finalize fallback/);
+  assert.match(result.warnings.join("\n"), /relayer-first path/);
 });
 
 test("warns when self-only CoreID pinning is still present in closed state", () => {

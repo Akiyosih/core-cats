@@ -5,6 +5,7 @@ function usage() {
       "",
       "Options:",
       "  --quantity <1|2|3>                Create a mint session with this quantity (default: 1)",
+      "  --session-id <uuid>               Attach to an existing mint session instead of creating one",
       "  --expected-chain-id <n>           Fail if the session reports a different chain id",
       "  --expected-network <name>         Fail if the session reports a different network name",
       "  --expected-contract <cb...>       Fail if the session reports a different CoreCats address",
@@ -24,6 +25,7 @@ function parseArgs(argv) {
   const args = {
     origin: argv[2].replace(/\/$/, ""),
     quantity: 1,
+    sessionId: "",
     expectedChainId: null,
     expectedNetwork: "",
     expectedContract: "",
@@ -38,6 +40,9 @@ function parseArgs(argv) {
 
     if (arg === "--quantity") {
       args.quantity = Number(next);
+      i += 1;
+    } else if (arg === "--session-id") {
+      args.sessionId = String(next || "").trim();
       i += 1;
     } else if (arg === "--expected-chain-id") {
       args.expectedChainId = Number(next);
@@ -223,13 +228,15 @@ async function main() {
   if (transparencyContractStatus) console.log(`transparency_contract_status=${transparencyContractStatus}`);
   if (transparencyContract) console.log(`transparency_contract=${transparencyContract}`);
 
-  const session = await fetchJson(`${args.origin}/api/mint/corepass/session`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ quantity: args.quantity }),
-  });
+  const session = args.sessionId
+    ? await readSession(args.origin, args.sessionId)
+    : await fetchJson(`${args.origin}/api/mint/corepass/session`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ quantity: args.quantity }),
+      });
 
-  printSection("Created Session");
+  printSection(args.sessionId ? "Existing Session" : "Created Session");
   printSessionSummary(session);
   validateSession(session, args);
 

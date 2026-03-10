@@ -258,7 +258,7 @@ Current policy:
 7. Decide owner-indexing approach for `/my-cats`
 8. Replace the temporary in-memory CorePass mint session store with a durable production store
 9. Harden the CorePass callback/finalize routes for production operation
-10. Refine `/mint` around `sign -> commitMint -> auto-finalize -> manual finalize fallback`
+10. Refine `/mint` around `sign -> commitMint -> auto-finalize`, while keeping any manual/operator finalize recovery internal-only
 11. Add any final landing page visual refinements
 
 ## Publication / Hosting Constraint

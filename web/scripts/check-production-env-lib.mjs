@@ -107,7 +107,9 @@ export function validateProductionEnv(env) {
   }
 
   if (relayerEnabled !== "true") {
-    warnings.push("CORECATS_RELAYER_ENABLED is not true; the UI may expose manual finalize fallback instead of the intended relayer path");
+    warnings.push(
+      "CORECATS_RELAYER_ENABLED is not true; automatic finalize will be unavailable and the public wait/retry guidance will no longer match the intended relayer-first path",
+    );
   }
   if (expectedCoreId) {
     if (launchState === "closed") {

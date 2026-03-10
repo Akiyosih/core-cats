@@ -43,7 +43,8 @@ This plan is aligned to the current repository behavior and should not assume fe
 4. Wallet-limit refusal already exists in the backend path.
    - the current expectation is "identify may complete, but the backend rejects before a gas-spending commit transaction is prepared"
 5. Session continuation is currently `sessionId`-based.
-   - page reload and new-tab continuation can be tested
+   - same-page reload during finalize pending can be tested as internal recovery behavior
+   - do not treat fresh-open session history as a required public UX promise
    - wallet-address-only resume is not a current feature
 6. `/my-cats` already exists as an address lookup page outside the `closed` state.
    - the remaining work is launch-state exposure, accuracy, and post-mint handoff
@@ -117,7 +118,7 @@ The UI should make these phases easy to distinguish:
 4. commit confirmed
 5. finalize pending
 6. finalize sent by relayer
-7. manual finalize required or manual finalize available
+7. finalize taking longer than expected, with clear wait/retry guidance
 8. mint completed after finalize
 
 The critical rule is that "waiting" and "failed" must not look the same.
@@ -171,8 +172,12 @@ Verify the relayer path in production-like conditions:
 1. normal auto-finalize succeeds
 2. `too_early` is treated as waiting/retry, not terminal failure
 3. temporary RPC or send failure moves back into retry
-4. manual finalize fallback stays user-facing
-5. stuck sessions become visible through backend health or logs
+4. the public UI keeps the finalize guidance simple:
+   - wait on the current page while status updates
+   - do not start a new mint or reuse an earlier QR within `30` minutes
+   - if the NFT still has not arrived after `30` minutes, start a new mint from the beginning
+5. any manual/operator finalize path remains internal-only and is not required as a public UI element
+6. stuck sessions become visible through backend health or logs
 
 ## Phase D: Run the CCATTEST Rehearsal Canary Matrix
 
@@ -192,7 +197,7 @@ Use generic labels in public records:
 3. Wallet C
    - fresh wallet for success-path quantity `3`
 4. Wallet D
-   - reserved for manual-finalize and recovery tests
+   - reserved for recovery and restart tests
 5. Wallet E
    - optional extra generic-wallet confirmation wallet
 
@@ -236,11 +241,12 @@ Run these from the real public `/mint` UI while the site is in `canary`.
    - confirm one normal relayer finalize success from the rehearsal-canary UI path
 2. `FR-02`
    - force or simulate a relayer problem
-   - confirm the UI distinguishes `commit confirmed`, `finalize pending`, and manual finalize availability
-   - recover through manual finalize
+   - confirm the UI distinguishes `commit confirmed`, `finalize pending`, and the `30`-minute wait / retry guidance
+   - confirm no public manual-finalize QR is required for that UX
 3. `FR-03`
-   - after commit, reload or reopen the page with the same `sessionId`
+   - after commit and before finalize completes, reload the current page
    - confirm the session can continue to finalize completion
+   - same-`sessionId` reopen may still be probed as internal recovery behavior, but it is not a public UX promise
 4. `FR-04`
    - exercise duplicate callback or near-duplicate finalize handling
    - confirm the session remains coherent and does not regress
@@ -325,13 +331,13 @@ Treat these as already proven if the rehearsal canary passes:
 1. quantity `1 / 2 / 3`
 2. QR entry paths
 3. relayer finalize
-4. manual finalize
-5. `My Cats`
-6. transparency
-7. session recovery
-8. restart resilience
-9. over-limit refusal before gas-spending commit
-10. tokenURI and explorer consistency
+4. `My Cats`
+5. transparency
+6. session recovery
+7. restart resilience
+8. over-limit refusal before gas-spending commit
+9. tokenURI and explorer consistency
+10. finalize-waiting copy and `30`-minute retry guidance
 
 Reserve these for the later official `CCAT` canary:
 
@@ -357,11 +363,12 @@ The `CCATTEST rehearsal canary` can be treated as complete only if all of the fo
 2. both QR entry paths have evidence, or any unsupported path is clearly disclosed in the UI
 3. Wallet A reaches cumulative `3`, and 4th-equivalent attempts are refused before a gas-spending commit transaction is prepared
 4. normal relayer finalize succeeds
-5. manual finalize recovery succeeds
-6. the UI clearly distinguishes `commit confirmed`, `finalize pending`, and `completed`
-7. `My Cats`, explorer links, transparency, and tokenURI evidence are all consistent
-8. restart and session-recovery checks pass on the real proxy/backend path
-9. no unresolved `P0` issues remain
+5. the public UI clearly distinguishes `commit confirmed`, `finalize pending`, and `completed`
+6. the public finalize copy tells users not to restart minting or reuse earlier QR codes within `30` minutes
+7. the public finalize copy tells users to retry from the beginning only after `30` minutes if the NFT still has not arrived
+8. `My Cats`, explorer links, transparency, and tokenURI evidence are all consistent
+9. restart and session-recovery checks pass on the real proxy/backend path
+10. no unresolved `P0` issues remain
 
 ## Out of Scope for This Rehearsal Gate
 1. official `CCAT` mainnet deploy itself
