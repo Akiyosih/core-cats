@@ -8,7 +8,7 @@
     "start": "next start",
     "check:production-env": "node ./scripts/check-production-env.mjs",
     "probe:public-origin": "node ./scripts/probe-public-origin.mjs",
-    "test:ops": "node --test ./scripts/check-production-env.test.mjs ./scripts/corepass-uri.test.mjs ./scripts/corepass-callback.test.mjs ./scripts/corepass-identify.test.mjs",
+    "test:ops": "node --test ./scripts/check-production-env.test.mjs ./scripts/corepass-uri.test.mjs ./scripts/corepass-callback.test.mjs ./scripts/corepass-callback-body.test.mjs ./scripts/corepass-identify.test.mjs",
     "build:viewer-previews": "node ./scripts/generate-raster-previews.mjs",
     "build:teaser-placeholders": "node ./scripts/generate-teaser-placeholders.mjs"
   },

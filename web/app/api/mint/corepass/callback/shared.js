@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+import { normalizeCallbackBodyPayload } from "../../../../../lib/server/corepass-callback-body.js";
 
 export async function readCallbackBody(request) {
   const contentType = String(request.headers.get("content-type") || "").toLowerCase();
 
   if (contentType.includes("application/json")) {
-    return request.json();
+    return normalizeCallbackBodyPayload(await request.json());
   }
 
   if (contentType.includes("multipart/form-data") || contentType.includes("application/x-www-form-urlencoded")) {
@@ -20,7 +21,7 @@ export async function readCallbackBody(request) {
   }
 
   try {
-    return JSON.parse(raw);
+    return normalizeCallbackBodyPayload(JSON.parse(raw));
   } catch {}
 
   const searchParams = new URLSearchParams(raw);
