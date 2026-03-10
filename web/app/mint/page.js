@@ -74,7 +74,7 @@ export default function MintPage() {
           <span className="launch-badge">Canary Live</span>
           <p>
             Mint is open only for validation. This stage may still point at a rehearsal contract on mainnet, so log
-            evidence against the contract shown on this page and on Transparency.
+            evidence against the contract shown on this page and on Transparency. Official public mint is still soon.
           </p>
         </div>
       )}

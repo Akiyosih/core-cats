@@ -78,7 +78,7 @@ export default async function MyCatsPage({ searchParams }) {
         <h1>Search by wallet address.</h1>
         <p className="my-cats-copy">
           {isCanary
-            ? "Use this page to confirm ownership after rehearsal mints. Enter a Core wallet address to inspect the cats currently held there."
+            ? "Use this page to confirm ownership after rehearsal mints. Enter a Core wallet address to inspect the cats currently held there while the broader public ownership release is still soon."
             : "Enter a Core wallet address to see the cats currently held there."}
         </p>
         {isCanary ? (

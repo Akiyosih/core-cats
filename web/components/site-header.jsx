@@ -4,10 +4,10 @@ import { getCorePublicConfig } from "../lib/server/core-env";
 const links = [
   { href: "/", label: "Home" },
   { href: "/collection", label: "Collection" },
-  { href: "/my-cats", label: "My Cats", soonInClosed: true },
+  { href: "/my-cats", label: "My Cats", soonBeforePublic: true },
   { href: "/about", label: "About" },
   { href: "/transparency", label: "Transparency" },
-  { href: "/mint", label: "Mint", soonInClosed: true },
+  { href: "/mint", label: "Mint", soonBeforePublic: true },
 ];
 
 export default function SiteHeader() {
@@ -24,7 +24,7 @@ export default function SiteHeader() {
         {links.map((link) => (
           <Link key={link.href} href={link.href} className="main-nav__item">
             <span>{link.label}</span>
-            {launchState === "closed" && link.soonInClosed ? (
+            {launchState !== "public" && link.soonBeforePublic ? (
               <span className="main-nav__badge">Soon</span>
             ) : null}
           </Link>

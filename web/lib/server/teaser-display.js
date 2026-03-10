@@ -5,14 +5,14 @@ const HIDDEN_SUPERRARE_TYPES = new Set(["corelogo", "pinglogo"]);
 const TEASER_SUPERRARE_PRESENTATION = {
   999: {
     displayName: "Super Rare I",
-    description: "Reserved teaser placeholder shown during the closed preview stage.",
+    description: "Reserved placeholder shown before the official public release stage.",
     previewPng: "/teaser/super-rare-i.png",
     previewSvg: "/teaser/super-rare-i.svg",
     rarityTypeLabel: "Super Rare I",
   },
   1000: {
     displayName: "Super Rare II",
-    description: "Reserved teaser placeholder shown during the closed preview stage.",
+    description: "Reserved placeholder shown before the official public release stage.",
     previewPng: "/teaser/super-rare-ii.png",
     previewSvg: "/teaser/super-rare-ii.svg",
     rarityTypeLabel: "Super Rare II",
@@ -20,7 +20,7 @@ const TEASER_SUPERRARE_PRESENTATION = {
 };
 
 export function isTeaserDisplayEnabled() {
-  return getCorePublicConfig().launchState === "closed";
+  return getCorePublicConfig().launchState !== "public";
 }
 
 export function sanitizeTeaserSearchParams(searchParams = {}) {
