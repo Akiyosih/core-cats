@@ -92,7 +92,9 @@ class FinalizeManagerTests(unittest.TestCase):
                 "mobileUri": "",
                 "qrDataUrl": "",
                 "txHash": "0xcommit-tx",
+                "submittedAt": "",
                 "confirmedAt": iso_seconds_ago(30),
+                "confirmedBlockNumber": 0,
             },
             "finalize": {
                 "status": "awaiting_finalize",
@@ -140,6 +142,67 @@ class FinalizeManagerTests(unittest.TestCase):
         self.assertEqual(session["finalize"]["status"], "submitted")
         self.assertEqual(session["finalize"]["txHash"], "0xfinalize")
         self.assertEqual(session["finalize"]["mode"], "relayer")
+
+    def test_run_once_waits_for_commit_receipt_before_finalize_logic(self) -> None:
+        session = self._base_session()
+        session["status"] = "commit_submitted"
+        session["commit"]["status"] = "commit_submitted"
+        session["commit"]["submittedAt"] = iso_seconds_ago(5)
+        session["commit"]["confirmedAt"] = ""
+        self._put_session(session)
+        manager = FinalizeManager(
+            self.config,
+            self.store,
+            rpc_client=FakeRpcClient(
+                wallet_state=WalletMintState(
+                    current_block=500,
+                    minted=0,
+                    reserved=0,
+                    effective_reserved=0,
+                    pending_commit=PendingCommitState(quantity=1, finalize_block=100, expiry_block=200, commit_hash="0xold"),
+                ),
+                receipt=None,
+            ),
+            relay_fn=lambda config, minter: {"txHash": "0xfinalize"},
+        )
+
+        manager.run_once()
+
+        updated = self.store.get_session("session-1")
+        self.assertEqual(updated["status"], "commit_submitted")
+        self.assertEqual(updated["finalize"]["status"], "awaiting_finalize")
+        self.assertEqual(updated["finalize"]["lastErrorCode"], "")
+
+    def test_run_once_confirms_commit_receipt_before_relayer_finalize(self) -> None:
+        session = self._base_session()
+        session["status"] = "commit_submitted"
+        session["commit"]["status"] = "commit_submitted"
+        session["commit"]["submittedAt"] = iso_seconds_ago(5)
+        session["commit"]["confirmedAt"] = ""
+        self._put_session(session)
+        manager = FinalizeManager(
+            self.config,
+            self.store,
+            rpc_client=FakeRpcClient(
+                wallet_state=WalletMintState(
+                    current_block=105,
+                    minted=0,
+                    reserved=1,
+                    effective_reserved=1,
+                    pending_commit=PendingCommitState(quantity=1, finalize_block=100, expiry_block=300, commit_hash="0xabc"),
+                ),
+                receipt=TransactionReceipt(tx_hash="0xcommit-tx", block_number=104, success=True),
+            ),
+            relay_fn=lambda config, minter: {"txHash": "0xfinalize"},
+        )
+
+        manager.run_once()
+
+        updated = self.store.get_session("session-1")
+        self.assertEqual(updated["commit"]["status"], "commit_confirmed")
+        self.assertEqual(updated["commit"]["confirmedBlockNumber"], 104)
+        self.assertEqual(updated["status"], "finalize_submitted")
+        self.assertEqual(updated["finalize"]["txHash"], "0xfinalize")
 
     def test_run_once_marks_receipt_confirmed(self) -> None:
         session = self._base_session()

@@ -113,7 +113,7 @@ class SessionStore:
                 """
                 SELECT payload_json
                 FROM mint_sessions
-                WHERE status IN ('commit_confirmed', 'finalize_submitted')
+                WHERE status IN ('commit_submitted', 'commit_confirmed', 'finalize_submitted')
                 ORDER BY updated_at ASC
                 LIMIT ?
                 """,

@@ -209,7 +209,9 @@ async function buildCommitRequest(request, session) {
     mobileUri,
     qrDataUrl: await toQrDataUrl(desktopUri),
     txHash: "",
+    submittedAt: "",
     confirmedAt: "",
+    confirmedBlockNumber: 0,
   };
   session.status = "awaiting_commit";
   session.error = null;
@@ -479,6 +481,7 @@ function serializeSession(session) {
     },
     commit: session.commit
       ? {
+          status: session.commit.status || null,
           expiry: session.commit.expiry,
           messageHash: session.commit.messageHash,
           walletState: session.commit.walletState || null,
@@ -486,7 +489,9 @@ function serializeSession(session) {
           mobileUri: session.commit.mobileUri,
           qrDataUrl: session.commit.qrDataUrl,
           txHash: session.commit.txHash || null,
+          submittedAt: session.commit.submittedAt || null,
           confirmedAt: session.commit.confirmedAt || null,
+          confirmedBlockNumber: Number(session.commit.confirmedBlockNumber || 0) || null,
         }
       : null,
     finalize: session.finalize
@@ -646,10 +651,13 @@ export async function applyCorePassCallback(request, payload) {
       throw error;
     }
     session.commit.txHash = parsed.txHash;
-    session.commit.confirmedAt = nowIso();
-    session.status = "commit_confirmed";
+    session.commit.submittedAt = nowIso();
+    session.commit.confirmedAt = "";
+    session.commit.confirmedBlockNumber = 0;
+    session.commit.status = "commit_submitted";
+    session.status = "commit_submitted";
     session.error = null;
-    appendHistory(session, { step: "commit", event: "confirmed", txHash: parsed.txHash || null });
+    appendHistory(session, { step: "commit", event: "submitted", txHash: parsed.txHash || null });
     await buildFinalizeRequest(request, session);
     await persistSession(request, session);
     return serializeSession(session);

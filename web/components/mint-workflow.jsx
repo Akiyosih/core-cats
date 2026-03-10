@@ -35,12 +35,18 @@ function formatSessionState(value) {
       return "Awaiting wallet confirmation";
     case "awaiting_commit":
       return "Commit ready for approval";
+    case "commit_submitted":
+      return "Commit submitted; waiting for chain confirmation";
     case "authorize_rejected":
       return "Authorization rejected before commit";
     case "commit_confirmed":
       return "Commit confirmed";
+    case "commit_failed":
+      return "Commit failed";
     case "finalize_submitted":
       return "Finalize submitted";
+    case "finalize_expired":
+      return "Finalize expired";
     case "finalized":
       return "Mint completed";
     default:
@@ -268,24 +274,49 @@ export default function MintWorkflow({ config }) {
     (config.networkName || "").toLowerCase() === "devin" || Number(config.chainId || 0) === 3;
   const finalizeStatus = session?.finalize?.status || "awaiting_finalize";
   const finalizeStatusLabel = formatFinalizeStatus(finalizeStatus);
+  const commitSubmitted = Boolean(session?.commit?.txHash);
   const commitConfirmed = Boolean(session?.commit?.confirmedAt);
   const finalizeConfirmed = Boolean(session?.finalize?.confirmedAt);
   const finalizePending = commitConfirmed && !finalizeConfirmed;
-  const phaseCopy = finalizeConfirmed
-    ? "Mint completed after finalize. This session is done."
-    : finalizePending
-      ? "Commit confirmed. Finalize is still pending, so delivery is not complete yet."
-      : commitConfirmed
-        ? "Commit confirmed."
-        : session?.commit
-          ? "Wallet confirmed on desktop. QR 2 of 2 is now ready for the commit transaction."
-          : session?.identify?.completedAt
-            ? "Wallet confirmed. Waiting for mint authorization details."
-            : session
-              ? "Session created. Confirm the wallet in CorePass."
-              : "Session not started.";
+  let phaseCopy = "Session not started.";
+  if (session) {
+    phaseCopy = "Session created. Confirm the wallet in CorePass.";
+  }
+  if (session?.identify?.completedAt) {
+    phaseCopy = "Wallet confirmed. Waiting for mint authorization details.";
+  }
+  if (session?.commit) {
+    phaseCopy = "Wallet confirmed on desktop. QR 2 of 2 is now ready for the commit transaction.";
+  }
+  if (currentState === "commit_failed") {
+    phaseCopy = "The commit transaction did not confirm successfully.";
+  }
+  if (currentState === "finalize_expired") {
+    phaseCopy = "This session fell out of the finalize window and now needs operator intervention.";
+  }
+  if (commitSubmitted) {
+    phaseCopy = "Commit submitted. Waiting for on-chain confirmation before finalize can begin.";
+  }
+  if (finalizePending) {
+    phaseCopy = "Commit confirmed. Finalize is still pending, so delivery is not complete yet.";
+  }
+  if (finalizeConfirmed) {
+    phaseCopy = "Mint completed after finalize. This session is done.";
+  }
+  const commitCompletedLabel = commitConfirmed
+    ? "Commit confirmed. Finalize is still required before the cat is delivered."
+    : commitSubmitted
+      ? "Commit submitted. Waiting for chain confirmation before finalize can begin."
+      : "Commit approval is still required.";
+  const commitCompletedNote = commitConfirmed
+    ? "The commit is on-chain. Keep this desktop page open while the relayer finishes finalize, or use the manual finalize QR only if the session stalls."
+    : commitSubmitted
+      ? "CorePass returned the commit transaction. This desktop page is now waiting for the chain receipt."
+      : "Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass.";
   const relayerNote = finalizeConfirmed
     ? "Finalize completed. The mint is now delivered."
+    : commitSubmitted && !commitConfirmed
+      ? "CorePass returned the commit transaction, but the desktop session is still waiting for an on-chain receipt before finalize can begin."
     : session?.finalize?.stuck
       ? "Commit is confirmed, but finalize is taking longer than expected. The backend keeps checking, and the manual finalize fallback remains available."
       : finalizeStatus === "submitted"
@@ -303,6 +334,8 @@ export default function MintWorkflow({ config }) {
                 : "Relayer is not configured for this environment.";
   const automaticPathLabel = finalizeConfirmed
     ? "Completed"
+    : commitSubmitted && !commitConfirmed
+      ? "Waiting for commit confirmation"
     : finalizeStatus === "submitted"
       ? "Submitted"
       : session?.finalize?.stuck
@@ -315,7 +348,7 @@ export default function MintWorkflow({ config }) {
               ? "Retrying"
               : "Unavailable";
   const manualFinalizeAvailable = Boolean(
-    session?.finalize?.manualAvailable && session?.finalize?.status !== "expired" && !finalizeConfirmed,
+    commitConfirmed && session?.finalize?.manualAvailable && session?.finalize?.status !== "expired" && !finalizeConfirmed,
   );
   const progressItems = [
     {
@@ -334,6 +367,8 @@ export default function MintWorkflow({ config }) {
       label: "Commit recorded",
       detail: commitConfirmed
         ? "The commit transaction is confirmed on-chain."
+        : commitSubmitted
+          ? "The commit transaction was submitted from CorePass and is still waiting for an on-chain receipt."
         : session?.commit
           ? "Scan QR 2 of 2 to approve the commit transaction in CorePass."
           : "Commit is only prepared after wallet confirmation succeeds.",
@@ -343,6 +378,8 @@ export default function MintWorkflow({ config }) {
       label: "Finalize delivered",
       detail: finalizeConfirmed
         ? "Finalize confirmed. The mint is complete."
+        : commitSubmitted && !commitConfirmed
+          ? "Finalize will only start after the commit transaction is confirmed on-chain."
         : commitConfirmed
           ? relayerNote
           : "Finalize starts only after the commit is confirmed.",
@@ -487,8 +524,8 @@ export default function MintWorkflow({ config }) {
           copy="Once the CoreID is known, the server prepares the signed commitMint call and hands it to CorePass as a transaction request. This records the mint request on-chain, but delivery is not complete until finalize succeeds."
           request={session.commit}
           pendingNote="Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass."
-          completedLabel="Commit confirmed. Finalize is still required before the cat is delivered."
-          completedNote="The commit is on-chain. Keep this desktop page open while the relayer finishes finalize, or use the manual finalize QR only if the session stalls."
+          completedLabel={commitCompletedLabel}
+          completedNote={commitCompletedNote}
         />
       ) : null}
 
@@ -533,6 +570,8 @@ export default function MintWorkflow({ config }) {
                     ? "Finalize already completed for this session."
                     : session.finalize.status === "expired"
                       ? "Manual finalize is no longer safe for this session because the finalize window expired."
+                      : !commitConfirmed
+                        ? "Manual finalize stays disabled until the commit transaction is confirmed on-chain."
                       : "Manual CorePass finalize is not available for this session. The relayer path remains primary."}
                 </p>
               )}
@@ -588,6 +627,7 @@ export default function MintWorkflow({ config }) {
             <h2>Explorer and session details</h2>
             <div className="mint-meta-group">
               <StatusLine label="Commit tx" value={session.commit?.txHash || "not confirmed yet"} mono />
+              <StatusLine label="Commit state" value={commitConfirmed ? "Confirmed" : commitSubmitted ? "Submitted" : "Awaiting approval"} />
               {commitHref ? (
                 <a href={commitHref} target="_blank" rel="noreferrer" className="inline-link">
                   Open commit tx

@@ -142,7 +142,7 @@ class FinalizeManager:
                 )
 
             finalize = ensure_finalize_state(session)
-            if session.get("status") in {"commit_confirmed", "finalize_submitted"} and not finalize["confirmedAt"]:
+            if session.get("status") in {"commit_submitted", "commit_confirmed", "finalize_submitted"} and not finalize["confirmedAt"]:
                 pending_sessions += 1
                 confirmed_at = parse_iso(str(session.get("commit", {}).get("confirmedAt") or ""))
                 if confirmed_at is not None:
@@ -175,6 +175,13 @@ class FinalizeManager:
 
         finalize = ensure_finalize_state(session)
         changed = self._update_stuck_state(session)
+
+        if session.get("status") == "commit_submitted":
+            changed = self._handle_submitted_commit(session) or changed
+            if session.get("status") != "commit_confirmed":
+                changed = self._update_stuck_state(session) or changed
+                return changed
+
         wallet_state = self._rpc.get_wallet_mint_state(self._config.corecats_address, str(session["minter"]))
 
         if finalize["confirmedAt"]:
@@ -191,6 +198,66 @@ class FinalizeManager:
             changed = self._handle_pending_finalize(session, wallet_state) or changed
 
         changed = self._update_stuck_state(session) or changed
+        return changed
+
+    def _handle_submitted_commit(self, session: dict) -> bool:
+        commit = session.get("commit") if isinstance(session.get("commit"), dict) else {}
+        tx_hash = str(commit.get("txHash") or "").strip()
+        if not tx_hash:
+            return False
+
+        receipt = self._rpc.get_transaction_receipt(tx_hash)
+        if receipt is None:
+            changed = False
+            if commit.get("status") != "commit_submitted":
+                commit["status"] = "commit_submitted"
+                changed = True
+            if session.get("status") != "commit_submitted":
+                session["status"] = "commit_submitted"
+                changed = True
+            if changed:
+                session["updatedAt"] = now_iso()
+            return changed
+
+        if receipt.success is False:
+            changed = False
+            if commit.get("status") != "commit_reverted":
+                commit["status"] = "commit_reverted"
+                changed = True
+            if session.get("status") != "commit_failed":
+                session["status"] = "commit_failed"
+                changed = True
+            next_error = {
+                "code": "commit_reverted",
+                "message": "Commit transaction reverted on-chain.",
+            }
+            if session.get("error") != next_error:
+                session["error"] = next_error
+                changed = True
+            if changed:
+                session["updatedAt"] = now_iso()
+                append_history(session, {"step": "commit", "event": "reverted", "txHash": tx_hash})
+            return changed
+
+        changed = False
+        if commit.get("status") != "commit_confirmed":
+            commit["status"] = "commit_confirmed"
+            changed = True
+        if not commit.get("confirmedAt"):
+            commit["confirmedAt"] = now_iso()
+            changed = True
+        if int(commit.get("confirmedBlockNumber") or 0) != receipt.block_number:
+            commit["confirmedBlockNumber"] = receipt.block_number
+            changed = True
+        if session.get("status") != "commit_confirmed":
+            session["status"] = "commit_confirmed"
+            changed = True
+        if session.get("error") is not None:
+            session["error"] = None
+            changed = True
+        if changed:
+            session["updatedAt"] = now_iso()
+            append_history(session, {"step": "commit", "event": "confirmed", "txHash": tx_hash})
         return changed
 
     def _handle_pending_finalize(self, session: dict, wallet_state: WalletMintState) -> bool:
