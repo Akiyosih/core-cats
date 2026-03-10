@@ -136,10 +136,14 @@ function StatusLine({ label, value, mono = false }) {
 
 function describeCallbackError(code) {
   switch (String(code || "").trim()) {
+    case "canary_wallet_not_allowed":
+      return "This wallet is not on the current rehearsal canary allowlist, so the site did not prepare a commit transaction.";
     case "wallet_limit_reached":
       return "This wallet is already at the 3-cat limit for the standard mint path, so no new commit transaction was prepared.";
     case "pending_commit_exists":
       return "This wallet already has a commit waiting for finalize. Finish that session before starting another one.";
+    case "invalid_minter":
+      return "CorePass returned an unsupported wallet address format for this session.";
     case "wallet_state_unavailable":
       return "Mint authorization is temporarily unavailable because the backend could not confirm the wallet state.";
     case "authorize_failed":

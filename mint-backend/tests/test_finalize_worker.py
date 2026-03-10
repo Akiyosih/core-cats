@@ -53,6 +53,7 @@ class FinalizeManagerTests(unittest.TestCase):
             finalizer_password_file=None,
             finalize_worker_interval_seconds=5,
             finalize_stuck_timeout_seconds=180,
+            canary_allowed_core_id_keys=frozenset(),
         )
 
     def tearDown(self) -> None:

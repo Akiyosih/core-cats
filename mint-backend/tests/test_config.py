@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from corecats_mint_backend.config import load_config
+from corecats_mint_backend.config import _read_core_id_keys, load_config, normalize_core_address_key
 
 DUMMY_MAINNET_CORECATS_ADDRESS = "cb111111111111111111111111111111111111111111"
 DUMMY_FINALIZER_ADDRESS = "cb222222222222222222222222222222222222222222"
@@ -121,6 +121,42 @@ class ConfigValidationTests(unittest.TestCase):
         with patch.dict(os.environ, env, clear=True):
             with self.assertRaisesRegex(ValueError, "FINALIZER_ADDRESS must be explicitly set"):
                 load_config()
+
+
+class ConfigAddressNormalizationTests(unittest.TestCase):
+    def test_normalize_core_address_key_accepts_cb_and_hex_forms(self) -> None:
+        expected = "0xcc64595127da8b1f7d4a03f7e0e1f4562409b416"
+        self.assertEqual(normalize_core_address_key("CB36CC64595127DA8B1F7D4A03F7E0E1F4562409B416"), expected)
+        self.assertEqual(normalize_core_address_key("cc64595127da8b1f7d4a03f7e0e1f4562409b416"), expected)
+        self.assertEqual(normalize_core_address_key(expected), expected)
+
+    def test_normalize_core_address_key_rejects_unsupported_values(self) -> None:
+        with self.assertRaises(ValueError):
+            normalize_core_address_key("not-a-core-address")
+
+    def test_read_core_id_keys_deduplicates_and_normalizes(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                "CORECATS_CANARY_ALLOWED_CORE_IDS": (
+                    "CB36CC64595127DA8B1F7D4A03F7E0E1F4562409B416,\n"
+                    "0xcc64595127da8b1f7d4a03f7e0e1f4562409b416\n"
+                    "CB751E48F322F114DE6A8C1CACBE914544ABE29DBAD2"
+                )
+            },
+            clear=False,
+        ):
+            keys = _read_core_id_keys("CORECATS_CANARY_ALLOWED_CORE_IDS")
+
+        self.assertEqual(
+            keys,
+            frozenset(
+                {
+                    "0xcc64595127da8b1f7d4a03f7e0e1f4562409b416",
+                    "0x1e48f322f114de6a8c1cacbe914544abe29dbad2",
+                }
+            ),
+        )
 
 
 if __name__ == "__main__":

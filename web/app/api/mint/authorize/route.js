@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 
-import { getCorePublicConfig } from "../../../../lib/server/core-env.js";
+import { getCorePublicConfig, getCoreServerEnv, normalizeCoreAddressKey } from "../../../../lib/server/core-env.js";
 import { issueMintAuthorization } from "../../../../lib/server/core-spark.js";
 import { isExternalMintBackendEnabled, proxyMintBackendRequest } from "../../../../lib/server/mint-backend-proxy.js";
 
@@ -19,12 +19,25 @@ export async function POST(request) {
     const body = await request.json();
     const minter = String(body?.minter || "").trim();
     const quantity = Number(body?.quantity || 0);
+    const env = getCoreServerEnv();
 
     if (!minter) {
       return Response.json({ error: "minter is required" }, { status: 400 });
     }
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > 3) {
       return Response.json({ error: "quantity must be 1, 2, or 3" }, { status: 400 });
+    }
+    if (env.canaryAllowedCoreIds.length > 0) {
+      const minterKey = normalizeCoreAddressKey(minter);
+      if (!env.canaryAllowedCoreIds.includes(minterKey)) {
+        return Response.json(
+          {
+            error: "canary_wallet_not_allowed",
+            detail: "This wallet is not on the rehearsal canary allowlist.",
+          },
+          { status: 403 },
+        );
+      }
     }
 
     const nonce = buildNonce();
@@ -45,6 +58,15 @@ export async function POST(request) {
       relayerEnabled: config.relayerEnabled,
     });
   } catch (error) {
+    if (error.message?.startsWith("Unsupported Core address format")) {
+      return Response.json(
+        {
+          error: "invalid_minter",
+          detail: error.message,
+        },
+        { status: 400 },
+      );
+    }
     return Response.json(
       {
         error: "failed to issue mint authorization",

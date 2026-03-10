@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
-from .config import Config, load_config
+from .config import Config, load_config, normalize_core_address_key
 from .finalize_worker import FinalizeManager, FinalizeWorker
 from .policy import AuthorizationRejected, evaluate_authorization_precheck
 from .rpc import CoreRpcClient, RpcError
@@ -30,6 +30,12 @@ def json_response(handler: BaseHTTPRequestHandler, status: int, payload: dict) -
 
 def normalized_path(value: str) -> str:
     return urlparse(value).path
+
+
+def is_canary_wallet_allowed(config: Config, minter: str) -> bool:
+    if not config.canary_allowed_core_id_keys:
+        return True
+    return normalize_core_address_key(minter) in config.canary_allowed_core_id_keys
 
 
 class MintBackendHandler(BaseHTTPRequestHandler):
@@ -111,6 +117,16 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         expiry = int(body.get("expiry") or (int(datetime.now(timezone.utc).timestamp()) + 10 * 60))
 
         try:
+            if not is_canary_wallet_allowed(self.config, minter):
+                json_response(
+                    self,
+                    403,
+                    {
+                        "error": "canary_wallet_not_allowed",
+                        "detail": "This wallet is not on the rehearsal canary allowlist.",
+                    },
+                )
+                return
             wallet_state = self.rpc.get_wallet_mint_state(self.config.corecats_address, minter=minter)
             precheck = evaluate_authorization_precheck(wallet_state, quantity)
             payload = issue_mint_authorization(
@@ -151,6 +167,8 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             )
         except AuthorizationRejected as error:
             json_response(self, 409, {"error": error.code, "detail": str(error)})
+        except ValueError as error:
+            json_response(self, 400, {"error": "invalid_minter", "detail": str(error)})
         except RpcError as error:
             json_response(self, 503, {"error": "wallet_state_unavailable", "detail": str(error)})
         except Exception as error:  # noqa: BLE001

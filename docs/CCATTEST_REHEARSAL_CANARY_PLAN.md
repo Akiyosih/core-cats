@@ -72,6 +72,7 @@ For the real UI rehearsal, the public site should be configured as follows:
 9. `CORECATS_RELAYER_ENABLED=true`
 10. `NEXT_PUBLIC_LAUNCH_STATE=canary` for the real `/mint` UI rehearsal
 11. `COREPASS_EXPECTED_CORE_ID` must remain unset
+12. Contabo may set `CORECATS_CANARY_ALLOWED_CORE_IDS` during the rehearsal canary so only named test wallets can receive commit authorization
 
 If the site is intentionally kept in `closed`, that stage should be limited to terminal-side probes and non-UI checks. It should not be treated as the real rehearsal canary.
 
@@ -105,6 +106,7 @@ For each rehearsal-canary test, record at minimum:
    - `public`: general mint open
 2. Do not hide a real mint workflow behind `closed`.
 3. Use `canary` for the production-like `/mint` rehearsal.
+4. If the rehearsal must stay limited to selected wallets, enforce that at the backend authorization layer rather than through hidden URLs.
 
 ### B-2. Mint session copy
 The UI should make these phases easy to distinguish:

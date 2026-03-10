@@ -7,6 +7,8 @@ const FOXAR_ENV_PATH = path.join(ROOT_DIR, "foxar", ".env");
 export const DEFAULT_DEVIN_RPC_URL = "https://xcbapi-arch-devin.coreblockchain.net/";
 export const DEFAULT_DEVIN_CORECATS_ADDRESS = "ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba";
 export const DEFAULT_DEVIN_EXPLORER_BASE_URL = "https://xab.blockindex.net";
+const HEX_40_RE = /^[0-9a-f]{40}$/;
+const ICAN_RE = /^[a-z]{2}[0-9a-f]{42}$/;
 
 const DEFAULTS = {
   rpcUrl: DEFAULT_DEVIN_RPC_URL,
@@ -37,6 +39,36 @@ function normalizeBackendMode(value) {
 
 export function looksLikePlaceholder(value) {
   return /replace-with/i.test(String(value || "").trim());
+}
+
+export function normalizeCoreAddressKey(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw) {
+    throw new Error("Core address must not be empty");
+  }
+  if (raw.startsWith("0x") && raw.length === 42 && HEX_40_RE.test(raw.slice(2))) {
+    return raw;
+  }
+  if (raw.length === 40 && HEX_40_RE.test(raw)) {
+    return `0x${raw}`;
+  }
+  if (raw.length === 44 && ICAN_RE.test(raw)) {
+    return `0x${raw.slice(4)}`;
+  }
+  throw new Error(`Unsupported Core address format: ${value}`);
+}
+
+function parseCanaryAllowedCoreIds(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return [];
+  return Array.from(
+    new Set(
+      raw
+        .split(/[\s,]+/)
+        .filter(Boolean)
+        .map((item) => normalizeCoreAddressKey(item)),
+    ),
+  );
 }
 
 function parseEnvFile(filePath) {
@@ -90,6 +122,7 @@ export function getCoreServerEnv() {
     backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
     backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
     backendSharedSecret: (process.env.CORECATS_BACKEND_SHARED_SECRET || DEFAULTS.backendSharedSecret).trim(),
+    canaryAllowedCoreIds: parseCanaryAllowedCoreIds(process.env.CORECATS_CANARY_ALLOWED_CORE_IDS || ""),
     corePassExpectedCoreId: (process.env.COREPASS_EXPECTED_CORE_ID || "").trim(),
     coreCatsAddress:
       process.env.NEXT_PUBLIC_CORECATS_ADDRESS ||

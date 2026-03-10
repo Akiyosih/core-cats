@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -8,6 +9,8 @@ from typing import Optional
 DEFAULT_DEVIN_RPC_URL = "https://xcbapi-arch-devin.coreblockchain.net/"
 DEFAULT_DEVIN_CORECATS_ADDRESS = "ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba"
 DEFAULT_DEVIN_EXPLORER_BASE_URL = "https://xab.blockindex.net"
+_HEX_40_RE = re.compile(r"[0-9a-f]{40}")
+_ICAN_RE = re.compile(r"[a-z]{2}[0-9a-f]{42}")
 
 
 @dataclass(frozen=True)
@@ -33,6 +36,7 @@ class Config:
     finalizer_password_file: Optional[Path]
     finalize_worker_interval_seconds: int
     finalize_stuck_timeout_seconds: int
+    canary_allowed_core_id_keys: frozenset[str]
 
 
 def _read_int(name: str, default: int) -> int:
@@ -47,6 +51,32 @@ def _normalize_profile(raw: str) -> str:
     if profile in {"production", "prod"}:
         return "production"
     raise ValueError("CORECATS_BACKEND_PROFILE must be 'development' or 'production'")
+
+
+def normalize_core_address_key(value: str) -> str:
+    raw = str(value or "").strip().lower()
+    if not raw:
+        raise ValueError("Core address must not be empty")
+    if raw.startswith("0x") and len(raw) == 42 and _HEX_40_RE.fullmatch(raw[2:]):
+        return raw
+    if len(raw) == 40 and _HEX_40_RE.fullmatch(raw):
+        return f"0x{raw}"
+    if len(raw) == 44 and _ICAN_RE.fullmatch(raw):
+        return f"0x{raw[4:]}"
+    raise ValueError(f"Unsupported Core address format: {value}")
+
+
+def _read_core_id_keys(name: str) -> frozenset[str]:
+    raw = os.environ.get(name, "")
+    if not raw.strip():
+        return frozenset()
+
+    values = set()
+    for token in re.split(r"[\s,]+", raw.strip()):
+        if not token:
+            continue
+        values.add(normalize_core_address_key(token))
+    return frozenset(values)
 
 
 def _looks_like_placeholder(value: str) -> bool:
@@ -156,6 +186,7 @@ def load_config() -> Config:
         finalizer_password_file=Path(finalizer_password_file_raw).expanduser() if finalizer_password_file_raw else None,
         finalize_worker_interval_seconds=_read_int("CORECATS_FINALIZE_WORKER_INTERVAL_SECONDS", 5),
         finalize_stuck_timeout_seconds=_read_int("CORECATS_FINALIZE_STUCK_TIMEOUT_SECONDS", 180),
+        canary_allowed_core_id_keys=_read_core_id_keys("CORECATS_CANARY_ALLOWED_CORE_IDS"),
     )
     validate_config(config)
     return config
