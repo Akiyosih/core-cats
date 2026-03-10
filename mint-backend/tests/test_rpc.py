@@ -6,6 +6,7 @@ from corecats_mint_backend.rpc import (
     MINTED_PER_ADDRESS_SELECTOR,
     PENDING_COMMIT_SELECTOR,
     RESERVED_PER_ADDRESS_SELECTOR,
+    core_address_to_abi_word,
     core_address_to_hex,
     core_address_to_xcb_rpc,
 )
@@ -36,10 +37,16 @@ class CoreAddressTests(unittest.TestCase):
             "0xcc64595127da8b1f7d4a03f7e0e1f4562409b416",
         )
 
+    def test_core_address_to_abi_word_keeps_full_ican_body_for_core_addresses(self) -> None:
+        self.assertEqual(
+            core_address_to_abi_word("cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416"),
+            "cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416",
+        )
+
     def test_public_mapping_getter_selectors_match_corecats_contract(self) -> None:
-        self.assertEqual(MINTED_PER_ADDRESS_SELECTOR, "0xd445b978")
-        self.assertEqual(RESERVED_PER_ADDRESS_SELECTOR, "0x8eb23fb7")
-        self.assertEqual(PENDING_COMMIT_SELECTOR, "0x89f1e3f2")
+        self.assertEqual(MINTED_PER_ADDRESS_SELECTOR, "0x5539b96a")
+        self.assertEqual(RESERVED_PER_ADDRESS_SELECTOR, "0xe64f7f28")
+        self.assertEqual(PENDING_COMMIT_SELECTOR, "0xf622d4c8")
 
 
 if __name__ == "__main__":

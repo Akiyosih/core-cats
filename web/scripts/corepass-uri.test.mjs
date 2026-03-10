@@ -5,7 +5,7 @@ import {
   CORECATS_METHOD_SELECTORS,
   encodeCoreCatsCommitMintData,
   encodeCoreCatsFinalizeMintData,
-  normalizeCoreAddressToHex,
+  normalizeCoreAddressToAbiWord,
 } from "../lib/server/core-calldata.js";
 import {
   buildCorePassUri,
@@ -65,8 +65,11 @@ test("finalize calldata builder supports Core cb addresses for manual fallback",
   assert.match(encoded.data, /^0x11709128/);
 });
 
-test("Core address normalization strips the ICAN prefix and check digits", () => {
-  assert.equal(normalizeCoreAddressToHex("cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416"), "0xcc64595127da8b1f7d4a03f7e0e1f4562409b416");
+test("Core address normalization keeps the full ICAN body for ABI words", () => {
+  assert.equal(
+    normalizeCoreAddressToAbiWord("cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416"),
+    "0xcb36cc64595127da8b1f7d4a03f7e0e1f4562409b416",
+  );
 });
 
 test("finalize calldata uses the Core/ylm selector and normalized address body", () => {
@@ -75,7 +78,7 @@ test("finalize calldata uses the Core/ylm selector and normalized address body",
   assert.equal(data.slice(0, 10), CORECATS_METHOD_SELECTORS.finalizeMint);
   assert.equal(
     data,
-    "0x11709128000000000000000000000000cc64595127da8b1f7d4a03f7e0e1f4562409b416",
+    "0x1170912800000000000000000000cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416",
   );
 });
 

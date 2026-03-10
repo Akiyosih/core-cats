@@ -12,9 +12,9 @@ CALL_METHODS = ("xcb_call", "eth_call")
 BLOCK_NUMBER_METHODS = ("xcb_blockNumber", "eth_blockNumber")
 RECEIPT_METHODS = ("xcb_getTransactionReceipt", "eth_getTransactionReceipt")
 
-MINTED_PER_ADDRESS_SELECTOR = "0xd445b978"
-RESERVED_PER_ADDRESS_SELECTOR = "0x8eb23fb7"
-PENDING_COMMIT_SELECTOR = "0x89f1e3f2"
+MINTED_PER_ADDRESS_SELECTOR = "0x5539b96a"
+RESERVED_PER_ADDRESS_SELECTOR = "0xe64f7f28"
+PENDING_COMMIT_SELECTOR = "0xf622d4c8"
 
 _REQUEST_IDS = count(1)
 _HEX_40_RE = re.compile(r"[0-9a-f]{40}")
@@ -89,6 +89,19 @@ def core_address_to_xcb_rpc(value: str) -> str:
     raise ValueError(f"Unsupported Core address format: {value}")
 
 
+def core_address_to_abi_word(value: str) -> str:
+    raw = str(value or "").strip().lower()
+    if raw.startswith("0x") and len(raw) == 46 and _ICAN_RE.fullmatch(raw[2:]):
+        return raw[2:]
+    if len(raw) == 44 and _ICAN_RE.fullmatch(raw):
+        return raw
+    if raw.startswith("0x") and len(raw) == 42 and _HEX_40_RE.fullmatch(raw[2:]):
+        return raw[2:]
+    if len(raw) == 40 and _HEX_40_RE.fullmatch(raw):
+        return raw
+    raise ValueError(f"Unsupported Core address format: {value}")
+
+
 def _parse_hex_int(value: object) -> int:
     if value is None:
         return 0
@@ -107,7 +120,7 @@ def _pad_32(value: str) -> str:
 
 
 def _encode_address_call(selector: str, address: str) -> str:
-    body = core_address_to_hex(address)[2:]
+    body = core_address_to_abi_word(address)
     return f"{selector}{_pad_32(body)}"
 
 
