@@ -249,10 +249,12 @@ export default function MintWorkflow({ config }) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const issueRef = useRef(null);
   const step1Ref = useRef(null);
   const step2Ref = useRef(null);
   const step3Ref = useRef(null);
   const successRef = useRef(null);
+  const lastErrorScrollKeyRef = useRef("");
   const scrollMarksRef = useRef({
     sessionId: "",
     step1: false,
@@ -302,6 +304,13 @@ export default function MintWorkflow({ config }) {
       setSession(payload);
       setError(payload.error?.message || "");
     } catch (refreshError) {
+      if (refreshError.code === "session_not_found") {
+        setSession(null);
+        setSessionId("");
+        if (typeof window !== "undefined") {
+          window.history.replaceState({}, "", "/mint");
+        }
+      }
       setError(refreshError.message || "Failed to refresh mint session");
     }
   }
@@ -314,6 +323,14 @@ export default function MintWorkflow({ config }) {
     }, 3000);
     return () => clearInterval(timer);
   }, [sessionId]);
+
+  useEffect(() => {
+    if (!error) return;
+    const scrollKey = `${sessionId || "no-session"}:${error}`;
+    if (lastErrorScrollKeyRef.current === scrollKey) return;
+    scrollToSection(issueRef);
+    lastErrorScrollKeyRef.current = scrollKey;
+  }, [error, sessionId]);
 
   async function handleBegin() {
     setLoading(true);
@@ -554,7 +571,7 @@ export default function MintWorkflow({ config }) {
       </section>
 
       {error ? (
-        <section className="mint-card">
+        <section ref={issueRef} className="mint-card">
           <p className="eyebrow">Issue</p>
           <h2>Attention required</h2>
           <p className="mint-error">{error}</p>
