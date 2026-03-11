@@ -4,7 +4,6 @@ import { getStatusSnapshot } from "../../lib/server/corecats-status";
 import { getSummary } from "../../lib/viewer-data";
 
 export const dynamic = "force-dynamic";
-const SHOW_PUBLIC_MINT_COUNTER_PREVIEW_IN_CANARY = true;
 
 export default async function MintPage() {
   const config = getCorePublicConfig();
@@ -62,8 +61,7 @@ export default async function MintPage() {
     );
   }
 
-  const showMintCounter =
-    launchState === "public" || (launchState === "canary" && SHOW_PUBLIC_MINT_COUNTER_PREVIEW_IN_CANARY);
+  const showMintCounter = launchState === "public";
   const [summary, statusSnapshot] = showMintCounter ? await Promise.all([getSummary(), getStatusSnapshot()]) : [null, null];
   const mintedLabel = showMintCounter ? `${statusSnapshot.mintedCount.toLocaleString()} / ${summary.total.toLocaleString()} minted` : "";
 
