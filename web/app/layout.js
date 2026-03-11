@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
     launchState === "closed"
       ? "Pre-mainnet teaser. Core Cats is still in final preparation. Mainnet deployment and public mint are not live yet."
       : launchState === "canary"
-        ? "Official release is not live yet. Thanks for visiting early. The mainnet rehearsal canary is open, and you can already enjoy the art and collection while the final public launch is still being prepared."
+        ? "Public mint is not open yet. This site is currently in a mainnet rehearsal canary while the official release is being prepared. You can already browse the collection."
         : "";
 
   return (

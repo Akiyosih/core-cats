@@ -67,15 +67,6 @@ export default function MintPage() {
           <p>Mint is not open yet. Collection pages are public, but new mints are still paused.</p>
         </div>
       )}
-      {launchState === "canary" && (
-        <div className="launch-banner launch-banner--canary">
-          <span className="launch-badge">Canary Live</span>
-          <p>
-            Mint is open only for validation. This stage may still point at a rehearsal contract on mainnet, so log
-            evidence against the contract published on Transparency. Official public mint has not started yet.
-          </p>
-        </div>
-      )}
       {launchState === "public" && (
         <div className="launch-banner launch-banner--public">
           <span className="launch-badge">Public Live</span>
