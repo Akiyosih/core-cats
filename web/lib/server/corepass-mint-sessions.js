@@ -15,12 +15,18 @@ import {
 } from "./mint-backend-proxy.js";
 
 const SESSION_TTL_MS = Number(process.env.COREPASS_SESSION_TTL_SECONDS || 20 * 60) * 1000;
+const ACTIVE_MINT_SESSION_TTL_MS = Number(process.env.COREPASS_ACTIVE_MINT_SESSION_TTL_SECONDS || 35 * 60) * 1000;
 const store = globalThis.__coreCatsCorePassMintSessions || new Map();
 
 globalThis.__coreCatsCorePassMintSessions = store;
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+function extendSessionExpiry(session, ttlMs = ACTIVE_MINT_SESSION_TTL_MS) {
+  const nextExpiry = Date.now() + ttlMs;
+  session.expiresAtMs = Math.max(Number(session.expiresAtMs || 0), nextExpiry);
 }
 
 function cleanupExpiredSessions() {
@@ -657,6 +663,7 @@ export async function applyCorePassCallback(request, payload) {
     session.commit.status = "commit_submitted";
     session.status = "commit_submitted";
     session.error = null;
+    extendSessionExpiry(session);
     appendHistory(session, { step: "commit", event: "submitted", txHash: parsed.txHash || null });
     await buildFinalizeRequest(request, session);
     await persistSession(request, session);
@@ -679,6 +686,7 @@ export async function applyCorePassCallback(request, payload) {
     session.finalize.stuckSince = "";
     session.status = "finalized";
     session.error = null;
+    extendSessionExpiry(session);
     appendHistory(session, { step: "finalize", event: "confirmed", txHash: parsed.txHash || null });
     await persistSession(request, session);
     return serializeSession(session);
@@ -715,12 +723,14 @@ export async function attemptSessionFinalize(sessionId) {
     session.finalize.status = "submitted";
     session.finalize.mode = "relayer";
     session.status = "finalize_submitted";
+    extendSessionExpiry(session);
     session.updatedAt = nowIso();
     appendHistory(session, { step: "finalize", event: "submitted_by_relayer", txHash: result.txHash });
     await persistSession(request, session);
     return serializeSession(session);
   } catch (error) {
     session.finalize.lastError = error.message;
+    extendSessionExpiry(session);
     session.updatedAt = nowIso();
     appendHistory(session, { step: "finalize", event: "relayer_error", detail: error.message });
     await persistSession(request, session);
