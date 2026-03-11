@@ -3,8 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-import CopyButton from "./copy-button.jsx";
-
 const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";
 
 function preferredScrollBehavior() {
@@ -268,6 +266,7 @@ export default function MintWorkflow({ config }) {
   const [session, setSession] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const issueRef = useRef(null);
   const step1Ref = useRef(null);
@@ -317,14 +316,20 @@ export default function MintWorkflow({ config }) {
     };
   }, [sessionId]);
 
-  async function refreshSession(nextSessionId = sessionId) {
+  async function refreshSession(nextSessionId = sessionId, { manual = false } = {}) {
     if (!nextSessionId) return;
+    if (manual) {
+      setRefreshing(true);
+    }
     try {
       const payload = await getJson(`/api/mint/corepass/session?sessionId=${encodeURIComponent(nextSessionId)}`);
       setSession(payload);
       setError(payload.error?.message || "");
     } catch (refreshError) {
       if (refreshError.code === "session_not_found") {
+        if (session?.finalize?.confirmedAt) {
+          return;
+        }
         setSession(null);
         setSessionId("");
         if (typeof window !== "undefined") {
@@ -334,17 +339,17 @@ export default function MintWorkflow({ config }) {
         return;
       }
       setError(refreshError.message || "Failed to refresh mint session");
+    } finally {
+      if (manual) {
+        setRefreshing(false);
+      }
     }
   }
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId || session) return;
     refreshSession(sessionId);
-    const timer = setInterval(() => {
-      refreshSession(sessionId);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [sessionId]);
+  }, [sessionId, session]);
 
   async function handleBegin() {
     setLoading(true);
@@ -379,6 +384,9 @@ export default function MintWorkflow({ config }) {
   const rejectedSession = authorizeRejected ? describeRejectedSession(session?.error?.code || callbackError) : null;
   const displayedError = error || (authorizationExpired ? "QR 2 of 2 expired before approval. Start a new mint from the beginning." : "");
   const restartMintVisible = authorizationExpired || displayedError.toLowerCase().includes("start a new mint from the beginning");
+  const terminalSession = finalizeConfirmed || authorizationExpired || authorizeRejected || currentState === "commit_failed" || currentState === "finalize_expired";
+  const shouldAutoRefresh = Boolean(sessionId && !terminalSession && commitSubmitted);
+  const autoRefreshMs = session?.finalize?.stuck ? 120_000 : 60_000;
   let phaseCopy = "Session not started.";
   if (session) {
     phaseCopy = "Session created. Confirm the wallet in CorePass.";
@@ -461,6 +469,14 @@ export default function MintWorkflow({ config }) {
               : "Unavailable";
   const boundWallet = session?.identify?.completedAt ? session?.identify?.coreId || session?.minter || "not selected" : "not selected";
   const publishedContractAddress = session?.coreCatsAddress || config.coreCatsAddress;
+
+  useEffect(() => {
+    if (!shouldAutoRefresh) return;
+    const timer = setInterval(() => {
+      refreshSession(sessionId);
+    }, autoRefreshMs);
+    return () => clearInterval(timer);
+  }, [autoRefreshMs, sessionId, shouldAutoRefresh]);
 
   useEffect(() => {
     if (!displayedError) return;
@@ -633,6 +649,21 @@ export default function MintWorkflow({ config }) {
             <StatusLine label="Mint progress" value={phaseCopy} />
             <StatusLine label="Bound wallet" value={boundWallet} mono />
           </div>
+          {sessionId && !terminalSession ? (
+            <div className="mint-link-grid">
+              <button type="button" className="button button--ghost" onClick={() => refreshSession(sessionId, { manual: true })} disabled={refreshing}>
+                {refreshing ? "Refreshing..." : "Refresh status"}
+              </button>
+            </div>
+          ) : null}
+          {sessionId && !commitSubmitted && !terminalSession ? (
+            <p className="mint-meta">After you approve in CorePass, use Refresh status if the next step does not appear yet.</p>
+          ) : null}
+          {shouldAutoRefresh ? (
+            <p className="mint-meta">
+              Status now refreshes automatically every {session?.finalize?.stuck ? "2 minutes" : "minute"} while commit/finalize is still pending.
+            </p>
+          ) : null}
           <div className="mint-progress">
             {progressItems.map((item) => (
               <ProgressItem key={item.label} label={item.label} detail={item.detail} tone={item.tone} />
@@ -794,38 +825,6 @@ export default function MintWorkflow({ config }) {
               </a>
             ) : null}
           </div>
-        </section>
-      ) : null}
-
-      {session && !authorizationExpired ? (
-        <section>
-          <article className="mint-card">
-            <p className="eyebrow">Verify</p>
-            <h2>Explorer and contract links</h2>
-            <div className="mint-meta-group">
-              <StatusLine label="Commit tx" value={session.commit?.txHash || "not confirmed yet"} mono />
-              <StatusLine label="Commit state" value={commitConfirmed ? "Confirmed" : commitSubmitted ? "Submitted" : "Awaiting approval"} />
-              {commitHref ? (
-                <a href={commitHref} target="_blank" rel="noreferrer" className="inline-link">
-                  Open commit tx
-                </a>
-              ) : null}
-              <StatusLine label="Finalize status" value={finalizeStatusLabel} />
-              <StatusLine label="Finalize tx" value={session.finalize?.txHash || "not sent yet"} mono />
-              {finalizeHref ? (
-                <a href={finalizeHref} target="_blank" rel="noreferrer" className="inline-link">
-                  Open finalize tx
-                </a>
-              ) : null}
-              <StatusLine label="Contract" value={session.coreCatsAddress || config.coreCatsAddress} mono />
-              {contractHref ? (
-                <a href={contractHref} target="_blank" rel="noreferrer" className="inline-link">
-                  Open contract
-                </a>
-              ) : null}
-            </div>
-          </article>
-
         </section>
       ) : null}
     </div>

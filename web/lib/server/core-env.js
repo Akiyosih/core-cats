@@ -21,6 +21,7 @@ const DEFAULTS = {
   backendMode: "local",
   backendBaseUrl: "",
   backendSharedSecret: "",
+  statusSnapshotUrl: "",
 };
 
 function normalizeLaunchState(value) {
@@ -122,6 +123,14 @@ export function getCoreServerEnv() {
     backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
     backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
     backendSharedSecret: (process.env.CORECATS_BACKEND_SHARED_SECRET || DEFAULTS.backendSharedSecret).trim(),
+    statusSnapshotUrl: (
+      process.env.NEXT_PUBLIC_CORECATS_STATUS_URL ||
+      (
+        (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, "")
+          ? `${(process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, "")}/api/public/status`
+          : ""
+      )
+    ).trim(),
     canaryAllowedCoreIds: parseCanaryAllowedCoreIds(process.env.CORECATS_CANARY_ALLOWED_CORE_IDS || ""),
     corePassExpectedCoreId: (process.env.COREPASS_EXPECTED_CORE_ID || "").trim(),
     coreCatsAddress:
@@ -150,5 +159,6 @@ export function getCorePublicConfig() {
     coreCatsAddress: env.coreCatsAddress,
     explorerBaseUrl: env.explorerBaseUrl,
     relayerEnabled,
+    statusSnapshotUrl: env.statusSnapshotUrl,
   };
 }

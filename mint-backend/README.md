@@ -24,10 +24,15 @@ Implemented endpoints:
 4. `GET /api/internal/sessions/:sessionId`
 5. `PUT /api/internal/sessions/:sessionId`
 6. `DELETE /api/internal/sessions/:sessionId`
+7. `GET /api/public/status`
 
 All `/api/*` endpoints require:
 
 - `x-corecats-backend-shared-secret: ...`
+
+Exception:
+
+- `GET /api/public/status` is intentionally public and read-only so the browser can fetch ownership/minted snapshot data without a Vercel Function hop.
 
 ## Runtime
 
@@ -36,6 +41,7 @@ No framework is required. The service uses:
 1. Python standard library HTTP server
 2. Python built-in `sqlite3`
 3. local `spark` / `foxar`
+4. a cached explorer-derived ownership snapshot for public collection / ownership pages
 
 ## Start locally
 

@@ -22,7 +22,7 @@ Implemented routes:
 4. `/cats/[tokenId]`
 5. `/transparency`
 6. `/mint` (CorePass QR / app-link flow)
-7. `/my-cats` (status placeholder)
+7. `/my-cats` (wallet ownership lookup)
 
 ## Data Source
 
@@ -74,13 +74,19 @@ Important variables:
 9. `CORECATS_BACKEND_BASE_URL` (required when `CORECATS_BACKEND_MODE=proxy`)
 10. `CORECATS_BACKEND_SHARED_SECRET` (required when `CORECATS_BACKEND_MODE=proxy`)
 
+When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives a public ownership snapshot URL from:
+
+`<CORECATS_BACKEND_BASE_URL>/api/public/status`
+
+This lets `/collection`, `/my-cats`, and the public mint counter read live ownership state from the browser without using a Vercel Function on every page view.
+
 ## Current Mint Flow
 
 1. Create a CorePass mint session on `/mint`
 2. CorePass signs a random challenge to bind a concrete `coreID`
 3. CorePass sends the `commitMint(...)` transaction
 4. the server tries relayer-assisted `finalizeMint(minter)`
-5. if relayer finalize is unavailable, the page exposes a CorePass `finalizeMint(minter)` fallback request
+5. the desktop page keeps a lightweight status view and directs users to wait or retry from the beginning if finalize never completes
 
 ## Production Note
 
@@ -101,6 +107,7 @@ The external mint backend owns:
 2. nonce / expiry / signature issuance
 3. finalize relayer execution
 4. `spark` / `foxar` execution
+5. the public ownership snapshot consumed directly by collection / ownership pages
 
 See `../docs/MINT_BACKEND_ARCHITECTURE.md`.
 Use `./.env.production.example` and `../docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md` for the Vercel-side mainnet switch.

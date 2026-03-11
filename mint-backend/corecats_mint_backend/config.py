@@ -37,6 +37,7 @@ class Config:
     finalize_worker_interval_seconds: int
     finalize_stuck_timeout_seconds: int
     canary_allowed_core_id_keys: frozenset[str]
+    public_status_cache_seconds: int
 
 
 def _read_int(name: str, default: int) -> int:
@@ -115,6 +116,8 @@ def validate_config(config: Config) -> None:
         errors.append("CORECATS_FINALIZE_WORKER_INTERVAL_SECONDS must be greater than 0")
     if config.finalize_stuck_timeout_seconds <= 0:
         errors.append("CORECATS_FINALIZE_STUCK_TIMEOUT_SECONDS must be greater than 0")
+    if config.public_status_cache_seconds <= 0:
+        errors.append("CORECATS_PUBLIC_STATUS_CACHE_SECONDS must be greater than 0")
 
     if config.profile == "production":
         if config.network_name.lower() != "mainnet":
@@ -187,6 +190,7 @@ def load_config() -> Config:
         finalize_worker_interval_seconds=_read_int("CORECATS_FINALIZE_WORKER_INTERVAL_SECONDS", 5),
         finalize_stuck_timeout_seconds=_read_int("CORECATS_FINALIZE_STUCK_TIMEOUT_SECONDS", 180),
         canary_allowed_core_id_keys=_read_core_id_keys("CORECATS_CANARY_ALLOWED_CORE_IDS"),
+        public_status_cache_seconds=_read_int("CORECATS_PUBLIC_STATUS_CACHE_SECONDS", 120),
     )
     validate_config(config)
     return config

@@ -46,6 +46,7 @@ class CanaryAllowlistTests(unittest.TestCase):
             finalize_worker_interval_seconds=5,
             finalize_stuck_timeout_seconds=180,
             canary_allowed_core_id_keys=allowed,
+            public_status_cache_seconds=120,
         )
 
     def test_allowlist_is_open_when_not_configured(self) -> None:

@@ -1,9 +1,9 @@
 import MintWorkflow from "../../components/mint-workflow";
+import MintCounterBanner from "../../components/mint-counter-banner";
 import { getCorePublicConfig } from "../../lib/server/core-env";
-import { getStatusSnapshot } from "../../lib/server/corecats-status";
 import { getSummary } from "../../lib/viewer-data";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 export default async function MintPage() {
   const config = getCorePublicConfig();
@@ -62,8 +62,7 @@ export default async function MintPage() {
   }
 
   const showMintCounter = launchState === "public";
-  const [summary, statusSnapshot] = showMintCounter ? await Promise.all([getSummary(), getStatusSnapshot()]) : [null, null];
-  const mintedLabel = showMintCounter ? `${statusSnapshot.mintedCount.toLocaleString()} / ${summary.total.toLocaleString()} minted` : "";
+  const summary = showMintCounter ? await getSummary() : null;
 
   return (
     <div className="page-stack narrow-stack">
@@ -74,18 +73,8 @@ export default async function MintPage() {
         </div>
       )}
       {showMintCounter && (
-        <div className="launch-banner launch-banner--public mint-counter-banner">
-          <span className="launch-badge">Public mint live</span>
-          <p className="mint-counter-banner__count">{mintedLabel}</p>
-        </div>
+        <MintCounterBanner statusSnapshotUrl={config.statusSnapshotUrl} total={summary.total} />
       )}
-      {launchState === "public" && !showMintCounter && (
-        <div className="launch-banner launch-banner--public">
-          <span className="launch-badge">Public Live</span>
-          <p>Public mint is open. Connect with CorePass to secure your Core Cats.</p>
-        </div>
-      )}
-
       <details className="mint-verify-details">
         <summary>New to Core Blockchain?</summary>
         <div className="mint-verify-body mint-copy-stack">

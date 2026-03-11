@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 from .config import Config, load_config, normalize_core_address_key
 from .finalize_worker import FinalizeManager, FinalizeWorker
+from .ownership_snapshot import OwnershipSnapshotCache
 from .policy import AuthorizationRejected, evaluate_authorization_precheck
 from .rpc import CoreRpcClient, RpcError
 from .spark import classify_finalize_error_detail, issue_mint_authorization, relay_finalize_mint
@@ -18,12 +19,22 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def json_response(handler: BaseHTTPRequestHandler, status: int, payload: dict) -> None:
+def json_response(
+    handler: BaseHTTPRequestHandler,
+    status: int,
+    payload: dict,
+    *,
+    cache_control: str = "no-store",
+    extra_headers: dict[str, str] | None = None,
+) -> None:
     data = json.dumps(payload, ensure_ascii=True).encode("utf-8")
     handler.send_response(status)
     handler.send_header("content-type", "application/json; charset=utf-8")
     handler.send_header("content-length", str(len(data)))
-    handler.send_header("cache-control", "no-store")
+    handler.send_header("cache-control", cache_control)
+    if extra_headers:
+        for key, value in extra_headers.items():
+            handler.send_header(key, value)
     handler.end_headers()
     handler.wfile.write(data)
 
@@ -57,8 +68,12 @@ class MintBackendHandler(BaseHTTPRequestHandler):
     def finalize_manager(self) -> FinalizeManager:
         return self.server.finalize_manager  # type: ignore[attr-defined]
 
+    @property
+    def ownership_snapshot_cache(self) -> OwnershipSnapshotCache:
+        return self.server.ownership_snapshot_cache  # type: ignore[attr-defined]
+
     def _require_auth(self) -> bool:
-        if normalized_path(self.path) == "/healthz":
+        if normalized_path(self.path) in {"/healthz", "/api/public/status"}:
             return True
 
         expected = self.config.shared_secret
@@ -100,6 +115,21 @@ class MintBackendHandler(BaseHTTPRequestHandler):
                 "chainId": self.config.chain_id,
                 "finalizeWorker": self.finalize_manager.snapshot(),
             },
+        )
+
+    def _public_status_headers(self) -> dict[str, str]:
+        return {
+            "access-control-allow-origin": "*",
+            "access-control-allow-methods": "GET, OPTIONS",
+        }
+
+    def _handle_public_status(self) -> None:
+        json_response(
+            self,
+            200,
+            self.ownership_snapshot_cache.snapshot(),
+            cache_control="public, max-age=60, stale-while-revalidate=60",
+            extra_headers=self._public_status_headers(),
         )
 
     def _handle_authorize(self) -> None:
@@ -233,6 +263,8 @@ class MintBackendHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         if normalized_path(self.path) == "/healthz":
             return self._handle_healthz()
+        if normalized_path(self.path) == "/api/public/status":
+            return self._handle_public_status()
         if not self._require_auth():
             return
 
@@ -241,6 +273,18 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             return self._handle_get_session(session_id)
 
         json_response(self, 404, {"error": "not_found"})
+
+    def do_OPTIONS(self) -> None:  # noqa: N802
+        if normalized_path(self.path) == "/api/public/status":
+            self.send_response(204)
+            for key, value in self._public_status_headers().items():
+                self.send_header(key, value)
+            self.send_header("content-length", "0")
+            self.end_headers()
+            return
+        self.send_response(405)
+        self.send_header("content-length", "0")
+        self.end_headers()
 
     def do_POST(self) -> None:  # noqa: N802
         if not self._require_auth():
@@ -281,12 +325,14 @@ def main() -> None:
     rpc = CoreRpcClient(config.rpc_url)
     finalize_manager = FinalizeManager(config, store, rpc_client=rpc)
     finalize_worker = FinalizeWorker(finalize_manager, config.finalize_worker_interval_seconds)
+    ownership_snapshot_cache = OwnershipSnapshotCache(config)
 
     server = ThreadingHTTPServer((config.bind, config.port), MintBackendHandler)
     server.config = config  # type: ignore[attr-defined]
     server.store = store  # type: ignore[attr-defined]
     server.rpc = rpc  # type: ignore[attr-defined]
     server.finalize_manager = finalize_manager  # type: ignore[attr-defined]
+    server.ownership_snapshot_cache = ownership_snapshot_cache  # type: ignore[attr-defined]
 
     finalize_worker.start()
     print(f"Core Cats mint backend listening on http://{config.bind}:{config.port}")
