@@ -260,3 +260,9 @@ class CoreRpcClient:
             block_number=_parse_hex_int(result.get("blockNumber")),
             success=success,
         )
+
+    def get_raw_transaction_receipt(self, tx_hash: str) -> dict[str, object]:
+        result = self._request(RECEIPT_METHODS, [tx_hash])
+        if not isinstance(result, dict):
+            raise RpcError("transaction receipt did not return an object")
+        return result

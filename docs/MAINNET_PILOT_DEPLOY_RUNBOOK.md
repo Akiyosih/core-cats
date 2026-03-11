@@ -260,28 +260,27 @@ spark script script/CoreCatsFinalizeMint.s.sol:CoreCatsFinalizeMintScript \
 Then identify the assigned token id for the self-only minter:
 
 ```bash
-export OWNER_ADDRESS="$MINT_TO"
-
-spark script script/CoreCatsListOwnerTokens.s.sol:CoreCatsListOwnerTokensScript \
-  --fork-url "$CORE_MAINNET_RPC_URL" \
-  --network-id 1
+python3 scripts/read_live_token_evidence.py \
+  --rpc-url "$CORE_MAINNET_RPC_URL" \
+  --contract-address "$CORECATS_ADDRESS" \
+  --owner-address "$MINT_TO"
 ```
 
 Finally export and decode `tokenURI`:
 
 ```bash
-export TOKEN_ID="<assigned-token-id>"
-
-spark script script/CoreCatsExportTokenURI.s.sol:CoreCatsExportTokenURIScript \
-  --fork-url "$CORE_MAINNET_RPC_URL" \
-  --network-id 1
+python3 scripts/read_live_token_evidence.py \
+  --rpc-url "$CORE_MAINNET_RPC_URL" \
+  --contract-address "$CORECATS_ADDRESS" \
+  --token-id "<assigned-token-id>" \
+  --emit-token-uri
 ```
 
 Important:
 1. this validates the pilot contract on mainnet
 2. it does not by itself validate the real CorePass/web/backend path
 3. it does not replace the official final canary on the real `CCAT` contract
-4. `MINT_TO` and `MINTER_ADDRESS` must point at the same self-only operator wallet for the script-only path
+4. this `xcb_call`-based path is preferred on Core mainnet because `spark script` address parsing is not reliable for `cb...` readbacks
 
 ## Evidence To Save
 Record separately from the official release:

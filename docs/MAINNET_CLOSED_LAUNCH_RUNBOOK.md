@@ -131,11 +131,19 @@ This is the first real production-path mint.
 If the assigned token id is not obvious from the wallet/explorer view, use:
 
 ```bash
-OWNER_ADDRESS="<canary-minter-address>" \
-CORECATS_ADDRESS="<deployed-corecats-address>" \
-spark script script/CoreCatsListOwnerTokens.s.sol:CoreCatsListOwnerTokensScript \
-  --fork-url "$CORE_MAINNET_RPC_URL" \
-  --network-id 1
+python3 scripts/read_live_token_evidence.py \
+  --rpc-url "$CORE_MAINNET_RPC_URL" \
+  --contract-address "<deployed-corecats-address>" \
+  --owner-address "<canary-minter-address>"
+```
+
+If the finalize tx is already known, it can derive the minted token ids directly from the receipt:
+
+```bash
+python3 scripts/read_live_token_evidence.py \
+  --rpc-url "$CORE_MAINNET_RPC_URL" \
+  --contract-address "<deployed-corecats-address>" \
+  --finalize-tx "<finalize-tx-hash>"
 ```
 
 ### Quantity policy

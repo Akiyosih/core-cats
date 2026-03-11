@@ -322,6 +322,9 @@ Run these from the real public `/mint` UI while the site is in `canary`.
 7. `OT-07`
    - wallet label: any minted rehearsal wallet
    - target: `tokenURI(tokenId)` decodes to on-chain JSON/Base64 SVG for the minted rehearsal token ids
+   - evidence path:
+     - `python3 scripts/read_live_token_evidence.py --rpc-url "$CORE_MAINNET_RPC_URL" --contract-address "$CORECATS_ADDRESS" --finalize-tx "<finalize-tx-hash>"`
+     - or `--owner-address "<wallet-address>"` if the finalize tx is not at hand
 
 ### D-7. Operational behavior tests
 1. `OP-01`
