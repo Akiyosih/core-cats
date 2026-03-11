@@ -750,16 +750,14 @@ export default function MintWorkflow({ config }) {
             <div className="mint-action-panel">
               <p className="mint-action-title">Why this can take a few minutes</p>
               <p className="mint-meta">
-                Mint completion can take longer than a single block because random assignment happens in a separate
-                finalize transaction after commit.
+                Mint completion can take longer than a single block because the mint finishes in a separate finalize
+                step after commit.
               </p>
               <p className="mint-meta">
-                The current design uses commit, a future block, and on-chain finalize so the assignment can be checked
-                from public chain data without adding a separate VRF or oracle dependency.
+                This keeps the random assignment checkable from public chain data.
               </p>
               <p className="mint-meta">
-                When finalize completes, the cat arrives already revealed for this mint rather than waiting for a later
-                collection-wide reveal.
+                When finalize completes, your cat arrives already revealed.
               </p>
               <p className="mint-meta">Do not start a new mint or reuse any earlier QR within 30 minutes.</p>
               <p className="mint-meta">If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.</p>
@@ -796,15 +794,6 @@ export default function MintWorkflow({ config }) {
               </a>
             ) : null}
           </div>
-          <div className="mint-inline-actions">
-            {session?.minter ? <CopyButton value={session.minter} idleLabel="Copy wallet" doneLabel="Wallet copied" /> : null}
-            <a href="/transparency" className="button button--ghost button--inline">
-              Open transparency
-            </a>
-          </div>
-          <p className="mint-meta">
-            Token assignment may still need to be confirmed from explorer or readback tooling if the token id is not surfaced here yet.
-          </p>
         </section>
       ) : null}
 
