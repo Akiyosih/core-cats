@@ -5,6 +5,7 @@ import { Buffer } from "node:buffer";
 const DEFAULT_OUT_DIR = "manifests/viewer_v1";
 const DEFAULT_PUBLIC_SVG_DIR = "web/public/viewer_v1/svg";
 const DEFAULT_PUBLIC_PNG_DIR = "web/public/viewer_v1/png";
+const DEFAULT_PUBLIC_COLLECTION_INDEX_PATH = "web/public/viewer_v1/collection-index.json";
 const TRAIT_FILTER_ORDER = [
   ["pattern", "Pattern"],
   ["palette_id", "Color Variation"],
@@ -43,6 +44,7 @@ function parseArgs(argv) {
     emitSvgFiles: true,
     publicSvgDir: DEFAULT_PUBLIC_SVG_DIR,
     publicPngDir: DEFAULT_PUBLIC_PNG_DIR,
+    publicCollectionIndexPath: DEFAULT_PUBLIC_COLLECTION_INDEX_PATH,
     embedDataUri: false,
   };
 
@@ -62,6 +64,11 @@ function parseArgs(argv) {
       opts.publicPngDir = argv[++i];
       if (!opts.publicPngDir) {
         throw new Error("--public-png-dir requires a value");
+      }
+    } else if (arg === "--public-collection-index-path") {
+      opts.publicCollectionIndexPath = argv[++i];
+      if (!opts.publicCollectionIndexPath) {
+        throw new Error("--public-collection-index-path requires a value");
       }
     } else if (arg === "--emit-svg-files") {
       opts.emitSvgFiles = true;
@@ -194,6 +201,19 @@ function buildSummaryDoc(summaryDoc, root, outDir) {
     total: summaryDoc.total,
     counts: summaryDoc.counts,
     cross: summaryDoc.cross,
+  };
+}
+
+function buildCollectionIndexDoc(collectionItems, root, outDir) {
+  return {
+    version: "viewer_collection_index_v1",
+    generated_at: new Date().toISOString(),
+    source_collection: normalizeRel(root, path.join(outDir, "collection.json")),
+    total: collectionItems.length,
+    items: collectionItems.map((item) => ({
+      token_id: item.token_id,
+      trait_values: item.trait_values,
+    })),
   };
 }
 
@@ -389,11 +409,13 @@ function main() {
   const outDir = path.resolve(root, opts.outDir);
   const publicSvgDir = path.resolve(root, opts.publicSvgDir);
   const publicPngDir = path.resolve(root, opts.publicPngDir);
+  const publicCollectionIndexPath = path.resolve(root, opts.publicCollectionIndexPath);
 
   ensureDir(outDir);
   if (opts.emitSvgFiles) {
     ensureDir(publicSvgDir);
   }
+  ensureDir(path.dirname(publicCollectionIndexPath));
 
   const manifest = readJson(path.join(root, "manifests", "final_1000_manifest_v1.json"));
   const labelsDoc = readJson(path.join(root, "manifests", "trait_display_labels_v1.json"));
@@ -484,14 +506,17 @@ function main() {
 
   const filtersDoc = buildFilterDoc(collectionItems, labelsDoc, summaryDoc, root, outDir);
   const summaryViewDoc = buildSummaryDoc(summaryDoc, root, outDir);
+  const collectionIndexDoc = buildCollectionIndexDoc(collectionItems, root, outDir);
 
   fs.writeFileSync(path.join(outDir, "collection.json"), JSON.stringify(collectionDoc, null, 2) + "\n");
   fs.writeFileSync(path.join(outDir, "filters.json"), JSON.stringify(filtersDoc, null, 2) + "\n");
   fs.writeFileSync(path.join(outDir, "summary.json"), JSON.stringify(summaryViewDoc, null, 2) + "\n");
+  fs.writeFileSync(publicCollectionIndexPath, JSON.stringify(collectionIndexDoc, null, 2) + "\n");
 
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "collection.json"))}`);
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "filters.json"))}`);
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "summary.json"))}`);
+  console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, publicCollectionIndexPath)}`);
   if (opts.emitSvgFiles) {
     console.log(`[viewer-data] PASS: wrote SVG previews to ${normalizeRel(root, publicSvgDir)}`);
   }
