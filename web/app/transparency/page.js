@@ -80,13 +80,6 @@ export default function TransparencyPage() {
       : networkName === "mainnet"
         ? "Mainnet contract configured"
         : "Devin rehearsal contract configured";
-  const launchInterpretation =
-    config.launchState === "canary"
-      ? "The public mint UI is in validation mode. The currently configured contract may still be a rehearsal contract rather than the final public release contract."
-      : config.launchState === "public"
-        ? "The current contract surface is intended for the live public mint path."
-        : "The site is visible, but the public mint path is intentionally still closed.";
-
   const publicLinks = [
     { href: "https://core-cats.vercel.app", label: "Official website" },
     { href: "https://core-cats.vercel.app/mint", label: "Mint page" },
@@ -118,7 +111,7 @@ export default function TransparencyPage() {
           the mint flow itself.
         </SectionHeading>
         <div className="copy-grid copy-grid--two">
-          <article className="copy-card">
+          <article className="copy-card transparency-card--wide">
             <h2>Published contract surface</h2>
             <ul className="plain-list">
               <li>
@@ -147,15 +140,6 @@ export default function TransparencyPage() {
                   : "Check the explorer contract page and the published repository artifacts together."}
               </li>
             </ul>
-          </article>
-
-          <article className="copy-card">
-            <h2>Current deployment interpretation</h2>
-            <p>{launchInterpretation}</p>
-            <p>
-              Do not assume that a canary-stage contract is automatically the later official public contract. Compare
-              the live address above against the repository references below.
-            </p>
           </article>
         </div>
       </section>
