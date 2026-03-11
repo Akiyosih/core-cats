@@ -311,6 +311,8 @@ export default function MintWorkflow({ config }) {
         if (typeof window !== "undefined") {
           window.history.replaceState({}, "", "/mint");
         }
+        setError("Mint session not found or expired. Start a new mint from the beginning.");
+        return;
       }
       setError(refreshError.message || "Failed to refresh mint session");
     }
@@ -356,6 +358,7 @@ export default function MintWorkflow({ config }) {
   const authorizeRejected = currentState === "authorize_rejected";
   const rejectedSession = authorizeRejected ? describeRejectedSession(session?.error?.code || callbackError) : null;
   const displayedError = error || (authorizationExpired ? "QR 2 of 2 expired before approval. Start a new mint from the beginning." : "");
+  const restartMintVisible = authorizationExpired || displayedError.toLowerCase().includes("start a new mint from the beginning");
   let phaseCopy = "Session not started.";
   if (session) {
     phaseCopy = "Session created. Confirm the wallet in CorePass.";
@@ -590,6 +593,13 @@ export default function MintWorkflow({ config }) {
           <p className="eyebrow">Issue</p>
           <h2>Attention required</h2>
           <p className="mint-error">{displayedError}</p>
+          {restartMintVisible ? (
+            <div className="mint-link-grid">
+              <a href="/mint" className="button button--primary">
+                Start a new mint
+              </a>
+            </div>
+          ) : null}
         </section>
       ) : null}
 
@@ -621,15 +631,13 @@ export default function MintWorkflow({ config }) {
             <>
               <p>This step asks CorePass to sign a wallet-binding message. It proves that you control this wallet.</p>
               <p>No funds are transferred in this step. You are only signing a message.</p>
-              <div className="mint-copy-block">
-                <p className="mint-copy-title">What to expect in CorePass</p>
-                <ul className="plain-list mint-bullet-list">
+              <VerificationDetails summary="What this looks like in CorePass">
+                <ul className="plain-list mint-verify-list">
                   <li>You may see a &quot;Sign transaction&quot; style screen.</li>
-                  <li>The long <span className="mono-wrap">0x...</span> string is the challenge message to sign.</li>
+                  <li>The long <span className="mono-wrap">0x...</span> string is the challenge message to sign for wallet binding.</li>
                   <li>This is not a token transfer.</li>
                 </ul>
-              </div>
-              <p className="mint-caution">Only continue if you started this flow from the official CoreCats mint page.</p>
+              </VerificationDetails>
             </>
           }
           highlightedNotice="QR 1 of 2: wallet bind only, no funds move."
@@ -650,44 +658,43 @@ export default function MintWorkflow({ config }) {
           body={
             <>
               <p>This step sends the mint transaction to the CoreCats contract.</p>
-              <p>No native token amount is being sent to the contract itself when <span className="mono-wrap">value = 0</span>, but network gas is still required to execute the transaction.</p>
-              <div className="mint-copy-block">
-                <p className="mint-copy-title">What to expect in CorePass</p>
-                <ul className="plain-list mint-bullet-list">
-                  <li><span className="mono-wrap">to</span> should match the published CoreCats contract address.</li>
-                  <li><span className="mono-wrap">value</span> should be <span className="mono-wrap">0</span>.</li>
-                  <li>The long <span className="mono-wrap">0x...</span> data field is the contract call data for minting.</li>
-                </ul>
-              </div>
-              <p className="mint-meta">
-                Published contract:{" "}
-                {contractHref ? (
-                  <a href={contractHref} target="_blank" rel="noreferrer" className="inline-link mono-wrap">
-                    {publishedContractAddress}
-                  </a>
-                ) : (
-                  <span className="mono-wrap">{publishedContractAddress}</span>
-                )}{" "}
-                · <a href="/transparency" className="inline-link">Transparency</a> ·{" "}
-                <a href={PROJECT_REPOSITORY_URL} target="_blank" rel="noreferrer" className="inline-link">
-                  GitHub
-                </a>
-              </p>
-              <p className="mint-caution">Review the contract address and transaction fields before confirming.</p>
+              <p>A small amount of XCB is required for network gas.</p>
               <VerificationDetails>
                 <ol className="plain-list mint-verify-list">
-                  <li>Check the destination address. Make sure the <span className="mono-wrap">to</span> address shown in CorePass matches the CoreCats contract address published on this site and in the GitHub repository.</li>
-                  <li>Check the value field. For the mint call, <span className="mono-wrap">value</span> should be <span className="mono-wrap">0</span>. That means this is a contract interaction, not a direct native-token payment to the contract. You still need gas to submit the transaction.</li>
-                  <li>Check the explorer. After submission, inspect the transaction in the blockchain explorer to confirm the destination, input data, and result.</li>
-                  <li>Check the public source code. The project repository publishes the contract and app code used for this flow. Compare the published contract address, ABI, and mint flow with what you see in CorePass.</li>
-                  <li>Check contract verification status. If explorer verification is available, compare the verified source and ABI with the GitHub repository.</li>
+                  <li>
+                    Check the destination address. Make sure the <span className="mono-wrap">to</span> address shown in CorePass matches the published CoreCats contract address.
+                  </li>
+                  <li>
+                    Check the value field. For the mint call, <span className="mono-wrap">value</span> should be <span className="mono-wrap">0</span>. No native token amount is being sent to the contract itself, but gas is still required to submit the transaction.
+                  </li>
+                  <li>
+                    Check the data field. The long <span className="mono-wrap">0x...</span> value is the contract call data for minting.
+                  </li>
+                  <li>
+                    Published contract:{" "}
+                    {contractHref ? (
+                      <a href={contractHref} target="_blank" rel="noreferrer" className="inline-link mono-wrap">
+                        {publishedContractAddress}
+                      </a>
+                    ) : (
+                      <span className="mono-wrap">{publishedContractAddress}</span>
+                    )}
+                  </li>
+                  <li>
+                    Review the public references: <a href="/transparency" className="inline-link">Transparency</a> and{" "}
+                    <a href={PROJECT_REPOSITORY_URL} target="_blank" rel="noreferrer" className="inline-link">
+                      GitHub
+                    </a>
+                    .
+                  </li>
+                  <li>Review the contract address and transaction fields before confirming.</li>
                 </ol>
               </VerificationDetails>
             </>
           }
           highlightedNotice="QR 2 of 2: real mint transaction, small XCB gas required."
           request={session.commit}
-          pendingNote="Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass."
+          pendingNote="Scan QR 2 of 2 to approve the real commit transaction in CorePass."
           completedLabel={commitCompletedLabel}
           completedNote={commitCompletedNote}
           completeTone={authorizationExpired ? "blocked" : "done"}
