@@ -69,9 +69,10 @@ The current `main` branch now supports pilot-specific human-facing labels throug
 Pilot-specific deploy knobs:
 1. `CORECATS_COLLECTION_NAME`
 2. `CORECATS_SYMBOL`
-3. `CORECATS_TOKEN_NAME_PREFIX`
-4. `CORECATS_TOKEN_DESCRIPTION`
-5. `CORECATS_SUPERRARE_PLACEHOLDER=1`
+3. `CORECATS_ALLOW_NONSTANDARD_LABELS=1`
+4. `CORECATS_TOKEN_NAME_PREFIX`
+5. `CORECATS_TOKEN_DESCRIPTION`
+6. `CORECATS_SUPERRARE_PLACEHOLDER=1`
 
 These values are consumed by `foxar/script/CoreCatsDeploy.s.sol`.
 
@@ -85,6 +86,7 @@ The intended use is:
    - example:
      - `CORECATS_COLLECTION_NAME=CCATTEST`
      - `CORECATS_SYMBOL=CCATTEST`
+     - `CORECATS_ALLOW_NONSTANDARD_LABELS=1`
      - `CORECATS_TOKEN_NAME_PREFIX=CCATTEST`
      - `CORECATS_TOKEN_DESCRIPTION="CCATTEST pilot for self-only CorePass mainnet validation. Non-official release."`
      - `CORECATS_SUPERRARE_PLACEHOLDER=1`

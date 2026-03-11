@@ -23,12 +23,14 @@ Use these values unless there is a specific reason to change them:
 ```bash
 export CORECATS_COLLECTION_NAME=CCATTEST
 export CORECATS_SYMBOL=CCATTEST
+export CORECATS_ALLOW_NONSTANDARD_LABELS=1
 export CORECATS_TOKEN_NAME_PREFIX=CCATTEST
 export CORECATS_TOKEN_DESCRIPTION="CCATTEST pilot for self-only CorePass mainnet validation. Non-official release."
 export CORECATS_SUPERRARE_PLACEHOLDER=1
 ```
 
 These preserve mint/security/randomness/supply while making the pilot visibly non-official.
+The explicit `CORECATS_ALLOW_NONSTANDARD_LABELS=1` opt-in is required so the mainnet deploy script cannot accidentally reuse pilot labels during the official `CoreCats / CCAT` deploy.
 
 ## Required Inputs
 1. Mainnet RPC URL:

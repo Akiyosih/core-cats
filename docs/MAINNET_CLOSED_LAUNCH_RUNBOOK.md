@@ -46,6 +46,7 @@ Before mainnet launch work begins:
    - constructor args
    - verify packet
    - worklog template
+   - official label pair locked as `CoreCats` / `CCAT`
 5. CorePass callback/app-link base URL is fixed for the production site.
 6. CorePass mint session storage is durable enough for real mainnet use.
 7. If the optional pilot fallback is chosen, pilot-specific release labeling/configuration is prepared before deploy.
@@ -91,6 +92,8 @@ Run these steps in order.
    - `CoreCatsOnchainData`
    - `CoreCatsMetadataRenderer`
    - `CoreCats`
+   - for the official mainnet release, keep `CORECATS_COLLECTION_NAME=CoreCats` and `CORECATS_SYMBOL=CCAT`
+   - `foxar/script/CoreCatsDeploy.s.sol` now rejects nonstandard mainnet labels unless `CORECATS_ALLOW_NONSTANDARD_LABELS=1` is set intentionally for a pilot-style deploy
 3. Record:
    - deployer address
    - contract addresses
