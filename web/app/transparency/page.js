@@ -262,41 +262,10 @@ export default function TransparencyPage() {
       </section>
 
       <section className="page-stack transparency-section">
-        <SectionHeading eyebrow="Trust And References" title="What still depends on operations, and where to inspect more">
-          The contract fixes some rules, but the current mint path still has operational trust surfaces. This section
-          states them directly and points to the main public references.
+        <SectionHeading eyebrow="References" title="Where to inspect more">
+          If you want to go deeper than the quick checks above, use these public links and repository documents.
         </SectionHeading>
         <div className="copy-grid copy-grid--two">
-          <article className="copy-card transparency-card--wide">
-            <h2>Current trust assumptions</h2>
-            <ul className="plain-list">
-              <li>
-                <strong>Fixed in contract:</strong> supply <span className="mono-wrap">1000</span>, per-address limit{" "}
-                <span className="mono-wrap">3</span>, and the commit/finalize random assignment path.
-              </li>
-              <li>
-                <strong>Owner powers:</strong> the current contract shape still allows owner-controlled signer rotation
-                and metadata-renderer rotation.
-              </li>
-              <li>
-                <strong>Signer policy:</strong> mint authorization is currently issued off-chain.
-              </li>
-              <li>
-                <strong>Relayer role:</strong> relayer finalize is a convenience path rather than the only possible way
-                to finish a mint.
-              </li>
-              <li>
-                <strong>Randomness design:</strong> the published design uses commit, a future block, and on-chain
-                finalize so the assignment can be replay-checked from public chain data without adding a separate VRF
-                or oracle dependency.
-              </li>
-              <li>
-                <strong>Do not overclaim trustlessness:</strong> operational trust still exists around signer, relayer,
-                and owner-controlled configuration.
-              </li>
-            </ul>
-          </article>
-
           <article className="copy-card">
             <h2>Official links</h2>
             <ul className="plain-list">
