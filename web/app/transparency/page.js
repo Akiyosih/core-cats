@@ -54,6 +54,16 @@ const repositoryFiles = [
   },
 ];
 
+function SectionHeading({ eyebrow, title, children }) {
+  return (
+    <div className="transparency-section__heading">
+      <p className="eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
+      <p>{children}</p>
+    </div>
+  );
+}
+
 export default function TransparencyPage() {
   const config = getCorePublicConfig();
   const networkName = normalize(config.networkName);
@@ -80,181 +90,239 @@ export default function TransparencyPage() {
   const publicLinks = [
     { href: "https://core-cats.vercel.app", label: "Official website" },
     { href: "https://core-cats.vercel.app/mint", label: "Mint page" },
-    { href: "https://github.com/Akiyosih/core-cats", label: "GitHub Repository" },
-    { href: explorerBaseUrl, label: "Configured explorer" },
+    { href: "https://github.com/Akiyosih/core-cats", label: "GitHub repository" },
+    { href: explorerBaseUrl, label: "Blockindex explorer" },
     {
       href: "https://github.com/Akiyosih/core-cats/blob/main/docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md",
       label: "Vercel mainnet cutover checklist",
     },
-  ];
+  ].filter((item) => item.href);
 
   return (
     <div className="page-stack narrow-stack">
       <section className="copy-panel">
         <p className="eyebrow">Transparency</p>
-        <h1>Inspect the artifacts, not just the claims.</h1>
+        <h1>Check the live contract surface and public artifacts.</h1>
         <p>
-          Core Cats is meant to be checked from the outside. Art manifests, renderer inputs, deployment notes, and
-          rehearsal records are published so the collection can be examined directly.
+          Use this page to verify what is live right now, how the mint flow is structured, and which trust
+          assumptions still remain.
+        </p>
+        <p>
+          This is not a promise of safety. It is a map of what you can inspect for yourself before and after minting.
         </p>
       </section>
 
-      <section className="copy-grid copy-grid--two">
-        <article className="copy-card">
-          <h2>Public links</h2>
-          <ul className="plain-list">
-            {publicLinks.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} target="_blank" rel="noreferrer" className="resource-link">
-                  {item.label}
-                </Link>
+      <section className="page-stack transparency-section">
+        <SectionHeading eyebrow="Current Live Surface" title="What is live right now">
+          Start here if you want to confirm the current network, launch stage, and contract address before looking at
+          the mint flow itself.
+        </SectionHeading>
+        <div className="copy-grid copy-grid--two">
+          <article className="copy-card">
+            <h2>Published contract surface</h2>
+            <ul className="plain-list">
+              <li>
+                <strong>Network:</strong> {titleCase(config.networkName)}
               </li>
-            ))}
-          </ul>
-        </article>
-
-        <article className="copy-card">
-          <h2>Published contract surface</h2>
-          <ul className="plain-list">
-            <li>
-              <strong>Network:</strong> {titleCase(config.networkName)}
-            </li>
-            <li>
-              <strong>Launch state:</strong> {titleCase(config.launchState)}
-            </li>
-            <li>
-              <strong>Contract status:</strong> {contractStatus}
-            </li>
-            <li>
-              <strong>Contract:</strong>{" "}
-              {contractPending ? (
-                "The public site is live, but the final mainnet contract address has not been published here yet."
-              ) : (
-                <Link href={contractHref} target="_blank" rel="noreferrer" className="resource-link">
-                  {contractAddress}
-                </Link>
-              )}
-            </li>
-            <li>
-              <strong>Contract verification status:</strong>{" "}
-              {contractPending
-                ? "Verification depends on the final published contract address."
-                : "Check the explorer contract page and the published repository artifacts together."}
-            </li>
-            <li>
-              <strong>Signer policy:</strong> Mint authorization is currently issued off-chain. Compare that trust surface with the repository notes before minting.
-            </li>
-          </ul>
-        </article>
-
-        <article className="copy-card">
-          <h2>Current validation stage</h2>
-          <p>{launchInterpretation}</p>
-          <p>
-            Do not assume that a canary-stage contract is automatically the later official public contract. Verify the
-            address shown above and compare it against the runbook and rehearsal-plan documents.
-          </p>
-        </article>
-
-        <article className="copy-card">
-          <h2>What users should verify in CorePass</h2>
-          <ul className="plain-list">
-            <li>
-              <strong>QR 1:</strong> it is a signature request for wallet binding.
-            </li>
-            <li>
-              <strong>QR 2:</strong> it is a contract call for minting.
-            </li>
-            <li>
-              <strong>Destination address:</strong> <span className="mono-wrap">to</span> should match the published CoreCats contract address.
-            </li>
-            <li>
-              <strong>Value field:</strong> <span className="mono-wrap">value</span> should be <span className="mono-wrap">0</span> for the mint call.
-            </li>
-            <li>
-              <strong>Gas:</strong> gas is still required even when <span className="mono-wrap">value = 0</span>.
-            </li>
-          </ul>
-        </article>
-
-        <article className="copy-card">
-          <h2>What the long 0x data means</h2>
-          <ul className="plain-list">
-            <li>It is encoded contract call data, also called calldata.</li>
-            <li>It is not meant to be human-readable directly in the wallet UI.</li>
-            <li>It can still be checked against the published ABI, function flow, and explorer transaction data.</li>
-            <li>The public contract design for this mint path is a two-step commit/finalize flow with auditable random assignment.</li>
-          </ul>
-        </article>
-
-        <article className="copy-card">
-          <h2>How to independently verify</h2>
-          <ul className="plain-list">
-            <li>Compare the addresses shown in CorePass with the published addresses on this page and in the repository.</li>
-            <li>Inspect submitted transactions in the explorer to confirm the destination, input data, and result.</li>
-            <li>Compare the published contract flow and ABI with what appears in the wallet and explorer.</li>
-            <li>Review the randomness strategy and transparency notes instead of relying on marketing claims.</li>
-            <li>When explorer verification is available, compare the verified source and ABI with the GitHub repository.</li>
-          </ul>
-        </article>
-
-        <article className="copy-card">
-          <h2>Key repository files</h2>
-          <ul className="plain-list">
-            {repositoryFiles.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} target="_blank" rel="noreferrer" className="resource-link">
-                  {item.label}
-                </Link>
+              <li>
+                <strong>Launch state:</strong> {titleCase(config.launchState)}
               </li>
-            ))}
-          </ul>
-        </article>
+              <li>
+                <strong>Contract status:</strong> {contractStatus}
+              </li>
+              <li>
+                <strong>Contract:</strong>{" "}
+                {contractPending ? (
+                  "The public site is live, but the final mainnet contract address has not been published here yet."
+                ) : (
+                  <Link href={contractHref} target="_blank" rel="noreferrer" className="resource-link">
+                    {contractAddress}
+                  </Link>
+                )}
+              </li>
+              <li>
+                <strong>Contract verification status:</strong>{" "}
+                {contractPending
+                  ? "Verification depends on the final published contract address."
+                  : "Check the explorer contract page and the published repository artifacts together."}
+              </li>
+            </ul>
+          </article>
 
-        <article className="copy-card">
-          <h2>Current trust surface</h2>
-          <ul className="plain-list">
-            <li>
-              <strong>Fixed in contract:</strong> supply `1000`, per-address limit `3`, and the commit/finalize random
-              assignment path.
-            </li>
-            <li>
-              <strong>Owner powers:</strong> the current contract shape still allows owner-controlled signer rotation
-              and metadata-renderer rotation.
-            </li>
-            <li>
-              <strong>Backend role:</strong> mint authorization is currently issued off-chain, and relayer finalize is
-              a convenience path rather than the only way to finish a mint.
-            </li>
-            <li>
-              <strong>Randomness design:</strong> the published design uses commit, a future block, and on-chain finalize so the assignment can be replay-checked from public chain data without adding a separate VRF dependency.
-            </li>
-            <li>
-              <strong>Do not overclaim trustlessness:</strong> operational trust still exists around signer, relayer, and owner-controlled configuration.
-            </li>
-          </ul>
-        </article>
+          <article className="copy-card">
+            <h2>Current deployment interpretation</h2>
+            <p>{launchInterpretation}</p>
+            <p>
+              Do not assume that a canary-stage contract is automatically the later official public contract. Compare
+              the live address above against the repository references below.
+            </p>
+          </article>
+        </div>
+      </section>
 
-        <article className="copy-card">
-          <h2>Transparency / Verification Checklist</h2>
-          <ul className="plain-list">
-            <li>
-              <strong>Official project links:</strong> website, repository, explorer, and current contract surface are published above.
-            </li>
-            <li>
-              <strong>Published contract addresses:</strong> always compare the live contract address against the current launch state and rehearsal/public labeling.
-            </li>
-            <li>
-              <strong>CorePass review:</strong> verify whether the wallet is asking for a signature or a contract call, then check <span className="mono-wrap">to</span>, <span className="mono-wrap">value</span>, and calldata.
-            </li>
-            <li>
-              <strong>Explorer review:</strong> use Blockindex to confirm the submitted transaction fields and final result.
-            </li>
-            <li>
-              <strong>Repository review:</strong> compare the published contract logic, ABI, runbooks, and trust-surface notes with what you see on-chain.
-            </li>
-          </ul>
-        </article>
+      <section className="page-stack transparency-section">
+        <SectionHeading eyebrow="How This Mint Works" title="How the approvals and delivery fit together">
+          This page should still make sense on its own, so the mint flow is described here as first approval, second
+          approval, and finalize rather than only as QR labels.
+        </SectionHeading>
+        <div className="copy-grid copy-grid--two">
+          <article className="copy-card">
+            <h2>First approval: bind one wallet</h2>
+            <ul className="plain-list">
+              <li>The first CorePass approval is a wallet-binding signature for the current mint session.</li>
+              <li>It proves control of one wallet for that session.</li>
+              <li>It is not a token transfer.</li>
+              <li>No mint transaction is sent yet at this stage.</li>
+            </ul>
+          </article>
+
+          <article className="copy-card">
+            <h2>Second approval: send the mint call</h2>
+            <ul className="plain-list">
+              <li>The second CorePass approval is the mint contract call.</li>
+              <li>
+                The <span className="mono-wrap">to</span> address should match the published CoreCats contract.
+              </li>
+              <li>
+                The <span className="mono-wrap">value</span> field should be <span className="mono-wrap">0</span>.
+              </li>
+              <li>Gas is still required even when no native token amount is sent to the contract.</li>
+            </ul>
+          </article>
+
+          <article className="copy-card transparency-card--wide">
+            <h2>Finalize: random assignment and revealed delivery</h2>
+            <p>
+              Mint delivery is not complete at commit. After the mint call, a separate finalize step completes the
+              random assignment and delivers the NFT.
+            </p>
+            <ul className="plain-list">
+              <li>
+                The published randomness path uses commit, a future block, and on-chain finalize rather than a
+                one-step reveal.
+              </li>
+              <li>
+                This design can be replay-checked from public chain data without adding a separate VRF or oracle
+                dependency.
+              </li>
+              <li>
+                This is why mint completion can take longer than a single block even on a fast chain.
+              </li>
+              <li>
+                When finalize completes, the cat arrives already revealed for that mint rather than waiting for a later
+                collection-wide reveal.
+              </li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section className="page-stack transparency-section">
+        <SectionHeading eyebrow="How To Verify" title="How to verify it yourself">
+          If you want the practical checks rather than the architecture, start with the checklist and then use the
+          listed surfaces to inspect the details.
+        </SectionHeading>
+        <div className="copy-grid copy-grid--two">
+          <article className="copy-card">
+            <h2>Quick verification checklist</h2>
+            <ol className="plain-list">
+              <li>Check the current contract address on this page before minting.</li>
+              <li>In CorePass, confirm the first approval is a signature and the second approval is a contract call.</li>
+              <li>
+                For the mint call, confirm <span className="mono-wrap">to</span> matches the published contract and{" "}
+                <span className="mono-wrap">value</span> is <span className="mono-wrap">0</span>.
+              </li>
+              <li>After submission, inspect the transaction result in Blockindex.</li>
+              <li>Compare explorer details and repository artifacts when you want deeper assurance.</li>
+            </ol>
+          </article>
+
+          <article className="copy-card">
+            <h2>Where each check lives</h2>
+            <ul className="plain-list">
+              <li>
+                <strong>Inside CorePass:</strong> approval type, destination address, value field, and the long{" "}
+                <span className="mono-wrap">0x...</span> calldata.
+              </li>
+              <li>
+                <strong>Inside Blockindex:</strong> contract page, submitted transaction fields, execution result, and
+                verified source / ABI if available.
+              </li>
+              <li>
+                <strong>Inside GitHub:</strong> contract logic, randomness documentation, trust-surface notes, and
+                release runbooks.
+              </li>
+              <li>
+                <strong>About the long 0x field:</strong> it is encoded calldata. It is not meant to be human-readable
+                directly, but it can still be compared against the published ABI and explorer transaction details.
+              </li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section className="page-stack transparency-section">
+        <SectionHeading eyebrow="Trust And References" title="What still depends on operations, and where to inspect more">
+          The contract fixes some rules, but the current mint path still has operational trust surfaces. This section
+          states them directly and points to the main public references.
+        </SectionHeading>
+        <div className="copy-grid copy-grid--two">
+          <article className="copy-card transparency-card--wide">
+            <h2>Current trust assumptions</h2>
+            <ul className="plain-list">
+              <li>
+                <strong>Fixed in contract:</strong> supply <span className="mono-wrap">1000</span>, per-address limit{" "}
+                <span className="mono-wrap">3</span>, and the commit/finalize random assignment path.
+              </li>
+              <li>
+                <strong>Owner powers:</strong> the current contract shape still allows owner-controlled signer rotation
+                and metadata-renderer rotation.
+              </li>
+              <li>
+                <strong>Signer policy:</strong> mint authorization is currently issued off-chain.
+              </li>
+              <li>
+                <strong>Relayer role:</strong> relayer finalize is a convenience path rather than the only possible way
+                to finish a mint.
+              </li>
+              <li>
+                <strong>Randomness design:</strong> the published design uses commit, a future block, and on-chain
+                finalize so the assignment can be replay-checked from public chain data without adding a separate VRF
+                or oracle dependency.
+              </li>
+              <li>
+                <strong>Do not overclaim trustlessness:</strong> operational trust still exists around signer, relayer,
+                and owner-controlled configuration.
+              </li>
+            </ul>
+          </article>
+
+          <article className="copy-card">
+            <h2>Official links</h2>
+            <ul className="plain-list">
+              {publicLinks.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} target="_blank" rel="noreferrer" className="resource-link">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="copy-card">
+            <h2>Key repository files</h2>
+            <ul className="plain-list">
+              {repositoryFiles.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} target="_blank" rel="noreferrer" className="resource-link">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </article>
+        </div>
       </section>
     </div>
   );

@@ -911,6 +911,32 @@ main {
   color: #0f6d69;
 }
 
+.transparency-section {
+  gap: 18px;
+}
+
+.transparency-section__heading {
+  display: grid;
+  gap: 10px;
+  padding-inline: 4px;
+}
+
+.transparency-section__heading h2 {
+  margin: 0;
+  font-family: var(--title-font);
+  font-size: 1.55rem;
+}
+
+.transparency-section__heading p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.transparency-card--wide {
+  grid-column: 1 / -1;
+}
+
 .mono-wrap {
   font-family: "Courier New", monospace;
   overflow-wrap: anywhere;
