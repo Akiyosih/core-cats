@@ -97,7 +97,7 @@ export default async function MyCatsPage({ searchParams }) {
               name="owner"
               type="search"
               defaultValue={ownerQuery}
-              placeholder="ab... or cb..."
+              placeholder="cb..."
               className="owner-search-form__input"
               autoComplete="off"
               spellCheck="false"
@@ -113,7 +113,7 @@ export default async function MyCatsPage({ searchParams }) {
         <section className="copy-grid my-cats-grid">
           <article className="copy-card my-cats-card">
             <h2>Invalid address</h2>
-            <p>Enter a Core address beginning with <code>ab</code> or <code>cb</code>.</p>
+            <p>Enter a valid Core wallet address.</p>
           </article>
         </section>
       ) : null}

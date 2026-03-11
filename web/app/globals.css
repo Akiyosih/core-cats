@@ -988,6 +988,14 @@ main {
   font-size: 1.8rem;
 }
 
+.mint-copy-stack,
+.mint-copy-block,
+.mint-progress-summary,
+.mint-verify-body {
+  display: grid;
+  gap: 14px;
+}
+
 .mint-step-card {
   gap: 20px;
   position: relative;
@@ -1100,6 +1108,62 @@ main {
 .mint-meta-group {
   display: grid;
   gap: 8px;
+}
+
+.mint-copy-title {
+  margin: 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.mint-bullet-list,
+.mint-verify-list {
+  display: grid;
+  gap: 8px;
+}
+
+.mint-caution {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(24, 18, 13, 0.05);
+  border: 1px solid rgba(24, 18, 13, 0.08);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.mint-verify-details {
+  border-radius: 18px;
+  border: 1px solid rgba(41, 36, 31, 0.08);
+  background: rgba(255, 255, 255, 0.62);
+  overflow: hidden;
+}
+
+.mint-verify-details summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 16px 18px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.mint-verify-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.mint-verify-details summary::after {
+  content: "+";
+  float: right;
+  color: var(--teal);
+  font-size: 1.1rem;
+}
+
+.mint-verify-details[open] summary::after {
+  content: "−";
+}
+
+.mint-verify-body {
+  padding: 0 18px 18px;
 }
 
 .mint-inline-actions {

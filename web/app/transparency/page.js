@@ -25,6 +25,10 @@ function buildExplorerAddressUrl(explorerBaseUrl, address) {
 
 const repositoryFiles = [
   {
+    href: "https://github.com/Akiyosih/core-cats/blob/main/README.md",
+    label: "Repository overview",
+  },
+  {
     href: "https://github.com/Akiyosih/core-cats/blob/main/docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md",
     label: "Work procedure",
   },
@@ -37,32 +41,16 @@ const repositoryFiles = [
     label: "CCATTEST rehearsal canary plan",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/CORE_TESTNET_DEPLOY_RUNBOOK.md",
-    label: "Core Devin deploy runbook",
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/DECISIONS/ADR-0002-randomness-strategy.md",
+    label: "Randomness strategy ADR",
   },
   {
     href: "https://github.com/Akiyosih/core-cats/blob/main/manifests/final_1000_manifest_v1.json",
     label: "Final 1000 manifest",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/manifests/viewer_v1/summary.json",
-    label: "Viewer summary",
-  },
-  {
     href: "https://github.com/Akiyosih/core-cats/blob/main/docs/TRUST_AND_PRIVACY_SURFACE.md",
     label: "Trust + privacy notes",
-  },
-  {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/FREEZE_AND_RENOUNCE_POLICY.md",
-    label: "Freeze / renounce policy",
-  },
-  {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/MINTER_PRIVACY_NOTE.md",
-    label: "Minter privacy note",
-  },
-  {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/PUBLIC_DOCUMENT_LANGUAGE_POLICY.md",
-    label: "Public document language policy",
   },
 ];
 
@@ -90,6 +78,8 @@ export default function TransparencyPage() {
         : "The site is visible, but the public mint path is intentionally still closed.";
 
   const publicLinks = [
+    { href: "https://core-cats.vercel.app", label: "Official website" },
+    { href: "https://core-cats.vercel.app/mint", label: "Mint page" },
     { href: "https://github.com/Akiyosih/core-cats", label: "GitHub Repository" },
     { href: explorerBaseUrl, label: "Configured explorer" },
     {
@@ -124,7 +114,7 @@ export default function TransparencyPage() {
         </article>
 
         <article className="copy-card">
-          <h2>Current chain surface</h2>
+          <h2>Published contract surface</h2>
           <ul className="plain-list">
             <li>
               <strong>Network:</strong> {titleCase(config.networkName)}
@@ -145,6 +135,15 @@ export default function TransparencyPage() {
                 </Link>
               )}
             </li>
+            <li>
+              <strong>Contract verification status:</strong>{" "}
+              {contractPending
+                ? "Verification depends on the final published contract address."
+                : "Check the explorer contract page and the published repository artifacts together."}
+            </li>
+            <li>
+              <strong>Signer policy:</strong> Mint authorization is currently issued off-chain. Compare that trust surface with the repository notes before minting.
+            </li>
           </ul>
         </article>
 
@@ -155,6 +154,48 @@ export default function TransparencyPage() {
             Do not assume that a canary-stage contract is automatically the later official public contract. Verify the
             address shown above and compare it against the runbook and rehearsal-plan documents.
           </p>
+        </article>
+
+        <article className="copy-card">
+          <h2>What users should verify in CorePass</h2>
+          <ul className="plain-list">
+            <li>
+              <strong>QR 1:</strong> it is a signature request for wallet binding.
+            </li>
+            <li>
+              <strong>QR 2:</strong> it is a contract call for minting.
+            </li>
+            <li>
+              <strong>Destination address:</strong> <span className="mono-wrap">to</span> should match the published CoreCats contract address.
+            </li>
+            <li>
+              <strong>Value field:</strong> <span className="mono-wrap">value</span> should be <span className="mono-wrap">0</span> for the mint call.
+            </li>
+            <li>
+              <strong>Gas:</strong> gas is still required even when <span className="mono-wrap">value = 0</span>.
+            </li>
+          </ul>
+        </article>
+
+        <article className="copy-card">
+          <h2>What the long 0x data means</h2>
+          <ul className="plain-list">
+            <li>It is encoded contract call data, also called calldata.</li>
+            <li>It is not meant to be human-readable directly in the wallet UI.</li>
+            <li>It can still be checked against the published ABI, function flow, and explorer transaction data.</li>
+            <li>The public contract design for this mint path is a two-step commit/finalize flow with auditable random assignment.</li>
+          </ul>
+        </article>
+
+        <article className="copy-card">
+          <h2>How to independently verify</h2>
+          <ul className="plain-list">
+            <li>Compare the addresses shown in CorePass with the published addresses on this page and in the repository.</li>
+            <li>Inspect submitted transactions in the explorer to confirm the destination, input data, and result.</li>
+            <li>Compare the published contract flow and ABI with what appears in the wallet and explorer.</li>
+            <li>Review the randomness strategy and transparency notes instead of relying on marketing claims.</li>
+            <li>When explorer verification is available, compare the verified source and ABI with the GitHub repository.</li>
+          </ul>
         </article>
 
         <article className="copy-card">
@@ -185,23 +226,32 @@ export default function TransparencyPage() {
               <strong>Backend role:</strong> mint authorization is currently issued off-chain, and relayer finalize is
               a convenience path rather than the only way to finish a mint.
             </li>
+            <li>
+              <strong>Randomness design:</strong> the published design uses commit, a future block, and on-chain finalize so the assignment can be replay-checked from public chain data without adding a separate VRF dependency.
+            </li>
+            <li>
+              <strong>Do not overclaim trustlessness:</strong> operational trust still exists around signer, relayer, and owner-controlled configuration.
+            </li>
           </ul>
         </article>
 
         <article className="copy-card">
-          <h2>Privacy notes</h2>
+          <h2>Transparency / Verification Checklist</h2>
           <ul className="plain-list">
             <li>
-              <strong>Current path:</strong> CorePass protocol transport only. Connector/KYC-transfer is not required
-              for the present launch target.
+              <strong>Official project links:</strong> website, repository, explorer, and current contract surface are published above.
             </li>
             <li>
-              <strong>Session handling:</strong> the mint flow uses server-side session coordination and operator
-              recovery logs.
+              <strong>Published contract addresses:</strong> always compare the live contract address against the current launch state and rehearsal/public labeling.
             </li>
             <li>
-              <strong>Do not assume anonymity:</strong> on-chain transactions are public, and the current web/backend
-              architecture is operational rather than privacy-preserving.
+              <strong>CorePass review:</strong> verify whether the wallet is asking for a signature or a contract call, then check <span className="mono-wrap">to</span>, <span className="mono-wrap">value</span>, and calldata.
+            </li>
+            <li>
+              <strong>Explorer review:</strong> use Blockindex to confirm the submitted transaction fields and final result.
+            </li>
+            <li>
+              <strong>Repository review:</strong> compare the published contract logic, ABI, runbooks, and trust-surface notes with what you see on-chain.
             </li>
           </ul>
         </article>

@@ -1,9 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import CopyButton from "./copy-button.jsx";
+
+const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";
+
+function preferredScrollBehavior() {
+  if (typeof window === "undefined") return "auto";
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+}
+
+function scrollToSection(ref) {
+  if (!ref?.current) return;
+  ref.current.scrollIntoView({ behavior: preferredScrollBehavior(), block: "start" });
+}
 
 function explorerTxUrl(explorerBaseUrl, txHash) {
   if (!explorerBaseUrl || !txHash) return null;
@@ -103,25 +115,26 @@ function DesktopQrAction({
   eyebrow,
   stepBadge,
   title,
-  copy,
+  body,
   request,
   pendingNote,
   completedLabel,
   completedNote,
   highlightedNotice,
   completeTone = "done",
+  sectionRef = null,
 }) {
   if (!request) return null;
   const complete = Boolean(request.completedAt || request.txHash);
 
   return (
-    <article className="mint-card mint-step-card">
+    <article ref={sectionRef} className="mint-card mint-step-card">
       <div className="mint-step-header">
         <p className="eyebrow">{eyebrow}</p>
         <p className="mint-step-pill">{stepBadge}</p>
       </div>
       <h2>{title}</h2>
-      <p>{copy}</p>
+      <div className="mint-copy-stack">{body}</div>
       {complete ? (
         <div className={`mint-step-summary mint-step-summary--${completeTone}`}>
           <p className="mint-step-summary-title">{completedLabel}</p>
@@ -145,6 +158,15 @@ function DesktopQrAction({
         </div>
       )}
     </article>
+  );
+}
+
+function VerificationDetails({ children, summary = "How to verify this yourself" }) {
+  return (
+    <details className="mint-verify-details">
+      <summary>{summary}</summary>
+      <div className="mint-verify-body">{children}</div>
+    </details>
   );
 }
 
@@ -230,6 +252,17 @@ export default function MintWorkflow({ config }) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const step1Ref = useRef(null);
+  const step2Ref = useRef(null);
+  const step3Ref = useRef(null);
+  const successRef = useRef(null);
+  const scrollMarksRef = useRef({
+    sessionId: "",
+    step1: false,
+    step2: false,
+    step3: false,
+    success: false,
+  });
 
   const commitHref = useMemo(
     () => explorerTxUrl(session?.explorerBaseUrl || config.explorerBaseUrl, session?.commit?.txHash),
@@ -254,6 +287,16 @@ export default function MintWorkflow({ config }) {
     if (!initialSessionId) return;
     setSessionId(initialSessionId);
   }, [initialSessionId]);
+
+  useEffect(() => {
+    scrollMarksRef.current = {
+      sessionId,
+      step1: false,
+      step2: false,
+      step3: false,
+      success: false,
+    };
+  }, [sessionId]);
 
   async function refreshSession(nextSessionId = sessionId) {
     if (!nextSessionId) return;
@@ -292,7 +335,6 @@ export default function MintWorkflow({ config }) {
 
   const currentState = session?.status || "idle";
   const currentStateLabel = formatSessionState(currentState);
-  const minter = session?.minter || "not selected";
   const walletState = session?.commit?.walletState || null;
   const showTestnetNotice =
     (config.networkName || "").toLowerCase() === "devin" || Number(config.chainId || 0) === 3;
@@ -377,6 +419,38 @@ export default function MintWorkflow({ config }) {
             : session?.relayerEnabled
               ? "Retrying"
               : "Unavailable";
+  const boundWallet = session?.identify?.completedAt ? session?.identify?.coreId || session?.minter || "not selected" : "not selected";
+  const publishedContractAddress = session?.coreCatsAddress || config.coreCatsAddress;
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const scrollMarks = scrollMarksRef.current;
+    if (scrollMarks.sessionId !== sessionId) return;
+
+    if (finalizeConfirmed && !scrollMarks.success) {
+      scrollToSection(successRef);
+      scrollMarks.success = true;
+      return;
+    }
+
+    if (session?.finalize && !finalizeConfirmed && !scrollMarks.step3) {
+      scrollToSection(step3Ref);
+      scrollMarks.step3 = true;
+      return;
+    }
+
+    if (session?.commit && !commitSubmitted && !scrollMarks.step2) {
+      scrollToSection(step2Ref);
+      scrollMarks.step2 = true;
+      return;
+    }
+
+    if (session && !session?.identify?.completedAt && !scrollMarks.step1) {
+      scrollToSection(step1Ref);
+      scrollMarks.step1 = true;
+    }
+  }, [sessionId, session, commitSubmitted, finalizeConfirmed]);
   const progressItems = [
     {
       label: "Session created",
@@ -420,37 +494,17 @@ export default function MintWorkflow({ config }) {
 
   return (
     <div className="mint-stack">
-      <section className="mint-grid">
-        <article className="mint-card">
-          <p className="eyebrow">Session</p>
-          <h2>Current mint session</h2>
-          <p>
-            This desktop-first flow uses two CorePass approvals. QR 1 of 2 binds the session to one wallet, then QR 2
-            of 2 submits the commit transaction from the same desktop page.
-          </p>
-          {showTestnetNotice ? (
-            <p className="mint-warning">
-              In this Devin testnet environment, the available CorePass path still needs support for
-              <span className="mono-wrap"> ab... </span>
-              addresses to complete live wallet checks.
-            </p>
-          ) : null}
-          <div className="mint-meta-group">
-            <StatusLine label="Network" value={config.networkName} />
-            <StatusLine label="Expected chain id" value={String(config.chainId)} />
-            <StatusLine label="Contract" value={config.coreCatsAddress} mono />
-            <StatusLine label="Session state" value={currentStateLabel} />
-            <StatusLine label="Mint progress" value={phaseCopy} />
-            <StatusLine label="CoreID" value={minter} mono />
-          </div>
-        </article>
-
+      <section>
         <article className="mint-card">
           <p className="eyebrow">Start</p>
           <h2>Choose quantity and begin on desktop</h2>
           <p>
-            Pick 1 to 3 cats, then create a CorePass session from this desktop browser. Wallet-limit checks happen
-            before any gas-spending commit transaction is prepared.
+            Pick 1 to 3 cats and create a CorePass mint session from this desktop browser. QR 1 of 2 binds the wallet
+            with a signature. QR 2 of 2 sends the mint contract call. Wallet-limit checks happen before any
+            gas-spending transaction is prepared.
+          </p>
+          <p className="mint-meta">
+            Review the published contract address and verification notes on <a href="/transparency" className="inline-link">Transparency</a> before approving in CorePass.
           </p>
           <div className="quantity-row" role="group" aria-label="Mint quantity">
             {[1, 2, 3].map((value) => (
@@ -468,11 +522,18 @@ export default function MintWorkflow({ config }) {
             {loading ? "Preparing CorePass session..." : "Start with CorePass"}
           </button>
           <div className="mint-step-summary mint-step-summary--route">
-            <p className="mint-step-summary-title">Desktop rehearsal path</p>
+            <p className="mint-step-summary-title">Desktop-first path</p>
             <p className="mint-meta">Use a desktop browser and wait here while the mint status updates.</p>
-            <p className="mint-meta">QR 1 of 2 binds the wallet. QR 2 of 2 submits the commit transaction.</p>
+            <p className="mint-meta">QR 1 of 2 is a wallet-binding signature. QR 2 of 2 is the mint transaction.</p>
             <p className="mint-meta">Same-device mobile mint is not supported in this stage.</p>
           </div>
+          {showTestnetNotice ? (
+            <p className="mint-warning">
+              In this Devin testnet environment, the available CorePass path still needs support for
+              <span className="mono-wrap"> ab... </span>
+              addresses to complete live wallet checks.
+            </p>
+          ) : null}
           {walletState ? (
             <div className="mint-policy-box">
               <p className="mint-policy-title">Wallet policy snapshot</p>
@@ -499,37 +560,52 @@ export default function MintWorkflow({ config }) {
         </section>
       ) : null}
 
-      <section className="mint-grid">
+      <section>
         <article className="mint-card">
           <p className="eyebrow">Progress</p>
           <h2>What stage this mint is in</h2>
+          <p>This desktop page tracks the current mint attempt while CorePass handles each approval.</p>
+          <div className="mint-progress-summary">
+            <StatusLine label="Session state" value={currentStateLabel} />
+            <StatusLine label="Mint progress" value={phaseCopy} />
+            <StatusLine label="Bound wallet" value={boundWallet} mono />
+          </div>
           <div className="mint-progress">
             {progressItems.map((item) => (
               <ProgressItem key={item.label} label={item.label} detail={item.detail} tone={item.tone} />
             ))}
           </div>
         </article>
-
-        <article className="mint-card">
-          <p className="eyebrow">Waiting</p>
-          <h2>What to do while finalize runs</h2>
-          <p>Automatic finalize usually completes within a few minutes. Please wait.</p>
-          <p className="mint-meta">Do not start a new mint or reuse any earlier QR within 30 minutes.</p>
-          <p className="mint-meta">If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.</p>
-          <div className="mint-meta-group">
-            <StatusLine label="Finalize path" value={finalizeConfirmed ? `Completed via ${session?.finalize?.mode || "unknown"}` : "Automatic relayer"} />
-            <StatusLine label="Finalize state" value={finalizeStatusLabel} />
-            <StatusLine label="Last finalize attempt" value={formatDateTime(session?.finalize?.lastAttemptAt)} />
-          </div>
-        </article>
       </section>
 
       {session ? (
         <DesktopQrAction
+          sectionRef={step1Ref}
           eyebrow="Step 1"
           stepBadge="QR 1 of 2"
-          title="Bind the mint session to a CorePass wallet"
-          copy="CorePass signs a short challenge so this mint session can be tied to a specific CoreID before the free-mint authorization is issued. This step does not move funds."
+          title="Bind your wallet"
+          body={
+            <>
+              <p>This step asks CorePass to sign a wallet-binding message. It proves that you control this wallet.</p>
+              <p>No funds are transferred in this step. You are only signing a message.</p>
+              <div className="mint-copy-block">
+                <p className="mint-copy-title">What to expect in CorePass</p>
+                <ul className="plain-list mint-bullet-list">
+                  <li>You may see a &quot;Sign transaction&quot; style screen.</li>
+                  <li>The long <span className="mono-wrap">0x...</span> string is the challenge message to sign.</li>
+                  <li>This is not a token transfer.</li>
+                </ul>
+              </div>
+              <p className="mint-caution">Only continue if you started this flow from the official CoreCats mint page.</p>
+              <VerificationDetails>
+                <ol className="plain-list mint-verify-list">
+                  <li>Check that CorePass is asking for a signature, not a native-token payment or token approval.</li>
+                  <li>Check that the long <span className="mono-wrap">0x...</span> value is a challenge message to sign for wallet binding.</li>
+                  <li>After approval, confirm that this desktop page advances to QR 2 of 2 for the same wallet.</li>
+                </ol>
+              </VerificationDetails>
+            </>
+          }
           highlightedNotice="QR 1 of 2: wallet bind only, no funds move."
           request={session.identify}
           pendingNote="Scan QR 1 of 2 with CorePass. The phone should stay inside CorePass after approval, while this desktop page waits for the callback."
@@ -541,10 +617,48 @@ export default function MintWorkflow({ config }) {
 
       {session?.commit ? (
         <DesktopQrAction
+          sectionRef={step2Ref}
           eyebrow="Step 2"
           stepBadge="QR 2 of 2"
-          title="Commit the mint transaction"
-          copy="Once the CoreID is known, the server prepares the signed commitMint call and hands it to CorePass as a transaction request. This records the mint request on-chain, but delivery is not complete until finalize succeeds."
+          title="Send the mint transaction"
+          body={
+            <>
+              <p>This step sends the mint transaction to the CoreCats contract.</p>
+              <p>No native token amount is being sent to the contract itself when <span className="mono-wrap">value = 0</span>, but network gas is still required to execute the transaction.</p>
+              <div className="mint-copy-block">
+                <p className="mint-copy-title">What to expect in CorePass</p>
+                <ul className="plain-list mint-bullet-list">
+                  <li><span className="mono-wrap">to</span> should match the published CoreCats contract address.</li>
+                  <li><span className="mono-wrap">value</span> should be <span className="mono-wrap">0</span>.</li>
+                  <li>The long <span className="mono-wrap">0x...</span> data field is the contract call data for minting.</li>
+                </ul>
+              </div>
+              <p className="mint-meta">
+                Published contract:{" "}
+                {contractHref ? (
+                  <a href={contractHref} target="_blank" rel="noreferrer" className="inline-link mono-wrap">
+                    {publishedContractAddress}
+                  </a>
+                ) : (
+                  <span className="mono-wrap">{publishedContractAddress}</span>
+                )}{" "}
+                · <a href="/transparency" className="inline-link">Transparency</a> ·{" "}
+                <a href={PROJECT_REPOSITORY_URL} target="_blank" rel="noreferrer" className="inline-link">
+                  GitHub
+                </a>
+              </p>
+              <p className="mint-caution">Review the contract address and transaction fields before confirming.</p>
+              <VerificationDetails>
+                <ol className="plain-list mint-verify-list">
+                  <li>Check the destination address. Make sure the <span className="mono-wrap">to</span> address shown in CorePass matches the CoreCats contract address published on this site and in the GitHub repository.</li>
+                  <li>Check the value field. For the mint call, <span className="mono-wrap">value</span> should be <span className="mono-wrap">0</span>. That means this is a contract interaction, not a direct native-token payment to the contract. You still need gas to submit the transaction.</li>
+                  <li>Check the explorer. After submission, inspect the transaction in the blockchain explorer to confirm the destination, input data, and result.</li>
+                  <li>Check the public source code. The project repository publishes the contract and app code used for this flow. Compare the published contract address, ABI, and mint flow with what you see in CorePass.</li>
+                  <li>Check contract verification status. If explorer verification is available, compare the verified source and ABI with the GitHub repository.</li>
+                </ol>
+              </VerificationDetails>
+            </>
+          }
           highlightedNotice="QR 2 of 2: real mint transaction, small XCB gas required."
           request={session.commit}
           pendingNote="Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass."
@@ -554,12 +668,12 @@ export default function MintWorkflow({ config }) {
       ) : null}
 
       {session?.finalize ? (
-        <article className="mint-card mint-step-card">
+        <article ref={step3Ref} className="mint-card mint-step-card">
           <p className="eyebrow">Step 3</p>
-          <h2>Finalize the random assignment</h2>
+          <h2>Finalize and reveal the assigned cat</h2>
           <p>
-            Commit confirmation only records the pending mint. Your cat is delivered only after finalize succeeds and
-            the random assignment is completed on-chain.
+            Commit confirmation records the pending mint, but the NFT is delivered only after finalize succeeds and the
+            random assignment is completed on-chain.
           </p>
           <p className="mint-meta">Automatic finalize usually completes within a few minutes. Please wait.</p>
           {session.finalize?.lastError && !finalizeConfirmed ? (
@@ -569,12 +683,29 @@ export default function MintWorkflow({ config }) {
           ) : null}
           <div className="mint-action-grid">
             <div className="mint-action-panel">
-              <p className="mint-action-title">Automatic finalize</p>
+              <p className="mint-action-title">Automatic finalize status</p>
               <p className="mint-state">{automaticPathLabel}</p>
               <p className="mint-meta">{relayerNote}</p>
+              <div className="mint-meta-group">
+                <StatusLine label="Finalize path" value={finalizeConfirmed ? `Completed via ${session?.finalize?.mode || "unknown"}` : "Automatic relayer"} />
+                <StatusLine label="Finalize state" value={finalizeStatusLabel} />
+                <StatusLine label="Last finalize attempt" value={formatDateTime(session?.finalize?.lastAttemptAt)} />
+              </div>
             </div>
             <div className="mint-action-panel">
-              <p className="mint-action-title">If it takes longer</p>
+              <p className="mint-action-title">Why this can take a few minutes</p>
+              <p className="mint-meta">
+                Mint completion can take longer than a single block because random assignment happens in a separate
+                finalize transaction after commit.
+              </p>
+              <p className="mint-meta">
+                The current design uses commit, a future block, and on-chain finalize so the assignment can be checked
+                from public chain data without adding a separate VRF or oracle dependency.
+              </p>
+              <p className="mint-meta">
+                When finalize completes, the cat arrives already revealed for this mint rather than waiting for a later
+                collection-wide reveal.
+              </p>
               <p className="mint-meta">Do not start a new mint or reuse any earlier QR within 30 minutes.</p>
               <p className="mint-meta">If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.</p>
             </div>
@@ -583,7 +714,7 @@ export default function MintWorkflow({ config }) {
       ) : null}
 
       {finalizeConfirmed ? (
-        <section className="mint-card mint-success-card">
+        <section ref={successRef} className="mint-card mint-success-card">
           <p className="eyebrow">Completed</p>
           <h2>Mint completed after finalize</h2>
           <p>
@@ -623,10 +754,10 @@ export default function MintWorkflow({ config }) {
       ) : null}
 
       {session ? (
-        <section className="mint-grid">
+        <section>
           <article className="mint-card">
-            <p className="eyebrow">Transactions</p>
-            <h2>Explorer and session details</h2>
+            <p className="eyebrow">Verify</p>
+            <h2>Explorer and contract links</h2>
             <div className="mint-meta-group">
               <StatusLine label="Commit tx" value={session.commit?.txHash || "not confirmed yet"} mono />
               <StatusLine label="Commit state" value={commitConfirmed ? "Confirmed" : commitSubmitted ? "Submitted" : "Awaiting approval"} />

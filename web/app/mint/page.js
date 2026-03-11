@@ -6,8 +6,6 @@ export const dynamic = "force-dynamic";
 export default function MintPage() {
   const config = getCorePublicConfig();
   const launchState = config.launchState;
-  const isCanary = launchState === "canary";
-  const isPublic = launchState === "public";
 
   if (launchState === "closed") {
     return (
@@ -74,7 +72,7 @@ export default function MintPage() {
           <span className="launch-badge">Canary Live</span>
           <p>
             Mint is open only for validation. This stage may still point at a rehearsal contract on mainnet, so log
-            evidence against the contract shown on this page and on Transparency. Official public mint is still soon.
+            evidence against the contract published on Transparency. Official public mint has not started yet.
           </p>
         </div>
       )}
@@ -84,54 +82,6 @@ export default function MintPage() {
           <p>Public mint is open. Connect with CorePass to secure your Core Cats.</p>
         </div>
       )}
-
-      <section className="copy-grid">
-        <article className="copy-card">
-          <h2>{isCanary ? "What this canary proves" : "How mint works"}</h2>
-          <p>
-            {isCanary
-              ? "This run should prove the real public /mint path: CorePass sign, commit confirmation, finalize delivery, session recovery, and post-mint ownership handoff."
-              : "Choose 1 to 3 cats, start with CorePass, sign the session message, approve the commit transaction, and let finalize assign cats at random from the fixed set of 1,000."}
-          </p>
-        </article>
-
-        <article className="copy-card">
-          <h2>{isPublic ? "What you sign" : "How to enter CorePass"}</h2>
-          <p>
-            {isPublic
-              ? "The first CorePass step is only a short signature that links this mint session to your wallet. It does not move funds or grant token approvals."
-              : "Use a desktop browser as the primary mint surface. QR 1 of 2 binds the wallet, QR 2 of 2 submits the commit transaction, and the phone should stay inside CorePass while the desktop page advances."}
-          </p>
-        </article>
-
-        <article className="copy-card">
-          <h2>{isCanary ? "Why finalize still matters" : "What the transaction does"}</h2>
-          <p>
-            {isCanary
-              ? "Commit confirmation alone is not delivery. This canary should explicitly prove the difference between commit confirmed, finalize pending, and mint completed after finalize."
-              : "After the signature, CorePass shows the actual commit transaction. That transaction records your mint request on-chain. You do not choose a cat yourself: the finalize step assigns from the fixed set of 1,000 at random."}
-          </p>
-        </article>
-
-        <article className="copy-card">
-          <h2>{isCanary ? "After mint completion" : "What you can verify"}</h2>
-          <p>
-            {isCanary
-              ? "A good canary run ends with clean explorer links, a visible contract surface, and a natural handoff into My Cats for the same wallet."
-              : "The success path should leave a visible explorer trail: commit tx, finalize tx, current contract, and the ownership view that reflects the wallet holding the cat."}
-          </p>
-        </article>
-
-        {!isPublic ? (
-          <article className="copy-card">
-            <h2>Current device policy</h2>
-            <p>
-              Same-device mobile mint is not supported in this stage. Keep the mint page open on desktop and use
-              CorePass on the phone only for scanning and confirming each QR approval.
-            </p>
-          </article>
-        ) : null}
-      </section>
 
       <MintWorkflow config={config} />
     </div>
