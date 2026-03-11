@@ -1001,6 +1001,16 @@ main {
   line-height: 1.6;
 }
 
+.mint-counter-banner__count {
+  margin: 0;
+  color: var(--accent-deep);
+  font-family: var(--title-font);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
 .launch-badge {
   display: inline-flex;
   align-items: center;

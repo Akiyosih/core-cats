@@ -1,9 +1,12 @@
 import MintWorkflow from "../../components/mint-workflow";
 import { getCorePublicConfig } from "../../lib/server/core-env";
+import { getStatusSnapshot } from "../../lib/server/corecats-status";
+import { getSummary } from "../../lib/viewer-data";
 
 export const dynamic = "force-dynamic";
+const SHOW_PUBLIC_MINT_COUNTER_PREVIEW_IN_CANARY = true;
 
-export default function MintPage() {
+export default async function MintPage() {
   const config = getCorePublicConfig();
   const launchState = config.launchState;
 
@@ -59,6 +62,11 @@ export default function MintPage() {
     );
   }
 
+  const showMintCounter =
+    launchState === "public" || (launchState === "canary" && SHOW_PUBLIC_MINT_COUNTER_PREVIEW_IN_CANARY);
+  const [summary, statusSnapshot] = showMintCounter ? await Promise.all([getSummary(), getStatusSnapshot()]) : [null, null];
+  const mintedLabel = showMintCounter ? `${statusSnapshot.mintedCount.toLocaleString()} / ${summary.total.toLocaleString()} minted` : "";
+
   return (
     <div className="page-stack narrow-stack">
       {launchState === "closed" && (
@@ -67,7 +75,13 @@ export default function MintPage() {
           <p>Mint is not open yet. Collection pages are public, but new mints are still paused.</p>
         </div>
       )}
-      {launchState === "public" && (
+      {showMintCounter && (
+        <div className="launch-banner launch-banner--public mint-counter-banner">
+          <span className="launch-badge">Public mint live</span>
+          <p className="mint-counter-banner__count">{mintedLabel}</p>
+        </div>
+      )}
+      {launchState === "public" && !showMintCounter && (
         <div className="launch-banner launch-banner--public">
           <span className="launch-badge">Public Live</span>
           <p>Public mint is open. Connect with CorePass to secure your Core Cats.</p>
