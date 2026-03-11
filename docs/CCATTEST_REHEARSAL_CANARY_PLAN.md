@@ -86,17 +86,21 @@ If the site is intentionally kept in `closed`, that stage should be limited to t
 For each rehearsal-canary test, record at minimum:
 
 1. wallet label
-2. entry path
-3. quantity
-4. session id
-5. commit tx hash
-6. finalize tx hash
-7. assigned token id if known
-8. tokenURI readback result
-9. UI screenshot
-10. relevant backend log or health observation
-11. pass/fail result
-12. notes
+2. quantity
+3. QR1 path
+4. QR2 path
+5. how far it progressed
+6. any visible error text
+7. commit tx hash if any
+8. finalize tx hash if any
+9. final result
+10. UX observations
+11. session id
+12. any extra evidence needed for that case:
+   - UI screenshot
+   - assigned token id if known
+   - `tokenURI` readback result
+   - relevant backend log or health observation
 
 ## Phase B: Finish the Mint-Critical UI
 
@@ -135,6 +139,9 @@ The mint UI should explain the expected transport:
 2. mobile: show the direct app-link path
 3. if the CorePass in-app QR scanner is also supported, say so clearly
 4. if any path is unreliable, disclose the limitation in the live UI before public launch
+5. for rehearsal planning, `device standard camera` versus `CorePass in-app QR scanner` refers to the `QR 1 of 2` entry path unless a test explicitly says otherwise
+6. unless a test explicitly says otherwise, `QR 2 of 2` should continue inside CorePass after `QR 1 of 2`
+7. still keep one dedicated smoke test that uses the device standard camera for `QR 2 of 2`
 
 ### B-5. Success state
 The success state should surface:
@@ -197,89 +204,147 @@ Use generic labels in public records:
 3. Wallet C
    - fresh wallet for success-path quantity `3`
 4. Wallet D
-   - reserved for recovery and restart tests
+   - reserved first for recovery and restart tests
+   - if minimizing wallet switching matters, Wallet D may also be used for the remaining quantity-`1` generic-wallet success checks until it reaches the cap
 5. Wallet E
    - optional extra generic-wallet confirmation wallet
+   - not required if Wallet D still has enough headroom and the operator prefers to avoid wallet switching
 
 ### D-3. Success-path mint tests
 Run these from the real public `/mint` UI while the site is in `canary`.
 
 1. `SC-01`
-   - Wallet B
-   - quantity `1`
-   - device standard camera -> CorePass
-   - full mint success
+   - wallet label: `Wallet B`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - target: baseline desktop-first success path
 2. `SC-02`
-   - Wallet B or C
-   - quantity `1`
-   - CorePass in-app QR scanner
-   - full mint success
+   - wallet label: `Wallet D`, or `Wallet B` / `Wallet C` only if a separate generic-wallet success run is preferred
+   - quantity: `1`
+   - QR1 path: `CorePass in-app QR scanner`
+   - QR2 path: `continue inside CorePass`
+   - target: in-app scanner success path
 3. `SC-03`
-   - Wallet B
-   - quantity `2`
-   - full mint success
+   - wallet label: `Wallet B`
+   - quantity: `2`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - target: multi-quantity success for quantity `2`
 4. `SC-04`
-   - Wallet C
-   - quantity `3`
-   - full mint success
+   - wallet label: `Wallet C`
+   - quantity: `3`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - target: multi-quantity success for quantity `3`
+5. `SC-05`
+   - wallet label: `Wallet D`, or `Wallet E` only if preserving Wallet D headroom is more important than minimizing wallet switching
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `device standard camera`
+   - target: one-time smoke test that `QR 2 of 2` transaction handoff also works when reopened through the device standard camera instead of staying inside CorePass
 
 ### D-4. Limit and refusal tests
 1. `LT-01`
-   - Wallet A mints one more cat and reaches cumulative `2`
+   - wallet label: `Wallet A`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - target: mint one more cat and reach cumulative `2`
 2. `LT-02`
-   - Wallet A at cumulative `2`
-   - request quantity `2` or `3`
-   - backend/UI refusal occurs before a gas-spending commit transaction is prepared
+   - wallet label: `Wallet A`
+   - quantity: `2` or `3`
+   - QR1 path: `device standard camera`
+   - QR2 path: `not prepared`
+   - target: after Wallet A reaches cumulative `2`, confirm backend/UI refusal before any gas-spending commit transaction is prepared
 3. `LT-03`
-   - Wallet A mints one more cat and reaches cumulative `3`
+   - wallet label: `Wallet A`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - target: mint one more cat and reach cumulative `3`
 4. `LT-04`
-   - Wallet A attempts another mint
-   - the normal path is refused before a gas-spending commit transaction is prepared
+   - wallet label: `Wallet A`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `not prepared`
+   - target: confirm another mint is refused before a gas-spending commit transaction is prepared once Wallet A is full
 
 ### D-5. Finalize and recovery tests
 1. `FR-01`
-   - confirm one normal relayer finalize success from the rehearsal-canary UI path
+   - wallet label: any successful canary wallet
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - target: confirm one normal relayer finalize success from the rehearsal-canary UI path
 2. `FR-02`
-   - force or simulate a relayer problem
-   - confirm the UI distinguishes `commit confirmed`, `finalize pending`, and the `30`-minute wait / retry guidance
-   - confirm no public manual-finalize QR is required for that UX
+   - wallet label: `Wallet D`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - operator action: force or simulate a relayer problem after commit confirmation
+   - target: confirm the UI distinguishes `commit confirmed`, `finalize pending`, and the `30`-minute wait / retry guidance
+   - target: confirm no public manual-finalize QR is required for that UX
 3. `FR-03`
-   - after commit and before finalize completes, reload the current page
-   - confirm the session can continue to finalize completion
-   - same-`sessionId` reopen may still be probed as internal recovery behavior, but it is not a public UX promise
+   - wallet label: `Wallet D`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - operator action: after commit and before finalize completes, reload the current page
+   - target: confirm the session can continue to finalize completion
+   - note: same-`sessionId` reopen may still be probed as internal recovery behavior, but it is not a public UX promise
 4. `FR-04`
-   - exercise duplicate callback or near-duplicate finalize handling
-   - confirm the session remains coherent and does not regress
+   - wallet label: `Wallet D`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - operator action: exercise duplicate callback or near-duplicate finalize handling
+   - target: confirm the session remains coherent and does not regress
 
 ### D-6. Ownership, transparency, and metadata tests
 1. `OT-01`
-   - `My Cats` is correct for Wallet A at cumulative `2`
+   - wallet label: `Wallet A`
+   - target: `My Cats` is correct after Wallet A reaches cumulative `2`
 2. `OT-02`
-   - `My Cats` is correct for Wallet A at cumulative `3`
+   - wallet label: `Wallet A`
+   - target: `My Cats` is correct after Wallet A reaches cumulative `3`
 3. `OT-03`
-   - `My Cats` is correct for Wallet B and Wallet C after multi-quantity mints
+   - wallet label: `Wallet B` and `Wallet C`
+   - target: `My Cats` is correct after the quantity `2` and quantity `3` mints
 4. `OT-04`
-   - `My Cats` remains correct after page reload
+   - wallet label: any successful canary wallet
+   - target: `My Cats` remains correct after page reload
 5. `OT-05`
-   - mint completion leads naturally to `My Cats`, explorer, and transparency
+   - wallet label: any successful canary wallet
+   - target: mint completion leads naturally to `My Cats`, explorer, and transparency
 6. `OT-06`
-   - `/transparency` points at the correct `CCATTEST` contract, explorer, and repository docs
+   - target: `/transparency` points at the correct `CCATTEST` contract, explorer, and repository docs
 7. `OT-07`
-   - `tokenURI(tokenId)` decodes to on-chain JSON/Base64 SVG for the minted rehearsal token ids
+   - wallet label: any minted rehearsal wallet
+   - target: `tokenURI(tokenId)` decodes to on-chain JSON/Base64 SVG for the minted rehearsal token ids
 
 ### D-7. Operational behavior tests
 1. `OP-01`
-   - session created
-   - backend restarted
-   - session still readable and usable
+   - wallet label: `Wallet D`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `not reached`
+   - operator action: create the session, restart the backend, then confirm the session is still readable and usable
 2. `OP-02`
-   - commit confirmed
-   - backend restarted before finalize completes
-   - recovery still succeeds
+   - wallet label: `Wallet D`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `continue inside CorePass`
+   - operator action: restart the backend after commit confirmation and before finalize completes
+   - target: recovery still succeeds
 3. `OP-03`
-   - expired session or expired authorization is surfaced clearly to the user
+   - wallet label: `Wallet D`
+   - quantity: `1`
+   - QR1 path: `device standard camera`
+   - QR2 path: `not reached` or `expired before approval`
+   - target: expired session or expired authorization is surfaced clearly to the user
 4. `OP-04`
-   - `closed`, `canary`, and `public` launch-state switches match what the site actually allows
+   - target: `closed`, `canary`, and `public` launch-state switches match what the site actually allows
 
 ### D-8. Optional ownership-follow test
 1. `OF-01`
@@ -287,6 +352,101 @@ Run these from the real public `/mint` UI while the site is in `canary`.
    - confirm `My Cats` follows the ownership change after the status cache refreshes
 
 This is not a minimum mint gate, but it is high-value if `My Cats` is presented as a real ownership page.
+
+### D-9. Recommended Execution Order When Minimizing Wallet Switching
+If the operator wants to avoid re-entering seed phrases and switching wallets repeatedly, run the remaining tests in this order.
+
+1. Wallet D block: do all Wallet D tests first while it still has headroom.
+   - `OP-01`
+     - quantity: `1`
+     - QR1 path: `device standard camera`
+     - QR2 path: `not reached`
+     - note: create the session, restart the backend, and confirm the session is still usable before spending gas
+   - `OP-03`
+     - quantity: `1`
+     - QR1 path: `device standard camera`
+     - QR2 path: `not reached` or `expired before approval`
+     - note: confirm expired session or expired authorization messaging without consuming another mint slot
+   - `FR-02`
+     - quantity: `1`
+     - QR1 path: `device standard camera`
+     - QR2 path: `continue inside CorePass`
+     - note: induce the relayer problem here, before Wallet D is full
+     - if preserving Wallet D mint headroom is important, keep relayer recovery disabled long enough to observe the UI and let the session expire instead of completing finalize
+   - `SC-05` plus `FR-04`
+     - quantity: `1`
+     - QR1 path: `device standard camera`
+     - QR2 path: `device standard camera`
+     - note: use this run as the one-time `QR 2 of 2` standard-camera smoke and, if practical, piggyback the duplicate-callback or near-duplicate-finalize handling check on the same session
+   - `SC-02`
+     - quantity: `1`
+     - QR1 path: `CorePass in-app QR scanner`
+     - QR2 path: `continue inside CorePass`
+     - note: this should be the last planned successful Wallet D mint so Wallet D reaches its cap only after the D-specific checks are finished
+
+2. Wallet C block:
+   - `SC-04`
+     - quantity: `3`
+     - QR1 path: `device standard camera`
+     - QR2 path: `continue inside CorePass`
+     - note: this closes the quantity-`3` success proof in one switch
+
+3. Wallet A block:
+   - `LT-01`
+     - quantity: `1`
+     - QR1 path: `device standard camera`
+     - QR2 path: `continue inside CorePass`
+   - `LT-02`
+     - quantity: `2` or `3`
+     - QR1 path: `device standard camera`
+     - QR2 path: `not prepared`
+   - `LT-03`
+     - quantity: `1`
+     - QR1 path: `device standard camera`
+     - QR2 path: `continue inside CorePass`
+   - `LT-04`
+     - quantity: `1`
+     - QR1 path: `device standard camera`
+     - QR2 path: `not prepared`
+
+4. Cross-wallet follow-up:
+   - collect wallet-specific ownership/success evidence immediately after each successful mint instead of deferring all ownership checks to the end
+   - use the final Wallet A block to close the checks that can be done from Wallet A without switching again
+   - `OP-04`
+   - `OF-01` if ownership-follow evidence is wanted
+
+This order is chosen to:
+1. spend the least time switching wallets
+2. use Wallet D for all D-specific recovery checks before its remaining mint headroom is consumed
+3. avoid returning to Wallet B, because Wallet B already has quantity-`1` and quantity-`2` success evidence
+
+### D-10. Ownership Check Timing When Minimizing Wallet Switching
+Do not leave every ownership/transparency check to one final pass. Split them by when they are cheapest to collect.
+
+1. Collect immediately after each successful mint, while still on that wallet:
+   - `OT-03`
+     - for Wallet B and Wallet C, confirm `My Cats` reflects the quantity-`2` and quantity-`3` mint results
+   - `OT-05`
+     - from each successful mint completion state, confirm the handoff to `My Cats`, explorer, and transparency
+   - `OT-07`
+     - record the minted token ids and `tokenURI` evidence tied to that wallet's successful mint
+
+2. Leave for the final Wallet A block:
+   - `OT-01`
+     - confirm `My Cats` is correct after Wallet A reaches cumulative `2`
+   - `OT-02`
+     - confirm `My Cats` is correct after Wallet A reaches cumulative `3`
+   - `OT-04`
+     - confirm `My Cats` remains correct after page reload
+   - `OT-06`
+     - confirm `/transparency` points at the correct `CCATTEST` contract, explorer, and repository docs
+   - `OP-04`
+     - confirm `closed`, `canary`, and `public` launch-state switches match what the site actually allows
+
+This split keeps the plan aligned with the practical wallet-switch-minimizing workflow:
+1. collect wallet-specific success evidence while that wallet is already active
+2. avoid switching back into old wallets just to re-open pages that were already available during the successful mint
+3. finish with the checks that can still be closed cleanly from Wallet A
 
 ## Phase E: Fix, Re-Test, and Keep the Bug Bar Honest
 
