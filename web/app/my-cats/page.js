@@ -76,9 +76,7 @@ export default async function MyCatsPage({ searchParams }) {
         <p className="eyebrow my-cats-eyebrow">My Cats</p>
         <h1>Search by wallet address.</h1>
         <p className="my-cats-copy">
-          {isCanary
-            ? "Use this page to confirm ownership after rehearsal mints. Enter a Core wallet address to inspect the cats currently held there."
-            : "Enter a Core wallet address to see the cats currently held there."}
+          Enter a Core wallet address to see the cats currently held there.
         </p>
         {isCanary ? (
           <p className="my-cats-copy">
@@ -156,18 +154,6 @@ export default async function MyCatsPage({ searchParams }) {
         </>
       ) : null}
 
-      {!hasSearch ? (
-        <section className="copy-grid my-cats-grid">
-          <article className="copy-card my-cats-card">
-            <h2>{isCanary ? "Use this after mint" : "Search any address"}</h2>
-            <p>
-              {isCanary
-                ? "For rehearsal-canary testing, this is the intended post-mint ownership check. Search the same wallet that completed the mint and confirm the expected cats appear here."
-                : "This view uses the current on-chain ownership index instead of guessing from incomplete wallet data."}
-            </p>
-          </article>
-        </section>
-      ) : null}
     </div>
   );
 }

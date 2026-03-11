@@ -552,7 +552,7 @@ main {
 }
 
 .chip-wrap--nested {
-  padding-left: 14px;
+  padding-left: 0;
 }
 
 .filter-group-stack {
@@ -563,6 +563,33 @@ main {
 .filter-subgroup {
   display: grid;
   gap: 10px;
+}
+
+.filter-block__hint {
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.filter-subgroup__nested {
+  display: grid;
+  gap: 10px;
+  margin-left: 12px;
+  padding-left: 16px;
+  border-left: 1px solid rgba(24, 18, 13, 0.12);
+}
+
+.filter-subgroup__label {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.filter-subgroup--standalone {
+  align-content: start;
 }
 
 .filter-chip {

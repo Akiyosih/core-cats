@@ -110,6 +110,7 @@ function GroupedColorwayBlock({ paletteValues, categoryValues, searchParams, act
   return (
     <section className="filter-block">
       <h2>Colorway</h2>
+      <p className="filter-block__hint">Choose a broad family or drill into a specific palette.</p>
       <div className="filter-group-stack">
         {COLORWAY_GROUPS.map((group) => {
           const groupCount = categoryMap.get(group.id)?.count ?? 0;
@@ -129,31 +130,35 @@ function GroupedColorwayBlock({ paletteValues, categoryValues, searchParams, act
                 label={group.label}
                 count={groupCount}
               />
-              <div className="chip-wrap chip-wrap--nested">
-                {group.values.map((valueId) => {
-                  const value = paletteMap.get(valueId) || { id: valueId, label: valueId, count: 0 };
-                  const href = buildSearchHref(searchParams, {
-                    category: null,
-                    palette_id: activePalette === value.id ? null : value.id,
-                    page: null,
-                  });
+              <div className="filter-subgroup__nested">
+                <p className="filter-subgroup__label">Specific {group.label.toLowerCase()} palettes</p>
+                <div className="chip-wrap chip-wrap--nested">
+                  {group.values.map((valueId) => {
+                    const value = paletteMap.get(valueId) || { id: valueId, label: valueId, count: 0 };
+                    const href = buildSearchHref(searchParams, {
+                      category: null,
+                      palette_id: activePalette === value.id ? null : value.id,
+                      page: null,
+                    });
 
-                  return (
-                    <FilterChip
-                      key={`palette-${value.id}`}
-                      href={href}
-                      active={activePalette === value.id}
-                      empty={(value.count ?? 0) === 0}
-                      label={value.label}
-                      count={value.count ?? 0}
-                    />
-                  );
-                })}
+                    return (
+                      <FilterChip
+                        key={`palette-${value.id}`}
+                        href={href}
+                        active={activePalette === value.id}
+                        empty={(value.count ?? 0) === 0}
+                        label={value.label}
+                        count={value.count ?? 0}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );
         })}
-        <div className="filter-subgroup">
+        <div className="filter-subgroup filter-subgroup--standalone">
+          <p className="filter-subgroup__label">Standalone palette</p>
           <FilterChip
             href={superrareHref}
             active={activePalette === "superrare"}

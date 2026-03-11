@@ -97,8 +97,8 @@ export default function TransparencyPage() {
         <p className="eyebrow">Transparency</p>
         <h1>Check the live contract surface and public artifacts.</h1>
         <p>
-          Use this page to verify what is live right now, how the mint flow is structured, and which trust
-          assumptions still remain.
+          Use this page to verify what is live right now, how the mint flow is structured, and where to inspect the
+          public artifacts yourself.
         </p>
         <p>
           This is not a promise of safety. It is a map of what you can inspect for yourself before and after minting.
