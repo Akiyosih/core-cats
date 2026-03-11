@@ -83,6 +83,34 @@ export default function MintPage() {
         </div>
       )}
 
+      <details className="mint-verify-details">
+        <summary>New to Core Blockchain?</summary>
+        <div className="mint-verify-body mint-copy-stack">
+          <p>If this is your first time using Core Blockchain, minting Core Cats requires:</p>
+          <ul className="plain-list mint-bullet-list">
+            <li>a registered CorePass account</li>
+            <li>a small amount of XCB for gas</li>
+          </ul>
+          <p>Gas is usually very cheap — often less than $0.01 per transaction.</p>
+          <p>
+            You can ask a friend to send you a little XCB for gas, or follow this step-by-step guide to set up
+            CorePass, register on Ping Exchange, and get started:
+          </p>
+          <div className="mint-copy-block">
+            <p className="mint-copy-title">Read the guide:</p>
+            <a
+              href="https://medium.com/@tellmemoreaboutcore2022/how-to-set-up-corepass-id-register-on-ping-exchange-the-complete-step-by-step-guide-ee018ce2de4c"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-link"
+            >
+              How to Set Up CorePass ID & Register on Ping Exchange — The Complete Step-by-Step Guide
+            </a>
+          </div>
+          <p className="mint-meta">This is an external community guide shared for convenience.</p>
+        </div>
+      </details>
+
       <MintWorkflow config={config} />
     </div>
   );
