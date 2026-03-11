@@ -151,9 +151,6 @@ function DesktopQrAction({
               Keep this desktop page open. Scan with the device camera or the CorePass in-app scanner, approve inside
               CorePass, and then continue from this desktop browser.
             </p>
-            <a className="inline-link mono-wrap" href={request.desktopUri}>
-              Open raw CorePass URI
-            </a>
           </div>
         </div>
       )}
@@ -504,7 +501,11 @@ export default function MintWorkflow({ config }) {
             gas-spending transaction is prepared.
           </p>
           <p className="mint-meta">
-            Review the published contract address and verification notes on <a href="/transparency" className="inline-link">Transparency</a> before approving in CorePass.
+            If you want to verify the published contract address and public artifacts first, you can review{" "}
+            <a href="/transparency" className="inline-link">
+              Transparency
+            </a>{" "}
+            before approving in CorePass.
           </p>
           <div className="quantity-row" role="group" aria-label="Mint quantity">
             {[1, 2, 3].map((value) => (
@@ -597,13 +598,6 @@ export default function MintWorkflow({ config }) {
                 </ul>
               </div>
               <p className="mint-caution">Only continue if you started this flow from the official CoreCats mint page.</p>
-              <VerificationDetails>
-                <ol className="plain-list mint-verify-list">
-                  <li>Check that CorePass is asking for a signature, not a native-token payment or token approval.</li>
-                  <li>Check that the long <span className="mono-wrap">0x...</span> value is a challenge message to sign for wallet binding.</li>
-                  <li>After approval, confirm that this desktop page advances to QR 2 of 2 for the same wallet.</li>
-                </ol>
-              </VerificationDetails>
             </>
           }
           highlightedNotice="QR 1 of 2: wallet bind only, no funds move."
