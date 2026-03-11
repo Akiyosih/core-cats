@@ -3,7 +3,7 @@ import MintCounterBanner from "../../components/mint-counter-banner";
 import { getCorePublicConfig } from "../../lib/server/core-env";
 import { getSummary } from "../../lib/viewer-data";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export default async function MintPage() {
   const config = getCorePublicConfig();
