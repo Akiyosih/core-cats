@@ -122,10 +122,11 @@ function DesktopQrAction({
   completedNote,
   highlightedNotice,
   completeTone = "done",
+  resolved = false,
   sectionRef = null,
 }) {
   if (!request) return null;
-  const complete = Boolean(request.completedAt || request.txHash);
+  const complete = Boolean(request.completedAt || request.txHash || resolved);
 
   return (
     <article ref={sectionRef} className="mint-card mint-step-card">
@@ -324,14 +325,6 @@ export default function MintWorkflow({ config }) {
     return () => clearInterval(timer);
   }, [sessionId]);
 
-  useEffect(() => {
-    if (!error) return;
-    const scrollKey = `${sessionId || "no-session"}:${error}`;
-    if (lastErrorScrollKeyRef.current === scrollKey) return;
-    scrollToSection(issueRef);
-    lastErrorScrollKeyRef.current = scrollKey;
-  }, [error, sessionId]);
-
   async function handleBegin() {
     setLoading(true);
     setError("");
@@ -348,7 +341,6 @@ export default function MintWorkflow({ config }) {
   }
 
   const currentState = session?.status || "idle";
-  const currentStateLabel = formatSessionState(currentState);
   const walletState = session?.commit?.walletState || null;
   const showTestnetNotice =
     (config.networkName || "").toLowerCase() === "devin" || Number(config.chainId || 0) === 3;
@@ -358,8 +350,12 @@ export default function MintWorkflow({ config }) {
   const commitConfirmed = Boolean(session?.commit?.confirmedAt);
   const finalizeConfirmed = Boolean(session?.finalize?.confirmedAt);
   const finalizePending = commitConfirmed && !finalizeConfirmed;
+  const commitExpiryMs = Number(session?.commit?.expiry || 0) * 1000;
+  const authorizationExpired = Boolean(session?.commit && !commitSubmitted && commitExpiryMs > 0 && commitExpiryMs <= Date.now());
+  const currentStateLabel = authorizationExpired ? "Commit authorization expired" : formatSessionState(currentState);
   const authorizeRejected = currentState === "authorize_rejected";
   const rejectedSession = authorizeRejected ? describeRejectedSession(session?.error?.code || callbackError) : null;
+  const displayedError = error || (authorizationExpired ? "QR 2 of 2 expired before approval. Start a new mint from the beginning." : "");
   let phaseCopy = "Session not started.";
   if (session) {
     phaseCopy = "Session created. Confirm the wallet in CorePass.";
@@ -372,6 +368,9 @@ export default function MintWorkflow({ config }) {
   }
   if (session?.commit) {
     phaseCopy = "Wallet confirmed on desktop. QR 2 of 2 is now ready for the commit transaction.";
+  }
+  if (authorizationExpired) {
+    phaseCopy = "QR 2 of 2 expired before approval. Start a new mint from the beginning.";
   }
   if (currentState === "commit_failed") {
     phaseCopy = "The commit transaction did not confirm successfully.";
@@ -391,11 +390,15 @@ export default function MintWorkflow({ config }) {
   }
   const commitCompletedLabel = commitConfirmed
     ? "Commit confirmed. Automatic finalize is now in progress."
+    : authorizationExpired
+      ? "Commit authorization expired before approval."
     : commitSubmitted
       ? "Commit submitted. Waiting for chain confirmation before finalize can begin."
       : "Commit approval is still required.";
   const commitCompletedNote = commitConfirmed
     ? "Automatic finalize usually completes within a few minutes. Please wait."
+    : authorizationExpired
+      ? "QR 2 of 2 is no longer valid. Do not scan or reuse it. Start a new mint from the beginning."
     : commitSubmitted
       ? "CorePass returned the commit transaction. This desktop page is now waiting for the chain receipt."
       : "Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass.";
@@ -435,6 +438,14 @@ export default function MintWorkflow({ config }) {
               : "Unavailable";
   const boundWallet = session?.identify?.completedAt ? session?.identify?.coreId || session?.minter || "not selected" : "not selected";
   const publishedContractAddress = session?.coreCatsAddress || config.coreCatsAddress;
+
+  useEffect(() => {
+    if (!displayedError) return;
+    const scrollKey = `${sessionId || "no-session"}:${displayedError}`;
+    if (lastErrorScrollKeyRef.current === scrollKey) return;
+    scrollToSection(issueRef);
+    lastErrorScrollKeyRef.current = scrollKey;
+  }, [displayedError, sessionId]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -484,12 +495,14 @@ export default function MintWorkflow({ config }) {
         ? "The commit transaction is confirmed on-chain."
         : commitSubmitted
           ? "The commit transaction was submitted from CorePass and is still waiting for an on-chain receipt."
+        : authorizationExpired
+          ? "QR 2 of 2 expired before approval. Start a new mint from the beginning."
         : authorizeRejected && rejectedSession
           ? rejectedSession.commitDetail
         : session?.commit
           ? "Scan QR 2 of 2 to approve the commit transaction in CorePass."
           : "Commit is only prepared after wallet confirmation succeeds.",
-      tone: commitConfirmed ? "done" : authorizeRejected ? "blocked" : session?.commit ? "active" : "waiting",
+      tone: commitConfirmed ? "done" : authorizationExpired || authorizeRejected ? "blocked" : session?.commit ? "active" : "waiting",
     },
     {
       label: "Finalize delivered",
@@ -497,12 +510,14 @@ export default function MintWorkflow({ config }) {
         ? "Finalize confirmed. The mint is complete."
         : commitSubmitted && !commitConfirmed
           ? "Finalize will only start after the commit transaction is confirmed on-chain."
+        : authorizationExpired
+          ? "Finalize never started because QR 2 of 2 expired before approval."
         : commitConfirmed
           ? relayerNote
           : authorizeRejected
             ? "Finalize never started because no commit transaction was prepared for this session."
           : "Finalize starts only after the commit is confirmed.",
-      tone: finalizeConfirmed ? "done" : authorizeRejected ? "blocked" : commitConfirmed ? "active" : "waiting",
+      tone: finalizeConfirmed ? "done" : authorizationExpired || authorizeRejected ? "blocked" : commitConfirmed ? "active" : "waiting",
     },
   ];
 
@@ -570,11 +585,11 @@ export default function MintWorkflow({ config }) {
         </article>
       </section>
 
-      {error ? (
+      {displayedError ? (
         <section ref={issueRef} className="mint-card">
           <p className="eyebrow">Issue</p>
           <h2>Attention required</h2>
-          <p className="mint-error">{error}</p>
+          <p className="mint-error">{displayedError}</p>
         </section>
       ) : null}
 
@@ -675,6 +690,8 @@ export default function MintWorkflow({ config }) {
           pendingNote="Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass."
           completedLabel={commitCompletedLabel}
           completedNote={commitCompletedNote}
+          completeTone={authorizationExpired ? "blocked" : "done"}
+          resolved={authorizationExpired}
         />
       ) : null}
 
@@ -764,7 +781,7 @@ export default function MintWorkflow({ config }) {
         </section>
       ) : null}
 
-      {session ? (
+      {session && !authorizationExpired ? (
         <section>
           <article className="mint-card">
             <p className="eyebrow">Verify</p>
