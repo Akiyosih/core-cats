@@ -85,6 +85,25 @@ function formatFinalizeStatus(value) {
   }
 }
 
+function describeFinalizeError(code, detail) {
+  switch (String(code || "").trim()) {
+    case "too_early":
+      return "Automatic finalize is waiting for the finalize window to open.";
+    case "no_pending_commit":
+      return "Automatic finalize is waiting for the pending commit state to become readable.";
+    case "tx_reverted":
+      return "The latest automatic finalize attempt did not complete and is retrying in the background.";
+    case "relayer_not_configured":
+      return "Automatic finalize is temporarily unavailable. Please wait here. If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.";
+    case "finalize_expired":
+      return "Finalize did not complete within the available window. If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.";
+    case "finalize_failed":
+      return "Automatic finalize hit a relayer error and is retrying in the background.";
+    default:
+      return detail ? "Automatic finalize is retrying in the background." : "";
+  }
+}
+
 async function postJson(url, body) {
   const response = await fetch(url, {
     method: "POST",
@@ -348,6 +367,7 @@ export default function MintWorkflow({ config }) {
     (config.networkName || "").toLowerCase() === "devin" || Number(config.chainId || 0) === 3;
   const finalizeStatus = session?.finalize?.status || "awaiting_finalize";
   const finalizeStatusLabel = formatFinalizeStatus(finalizeStatus);
+  const finalizeUserNote = describeFinalizeError(session?.finalize?.lastErrorCode, session?.finalize?.lastError);
   const commitSubmitted = Boolean(session?.commit?.txHash);
   const commitConfirmed = Boolean(session?.commit?.confirmedAt);
   const finalizeConfirmed = Boolean(session?.finalize?.confirmedAt);
@@ -711,9 +731,9 @@ export default function MintWorkflow({ config }) {
             random assignment is completed on-chain.
           </p>
           <p className="mint-meta">Automatic finalize usually completes within a few minutes. Please wait.</p>
-          {session.finalize?.lastError && !finalizeConfirmed ? (
+          {finalizeUserNote && !finalizeConfirmed ? (
             <p className="mint-warning">
-              Latest finalize note: <span className="mono-wrap">{session.finalize.lastError}</span>
+              Latest finalize note: {finalizeUserNote}
             </p>
           ) : null}
           <div className="mint-action-grid">
