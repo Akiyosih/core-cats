@@ -97,9 +97,10 @@ The same app can be deployed in three public-facing modes:
    Final public release mode. The community-facing site opens `/mint` on the same origin people already know.
 
 For long-lived teaser hosting, the current direction is:
-1. keep `public-teaser` browse-first and static where possible
-2. feed live ownership from the public snapshot URL
-3. keep `private-canary` separate from the community-facing teaser origin
+1. use `web-public-teaser/` as the preferred static browse-only app for the community-facing teaser origin
+2. use `web/` for `private-canary` and later `public-mint`
+3. feed live ownership from the public snapshot URL
+4. keep `private-canary` separate from the community-facing teaser origin
 
 ## Current Mint Flow
 

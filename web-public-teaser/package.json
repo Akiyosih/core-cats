@@ -1,0 +1,18 @@
+{
+  "name": "core-cats-public-teaser",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "node ./scripts/sync-public-assets.mjs && next build --webpack",
+    "dev": "node ./scripts/sync-public-assets.mjs && next dev",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "ethers": "^6.15.0",
+    "next": "^16.1.6",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}

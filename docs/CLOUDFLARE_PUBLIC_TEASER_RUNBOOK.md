@@ -8,12 +8,17 @@ Purpose:
 Reference URLs:
 - Cloudflare Pages overview: https://developers.cloudflare.com/pages/
 - Cloudflare Pages pricing: https://developers.cloudflare.com/pages/functions/pricing/
-- Cloudflare Next.js guidance: https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/
+- Cloudflare Next.js static export guidance: https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/
 - Next.js public folder cache behavior: https://nextjs.org/docs/pages/api-reference/file-conventions/public-folder
+- Next.js static export: https://nextjs.org/docs/app/guides/static-exports
 
 ## Target Surface
 
 Use the `public-teaser` surface for the community-facing site.
+
+Deploy the separate static teaser app rooted at:
+
+`core-cats/web-public-teaser`
 
 Expected public routes:
 1. `/`
@@ -50,6 +55,13 @@ Notes:
 2. `NEXT_PUBLIC_CORECATS_STATUS_URL` lets `/collection`, `/cats/[tokenId]`, and `/my-cats` read live ownership state directly from the browser.
 3. `CORECATS_BACKEND_SHARED_SECRET` is not required on the public teaser surface because mint routes stay closed there.
 
+Cloudflare Pages build settings:
+1. Framework preset: `Next.js (Static HTML Export)`
+2. Root directory: `web-public-teaser`
+3. Build command: `npm run build`
+4. Build output directory: `out`
+5. Node.js version: leave the default unless a future Cloudflare runtime change requires pinning
+
 ## Public / Private Split
 
 Operate two separate deployments from the same repository:
@@ -66,6 +78,20 @@ Operate two separate deployments from the same repository:
 
 The final public mint can later reopen on the community-facing origin by switching the public site to `public-mint`.
 
+## Cloudflare Dashboard Flow
+
+Current UI labels can vary, but the flow should be:
+
+1. open `Developer Platform`
+2. choose `Start building`
+3. select `Pages`
+4. choose `Connect to Git`
+5. authorize GitHub if prompted
+6. select the `core-cats` repository
+7. enter the build settings listed above
+8. add the public teaser environment values
+9. deploy without a custom domain first
+
 ## Verification Checklist
 
 Before relaunching the public teaser:
@@ -76,6 +102,7 @@ Before relaunching the public teaser:
 4. `/my-cats` can look up ownership through the public snapshot URL.
 5. `/robots.txt` disallows `/mint` and `/api/`.
 6. `/transparency` shows the correct `Site surface`.
+7. `/viewer_v1/collection-index.json` loads from the static teaser origin.
 
 ## After Relaunch
 
