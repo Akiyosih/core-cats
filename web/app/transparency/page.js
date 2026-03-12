@@ -81,7 +81,7 @@ export default function TransparencyPage() {
         ? "Mainnet contract configured"
         : "Devin rehearsal contract configured";
   const publicLinks = [
-    { href: "https://core-cats.vercel.app", label: "Official website" },
+    { href: config.siteBaseUrl, label: "Official website" },
     { href: "https://github.com/Akiyosih/core-cats", label: "GitHub repository" },
     { href: explorerBaseUrl, label: "Blockindex explorer" },
     {

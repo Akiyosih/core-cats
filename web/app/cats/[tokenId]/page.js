@@ -1,6 +1,7 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
-import CatDetailBrowser from "../../../components/cat-detail-browser";
+import CatDetailLive from "../../../components/cat-detail-live";
 import { getCollectionItem, getSummary } from "../../../lib/viewer-data";
 import { getCorePublicConfig } from "../../../lib/server/core-env";
 
@@ -43,14 +44,16 @@ export default async function CatDetailPage({ params }) {
         <h1>{item.name}</h1>
         <p>{item.description}</p>
 
-        <CatDetailBrowser
-          tokenId={tokenId}
-          teaserEnabled={config.launchState !== "public"}
-          statusSnapshotUrl={config.statusSnapshotUrl}
-          collectionIndexUrl="/viewer_v1/collection-index.json"
-          explorerBaseUrl={config.explorerBaseUrl}
-          coreCatsAddress={config.coreCatsAddress}
-        />
+        <Suspense fallback={null}>
+          <CatDetailLive
+            tokenId={tokenId}
+            teaserEnabled={config.launchState !== "public"}
+            statusSnapshotUrl={config.statusSnapshotUrl}
+            collectionIndexUrl="/viewer_v1/collection-index.json"
+            explorerBaseUrl={config.explorerBaseUrl}
+            coreCatsAddress={config.coreCatsAddress}
+          />
+        </Suspense>
 
         <dl className="detail-traits">
           {item.display_attributes.map((attr) => (

@@ -59,11 +59,13 @@ export function validateProductionEnv(env) {
   const chainId = normalized(env.NEXT_PUBLIC_CORE_CHAIN_ID);
   const networkId = normalized(env.CORE_NETWORK_ID);
   const networkName = normalized(env.CORE_NETWORK_NAME);
+  const siteBaseUrl = normalizedUrl(env.NEXT_PUBLIC_SITE_BASE_URL || env.CORECATS_SITE_BASE_URL);
   const explorerBaseUrl = normalizedUrl(env.NEXT_PUBLIC_CORE_EXPLORER_BASE_URL);
   const coreCatsAddress = normalized(env.NEXT_PUBLIC_CORECATS_ADDRESS);
   const backendMode = normalized(env.CORECATS_BACKEND_MODE);
   const backendBaseUrl = normalizedUrl(env.CORECATS_BACKEND_BASE_URL);
   const backendSharedSecret = normalized(env.CORECATS_BACKEND_SHARED_SECRET);
+  const publicStatusUrl = normalizedUrl(env.NEXT_PUBLIC_CORECATS_STATUS_URL);
   const relayerEnabled = normalized(env.CORECATS_RELAYER_ENABLED || "true").toLowerCase();
   const expectedCoreId = normalized(env.COREPASS_EXPECTED_CORE_ID);
 
@@ -85,22 +87,43 @@ export function validateProductionEnv(env) {
   if (explorerBaseUrl !== "https://blockindex.net") {
     errors.push("NEXT_PUBLIC_CORE_EXPLORER_BASE_URL must be https://blockindex.net");
   }
-  if (backendMode !== "proxy") {
-    errors.push("CORECATS_BACKEND_MODE must be proxy for the production Vercel cutover");
+  if (siteBaseUrl && !siteBaseUrl.startsWith("https://")) {
+    errors.push("NEXT_PUBLIC_SITE_BASE_URL must start with https:// when set");
   }
 
-  if (!backendBaseUrl) {
-    errors.push("CORECATS_BACKEND_BASE_URL is required");
-  } else if (looksLikePlaceholder(backendBaseUrl)) {
-    errors.push("CORECATS_BACKEND_BASE_URL must not use a placeholder value");
-  } else if (!backendBaseUrl.startsWith("https://")) {
-    errors.push("CORECATS_BACKEND_BASE_URL must start with https://");
-  }
+  const mintSurfaceEnabled = launchState !== "closed" && (siteSurface === "private-canary" || siteSurface === "public-mint");
 
-  if (!backendSharedSecret) {
-    errors.push("CORECATS_BACKEND_SHARED_SECRET is required");
-  } else if (SECRET_PLACEHOLDER_RE.test(backendSharedSecret) || backendSharedSecret === "dev-only-secret") {
-    errors.push("CORECATS_BACKEND_SHARED_SECRET must not use a placeholder or dev-only value");
+  if (mintSurfaceEnabled) {
+    if (backendMode !== "proxy") {
+      errors.push("CORECATS_BACKEND_MODE must be proxy when the mint surface is enabled");
+    }
+
+    if (!backendBaseUrl) {
+      errors.push("CORECATS_BACKEND_BASE_URL is required when the mint surface is enabled");
+    } else if (looksLikePlaceholder(backendBaseUrl)) {
+      errors.push("CORECATS_BACKEND_BASE_URL must not use a placeholder value");
+    } else if (!backendBaseUrl.startsWith("https://")) {
+      errors.push("CORECATS_BACKEND_BASE_URL must start with https://");
+    }
+
+    if (!backendSharedSecret) {
+      errors.push("CORECATS_BACKEND_SHARED_SECRET is required when the mint surface is enabled");
+    } else if (SECRET_PLACEHOLDER_RE.test(backendSharedSecret) || backendSharedSecret === "dev-only-secret") {
+      errors.push("CORECATS_BACKEND_SHARED_SECRET must not use a placeholder or dev-only value");
+    }
+  } else {
+    if (backendMode && backendMode !== "proxy") {
+      warnings.push("CORECATS_BACKEND_MODE is set on a browse-only surface; mint routes stay closed there");
+    }
+    if (backendBaseUrl && !backendBaseUrl.startsWith("https://")) {
+      errors.push("CORECATS_BACKEND_BASE_URL must start with https:// when set");
+    }
+    if (publicStatusUrl && !publicStatusUrl.startsWith("https://")) {
+      errors.push("NEXT_PUBLIC_CORECATS_STATUS_URL must start with https:// when set");
+    }
+    if (!publicStatusUrl && !backendBaseUrl) {
+      warnings.push("Browse-only surfaces should set NEXT_PUBLIC_CORECATS_STATUS_URL or CORECATS_BACKEND_BASE_URL if live ownership badges are expected");
+    }
   }
 
   if (!coreCatsAddress) {
@@ -111,7 +134,7 @@ export function validateProductionEnv(env) {
     errors.push("NEXT_PUBLIC_CORECATS_ADDRESS must be the real mainnet contract address in canary/public");
   }
 
-  if (relayerEnabled !== "true") {
+  if (mintSurfaceEnabled && relayerEnabled !== "true") {
     warnings.push(
       "CORECATS_RELAYER_ENABLED is not true; automatic finalize will be unavailable and the public wait/retry guidance will no longer match the intended relayer-first path",
     );
@@ -157,8 +180,10 @@ export function validateProductionEnv(env) {
       networkName,
       explorerBaseUrl,
       coreCatsAddress,
+      siteBaseUrl,
       backendMode,
       backendBaseUrl,
+      publicStatusUrl,
       relayerEnabled,
       expectedCoreId,
     },

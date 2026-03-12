@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import MyCatsBrowser from "../../components/my-cats-browser";
 import { getCollection } from "../../lib/viewer-data";
 import { getCorePublicConfig } from "../../lib/server/core-env";
@@ -34,10 +36,12 @@ export default async function MyCatsPage() {
   const collection = await getCollection();
 
   return (
-    <MyCatsBrowser
-      collection={collection}
-      launchState={launchState}
-      statusSnapshotUrl={statusSnapshotUrl}
-    />
+    <Suspense fallback={null}>
+      <MyCatsBrowser
+        collection={collection}
+        launchState={launchState}
+        statusSnapshotUrl={statusSnapshotUrl}
+      />
+    </Suspense>
   );
 }

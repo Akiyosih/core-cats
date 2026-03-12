@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import CollectionBrowser from "../../components/collection-browser";
 import { getCollection, getFilters } from "../../lib/viewer-data";
 import { getCorePublicConfig } from "../../lib/server/core-env";
@@ -9,11 +11,13 @@ export default async function CollectionPage() {
   const { launchState, statusSnapshotUrl } = getCorePublicConfig();
 
   return (
-    <CollectionBrowser
-      collection={collection}
-      filtersDoc={filtersDoc}
-      teaserEnabled={launchState !== "public"}
-      statusSnapshotUrl={statusSnapshotUrl}
-    />
+    <Suspense fallback={null}>
+      <CollectionBrowser
+        collection={collection}
+        filtersDoc={filtersDoc}
+        teaserEnabled={launchState !== "public"}
+        statusSnapshotUrl={statusSnapshotUrl}
+      />
+    </Suspense>
   );
 }

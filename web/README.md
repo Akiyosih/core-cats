@@ -70,16 +70,19 @@ Important variables:
 5. `FINALIZER_PRIVATE_KEY` (optional, defaults to deployer key)
 6. `NEXT_PUBLIC_CORECATS_ADDRESS` (optional, defaults to the latest Devin rehearsal address)
 7. `NEXT_PUBLIC_SITE_SURFACE` (`public-teaser`, `private-canary`, or `public-mint`)
-8. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
-9. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
-10. `CORECATS_BACKEND_BASE_URL` (required when `CORECATS_BACKEND_MODE=proxy`)
-11. `CORECATS_BACKEND_SHARED_SECRET` (required when `CORECATS_BACKEND_MODE=proxy`)
+8. `NEXT_PUBLIC_SITE_BASE_URL` (optional, recommended for public links / robots / host portability)
+9. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
+10. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
+11. `CORECATS_BACKEND_BASE_URL` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
+12. `CORECATS_BACKEND_SHARED_SECRET` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
 
 When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives a public ownership snapshot URL from:
 
 `<CORECATS_BACKEND_BASE_URL>/api/public/status`
 
 This lets `/collection`, `/my-cats`, and the public mint counter read live ownership state from the browser without using a Vercel Function on every page view.
+
+Browse-only teaser deployments can also skip the proxy secret entirely and set `NEXT_PUBLIC_CORECATS_STATUS_URL` directly to the public snapshot origin.
 
 ## Deployment Surfaces
 
@@ -92,6 +95,11 @@ The same app can be deployed in three public-facing modes:
    be linked from the public teaser site.
 3. `public-mint`
    Final public release mode. The community-facing site opens `/mint` on the same origin people already know.
+
+For long-lived teaser hosting, the current direction is:
+1. keep `public-teaser` browse-first and static where possible
+2. feed live ownership from the public snapshot URL
+3. keep `private-canary` separate from the community-facing teaser origin
 
 ## Current Mint Flow
 

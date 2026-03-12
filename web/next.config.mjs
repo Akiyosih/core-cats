@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    // Source: https://nextjs.org/docs/app/api-reference/config/next-config-js
+    cpus: 1,
+    staticGenerationMinPagesPerWorker: 2000,
+  },
   async headers() {
     return [
       {

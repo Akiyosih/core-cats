@@ -17,6 +17,7 @@ const DEFAULTS = {
   networkName: "devin",
   launchState: "closed",
   siteSurface: "public-teaser",
+  siteBaseUrl: "",
   coreCatsAddress: DEFAULT_DEVIN_CORECATS_ADDRESS,
   explorerBaseUrl: DEFAULT_DEVIN_EXPLORER_BASE_URL,
   backendMode: "local",
@@ -50,6 +51,10 @@ function normalizeBackendMode(value) {
     return value;
   }
   return DEFAULTS.backendMode;
+}
+
+function normalizeUrl(value) {
+  return String(value || "").trim().replace(/\/$/, "");
 }
 
 export function looksLikePlaceholder(value) {
@@ -141,6 +146,7 @@ export function getCoreServerEnv() {
     networkName: process.env.CORE_NETWORK_NAME || DEFAULTS.networkName,
     launchState,
     siteSurface,
+    siteBaseUrl: normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || process.env.CORECATS_SITE_BASE_URL || ""),
     backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
     backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
     backendSharedSecret: (process.env.CORECATS_BACKEND_SHARED_SECRET || DEFAULTS.backendSharedSecret).trim(),
@@ -189,6 +195,7 @@ export function getCorePublicConfig() {
     privateCanarySite: siteSurface === "private-canary",
     publicMintSite: siteSurface === "public-mint",
     mintSurfaceEnabled,
+    siteBaseUrl: env.siteBaseUrl,
     coreCatsAddress: env.coreCatsAddress,
     explorerBaseUrl: env.explorerBaseUrl,
     relayerEnabled,

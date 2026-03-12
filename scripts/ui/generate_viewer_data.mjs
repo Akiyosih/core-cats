@@ -217,6 +217,27 @@ function buildCollectionIndexDoc(collectionItems, root, outDir) {
   };
 }
 
+function buildDetailIndexDoc(collectionItems, root, outDir) {
+  return {
+    version: "viewer_detail_index_v1",
+    generated_at: new Date().toISOString(),
+    source_collection: normalizeRel(root, path.join(outDir, "collection.json")),
+    total: collectionItems.length,
+    items: collectionItems.map((item) => ({
+      token_id: item.token_id,
+      name: item.name,
+      description: item.description,
+      image_src: item.image_src,
+      image_svg_src: item.image_svg_src,
+      image_svg_file: item.image_svg_file,
+      image_preview_src: item.image_preview_src,
+      image_preview_file: item.image_preview_file,
+      display_attributes: item.display_attributes,
+      integrity: item.integrity,
+    })),
+  };
+}
+
 function parseHexConstant(sourceText, constantName) {
   const escaped = constantName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = new RegExp(`bytes\\s+internal\\s+constant\\s+${escaped}\\s*=\\s*hex"([0-9a-fA-F]+)";`);
@@ -507,15 +528,18 @@ function main() {
   const filtersDoc = buildFilterDoc(collectionItems, labelsDoc, summaryDoc, root, outDir);
   const summaryViewDoc = buildSummaryDoc(summaryDoc, root, outDir);
   const collectionIndexDoc = buildCollectionIndexDoc(collectionItems, root, outDir);
+  const detailIndexDoc = buildDetailIndexDoc(collectionItems, root, outDir);
 
   fs.writeFileSync(path.join(outDir, "collection.json"), JSON.stringify(collectionDoc, null, 2) + "\n");
   fs.writeFileSync(path.join(outDir, "filters.json"), JSON.stringify(filtersDoc, null, 2) + "\n");
   fs.writeFileSync(path.join(outDir, "summary.json"), JSON.stringify(summaryViewDoc, null, 2) + "\n");
+  fs.writeFileSync(path.join(outDir, "detail-index.json"), JSON.stringify(detailIndexDoc, null, 2) + "\n");
   fs.writeFileSync(publicCollectionIndexPath, JSON.stringify(collectionIndexDoc, null, 2) + "\n");
 
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "collection.json"))}`);
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "filters.json"))}`);
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "summary.json"))}`);
+  console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "detail-index.json"))}`);
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, publicCollectionIndexPath)}`);
   if (opts.emitSvgFiles) {
     console.log(`[viewer-data] PASS: wrote SVG previews to ${normalizeRel(root, publicSvgDir)}`);

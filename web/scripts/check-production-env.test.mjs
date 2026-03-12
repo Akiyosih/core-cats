@@ -7,6 +7,7 @@ function buildBaseEnv(overrides = {}) {
   return {
     NEXT_PUBLIC_LAUNCH_STATE: "closed",
     NEXT_PUBLIC_SITE_SURFACE: "public-teaser",
+    NEXT_PUBLIC_SITE_BASE_URL: "https://teaser.example.com",
     NEXT_PUBLIC_CORE_CHAIN_ID: "1",
     CORE_NETWORK_ID: "1",
     CORE_NETWORK_NAME: "mainnet",
@@ -25,13 +26,31 @@ test("closed launch accepts placeholder contract address", () => {
   assert.deepEqual(result.errors, []);
 });
 
+test("browse-only surface accepts explicit public snapshot url without backend secret", () => {
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      CORECATS_BACKEND_BASE_URL: "",
+      CORECATS_BACKEND_SHARED_SECRET: "",
+      NEXT_PUBLIC_CORECATS_STATUS_URL: "https://status.example.com/api/public/status",
+    }),
+  );
+  assert.deepEqual(result.errors, []);
+});
+
 test("canary launch rejects placeholder contract address", () => {
   const result = validateProductionEnv(buildBaseEnv({ NEXT_PUBLIC_LAUNCH_STATE: "canary", NEXT_PUBLIC_SITE_SURFACE: "private-canary" }));
   assert.match(result.errors.join("\n"), /real mainnet contract address/);
 });
 
 test("rejects missing backend https origin", () => {
-  const result = validateProductionEnv(buildBaseEnv({ CORECATS_BACKEND_BASE_URL: "http://backend.example.com" }));
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_SITE_SURFACE: "private-canary",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      CORECATS_BACKEND_BASE_URL: "http://backend.example.com",
+    }),
+  );
   assert.match(result.errors.join("\n"), /must start with https:\/\//);
 });
 
@@ -41,7 +60,14 @@ test("rejects private keys in Vercel env", () => {
 });
 
 test("warns when relayer flag is not true", () => {
-  const result = validateProductionEnv(buildBaseEnv({ CORECATS_RELAYER_ENABLED: "false" }));
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_SITE_SURFACE: "private-canary",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      CORECATS_RELAYER_ENABLED: "false",
+    }),
+  );
   assert.equal(result.errors.length, 0);
   assert.match(result.warnings.join("\n"), /relayer-first path/);
 });
