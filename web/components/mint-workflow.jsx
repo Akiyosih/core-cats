@@ -386,8 +386,12 @@ export default function MintWorkflow({ config }) {
   const finalizePending = commitConfirmed && !finalizeConfirmed;
   const commitExpiryMs = Number(session?.commit?.expiry || 0) * 1000;
   const authorizationExpired = Boolean(session?.commit && !commitSubmitted && commitExpiryMs > 0 && commitExpiryMs <= Date.now());
-  const identifyCompletedAtMs = session?.identify?.completedAt ? Date.parse(session.identify.completedAt) : 0;
-  const identifyRefreshElapsedMs = identifyCompletedAtMs > 0 ? Math.max(0, Date.now() - identifyCompletedAtMs) : 0;
+  const preCommitRefreshAnchorMs = session?.identify?.completedAt
+    ? Date.parse(session.identify.completedAt)
+    : session?.createdAt
+      ? Date.parse(session.createdAt)
+      : 0;
+  const preCommitRefreshElapsedMs = preCommitRefreshAnchorMs > 0 ? Math.max(0, Date.now() - preCommitRefreshAnchorMs) : 0;
   const currentStateLabel = authorizationExpired ? "Commit authorization expired" : formatSessionState(currentState);
   const authorizeRejected = currentState === "authorize_rejected";
   const rejectedSession = authorizeRejected ? describeRejectedSession(session?.error?.code || callbackError) : null;
@@ -395,9 +399,9 @@ export default function MintWorkflow({ config }) {
   const restartMintVisible = authorizationExpired || displayedError.toLowerCase().includes("start a new mint from the beginning");
   const terminalSession = finalizeConfirmed || authorizationExpired || authorizeRejected || currentState === "commit_failed" || currentState === "finalize_expired";
   const shouldAutoRefreshPreCommit = Boolean(
-    sessionId && session?.identify?.completedAt && !session?.commit && !authorizeRejected && !terminalSession && identifyRefreshElapsedMs < 90_000,
+    sessionId && session && !session?.commit && !authorizeRejected && !terminalSession && preCommitRefreshElapsedMs < 90_000,
   );
-  const preCommitAutoRefreshMs = identifyRefreshElapsedMs < 30_000 ? 5_000 : 10_000;
+  const preCommitAutoRefreshMs = preCommitRefreshElapsedMs < 30_000 ? 5_000 : 10_000;
   const shouldAutoRefresh = Boolean(sessionId && !terminalSession && commitSubmitted);
   const autoRefreshMs = session?.finalize?.stuck ? 120_000 : 60_000;
   let phaseCopy = "Session not started.";
@@ -682,7 +686,7 @@ export default function MintWorkflow({ config }) {
           ) : null}
           {shouldAutoRefreshPreCommit ? (
             <p className="mint-meta">
-              After QR 1 of 2, this page briefly checks for QR 2 automatically every {preCommitAutoRefreshMs === 5_000 ? "5" : "10"} seconds.
+              This page briefly checks for wallet confirmation and QR 2 automatically every {preCommitAutoRefreshMs === 5_000 ? "5" : "10"} seconds.
             </p>
           ) : null}
           {shouldAutoRefresh ? (
