@@ -68,6 +68,7 @@ Run these steps in order.
    - `/mint` renders as `closed`
    - `/transparency` shows `Mainnet deployment pending` until the real contract address is supplied
    - the public site is still reachable on the intended origin
+   - any callback/app-link redirect built by the app resolves to the intended public origin, not `localhost` or an internal host
 
 Optional terminal-side probe after redeploy:
 
@@ -92,6 +93,9 @@ Move to `canary` only after the Contabo backend and contract address are both co
    - `/mint` shows the canary banner
    - mint session creation works from the production origin
    - proxy traffic reaches the Contabo backend successfully
+   - QR 1 callback returns to the same public origin and prepares QR 2
+   - callback redirects never resolve to `localhost` or another internal host
+   - if any edge restriction is added in front of the host, `/api/mint/corepass/callback/*` remains reachable by CorePass without browser-only auth prompts
 
 One valid use of this stage is the `CCATTEST rehearsal canary`:
 1. keep `NEXT_PUBLIC_CORECATS_ADDRESS` pointed at the mainnet `CCATTEST` contract
@@ -112,6 +116,8 @@ Move to `public` only after at least one successful canary mint.
    - `/mint` shows the public-live banner
    - relayer status shown to users matches actual backend behavior
    - transparency and explorer links still point at mainnet
+   - QR 1 and QR 2 callback/app-link returns stay on the final public mint origin
+   - callback redirects never point to `localhost` or another internal host
 
 ## Mint UX Readiness Checks
 Before treating a Vercel deployment as release-ready, confirm:

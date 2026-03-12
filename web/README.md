@@ -130,6 +130,11 @@ The Vercel app keeps:
 2. CorePass callback redirects
 3. session state transitions
 
+Host-sensitive callback note:
+1. callback URLs and callback redirects must always resolve to the external site origin users opened
+2. do not rely on implicit `request.url` / reverse-proxy host behavior when an explicit `NEXT_PUBLIC_SITE_BASE_URL` is available
+3. if a temporary edge auth layer is added, keep `/api/mint/corepass/callback/*` reachable from CorePass without browser-only auth prompts
+
 The external mint backend owns:
 1. durable session persistence
 2. nonce / expiry / signature issuance

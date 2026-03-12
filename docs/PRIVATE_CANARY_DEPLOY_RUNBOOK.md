@@ -105,6 +105,7 @@ Recommended default when the existing Contabo host is used:
    - replace `canary.example.com`
    - replace `REPLACE_WITH_BCRYPT_HASH`
    - keep `/api/mint/corepass/callback/*` outside Basic Auth so CorePass can reach the callback URL
+   - do not rewrite callback redirects to `localhost` or any internal host; the canary origin must round-trip back to the same external host users opened
    - `systemctl reload caddy`
 
 ## Canary-Specific Checks
@@ -115,7 +116,9 @@ After deployment:
 3. `/robots.txt` disallows all indexing
 4. page source contains `noindex`
 5. callback URLs use the private canary origin, not the public teaser origin
-6. `/transparency` shows `Site surface: private-canary`
+6. QR 1 callback reaches the app and produces QR 2 without requiring Basic Auth inside CorePass
+7. callback redirects never point to `localhost` or another internal host
+8. `/transparency` shows `Site surface: private-canary`
 
 ## Exit Condition
 
