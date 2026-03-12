@@ -117,8 +117,8 @@ async function postJson(url, body) {
   return payload;
 }
 
-async function getJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
+async function getJson(url, options = {}) {
+  const response = await fetch(url, { cache: "no-store", ...options });
   const payload = await response.json();
   if (!response.ok) {
     const error = new Error(payload.detail || payload.error || "request failed");
@@ -322,7 +322,12 @@ export default function MintWorkflow({ config }) {
       setRefreshing(true);
     }
     try {
-      const payload = await getJson(`/api/mint/corepass/session?sessionId=${encodeURIComponent(nextSessionId)}`);
+      const sessionUrl = new URL("/api/mint/corepass/session", window.location.origin);
+      sessionUrl.searchParams.set("sessionId", nextSessionId);
+      if (manual) {
+        sessionUrl.searchParams.set("force", "1");
+      }
+      const payload = await getJson(sessionUrl.toString());
       setSession(payload);
       setError(payload.error?.message || "");
     } catch (refreshError) {

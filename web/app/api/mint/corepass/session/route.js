@@ -28,11 +28,12 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = String(searchParams.get("sessionId") || "").trim();
+    const force = ["1", "true", "yes"].includes(String(searchParams.get("force") || "").trim().toLowerCase());
     if (!sessionId) {
       return Response.json({ error: "sessionId is required" }, { status: 400 });
     }
 
-    const session = await readMintSession(request, sessionId);
+    const session = await readMintSession(request, sessionId, { force });
     return Response.json(session);
   } catch (error) {
     const status = error.code === "session_not_found" ? 404 : 500;

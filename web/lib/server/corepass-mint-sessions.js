@@ -16,9 +16,14 @@ import {
 
 const SESSION_TTL_MS = Number(process.env.COREPASS_SESSION_TTL_SECONDS || 20 * 60) * 1000;
 const ACTIVE_MINT_SESSION_TTL_MS = Number(process.env.COREPASS_ACTIVE_MINT_SESSION_TTL_SECONDS || 35 * 60) * 1000;
+const SESSION_READ_CACHE_TTL_MS = Number(process.env.COREPASS_SESSION_READ_CACHE_SECONDS || 15) * 1000;
+const TERMINAL_SESSION_READ_CACHE_TTL_MS = Number(process.env.COREPASS_TERMINAL_SESSION_READ_CACHE_SECONDS || 60 * 60) * 1000;
+const MISSING_SESSION_READ_CACHE_TTL_MS = Number(process.env.COREPASS_MISSING_SESSION_CACHE_SECONDS || 60) * 1000;
 const store = globalThis.__coreCatsCorePassMintSessions || new Map();
+const sessionReadCache = globalThis.__coreCatsCorePassMintSessionReadCache || new Map();
 
 globalThis.__coreCatsCorePassMintSessions = store;
+globalThis.__coreCatsCorePassMintSessionReadCache = sessionReadCache;
 
 function nowIso() {
   return new Date().toISOString();
@@ -27,6 +32,13 @@ function nowIso() {
 function extendSessionExpiry(session, ttlMs = ACTIVE_MINT_SESSION_TTL_MS) {
   const nextExpiry = Date.now() + ttlMs;
   session.expiresAtMs = Math.max(Number(session.expiresAtMs || 0), nextExpiry);
+}
+
+function structuredCloneSafe(value) {
+  if (typeof globalThis.structuredClone === "function") {
+    return globalThis.structuredClone(value);
+  }
+  return JSON.parse(JSON.stringify(value));
 }
 
 function cleanupExpiredSessions() {
@@ -41,7 +53,66 @@ function cleanupExpiredSessions() {
   }
 }
 
+function cleanupSessionReadCache() {
+  const now = Date.now();
+  for (const [sessionId, entry] of sessionReadCache.entries()) {
+    if (Number(entry?.expiresAtMs || 0) <= now) {
+      sessionReadCache.delete(sessionId);
+    }
+  }
+}
+
+function invalidateSessionReadCache(sessionId) {
+  if (!sessionId) return;
+  sessionReadCache.delete(sessionId);
+}
+
+function buildCachedMissingSessionError(entry) {
+  const error = new Error(entry?.message || "mint session not found or expired");
+  error.code = entry?.code || "session_not_found";
+  return error;
+}
+
+function cacheMissingSession(sessionId, error, ttlMs = MISSING_SESSION_READ_CACHE_TTL_MS) {
+  sessionReadCache.set(sessionId, {
+    kind: "missing",
+    code: error.code || "session_not_found",
+    message: error.message || "mint session not found or expired",
+    expiresAtMs: Date.now() + ttlMs,
+  });
+}
+
+function isCommitAuthorizationExpired(session) {
+  if (!session?.commit) {
+    return false;
+  }
+  if (String(session.commit.txHash || "").trim()) {
+    return false;
+  }
+  const expiryMs = Number(session.commit.expiry || 0) * 1000;
+  return expiryMs > 0 && expiryMs <= Date.now();
+}
+
+function isTerminalSession(session) {
+  return (
+    Boolean(session?.finalize?.confirmedAt) ||
+    session?.status === "authorize_rejected" ||
+    session?.status === "commit_failed" ||
+    session?.status === "finalize_expired" ||
+    isCommitAuthorizationExpired(session)
+  );
+}
+
+function cacheSerializedSession(sessionId, payload, ttlMs) {
+  sessionReadCache.set(sessionId, {
+    kind: "value",
+    payload: structuredCloneSafe(payload),
+    expiresAtMs: Date.now() + ttlMs,
+  });
+}
+
 async function persistSession(request, session) {
+  invalidateSessionReadCache(session?.id);
   if (isExternalMintBackendEnabled()) {
     await writeRemoteMintSession(request, session);
   } else {
@@ -50,6 +121,7 @@ async function persistSession(request, session) {
 }
 
 async function removeSession(request, sessionId) {
+  invalidateSessionReadCache(sessionId);
   if (isExternalMintBackendEnabled()) {
     await deleteRemoteMintSession(request, sessionId);
   } else {
@@ -526,6 +598,7 @@ function serializeSession(session) {
 
 export async function createMintSession(request, { quantity }) {
   cleanupExpiredSessions();
+  cleanupSessionReadCache();
   const env = getCoreServerEnv();
 
   const session = {
@@ -557,8 +630,31 @@ export async function createMintSession(request, { quantity }) {
   return serializeSession(session);
 }
 
-export async function readMintSession(request, sessionId) {
-  return serializeSession(await getRequiredSession(request, sessionId));
+export async function readMintSession(request, sessionId, { force = false } = {}) {
+  cleanupSessionReadCache();
+
+  if (!force) {
+    const cached = sessionReadCache.get(sessionId);
+    if (cached?.kind === "value" && Number(cached.expiresAtMs || 0) > Date.now()) {
+      return structuredCloneSafe(cached.payload);
+    }
+    if (cached?.kind === "missing" && Number(cached.expiresAtMs || 0) > Date.now()) {
+      throw buildCachedMissingSessionError(cached);
+    }
+  }
+
+  try {
+    const session = await getRequiredSession(request, sessionId);
+    const serialized = serializeSession(session);
+    const ttlMs = isTerminalSession(session) ? TERMINAL_SESSION_READ_CACHE_TTL_MS : SESSION_READ_CACHE_TTL_MS;
+    cacheSerializedSession(sessionId, serialized, ttlMs);
+    return structuredCloneSafe(serialized);
+  } catch (error) {
+    if (error.code === "session_not_found") {
+      cacheMissingSession(sessionId, error);
+    }
+    throw error;
+  }
 }
 
 export function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
