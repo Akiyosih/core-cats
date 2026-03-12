@@ -277,6 +277,7 @@ Run these from the real public `/mint` UI while the site is in `canary`.
    - QR1 path: `device standard camera`
    - QR2 path: `continue inside CorePass`
    - target: mint one more cat and reach cumulative `3`
+   - note: on the recovered private canary surface, this is also the next plan-aligned success run that should confirm the desktop page advances from `QR 2 of 2` into the post-commit / Step 3 state without a manual reload
 4. `LT-04`
    - wallet label: `Wallet A`
    - quantity: `1`
