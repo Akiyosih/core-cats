@@ -565,31 +565,29 @@ export default function MintWorkflow({ config }) {
     {
       label: "Commit recorded",
       detail: commitConfirmed
-        ? "The commit transaction is confirmed on-chain."
+        ? "QR 2 of 2 is confirmed on-chain."
         : commitSubmitted
-          ? "The commit transaction was submitted from CorePass and is still waiting for an on-chain receipt."
+          ? "QR 2 of 2 was submitted from CorePass and is still waiting for an on-chain receipt."
         : authorizationExpired
           ? "QR 2 of 2 expired before approval. Start a new mint from the beginning."
         : authorizeRejected && rejectedSession
           ? rejectedSession.commitDetail
         : session?.commit
           ? "Scan QR 2 of 2 to approve the commit transaction in CorePass."
-          : "Commit is only prepared after wallet confirmation succeeds.",
+          : "QR 2 of 2 is only prepared after wallet confirmation succeeds.",
       tone: commitConfirmed ? "done" : authorizationExpired || authorizeRejected ? "blocked" : session?.commit ? "active" : "waiting",
     },
     {
       label: "Finalize delivered",
       detail: finalizeConfirmed
         ? "Finalize confirmed. The mint is complete."
-        : commitSubmitted && !commitConfirmed
-          ? "Finalize will only start after the commit transaction is confirmed on-chain."
         : authorizationExpired
-          ? "Finalize never started because QR 2 of 2 expired before approval."
+          ? "Delivery never started because QR 2 of 2 expired before approval."
         : commitConfirmed
           ? relayerNote
-          : authorizeRejected
-            ? "Finalize never started because no commit transaction was prepared for this session."
-          : "Finalize starts only after the commit is confirmed.",
+        : authorizeRejected
+            ? "Delivery never started because no commit transaction was prepared for this session."
+          : "Your cat arrives only after the automatic finalize step completes.",
       tone: finalizeConfirmed ? "done" : authorizationExpired || authorizeRejected ? "blocked" : commitConfirmed ? "active" : "waiting",
     },
   ];
@@ -630,8 +628,10 @@ export default function MintWorkflow({ config }) {
           </button>
           <div className="mint-step-summary mint-step-summary--route">
             <p className="mint-step-summary-title">Desktop-first path</p>
-            <p className="mint-meta">Use a desktop browser and wait here while the mint status updates.</p>
-            <p className="mint-meta">QR 1 of 2 is a wallet-binding signature. QR 2 of 2 is the mint transaction.</p>
+            <p className="mint-meta">
+              Open this mint page on a browser device separate from the phone running CorePass, then scan and approve
+              both QR steps in CorePass. Desktop or tablet is recommended.
+            </p>
             <p className="mint-meta">Same-device mobile mint is not supported in this stage.</p>
           </div>
           {showTestnetNotice ? (
