@@ -318,7 +318,7 @@ export default function MintWorkflow({ config }) {
     };
   }, [sessionId]);
 
-  async function refreshSession(nextSessionId = sessionId, { manual = false } = {}) {
+  async function refreshSession(nextSessionId = sessionId, { manual = false, force = manual } = {}) {
     if (!nextSessionId) return;
     if (manual) {
       setRefreshing(true);
@@ -326,7 +326,7 @@ export default function MintWorkflow({ config }) {
     try {
       const sessionUrl = new URL("/api/mint/corepass/session", window.location.origin);
       sessionUrl.searchParams.set("sessionId", nextSessionId);
-      if (manual) {
+      if (force) {
         sessionUrl.searchParams.set("force", "1");
       }
       const payload = await getJson(sessionUrl.toString());
@@ -498,7 +498,7 @@ export default function MintWorkflow({ config }) {
   useEffect(() => {
     if (!shouldAutoRefreshPreCommit) return;
     const timer = setTimeout(() => {
-      refreshSession(sessionId);
+      refreshSession(sessionId, { force: true });
     }, preCommitAutoRefreshMs);
     return () => clearTimeout(timer);
   }, [preCommitAutoRefreshMs, sessionId, shouldAutoRefreshPreCommit]);
