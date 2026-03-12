@@ -104,6 +104,7 @@ Recommended default when the existing Contabo host is used:
    - `cp /root/core-cats/web/reverse-proxy/Caddyfile.private-canary.example /etc/caddy/Caddyfile`
    - replace `canary.example.com`
    - replace `REPLACE_WITH_BCRYPT_HASH`
+   - keep `/api/mint/corepass/callback/*` outside Basic Auth so CorePass can reach the callback URL
    - `systemctl reload caddy`
 
 ## Canary-Specific Checks

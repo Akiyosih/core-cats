@@ -156,6 +156,10 @@ async function getRequiredSession(request, sessionId) {
 }
 
 function buildAbsoluteUrl(request, pathname, search = "") {
+  const config = getCorePublicConfig();
+  if (config.siteBaseUrl) {
+    return `${config.siteBaseUrl}${pathname}${search}`;
+  }
   const forwardedProto = request.headers.get("x-forwarded-proto");
   const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
   const protocol = forwardedProto || (host?.startsWith("localhost") || host?.startsWith("127.0.0.1") ? "http" : "https");
