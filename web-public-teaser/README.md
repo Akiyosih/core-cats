@@ -30,11 +30,18 @@ It also ships Cloudflare `_headers` rules so the teaser images and shared viewer
 
 See `.env.production.example`.
 
-Required public values:
+Required build-time values:
 1. `NEXT_PUBLIC_SITE_SURFACE=public-teaser`
 2. `NEXT_PUBLIC_SITE_BASE_URL`
 3. `NEXT_PUBLIC_CORECATS_ADDRESS`
-4. `NEXT_PUBLIC_CORECATS_STATUS_URL`
+4. `NEXT_PUBLIC_CORECATS_STATUS_URL=/api/public/status`
+
+Required Pages Function binding:
+1. `CORECATS_PUBLIC_STATUS_UPSTREAM`
+
+The teaser uses a same-origin Pages Function at `/api/public/status` so browsers do not fetch the ownership
+snapshot directly from the upstream Contabo host. The function applies a short edge cache before passing the JSON
+through to the client.
 
 ## Hosting
 

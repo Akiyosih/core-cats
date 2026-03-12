@@ -32,7 +32,7 @@ Public teaser behavior:
 1. `Mint` stays closed and shows `Soon`
 2. `/mint` is not deployed on the public teaser origin
 3. bots are discouraged from indexing `/mint` and `/api/`
-4. live ownership comes from the public snapshot URL, not from a request-time Vercel function
+4. live ownership comes from a same-origin Cloudflare Pages Function, not from a request-time Vercel function
 
 ## Environment
 
@@ -47,13 +47,15 @@ CORE_NETWORK_ID=1
 CORE_NETWORK_NAME=mainnet
 NEXT_PUBLIC_CORE_EXPLORER_BASE_URL=https://blockindex.net
 NEXT_PUBLIC_CORECATS_ADDRESS=replace-with-current-public-contract
-NEXT_PUBLIC_CORECATS_STATUS_URL=https://replace-with-public-status-origin/api/public/status
+NEXT_PUBLIC_CORECATS_STATUS_URL=/api/public/status
+CORECATS_PUBLIC_STATUS_UPSTREAM=https://replace-with-public-status-origin/api/public/status
 ```
 
 Notes:
 1. `NEXT_PUBLIC_SITE_BASE_URL` keeps public links and robots host-neutral.
-2. `NEXT_PUBLIC_CORECATS_STATUS_URL` lets `/collection`, `/cats/[tokenId]`, and `/my-cats` read live ownership state directly from the browser.
-3. `CORECATS_BACKEND_SHARED_SECRET` is not required on the public teaser surface because mint routes stay closed there.
+2. `NEXT_PUBLIC_CORECATS_STATUS_URL=/api/public/status` keeps browser reads same-origin on the public teaser host.
+3. `CORECATS_PUBLIC_STATUS_UPSTREAM` points the Cloudflare Pages Function at the current public Contabo snapshot URL.
+4. `CORECATS_BACKEND_SHARED_SECRET` is not required on the public teaser surface because mint routes stay closed there.
 
 Cloudflare Pages build settings:
 1. Framework preset: `Next.js (Static HTML Export)`
@@ -94,6 +96,9 @@ Current UI labels can vary, but the flow should be:
 
 The static teaser app also includes a `_headers` file in `web-public-teaser/public/_headers` so Cloudflare Pages can
 cache `viewer_v1` art assets and the teaser images aggressively after each deploy.
+It also includes a Pages Function at `web-public-teaser/functions/api/public/status.js` so the browser reads
+ownership data from the teaser origin instead of hitting Contabo directly. That function applies a short edge cache
+before returning the upstream JSON.
 
 ## Verification Checklist
 
@@ -101,18 +106,19 @@ Before relaunching the public teaser:
 
 1. `Mint` in the header shows `Soon` and is not clickable.
 2. `/mint` returns the teaser-origin not-found response instead of opening CorePass session flow.
-3. `/collection` loads minted status from the public snapshot URL.
-4. `/my-cats` can look up ownership through the public snapshot URL.
-5. `/robots.txt` disallows `/mint` and `/api/`.
-6. `/transparency` shows the correct `Site surface`.
-7. `/viewer_v1/collection-index.json` loads from the static teaser origin.
-8. image responses under `/viewer_v1/png/` and `/viewer_v1/svg/` return long-lived cache headers.
+3. `/api/public/status` returns JSON on the public teaser origin.
+4. `/collection` loads minted status through the same-origin status route.
+5. `/my-cats` can look up ownership through the same-origin status route.
+6. `/robots.txt` disallows `/mint` and `/api/`.
+7. `/transparency` shows the correct `Site surface`.
+8. `/viewer_v1/collection-index.json` loads from the static teaser origin.
+9. image responses under `/viewer_v1/png/` and `/viewer_v1/svg/` return long-lived cache headers.
 
 ## After Relaunch
 
 Watch:
 1. asset transfer volume
-2. snapshot URL availability
+2. same-origin snapshot route availability
 3. crawler behavior on `/collection` and `/cats/[tokenId]`
 
 If the public teaser stays stable, private canary can resume separately without reopening mint on the community-facing origin.
