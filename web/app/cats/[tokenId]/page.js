@@ -87,6 +87,16 @@ export default async function CatDetailPage({ params }) {
               item.image_svg_file || "not available"
             )}
           </p>
+          <p>
+            <strong>Avatar PNG:</strong>{" "}
+            {item.image_preview_src ? (
+              <a href={item.image_preview_src} target="_blank" rel="noreferrer" className="detail-external-link">
+                Open 384×384 PNG
+              </a>
+            ) : (
+              item.image_preview_file || "not available"
+            )}
+          </p>
         </div>
 
         <details className="mint-verify-details detail-verify-details">

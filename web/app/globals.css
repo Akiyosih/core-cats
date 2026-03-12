@@ -942,6 +942,14 @@ main {
   color: var(--ink-soft);
 }
 
+.owner-results-note {
+  margin: 12px 0 0;
+  max-width: 42rem;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
 .owner-results-address__short {
   font-weight: 700;
   color: var(--ink);

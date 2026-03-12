@@ -144,6 +144,9 @@ export default function MyCatsBrowser({ collection, launchState, statusSnapshotU
                 <span className="owner-results-address__short">{shortenAddress(ownerStatus.owner)}</span>
                 <span className="owner-results-address__full">{ownerStatus.owner}</span>
               </p>
+              <p className="owner-results-note">
+                Open any cat to get a raw preview SVG, an avatar-ready PNG, and verification details for that artwork.
+              </p>
             </div>
             <div className="owner-results-actions">
               <CopyButton value={ownerStatus.owner} />
