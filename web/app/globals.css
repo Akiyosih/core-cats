@@ -841,6 +841,29 @@ main {
   font-size: 0.92rem;
 }
 
+.detail-verify-details {
+  margin-top: 2px;
+}
+
+.detail-verify-body {
+  display: grid;
+  gap: 14px;
+}
+
+.detail-verify-body > p {
+  margin: 0;
+}
+
+.detail-verify-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+}
+
+.detail-verify-list {
+  gap: 10px;
+}
+
 .my-cats-panel {
   text-align: center;
   padding: 64px 24px;

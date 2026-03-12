@@ -8,6 +8,11 @@ import { getCorePublicConfig } from "../../../lib/server/core-env";
 export const dynamic = "force-static";
 export const dynamicParams = false;
 
+const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";
+const RENDER_SCRIPT_URL = `${PROJECT_REPOSITORY_URL}/blob/main/scripts/ui/generate_viewer_data.mjs`;
+const ONCHAIN_DATA_URL = `${PROJECT_REPOSITORY_URL}/blob/main/foxar/src/CoreCatsOnchainData.sol`;
+const RENDERER_REFERENCE_URL = `${PROJECT_REPOSITORY_URL}/blob/main/foxar/src/CoreCatsMetadataRenderer.sol`;
+
 export async function generateStaticParams() {
   const summary = await getSummary();
   return Array.from({ length: Number(summary.total || 1000) }, (_, index) => ({
@@ -30,6 +35,11 @@ export default async function CatDetailPage({ params }) {
   }
 
   const detailImageSrc = item.image_svg_src || item.image_src || item.image_data_uri;
+  const patternAttr = item.display_attributes.find((attr) => attr.trait_type_id === "Pattern");
+  const colorVariationAttr = item.display_attributes.find((attr) => attr.trait_type_id === "Color Variation");
+  const renderRecipe = item.render_recipe || {};
+  const colorTuple = Array.isArray(renderRecipe.color_tuple) ? renderRecipe.color_tuple.join(", ") : null;
+  const slots = renderRecipe.slots == null ? null : String(renderRecipe.slots);
 
   return (
     <div className="detail-layout">
@@ -78,6 +88,68 @@ export default async function CatDetailPage({ params }) {
             )}
           </p>
         </div>
+
+        <details className="mint-verify-details detail-verify-details">
+          <summary>Render Recipe and Verification</summary>
+          <div className="mint-verify-body detail-verify-body">
+            <p>
+              This preview can be regenerated from the public render script and on-chain data tables using the
+              render recipe below.
+            </p>
+            <p className="detail-inline-note">
+              The PNG SHA256 lets you confirm that the preview PNG file has not changed.
+            </p>
+
+            <div className="detail-verify-links">
+              <a href={RENDER_SCRIPT_URL} target="_blank" rel="noreferrer" className="detail-external-link">
+                Render script on GitHub
+              </a>
+              <a href={ONCHAIN_DATA_URL} target="_blank" rel="noreferrer" className="detail-external-link">
+                On-chain data tables on GitHub
+              </a>
+              <a href={RENDERER_REFERENCE_URL} target="_blank" rel="noreferrer" className="detail-external-link">
+                Renderer reference on GitHub
+              </a>
+            </div>
+
+            <dl className="detail-traits detail-verify-list">
+              <div className="detail-traits__row">
+                <dt>Pattern</dt>
+                <dd>
+                  {patternAttr?.value_label || renderRecipe.pattern || "not available"}
+                  {patternAttr?.value_id && patternAttr.value_id !== patternAttr.value_label ? (
+                    <span className="detail-meta__short"> ({patternAttr.value_id})</span>
+                  ) : null}
+                </dd>
+              </div>
+              <div className="detail-traits__row">
+                <dt>Color Variation</dt>
+                <dd>
+                  {colorVariationAttr?.value_label || renderRecipe.palette_id || "not available"}
+                  {colorVariationAttr?.value_id && colorVariationAttr.value_id !== colorVariationAttr.value_label ? (
+                    <span className="detail-meta__short"> ({colorVariationAttr.value_id})</span>
+                  ) : null}
+                </dd>
+              </div>
+              <div className="detail-traits__row">
+                <dt>Color tuple</dt>
+                <dd>{colorTuple || "not used for this render"}</dd>
+              </div>
+              <div className="detail-traits__row">
+                <dt>Slots</dt>
+                <dd>{slots || "not used for this render"}</dd>
+              </div>
+              <div className="detail-traits__row">
+                <dt>Variant key</dt>
+                <dd>{item.integrity.variant_key}</dd>
+              </div>
+              <div className="detail-traits__row">
+                <dt>Preview PNG SHA256</dt>
+                <dd>{item.integrity.final_png_24_sha256}</dd>
+              </div>
+            </dl>
+          </div>
+        </details>
       </section>
     </div>
   );

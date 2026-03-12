@@ -233,6 +233,13 @@ function buildDetailIndexDoc(collectionItems, root, outDir) {
       image_preview_src: item.image_preview_src,
       image_preview_file: item.image_preview_file,
       display_attributes: item.display_attributes,
+      trait_values: item.trait_values,
+      render_recipe: {
+        pattern: item.trait_values.pattern,
+        palette_id: item.trait_values.palette_id,
+        color_tuple: item.color_tuple ?? null,
+        slots: item.slots ?? null,
+      },
       integrity: item.integrity,
     })),
   };
@@ -494,6 +501,8 @@ function main() {
       image_preview_src: imagePngPublicPath,
       image_preview_file: normalizeRel(root, path.join(publicPngDir, imagePngFile)),
       trait_values: buildTraitValues(manifestItem),
+      color_tuple: manifestItem.color_tuple ?? null,
+      slots: manifestItem.slots ?? null,
       attributes: manifestItem.attributes,
       display_attributes: buildDisplayAttributes(manifestItem.attributes, labelsDoc),
       integrity: {
