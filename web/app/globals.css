@@ -936,10 +936,11 @@ main {
 }
 
 .owner-results-address {
-  display: grid;
-  gap: 4px;
   margin: 10px 0 0;
+  font-family: "Courier New", monospace;
+  font-size: 0.88rem;
   color: var(--ink-soft);
+  overflow-wrap: anywhere;
 }
 
 .owner-results-note {
@@ -950,17 +951,6 @@ main {
   line-height: 1.55;
 }
 
-.owner-results-address__short {
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.owner-results-address__full {
-  font-family: "Courier New", monospace;
-  font-size: 0.88rem;
-  overflow-wrap: anywhere;
-}
-
 .button--inline {
   padding-inline: 16px;
 }
@@ -969,6 +959,45 @@ main {
   margin: 0;
   padding-left: 18px;
   line-height: 1.75;
+}
+
+.owner-help-details {
+  margin-top: 16px;
+  max-width: 42rem;
+}
+
+.owner-help-body {
+  display: grid;
+  gap: 12px;
+}
+
+.owner-help-body p {
+  margin: 0;
+}
+
+.owner-help-qr {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.owner-help-qr img {
+  width: 176px;
+  height: 176px;
+  border-radius: 16px;
+  border: 1px solid rgba(41, 36, 31, 0.08);
+  background: #ffffff;
+}
+
+.owner-help-address {
+  font-family: "Courier New", monospace;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.owner-help-note {
+  color: var(--ink-soft);
 }
 
 .resource-link {

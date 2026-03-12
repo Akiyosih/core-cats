@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import QRCode from "qrcode";
 
 import MyCatsBrowser from "../../components/my-cats-browser";
 import { getCollection } from "../../lib/viewer-data";
@@ -7,7 +8,7 @@ import { getCorePublicConfig } from "../../lib/server/core-env";
 export const dynamic = "force-static";
 
 export default async function MyCatsPage() {
-  const { launchState, statusSnapshotUrl } = getCorePublicConfig();
+  const { launchState, statusSnapshotUrl, coreCatsAddress } = getCorePublicConfig();
 
   if (launchState === "closed") {
     return (
@@ -34,11 +35,22 @@ export default async function MyCatsPage() {
   }
 
   const collection = await getCollection();
+  const coreCatsContractQr = await QRCode.toDataURL(coreCatsAddress, {
+    errorCorrectionLevel: "M",
+    margin: 1,
+    scale: 8,
+    color: {
+      dark: "#111111",
+      light: "#ffffff",
+    },
+  });
 
   return (
     <Suspense fallback={null}>
       <MyCatsBrowser
         collection={collection}
+        coreCatsAddress={coreCatsAddress}
+        coreCatsContractQr={coreCatsContractQr}
         launchState={launchState}
         statusSnapshotUrl={statusSnapshotUrl}
       />

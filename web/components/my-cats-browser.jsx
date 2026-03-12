@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import CollectionCard from "./collection-card";
-import CopyButton from "./copy-button";
 import { isCoreAddress } from "../lib/collection-utils";
 import { usePublicStatusSnapshot } from "../lib/public-status-client";
 
@@ -12,12 +11,13 @@ function normalizeOwnerInput(value) {
   return String(value || "").trim();
 }
 
-function shortenAddress(value) {
-  if (!value) return "";
-  return `${value.slice(0, 8)}...${value.slice(-6)}`;
-}
-
-export default function MyCatsBrowser({ collection, launchState, statusSnapshotUrl }) {
+export default function MyCatsBrowser({
+  collection,
+  coreCatsAddress,
+  coreCatsContractQr,
+  launchState,
+  statusSnapshotUrl,
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialOwner = normalizeOwnerInput(searchParams.get("owner") || "");
@@ -140,16 +140,36 @@ export default function MyCatsBrowser({ collection, launchState, statusSnapshotU
             <div>
               <p className="eyebrow">Owner results</p>
               <h2>{ownerStatus.tokenIds.length} cats are currently held by this address.</h2>
-              <p className="owner-results-address">
-                <span className="owner-results-address__short">{shortenAddress(ownerStatus.owner)}</span>
-                <span className="owner-results-address__full">{ownerStatus.owner}</span>
-              </p>
+              <p className="owner-results-address">{ownerStatus.owner}</p>
               <p className="owner-results-note">
                 Open any cat to get a raw preview SVG, an avatar-ready PNG, and verification details for that artwork.
               </p>
+              <details className="mint-verify-details owner-help-details">
+                <summary>How to show CoreCats in CorePass</summary>
+                <div className="mint-verify-body owner-help-body">
+                  <p>In CorePass, open NFTs in your wallet and tap +ADD NFT.</p>
+                  <p>
+                    In the CBC721 contract address field, tap the QR icon and scan the CoreCats contract QR below.
+                  </p>
+                  <p>Then tap Import NFT Collection and confirm in CorePass.</p>
+                  <div className="owner-help-qr">
+                    <img src={coreCatsContractQr} alt="CoreCats contract address QR" width="176" height="176" />
+                    <p className="owner-help-address">{coreCatsAddress}</p>
+                  </div>
+                  <p className="owner-help-note">
+                    This step is optional. Even if CoreCats is not shown in CorePass, your NFT can still already be in
+                    your wallet.
+                  </p>
+                  <p className="owner-help-note">
+                    CorePass may show the token ID, but it does not display the cat artwork itself.
+                  </p>
+                  <p className="owner-help-note">
+                    To view the artwork, use this site or read the on-chain data directly.
+                  </p>
+                </div>
+              </details>
             </div>
             <div className="owner-results-actions">
-              <CopyButton value={ownerStatus.owner} />
               {ownerStatus.explorer ? (
                 <a href={ownerStatus.explorer} target="_blank" rel="noreferrer" className="button button--ghost">
                   View address on Blockindex
