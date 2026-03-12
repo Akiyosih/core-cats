@@ -83,7 +83,8 @@ When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the 
 
 This lets `/collection`, `/my-cats`, and the public mint counter read live ownership state from the browser without using a Vercel Function on every page view.
 
-Browse-only teaser deployments can also skip the proxy secret entirely and set `NEXT_PUBLIC_CORECATS_STATUS_URL` directly to the public snapshot origin.
+For the current Cloudflare Pages teaser path, prefer a same-origin route such as `/api/public/status` and point that route at the upstream public snapshot origin with a host-side binding or equivalent runtime env.
+Direct browser reads from the upstream public snapshot origin remain acceptable only for simpler browse-only hosts that do not provide a same-origin edge/cache layer.
 
 Useful env templates:
 1. `./.env.production.example`
