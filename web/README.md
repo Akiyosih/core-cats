@@ -84,6 +84,10 @@ This lets `/collection`, `/my-cats`, and the public mint counter read live owner
 
 Browse-only teaser deployments can also skip the proxy secret entirely and set `NEXT_PUBLIC_CORECATS_STATUS_URL` directly to the public snapshot origin.
 
+Useful env templates:
+1. `./.env.production.example`
+2. `./.env.private-canary.example`
+
 ## Deployment Surfaces
 
 The same app can be deployed in three public-facing modes:
@@ -133,6 +137,7 @@ The external mint backend owns:
 
 See `../docs/MINT_BACKEND_ARCHITECTURE.md`.
 Use `./.env.production.example` and `../docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md` for the Vercel-side mainnet switch.
+Use `./.env.private-canary.example` and `../docs/PRIVATE_CANARY_DEPLOY_RUNBOOK.md` for the temporary private canary surface.
 
 Before copying the final values into Vercel, stage them in a local file such as `.env.production.local` and run:
 

@@ -3,10 +3,26 @@ import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { getCorePublicConfig } from "../lib/server/core-env";
 
-export const metadata = {
-  title: "Core Cats",
-  description: "Core Cats web UI foundation for a transparent, full on-chain pixel cat collection.",
-};
+export function generateMetadata() {
+  const { privateCanarySite } = getCorePublicConfig();
+
+  return {
+    title: "Core Cats",
+    description: "Core Cats web UI foundation for a transparent, full on-chain pixel cat collection.",
+    robots: privateCanarySite
+      ? {
+          index: false,
+          follow: false,
+          nocache: true,
+          googleBot: {
+            index: false,
+            follow: false,
+            noimageindex: true,
+          },
+        }
+      : undefined,
+  };
+}
 
 export default function RootLayout({ children }) {
   const { launchState, publicTeaserSite, privateCanarySite } = getCorePublicConfig();
