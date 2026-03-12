@@ -600,11 +600,12 @@ export default function MintWorkflow({ config }) {
         <article className="mint-card">
           <p className="eyebrow">Start</p>
           <h2>Choose quantity and begin on desktop</h2>
-          <p>
-            Pick 1 to 3 cats and create a CorePass mint session from this desktop browser. QR 1 of 2 binds the wallet
-            with a signature. QR 2 of 2 sends the mint contract call. Wallet-limit checks happen before any
-            gas-spending transaction is prepared.
-          </p>
+          <div className="mint-copy-stack">
+            <p>Pick 1 to 3 cats and start a CorePass mint session from this desktop browser.</p>
+            <p>QR 1 of 2 binds your wallet with a signature.</p>
+            <p>QR 2 of 2 sends the mint transaction.</p>
+            <p>Each wallet can mint up to 3 cats.</p>
+          </div>
           <p className="mint-meta">
             If you want to verify the published contract address and public artifacts first, you can review{" "}
             <a href="/transparency" className="inline-link">
@@ -651,9 +652,7 @@ export default function MintWorkflow({ config }) {
               </div>
             </div>
           ) : (
-            <p className="mint-meta">
-              The wallet policy snapshot appears here after QR 1 of 2 completes and authorization is prepared.
-            </p>
+            <p className="mint-meta">When available, the wallet policy snapshot appears here after wallet confirmation.</p>
           )}
         </article>
       </section>
