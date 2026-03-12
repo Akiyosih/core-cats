@@ -2,6 +2,12 @@
 
 Status: Draft for the current `main` branch
 
+Current recovery posture:
+1. the prior public-origin rehearsal is paused while publication/resource hardening is completed
+2. public teaser/browse reopening and canary mint reopening are now treated as separate tasks
+3. the next rehearsal restart may use a private operator-controlled canary origin while the community-facing teaser surface stays browse-only
+4. the later public mint still targets the community-facing public site
+
 ## Purpose
 Use the already-deployed mainnet `CCATTEST` contract as a rehearsal canary so the project can remove mint, finalize, UI, recovery, and transparency defects before the official `CCAT` contract is deployed.
 
@@ -14,12 +20,11 @@ This plan is intentionally narrower than the full launch runbook:
 Use the following terms consistently:
 
 1. `CCATTEST rehearsal canary`
-   - the public `web/` app is switched to `canary`
-   - the real public `/mint` UI is used
+   - the intended production-like `/mint` UI is used
    - the configured mainnet contract is still the rehearsal contract `CCATTEST`
+   - this may temporarily run on a private operator-controlled canary origin during recovery work
 2. `official CCAT canary`
-   - the public `web/` app is switched to `canary`
-   - the real public `/mint` UI is used
+   - the intended production-like `/mint` UI is used
    - the configured mainnet contract is the later official `CCAT` deployment
 
 The `CCATTEST rehearsal canary` is a risk-reduction stage. It does not replace the later official `CCAT` canary because the contract address and signing domain will still differ.
@@ -37,7 +42,7 @@ This plan is aligned to the current repository behavior and should not assume fe
    - generic-wallet behavior is already the target state
 2. Do not add a hidden operator-only mint UI under `closed`.
    - `closed` should keep meaning "public site visible, mint path not live"
-   - if the real `/mint` UI needs to be tested, switch to `canary`
+   - if the real `/mint` UI needs to be tested, switch the active canary surface to `canary`
 3. Durable session storage is already implemented.
    - the remaining work is to verify restart and recovery behavior, not to redesign storage from scratch
 4. Wallet-limit refusal already exists in the backend path.
@@ -60,7 +65,7 @@ This plan is aligned to the current repository behavior and should not assume fe
 3. Keep `main` as the deployment reference until the next rehearsal-canary redeploy is intentionally triggered.
 
 ### A-2. Rehearsal canary env target
-For the real UI rehearsal, the public site should be configured as follows:
+For the production-like UI rehearsal, the active canary surface should be configured as follows:
 
 1. `NEXT_PUBLIC_CORE_CHAIN_ID=1`
 2. `CORE_NETWORK_ID=1`
@@ -75,7 +80,7 @@ For the real UI rehearsal, the public site should be configured as follows:
 11. `COREPASS_EXPECTED_CORE_ID` must remain unset
 12. Contabo may set `CORECATS_CANARY_ALLOWED_CORE_IDS` during the rehearsal canary so only named test wallets can receive commit authorization
 
-If the site is intentionally kept in `closed`, that stage should be limited to terminal-side probes and non-UI checks. It should not be treated as the real rehearsal canary.
+If the community-facing teaser site is intentionally kept in `closed`, that surface should be limited to browse/public checks. It should not be treated as the real rehearsal canary.
 
 ### A-3. Fallback and env drift checks
 1. Confirm no important public surface still falls back to Devin/testnet values.

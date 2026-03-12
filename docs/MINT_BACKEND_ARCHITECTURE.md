@@ -18,6 +18,17 @@ The production mint path will be split into:
 
 This is the selected path because it preserves the current Core signing/finalization workflow while keeping secrets off Vercel.
 
+## Temporary Recovery Note
+If the public teaser/browse site must be restored before the public mint surface is safe to reopen, a temporary split is acceptable:
+
+1. public teaser/browse surface
+2. private operator-controlled canary mint surface
+
+This recovery split does not change the eventual public mint target. It is only an interim publication strategy while:
+1. browse/static hosting is being hardened for low-cost long-lived publication
+2. mint/session/callback paths are being kept off the community-facing teaser surface
+3. the project decides whether the long-lived public browse origin should remain on Vercel or move elsewhere
+
 Current CorePass scope for this architecture:
 1. Protocol-direct mint flow only
    - `corepass:sign`
@@ -68,7 +79,7 @@ Contabo will run the live mint backend:
 5. internal API for the Vercel app
 
 ## Proxy Model
-Browser traffic should continue to use the Vercel origin.
+For the long-term public mint target, browser traffic should continue to use the public mint origin.
 
 The current `web/` app now supports an external backend mode for privileged mint operations and durable session persistence:
 
@@ -81,6 +92,11 @@ This preserves one stable public origin for:
 1. CorePass callback URLs
 2. app-link / QR flow
 3. public UX
+
+During temporary recovery, the public teaser/browse surface and the private canary mint surface may use different origins. If they do:
+1. treat the browse origin as mint-closed
+2. treat the canary origin as operator validation only
+3. still revalidate the final public mint origin before public opening
 
 ## Current Switches
 The `web/` app supports these backend-related env vars:
@@ -96,6 +112,12 @@ Recommended production teaser state:
 1. `NEXT_PUBLIC_LAUNCH_STATE=closed`
 2. `CORECATS_BACKEND_MODE=local`
 3. no mint secrets on Vercel
+
+Recommended temporary recovery teaser state:
+
+1. keep the community-facing teaser/browse surface mint-closed
+2. minimize server-side work on the community-facing teaser/browse surface
+3. keep any live canary mint path on a private operator-controlled origin until publication hardening is complete
 
 Recommended mint preparation state:
 

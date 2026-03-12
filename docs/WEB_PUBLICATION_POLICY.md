@@ -13,7 +13,8 @@ This document is operational. It complements:
 2. `core-cats-eth` is reference/archive only.
 3. The current website lives in `web/` and is a Next.js application with server-side routes.
 4. The current mint flow depends on CorePass session/callback handling and server-side signing/finalization support.
-5. Therefore, the current `web/` should be treated as a long-lived public application, not merely as a static teaser bundle.
+5. The eventual public mint target may still use the current `web/` application end-to-end.
+6. However, browse/teaser publication and mint/canary publication may be split temporarily while resource-hardening and hosting recovery work is in progress.
 
 ## Web Role
 The website exists to provide:
@@ -37,6 +38,18 @@ This should follow the existing launch-state model:
 2. `canary`
 3. `public`
 
+## Temporary Recovery Split
+If the public site is paused or resource-hardening work is still in progress, the project may temporarily split:
+
+1. a public teaser/browse surface
+2. a private canary mint surface
+
+This temporary split is acceptable if all of the following remain true:
+1. the public teaser surface keeps mint logically closed
+2. the private canary surface is treated as operator validation, not public launch
+3. the later public mint is still intended to open on the community-facing public site
+4. the split is used to reduce cost/risk while hardening the browse surface, not to bypass the canary/public launch discipline
+
 ## Publication Phases
 ### 1. Viewing / Teaser Publication (`closed`)
 Goal:
@@ -59,10 +72,14 @@ Backend expectations:
 
 ### 2. Mainnet Validation Window (`closed` or `canary`)
 Goal:
-1. keep the same public site live
+1. keep the intended public site live if that is operationally safe
 2. deploy contracts
 3. point the site at real mainnet addresses
 4. perform canary validation without turning the site into a public mint immediately
+
+Notes:
+1. If the public teaser surface must remain browse-only during recovery, the active canary may instead run on a private operator-controlled origin.
+2. That temporary private-canary stage does not remove the need to validate the final public mint origin before public opening.
 
 ### 3. Public Mint (`public`)
 Goal:
@@ -82,12 +99,13 @@ Expected behavior:
 
 ## Hosting Policy
 ### Preferred Direction
-Use a platform that can host the current Next.js app and its server-side routes without redesigning the stack.
+Use a platform arrangement that keeps the browse surface cheap to publish and the mint surface explicit about when it is actually live.
 
 Good fits:
 1. Cloudflare Pages with the required runtime support
 2. Vercel
 3. another host that supports the current Next.js server-side shape
+4. a temporary split where browse/teaser publication and private canary mint validation do not share one origin
 
 ### Important Constraint
 The current `web/` is not best treated as a `github.io`-style static export.
@@ -95,19 +113,24 @@ The current `web/` is not best treated as a `github.io`-style static export.
 Reason:
 1. the app contains server-side mint routes
 2. the app contains CorePass session/callback handling
-3. the site should preserve one consistent origin through teaser, canary, public mint, and post-mint viewing
+3. the eventual public mint should preserve one consistent origin through teaser, canary, public mint, and post-mint viewing
 
 ### Static Export Note
-A fully static teaser-only build remains possible in theory, but it should be treated as a separate derivative publication path, not as the default deployment of the current `web/`.
+A static-first teaser/browse publication path remains acceptable if:
+1. the public surface keeps mint closed
+2. live ownership can still be read from a separate public snapshot source
+3. the mint/canary path is treated as a separate dynamic surface until public opening is ready
 
 ## Origin / Domain Policy
 1. Origin stability matters.
 2. CorePass callback and app-link behavior should not be forced to change hostnames between teaser and launch if avoidable.
 3. If no custom domain is used, prefer one stable origin from teaser through public mint.
+4. During recovery work, a separate private canary origin is acceptable as an interim measure.
 
 Conclusion:
 1. custom domain is not mandatory
 2. unnecessary origin changes should be avoided
+3. temporary private-canary split is allowed when it protects the long-lived public teaser surface
 
 ## Mint Backend Policy
 During public mint, the required backend is not merely a signature endpoint.
@@ -125,7 +148,7 @@ Therefore:
 3. post-mint viewing can disable or remove general mint issuance again
 
 ## Current Chosen Deployment Shape
-The current chosen operational split is:
+The long-term public mint target remains:
 
 1. public site on Vercel
 2. mint backend on the Contabo Linux server
@@ -138,6 +161,13 @@ This lets the project keep:
 3. the current Core signing/finalization path with minimal redesign
 
 See `docs/MINT_BACKEND_ARCHITECTURE.md` for the backend-specific details.
+
+## Current Recovery Direction
+Because a public deployment may need resource-hardening before it can be left online cheaply for a long teaser period, the current recovery direction is:
+
+1. prioritize a low-cost public teaser/browse surface
+2. keep mint/canary validation on a private operator-controlled surface until the public browse surface is hardened
+3. resume public mint later on the community-facing public site after canary and publication readiness both recover
 
 ## Logo-Bearing Superrare Policy
 Until branding permission is clearly settled, the two logo-bearing cats should not be used in public teaser-facing materials.
@@ -163,11 +193,13 @@ When implementing or updating the site:
 3. keep the same site structure from teaser through mint where possible
 4. if logo-bearing superrares are temporarily hidden, do so as a presentation-layer policy
 5. keep transparency and GitHub links available before mint opens
-6. prefer host/origin continuity over premature optimization for static-only hosting
+6. prefer host/origin continuity for the eventual public mint
+7. during recovery, it is acceptable to separate public teaser publication from private canary validation if that materially improves cost control or stability
 
 ## Decision Summary
 1. The project may publish a teaser/viewing site before mint opens.
-2. The current `web/` should be treated as the long-lived public site, not a throwaway teaser.
-3. Public mint should be enabled later through launch-state changes and the live CorePass backend.
-4. After mint closes, the same site should remain as the browsing/transparency surface.
-5. Logo-bearing superrares should stay out of teaser-facing visuals until branding permission is clear.
+2. The eventual public mint should still open on the community-facing public site.
+3. Until publication hardening is complete, the public teaser surface and private canary mint surface may be separate.
+4. Public mint should be enabled later through launch-state changes and the live CorePass backend.
+5. After mint closes, the browsing/transparency surface should remain online in the cheapest maintainable form.
+6. Logo-bearing superrares should stay out of teaser-facing visuals until branding permission is clear.
