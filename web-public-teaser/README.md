@@ -48,3 +48,12 @@ through to the client.
 Current preferred host:
 1. Cloudflare Pages for the public teaser surface
 2. separate private canary host for mint rehearsal
+
+## Cloudflare Deploy Note
+
+Cloudflare Pages is configured with `web-public-teaser` as the root directory.
+If a public teaser change only touches shared files under `../web`, Cloudflare can show
+`No deployment available` for that commit because nothing changed inside the configured root.
+
+When a shared browse/UI change needs to reach Cloudflare production, make sure the commit also
+contains a change under `web-public-teaser/` so Pages creates a new deployment.
