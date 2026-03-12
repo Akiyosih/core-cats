@@ -37,6 +37,8 @@ export default async function CatDetailPage({ params }) {
   const detailImageSrc = item.image_svg_src || item.image_src || item.image_data_uri;
   const patternAttr = item.display_attributes.find((attr) => attr.trait_type_id === "Pattern");
   const colorVariationAttr = item.display_attributes.find((attr) => attr.trait_type_id === "Color Variation");
+  const collarAttr = item.display_attributes.find((attr) => attr.trait_type_id === "Collar");
+  const rarityTypeAttr = item.display_attributes.find((attr) => attr.trait_type_id === "Rarity Type");
   const renderRecipe = item.render_recipe || {};
   const colorTuple = Array.isArray(renderRecipe.color_tuple) ? renderRecipe.color_tuple.join(", ") : null;
   const slots = renderRecipe.slots == null ? null : String(renderRecipe.slots);
@@ -75,8 +77,6 @@ export default async function CatDetailPage({ params }) {
         </dl>
 
         <div className="detail-meta">
-          <p><strong>Variant key:</strong> {item.integrity.variant_key}</p>
-          <p><strong>PNG24 SHA256:</strong> {item.integrity.final_png_24_sha256}</p>
           <p>
             <strong>Preview SVG:</strong>{" "}
             {detailImageSrc ? (
@@ -134,6 +134,24 @@ export default async function CatDetailPage({ params }) {
               <div className="detail-traits__row">
                 <dt>Color tuple</dt>
                 <dd>{colorTuple || "not used for this render"}</dd>
+              </div>
+              <div className="detail-traits__row">
+                <dt>Collar</dt>
+                <dd>
+                  {collarAttr?.value_label || item.trait_values?.collar || "not available"}
+                  {collarAttr?.value_id && collarAttr.value_id !== collarAttr.value_label ? (
+                    <span className="detail-meta__short"> ({collarAttr.value_id})</span>
+                  ) : null}
+                </dd>
+              </div>
+              <div className="detail-traits__row">
+                <dt>Rare Feature</dt>
+                <dd>
+                  {rarityTypeAttr?.value_label || item.trait_values?.rarity_type || "not available"}
+                  {rarityTypeAttr?.value_id && rarityTypeAttr.value_id !== rarityTypeAttr.value_label ? (
+                    <span className="detail-meta__short"> ({rarityTypeAttr.value_id})</span>
+                  ) : null}
+                </dd>
               </div>
               <div className="detail-traits__row">
                 <dt>Slots</dt>
