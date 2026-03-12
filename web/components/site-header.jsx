@@ -11,7 +11,8 @@ const links = [
 ];
 
 export default function SiteHeader() {
-  const { launchState } = getCorePublicConfig();
+  const config = getCorePublicConfig();
+  const showSoonBadge = !config.mintSurfaceEnabled;
 
   return (
     <header className="site-header">
@@ -21,14 +22,26 @@ export default function SiteHeader() {
       </Link>
 
       <nav className="main-nav" aria-label="Primary">
-        {links.map((link) => (
-          <Link key={link.href} href={link.href} className="main-nav__item">
-            <span>{link.label}</span>
-            {launchState !== "public" && link.soonBeforePublic ? (
-              <span className="main-nav__badge">Soon</span>
-            ) : null}
-          </Link>
-        ))}
+        {links.map((link) => {
+          const mintDisabled = link.soonBeforePublic && !config.mintSurfaceEnabled;
+          const badge = link.soonBeforePublic && showSoonBadge ? <span className="main-nav__badge">Soon</span> : null;
+
+          if (mintDisabled) {
+            return (
+              <span key={link.href} className="main-nav__item main-nav__item--disabled" aria-disabled="true">
+                <span>{link.label}</span>
+                {badge}
+              </span>
+            );
+          }
+
+          return (
+            <Link key={link.href} href={link.href} className="main-nav__item">
+              <span>{link.label}</span>
+              {badge}
+            </Link>
+          );
+        })}
       </nav>
     </header>
   );

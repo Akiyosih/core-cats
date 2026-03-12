@@ -5,6 +5,7 @@ export const DEFAULT_DEVIN_CORECATS_ADDRESS = "ab597892bace5d97cf2fffa9a6eb0d566
 export const DEFAULT_DEVIN_EXPLORER_BASE_URL = "https://xab.blockindex.net";
 
 const VALID_LAUNCH_STATES = new Set(["closed", "canary", "public"]);
+const VALID_SITE_SURFACES = new Set(["public-teaser", "private-canary", "public-mint"]);
 const SECRET_PLACEHOLDER_RE = /replace-with/i;
 const ADDRESS_PLACEHOLDER_RE = /replace-with/i;
 
@@ -54,6 +55,7 @@ export function validateProductionEnv(env) {
   const warnings = [];
 
   const launchState = normalized(env.NEXT_PUBLIC_LAUNCH_STATE);
+  const siteSurface = normalized(env.NEXT_PUBLIC_SITE_SURFACE);
   const chainId = normalized(env.NEXT_PUBLIC_CORE_CHAIN_ID);
   const networkId = normalized(env.CORE_NETWORK_ID);
   const networkName = normalized(env.CORE_NETWORK_NAME);
@@ -67,6 +69,9 @@ export function validateProductionEnv(env) {
 
   if (!VALID_LAUNCH_STATES.has(launchState)) {
     errors.push("NEXT_PUBLIC_LAUNCH_STATE must be one of: closed, canary, public");
+  }
+  if (siteSurface && !VALID_SITE_SURFACES.has(siteSurface)) {
+    errors.push("NEXT_PUBLIC_SITE_SURFACE must be one of: public-teaser, private-canary, public-mint");
   }
   if (chainId !== "1") {
     errors.push("NEXT_PUBLIC_CORE_CHAIN_ID must be 1");
@@ -119,6 +124,16 @@ export function validateProductionEnv(env) {
     }
   }
 
+  if (launchState === "public" && siteSurface && siteSurface !== "public-mint") {
+    errors.push("NEXT_PUBLIC_SITE_SURFACE must be public-mint when NEXT_PUBLIC_LAUNCH_STATE=public");
+  }
+  if (launchState === "closed" && siteSurface === "private-canary") {
+    warnings.push("NEXT_PUBLIC_SITE_SURFACE=private-canary is unusual while NEXT_PUBLIC_LAUNCH_STATE=closed");
+  }
+  if (launchState === "canary" && !siteSurface) {
+    warnings.push("NEXT_PUBLIC_SITE_SURFACE is unset; canary deployments should choose public-teaser or private-canary explicitly");
+  }
+
   for (const key of ["DEPLOYER_PRIVATE_KEY", "MINT_SIGNER_PRIVATE_KEY", "FINALIZER_PRIVATE_KEY"]) {
     if (hasValue(env, key)) {
       errors.push(`${key} must not be present in the Vercel production env`);
@@ -136,6 +151,7 @@ export function validateProductionEnv(env) {
     warnings,
     normalized: {
       launchState,
+      siteSurface,
       chainId,
       networkId,
       networkName,

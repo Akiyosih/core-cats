@@ -9,20 +9,28 @@ export default async function MintPage() {
   const config = getCorePublicConfig();
   const launchState = config.launchState;
 
-  if (launchState === "closed") {
+  if (launchState === "closed" || !config.mintSurfaceEnabled) {
+    const isPublicTeaser = config.publicTeaserSite && launchState !== "closed";
     return (
       <div className="page-stack narrow-stack">
         <section className="copy-panel">
           <p className="eyebrow">Mint</p>
-          <h1>Mint opens soon.</h1>
-          <p>
-            The collection can already be explored, but CorePass minting stays closed until the launch path is ready
-            for the next canary or public stage. When mint goes live, this page becomes the real entry for the same
-            CorePass session flow that is being prepared here.
-          </p>
+          <h1>{isPublicTeaser ? "Mint is not available on this public teaser site." : "Mint opens soon."}</h1>
+          {isPublicTeaser ? (
+            <p>
+              This deployment is for public browsing only. The rehearsal canary mint flow runs on a separate private
+              surface until the official public release is ready to open on the community-facing site.
+            </p>
+          ) : (
+            <p>
+              The collection can already be explored, but CorePass minting stays closed until the launch path is ready
+              for the next canary or public stage. When mint goes live, this page becomes the real entry for the same
+              CorePass session flow that is being prepared here.
+            </p>
+          )}
           <div className="copy-panel__actions">
-            <a href="https://coreblockchain.net/" target="_blank" rel="noreferrer" className="button button--ghost">
-              About Core Blockchain
+            <a href="/collection" className="button button--ghost">
+              Browse collection
             </a>
             <a href="/transparency" className="button button--ghost">
               Check transparency
@@ -32,29 +40,34 @@ export default async function MintPage() {
 
         <section className="copy-grid copy-grid--two">
           <article className="copy-card">
-            <h2>What will happen here</h2>
-            <p>
-              Minting will use CorePass, a short session signature, and an on-chain commit/finalize flow that assigns
-              cats at random from the fixed set of 1,000.
-            </p>
+            <h2>{isPublicTeaser ? "What is live on this site" : "What will happen here"}</h2>
+            {isPublicTeaser ? (
+              <p>
+                The public teaser stays open for browsing, transparency, and collection lookup while the mint canary
+                continues separately.
+              </p>
+            ) : (
+              <p>
+                Minting will use CorePass, a short session signature, and an on-chain commit/finalize flow that assigns
+                cats at random from the fixed set of 1,000.
+              </p>
+            )}
           </article>
 
           <article className="copy-card">
-            <h2>Why it is still closed</h2>
-            <p>
-              The public site is already live for browsing and transparency, while the actual mint flow stays shut
-              until the launch state advances from closed to canary and then public. The closed state should not hide
-              a private mint UI path.
-            </p>
-          </article>
-
-          <article className="copy-card">
-            <h2>What will be validated next</h2>
-            <p>
-              The next live stage is the rehearsal canary: the public `/mint` UI, the Contabo relayer path, session
-              recovery, and the ownership/transparency handoff all need to behave coherently on mainnet before the
-              official contract launch.
-            </p>
+            <h2>{isPublicTeaser ? "Why mint is separate right now" : "Why it is still closed"}</h2>
+            {isPublicTeaser ? (
+              <p>
+                Public browsing and private mint rehearsal are intentionally split so the teaser can stay lightweight
+                while the CorePass canary continues without exposing live session creation to every visitor.
+              </p>
+            ) : (
+              <p>
+                The public site is already live for browsing and transparency, while the actual mint flow stays shut
+                until the launch state advances from closed to canary and then public. The closed state should not hide
+                a private mint UI path.
+              </p>
+            )}
           </article>
         </section>
       </div>

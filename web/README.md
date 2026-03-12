@@ -69,16 +69,29 @@ Important variables:
 4. `MINT_SIGNER_PRIVATE_KEY` (optional, defaults to deployer key)
 5. `FINALIZER_PRIVATE_KEY` (optional, defaults to deployer key)
 6. `NEXT_PUBLIC_CORECATS_ADDRESS` (optional, defaults to the latest Devin rehearsal address)
-7. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
-8. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
-9. `CORECATS_BACKEND_BASE_URL` (required when `CORECATS_BACKEND_MODE=proxy`)
-10. `CORECATS_BACKEND_SHARED_SECRET` (required when `CORECATS_BACKEND_MODE=proxy`)
+7. `NEXT_PUBLIC_SITE_SURFACE` (`public-teaser`, `private-canary`, or `public-mint`)
+8. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
+9. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
+10. `CORECATS_BACKEND_BASE_URL` (required when `CORECATS_BACKEND_MODE=proxy`)
+11. `CORECATS_BACKEND_SHARED_SECRET` (required when `CORECATS_BACKEND_MODE=proxy`)
 
 When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives a public ownership snapshot URL from:
 
 `<CORECATS_BACKEND_BASE_URL>/api/public/status`
 
 This lets `/collection`, `/my-cats`, and the public mint counter read live ownership state from the browser without using a Vercel Function on every page view.
+
+## Deployment Surfaces
+
+The same app can be deployed in three public-facing modes:
+
+1. `public-teaser`
+   Browse-only community site. `Mint` stays closed and public visitors cannot create CorePass sessions there.
+2. `private-canary`
+   Separate rehearsal surface for operator-led canary testing. Mint routes stay enabled, but this surface should not
+   be linked from the public teaser site.
+3. `public-mint`
+   Final public release mode. The community-facing site opens `/mint` on the same origin people already know.
 
 ## Current Mint Flow
 

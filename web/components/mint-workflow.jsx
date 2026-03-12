@@ -207,6 +207,8 @@ function describeCallbackError(code) {
       return "Mint authorization is temporarily unavailable because the backend could not confirm the wallet state.";
     case "authorize_failed":
       return "Mint authorization failed after the wallet was identified.";
+    case "mint_surface_closed":
+      return "Mint is not available on this deployment. Start from the public teaser or the private canary surface that matches your current stage.";
     default:
       return code ? `CorePass callback returned ${code}.` : "";
   }

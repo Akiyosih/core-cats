@@ -16,6 +16,7 @@ const DEFAULTS = {
   networkId: 3,
   networkName: "devin",
   launchState: "closed",
+  siteSurface: "public-teaser",
   coreCatsAddress: DEFAULT_DEVIN_CORECATS_ADDRESS,
   explorerBaseUrl: DEFAULT_DEVIN_EXPLORER_BASE_URL,
   backendMode: "local",
@@ -29,6 +30,19 @@ function normalizeLaunchState(value) {
     return value;
   }
   return DEFAULTS.launchState;
+}
+
+function normalizeSiteSurface(value, launchState) {
+  if (value === "public-teaser" || value === "private-canary" || value === "public-mint") {
+    return value;
+  }
+  if (launchState === "public") {
+    return "public-mint";
+  }
+  if (launchState === "closed") {
+    return "public-teaser";
+  }
+  return "private-canary";
 }
 
 function normalizeBackendMode(value) {
@@ -104,6 +118,14 @@ export function getCoreServerEnv() {
   const finalizerPrivateKey =
     process.env.FINALIZER_PRIVATE_KEY || fileEnv.FINALIZER_PRIVATE_KEY || deployerPrivateKey;
 
+  const launchState = normalizeLaunchState(
+    process.env.NEXT_PUBLIC_LAUNCH_STATE || process.env.CORECATS_LAUNCH_STATE || DEFAULTS.launchState,
+  );
+  const siteSurface = normalizeSiteSurface(
+    process.env.NEXT_PUBLIC_SITE_SURFACE || process.env.CORECATS_SITE_SURFACE || DEFAULTS.siteSurface,
+    launchState,
+  );
+
   return {
     rootDir: ROOT_DIR,
     foxarDir: path.join(ROOT_DIR, "foxar"),
@@ -117,9 +139,8 @@ export function getCoreServerEnv() {
     chainId: Number(process.env.NEXT_PUBLIC_CORE_CHAIN_ID || process.env.CORE_CHAIN_ID || DEFAULTS.chainId),
     networkId: Number(process.env.CORE_NETWORK_ID || DEFAULTS.networkId),
     networkName: process.env.CORE_NETWORK_NAME || DEFAULTS.networkName,
-    launchState: normalizeLaunchState(
-      process.env.NEXT_PUBLIC_LAUNCH_STATE || process.env.CORECATS_LAUNCH_STATE || DEFAULTS.launchState,
-    ),
+    launchState,
+    siteSurface,
     backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
     backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
     backendSharedSecret: (process.env.CORECATS_BACKEND_SHARED_SECRET || DEFAULTS.backendSharedSecret).trim(),
@@ -148,14 +169,26 @@ export function getCoreServerEnv() {
   };
 }
 
+export function isMintSurfaceEnabled(config) {
+  const state = config || getCorePublicConfig();
+  return state.launchState !== "closed" && (state.siteSurface === "private-canary" || state.siteSurface === "public-mint");
+}
+
 export function getCorePublicConfig() {
   const env = getCoreServerEnv();
   const relayerEnabled =
     env.backendMode === "proxy" ? process.env.CORECATS_RELAYER_ENABLED !== "false" : Boolean(env.finalizerPrivateKey);
+  const siteSurface = env.siteSurface;
+  const mintSurfaceEnabled = isMintSurfaceEnabled({ launchState: env.launchState, siteSurface });
   return {
     chainId: env.chainId,
     networkName: env.networkName,
     launchState: env.launchState,
+    siteSurface,
+    publicTeaserSite: siteSurface === "public-teaser",
+    privateCanarySite: siteSurface === "private-canary",
+    publicMintSite: siteSurface === "public-mint",
+    mintSurfaceEnabled,
     coreCatsAddress: env.coreCatsAddress,
     explorerBaseUrl: env.explorerBaseUrl,
     relayerEnabled,

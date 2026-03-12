@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCollection, getSummary } from "../lib/viewer-data";
+import { getCorePublicConfig } from "../lib/server/core-env";
 import { isTeaserDisplayEnabled } from "../lib/server/teaser-display.js";
 
 const HOME_NATURAL_IDS = [272, 241, 690, 647, 322, 818, 515, 102, 922, 415];
@@ -15,8 +16,10 @@ function Metric({ value, label }) {
 }
 
 export default async function HomePage() {
-  const [collection, summary] = await Promise.all([getCollection(), getSummary()]);
+  const [collection, summary, config] = await Promise.all([getCollection(), getSummary(), getCorePublicConfig()]);
   const teaserMode = isTeaserDisplayEnabled();
+  const mintStatusHref = config.mintSurfaceEnabled ? "/mint" : "/transparency";
+  const mintStatusLabel = config.mintSurfaceEnabled ? "Mint Status" : "Launch Status";
   const itemById = new Map(collection.items.map((item) => [item.token_id, item]));
   const naturalPreview = HOME_NATURAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
   const specialPreview = HOME_SPECIAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
@@ -56,8 +59,8 @@ export default async function HomePage() {
             <Link href="/transparency" className="button button--ghost">
               Transparency
             </Link>
-            <Link href="/mint" className="button button--ghost">
-              Mint Status
+            <Link href={mintStatusHref} className="button button--ghost">
+              {mintStatusLabel}
             </Link>
           </div>
         </div>

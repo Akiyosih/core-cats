@@ -1,8 +1,14 @@
 import { createMintSession, readMintSession } from "../../../../../lib/server/corepass-mint-sessions.js";
+import { getCorePublicConfig } from "../../../../../lib/server/core-env.js";
+import { mintSurfaceClosedResponse } from "../../../../../lib/server/mint-surface.js";
 
 export const runtime = "nodejs";
 
 export async function POST(request) {
+  const config = getCorePublicConfig();
+  if (!config.mintSurfaceEnabled) {
+    return mintSurfaceClosedResponse(config);
+  }
   try {
     const body = await request.json();
     const quantity = Number(body?.quantity || 0);
@@ -25,6 +31,10 @@ export async function POST(request) {
 }
 
 export async function GET(request) {
+  const config = getCorePublicConfig();
+  if (!config.mintSurfaceEnabled) {
+    return mintSurfaceClosedResponse(config);
+  }
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = String(searchParams.get("sessionId") || "").trim();

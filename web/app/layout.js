@@ -9,12 +9,14 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const { launchState } = getCorePublicConfig();
+  const { launchState, publicTeaserSite, privateCanarySite } = getCorePublicConfig();
   const siteNotice =
     launchState === "closed"
       ? "Pre-mainnet teaser. Core Cats is still in final preparation. Mainnet deployment and public mint are not live yet."
-      : launchState === "canary"
-        ? "Public mint is not open yet. This site is currently in a mainnet rehearsal canary while the official release is being prepared. You can already browse the collection."
+      : publicTeaserSite
+        ? "Public mint is not open yet. This public site is browse-only while the private mainnet rehearsal canary continues separately."
+        : privateCanarySite
+          ? "Private rehearsal canary. Public mint is not open yet."
         : "";
 
   return (

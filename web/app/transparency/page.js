@@ -82,7 +82,6 @@ export default function TransparencyPage() {
         : "Devin rehearsal contract configured";
   const publicLinks = [
     { href: "https://core-cats.vercel.app", label: "Official website" },
-    { href: "https://core-cats.vercel.app/mint", label: "Mint page" },
     { href: "https://github.com/Akiyosih/core-cats", label: "GitHub repository" },
     { href: explorerBaseUrl, label: "Blockindex explorer" },
     {
@@ -119,6 +118,10 @@ export default function TransparencyPage() {
               </li>
               <li>
                 <strong>Launch state:</strong> {titleCase(config.launchState)}
+              </li>
+              <li>
+                <strong>Site surface:</strong>{" "}
+                {config.publicTeaserSite ? "Public teaser" : config.privateCanarySite ? "Private canary" : "Public mint"}
               </li>
               <li>
                 <strong>Contract status:</strong> {contractStatus}

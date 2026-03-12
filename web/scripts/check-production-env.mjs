@@ -22,6 +22,7 @@ function main() {
 
   console.log(`Checked: ${sourceLabel}`);
   console.log(`  launch_state=${result.normalized.launchState || "(missing)"}`);
+  console.log(`  site_surface=${result.normalized.siteSurface || "(default)"}`);
   console.log(`  backend_mode=${result.normalized.backendMode || "(missing)"}`);
   console.log(`  backend_base_url=${result.normalized.backendBaseUrl || "(missing)"}`);
 

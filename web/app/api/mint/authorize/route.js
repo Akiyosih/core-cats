@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 
 import { getCorePublicConfig, getCoreServerEnv, normalizeCoreAddressKey } from "../../../../lib/server/core-env.js";
+import { mintSurfaceClosedResponse } from "../../../../lib/server/mint-surface.js";
 import { issueMintAuthorization } from "../../../../lib/server/core-spark.js";
 import { isExternalMintBackendEnabled, proxyMintBackendRequest } from "../../../../lib/server/mint-backend-proxy.js";
 
@@ -11,6 +12,10 @@ function buildNonce() {
 }
 
 export async function POST(request) {
+  const config = getCorePublicConfig();
+  if (!config.mintSurfaceEnabled) {
+    return mintSurfaceClosedResponse(config);
+  }
   if (isExternalMintBackendEnabled()) {
     return proxyMintBackendRequest(request, "/api/mint/authorize");
   }
@@ -43,8 +48,6 @@ export async function POST(request) {
     const nonce = buildNonce();
     const expiry = Math.floor(Date.now() / 1000) + 10 * 60;
     const authorization = await issueMintAuthorization({ minter, quantity, nonce, expiry });
-    const config = getCorePublicConfig();
-
     return Response.json({
       minter: authorization.minter,
       quantity: authorization.quantity,

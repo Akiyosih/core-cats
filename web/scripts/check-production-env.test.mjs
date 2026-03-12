@@ -6,6 +6,7 @@ import { validateProductionEnv } from "./check-production-env-lib.mjs";
 function buildBaseEnv(overrides = {}) {
   return {
     NEXT_PUBLIC_LAUNCH_STATE: "closed",
+    NEXT_PUBLIC_SITE_SURFACE: "public-teaser",
     NEXT_PUBLIC_CORE_CHAIN_ID: "1",
     CORE_NETWORK_ID: "1",
     CORE_NETWORK_NAME: "mainnet",
@@ -25,7 +26,7 @@ test("closed launch accepts placeholder contract address", () => {
 });
 
 test("canary launch rejects placeholder contract address", () => {
-  const result = validateProductionEnv(buildBaseEnv({ NEXT_PUBLIC_LAUNCH_STATE: "canary" }));
+  const result = validateProductionEnv(buildBaseEnv({ NEXT_PUBLIC_LAUNCH_STATE: "canary", NEXT_PUBLIC_SITE_SURFACE: "private-canary" }));
   assert.match(result.errors.join("\n"), /real mainnet contract address/);
 });
 
@@ -55,9 +56,21 @@ test("rejects self-only CoreID pinning for canary launch", () => {
   const result = validateProductionEnv(
     buildBaseEnv({
       NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_SITE_SURFACE: "private-canary",
       NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
       COREPASS_EXPECTED_CORE_ID: "cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416",
     }),
   );
   assert.match(result.errors.join("\n"), /COREPASS_EXPECTED_CORE_ID must be removed/);
+});
+
+test("rejects non-public mint surface for public launch", () => {
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "public",
+      NEXT_PUBLIC_SITE_SURFACE: "public-teaser",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+    }),
+  );
+  assert.match(result.errors.join("\n"), /must be public-mint/);
 });

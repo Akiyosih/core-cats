@@ -1,4 +1,5 @@
 import { getCorePublicConfig } from "../../../../lib/server/core-env.js";
+import { mintSurfaceClosedResponse } from "../../../../lib/server/mint-surface.js";
 import { relayFinalizeMint } from "../../../../lib/server/core-spark.js";
 import { isExternalMintBackendEnabled, proxyMintBackendRequest } from "../../../../lib/server/mint-backend-proxy.js";
 
@@ -14,6 +15,10 @@ function classifyFinalizeError(message) {
 }
 
 export async function POST(request) {
+  const config = getCorePublicConfig();
+  if (!config.mintSurfaceEnabled) {
+    return mintSurfaceClosedResponse(config);
+  }
   if (isExternalMintBackendEnabled()) {
     return proxyMintBackendRequest(request, "/api/mint/finalize");
   }
@@ -26,8 +31,6 @@ export async function POST(request) {
     }
 
     const result = await relayFinalizeMint({ minter });
-    const config = getCorePublicConfig();
-
     return Response.json({
       txHash: result.txHash,
       relayerEnabled: config.relayerEnabled,
