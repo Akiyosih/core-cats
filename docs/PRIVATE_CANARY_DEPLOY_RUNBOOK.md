@@ -9,6 +9,8 @@ Reference URLs:
 1. Core Blockchain project surface: https://coreblockchain.net/
 2. Foxar toolchain intro: https://foxar.dev/intro/
 3. Cloudflare Pages static teaser runbook: `docs/CLOUDFLARE_PUBLIC_TEASER_RUNBOOK.md`
+4. Caddy `basic_auth` directive: https://caddyserver.com/docs/caddyfile/directives/basic_auth
+5. Caddy `reverse_proxy` directive: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy
 
 ## Target Surface
 
@@ -38,15 +40,24 @@ CORE_NETWORK_NAME=mainnet
 NEXT_PUBLIC_CORE_EXPLORER_BASE_URL=https://blockindex.net
 NEXT_PUBLIC_CORECATS_ADDRESS=cb3022bb9ee4752d778f4c63b47559e77b4ca06a122a
 CORECATS_BACKEND_MODE=proxy
-CORECATS_BACKEND_BASE_URL=https://replace-with-private-canary-backend-origin
+CORECATS_INTERNAL_BACKEND_BASE_URL=http://127.0.0.1:8787
 CORECATS_BACKEND_SHARED_SECRET=replace-with-the-same-random-secret-as-the-backend
 CORECATS_RELAYER_ENABLED=true
 ```
 
 Notes:
 1. the private canary host should not reuse the public teaser origin
-2. the backend origin may be the existing Contabo proxy if it is already the live mint backend
-3. `NEXT_PUBLIC_CORECATS_STATUS_URL` is optional on the private canary host, but keeping it set is useful for `/collection` and `/my-cats`
+2. if the web app and backend share the same Contabo host, prefer `CORECATS_INTERNAL_BACKEND_BASE_URL=http://127.0.0.1:8787`
+3. if the canary web app is hosted elsewhere, set `CORECATS_BACKEND_BASE_URL=https://...` instead
+4. `NEXT_PUBLIC_CORECATS_STATUS_URL` is optional on the private canary host, but keeping it set is useful for `/collection` and `/my-cats`
+
+## Repo-Side Files
+
+Relevant files:
+1. app env example: `web/.env.private-canary.example`
+2. Contabo env example: `web/systemd/corecats-private-canary-web.env.example`
+3. systemd unit example: `web/systemd/corecats-private-canary-web.service.example`
+4. Caddy example: `web/reverse-proxy/Caddyfile.private-canary.example`
 
 ## Recommended Access Policy
 
@@ -72,6 +83,28 @@ Before deployment:
 1. stage the target env in a local file
 2. run `node ./scripts/check-production-env.mjs ./.env.production.local`
 3. confirm the output resolves to `private-canary`
+
+## Contabo Default Deployment
+
+Recommended default when the existing Contabo host is used:
+
+1. copy `core-cats/web/systemd/corecats-private-canary-web.env.example` to `/etc/corecats-private-canary-web.env`
+2. set:
+   - `NEXT_PUBLIC_SITE_BASE_URL=https://<private-canary-origin>`
+   - `CORECATS_BACKEND_SHARED_SECRET=<same-secret-as-backend>`
+   - `NEXT_PUBLIC_CORECATS_STATUS_URL=<public-status-url>` if browse pages should show ownership
+3. keep `CORECATS_INTERNAL_BACKEND_BASE_URL=http://127.0.0.1:8787`
+4. set file permissions:
+   - `chmod 600 /etc/corecats-private-canary-web.env`
+5. install the systemd unit:
+   - `cp /root/core-cats/web/systemd/corecats-private-canary-web.service.example /etc/systemd/system/corecats-private-canary-web.service`
+   - `systemctl daemon-reload`
+   - `systemctl enable --now corecats-private-canary-web`
+6. install the Caddy config:
+   - `cp /root/core-cats/web/reverse-proxy/Caddyfile.private-canary.example /etc/caddy/Caddyfile`
+   - replace `canary.example.com`
+   - replace `REPLACE_WITH_BCRYPT_HASH`
+   - `systemctl reload caddy`
 
 ## Canary-Specific Checks
 

@@ -38,10 +38,10 @@ function buildForwardHeaders(request, extras = {}) {
 
 export function getMintBackendBaseUrl() {
   const env = getCoreServerEnv();
-  if (env.backendMode !== "proxy" || !env.backendBaseUrl) {
+  if (env.backendMode !== "proxy") {
     return "";
   }
-  return env.backendBaseUrl;
+  return env.internalBackendBaseUrl || env.backendBaseUrl;
 }
 
 export function isExternalMintBackendEnabled() {

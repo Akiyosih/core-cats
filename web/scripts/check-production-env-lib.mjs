@@ -46,6 +46,10 @@ function normalizedUrl(value) {
   return normalized(value).replace(/\/$/, "");
 }
 
+function isLoopbackHttpUrl(value) {
+  return /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(value);
+}
+
 function hasValue(env, key) {
   return normalized(env[key]) !== "";
 }
@@ -64,6 +68,7 @@ export function validateProductionEnv(env) {
   const coreCatsAddress = normalized(env.NEXT_PUBLIC_CORECATS_ADDRESS);
   const backendMode = normalized(env.CORECATS_BACKEND_MODE);
   const backendBaseUrl = normalizedUrl(env.CORECATS_BACKEND_BASE_URL);
+  const internalBackendBaseUrl = normalizedUrl(env.CORECATS_INTERNAL_BACKEND_BASE_URL);
   const backendSharedSecret = normalized(env.CORECATS_BACKEND_SHARED_SECRET);
   const publicStatusUrl = normalizedUrl(env.NEXT_PUBLIC_CORECATS_STATUS_URL);
   const relayerEnabled = normalized(env.CORECATS_RELAYER_ENABLED || "true").toLowerCase();
@@ -92,18 +97,26 @@ export function validateProductionEnv(env) {
   }
 
   const mintSurfaceEnabled = launchState !== "closed" && (siteSurface === "private-canary" || siteSurface === "public-mint");
+  const hasInternalBackend = Boolean(internalBackendBaseUrl);
+  const requiresExternalBackend = mintSurfaceEnabled && siteSurface === "public-mint";
 
   if (mintSurfaceEnabled) {
     if (backendMode !== "proxy") {
       errors.push("CORECATS_BACKEND_MODE must be proxy when the mint surface is enabled");
     }
 
-    if (!backendBaseUrl) {
+    if (requiresExternalBackend && !backendBaseUrl) {
+      errors.push("CORECATS_BACKEND_BASE_URL is required when NEXT_PUBLIC_SITE_SURFACE=public-mint");
+    } else if (!backendBaseUrl && !hasInternalBackend) {
       errors.push("CORECATS_BACKEND_BASE_URL is required when the mint surface is enabled");
-    } else if (looksLikePlaceholder(backendBaseUrl)) {
+    } else if (backendBaseUrl && looksLikePlaceholder(backendBaseUrl)) {
       errors.push("CORECATS_BACKEND_BASE_URL must not use a placeholder value");
-    } else if (!backendBaseUrl.startsWith("https://")) {
+    } else if (backendBaseUrl && !backendBaseUrl.startsWith("https://")) {
       errors.push("CORECATS_BACKEND_BASE_URL must start with https://");
+    }
+
+    if (internalBackendBaseUrl && !isLoopbackHttpUrl(internalBackendBaseUrl)) {
+      errors.push("CORECATS_INTERNAL_BACKEND_BASE_URL must use a loopback http(s) origin such as http://127.0.0.1:8787");
     }
 
     if (!backendSharedSecret) {
@@ -123,6 +136,9 @@ export function validateProductionEnv(env) {
     }
     if (!publicStatusUrl && !backendBaseUrl) {
       warnings.push("Browse-only surfaces should set NEXT_PUBLIC_CORECATS_STATUS_URL or CORECATS_BACKEND_BASE_URL if live ownership badges are expected");
+    }
+    if (internalBackendBaseUrl && !isLoopbackHttpUrl(internalBackendBaseUrl)) {
+      errors.push("CORECATS_INTERNAL_BACKEND_BASE_URL must use a loopback http(s) origin such as http://127.0.0.1:8787");
     }
   }
 
@@ -183,6 +199,7 @@ export function validateProductionEnv(env) {
       siteBaseUrl,
       backendMode,
       backendBaseUrl,
+      internalBackendBaseUrl,
       publicStatusUrl,
       relayerEnabled,
       expectedCoreId,

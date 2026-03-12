@@ -54,6 +54,19 @@ test("rejects missing backend https origin", () => {
   assert.match(result.errors.join("\n"), /must start with https:\/\//);
 });
 
+test("private canary accepts loopback internal backend without external backend origin", () => {
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_SITE_SURFACE: "private-canary",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      CORECATS_BACKEND_BASE_URL: "",
+      CORECATS_INTERNAL_BACKEND_BASE_URL: "http://127.0.0.1:8787",
+    }),
+  );
+  assert.deepEqual(result.errors, []);
+});
+
 test("rejects private keys in Vercel env", () => {
   const result = validateProductionEnv(buildBaseEnv({ MINT_SIGNER_PRIVATE_KEY: "deadbeef" }));
   assert.match(result.errors.join("\n"), /MINT_SIGNER_PRIVATE_KEY must not be present/);

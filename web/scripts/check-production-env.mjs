@@ -25,6 +25,7 @@ function main() {
   console.log(`  site_surface=${result.normalized.siteSurface || "(default)"}`);
   console.log(`  backend_mode=${result.normalized.backendMode || "(missing)"}`);
   console.log(`  backend_base_url=${result.normalized.backendBaseUrl || "(missing)"}`);
+  console.log(`  internal_backend_base_url=${result.normalized.internalBackendBaseUrl || "(missing)"}`);
 
   if (result.warnings.length) {
     printList("WARN", result.warnings);

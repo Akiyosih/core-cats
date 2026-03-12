@@ -22,6 +22,7 @@ const DEFAULTS = {
   explorerBaseUrl: DEFAULT_DEVIN_EXPLORER_BASE_URL,
   backendMode: "local",
   backendBaseUrl: "",
+  internalBackendBaseUrl: "",
   backendSharedSecret: "",
   statusSnapshotUrl: "",
 };
@@ -149,6 +150,9 @@ export function getCoreServerEnv() {
     siteBaseUrl: normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || process.env.CORECATS_SITE_BASE_URL || ""),
     backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
     backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
+    internalBackendBaseUrl: (
+      process.env.CORECATS_INTERNAL_BACKEND_BASE_URL || DEFAULTS.internalBackendBaseUrl
+    ).trim().replace(/\/$/, ""),
     backendSharedSecret: (process.env.CORECATS_BACKEND_SHARED_SECRET || DEFAULTS.backendSharedSecret).trim(),
     statusSnapshotUrl: (
       process.env.NEXT_PUBLIC_CORECATS_STATUS_URL ||

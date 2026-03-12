@@ -1,0 +1,14 @@
+canary.example.com {
+  # Recommended default: enable Basic Auth for the temporary operator-only canary surface.
+  # Generate the password hash with:
+  #   caddy hash-password --plaintext '<strong-password>'
+  basic_auth {
+    operator REPLACE_WITH_BCRYPT_HASH
+  }
+
+  header {
+    X-Robots-Tag "noindex, nofollow, noarchive"
+  }
+
+  reverse_proxy 127.0.0.1:3000
+}
