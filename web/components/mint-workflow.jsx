@@ -401,7 +401,7 @@ export default function MintWorkflow({ config }) {
   const shouldAutoRefreshPreCommit = Boolean(
     sessionId && session && !session?.commit && !authorizeRejected && !terminalSession && preCommitRefreshElapsedMs < 90_000,
   );
-  const preCommitAutoRefreshMs = preCommitRefreshElapsedMs < 30_000 ? 5_000 : 10_000;
+  const preCommitAutoRefreshMs = 5_000;
   const shouldAutoRefresh = Boolean(sessionId && !terminalSession && commitSubmitted);
   const autoRefreshMs = session?.finalize?.stuck ? 120_000 : 60_000;
   let phaseCopy = "Session not started.";
@@ -497,10 +497,10 @@ export default function MintWorkflow({ config }) {
 
   useEffect(() => {
     if (!shouldAutoRefreshPreCommit) return;
-    const timer = setTimeout(() => {
+    const timer = setInterval(() => {
       refreshSession(sessionId, { force: true });
     }, preCommitAutoRefreshMs);
-    return () => clearTimeout(timer);
+    return () => clearInterval(timer);
   }, [preCommitAutoRefreshMs, sessionId, shouldAutoRefreshPreCommit]);
 
   useEffect(() => {
@@ -686,7 +686,7 @@ export default function MintWorkflow({ config }) {
           ) : null}
           {shouldAutoRefreshPreCommit ? (
             <p className="mint-meta">
-              This page briefly checks for wallet confirmation and QR 2 automatically every {preCommitAutoRefreshMs === 5_000 ? "5" : "10"} seconds.
+              This page briefly checks for wallet confirmation and QR 2 automatically every 5 seconds.
             </p>
           ) : null}
           {shouldAutoRefresh ? (
