@@ -10,6 +10,7 @@ from typing import Any, Callable
 from .config import Config
 
 ZERO_ADDRESS = "00000000000000000000000000000000000000000000"
+BLOCKINDEX_USER_AGENT = "Mozilla/5.0 CoreCats/1.0"
 Urlopen = Callable[..., Any]
 
 
@@ -41,7 +42,14 @@ def _explorer_tx_url(explorer_base_url: str, tx_hash: str) -> str | None:
 
 
 def _fetch_json(url: str, *, opener: Urlopen) -> dict[str, Any]:
-    request = urllib.request.Request(url, headers={"accept": "application/json"}, method="GET")
+    request = urllib.request.Request(
+        url,
+        headers={
+            "accept": "application/json",
+            "user-agent": BLOCKINDEX_USER_AGENT,
+        },
+        method="GET",
+    )
     with opener(request, timeout=15) as response:
         payload = json.loads(response.read().decode("utf-8"))
     if not isinstance(payload, dict):
