@@ -134,7 +134,6 @@ function DesktopQrAction({
   title,
   body,
   request,
-  pendingNote,
   completedLabel,
   completedNote,
   highlightedNotice,
@@ -164,11 +163,6 @@ function DesktopQrAction({
             <p className="mint-action-title">Desktop QR handoff</p>
             {highlightedNotice ? <p className="mint-scan-callout">{highlightedNotice}</p> : null}
             {request.qrDataUrl ? <img src={request.qrDataUrl} alt={`${title} QR`} className="mint-qr" /> : null}
-            {pendingNote ? <p className="mint-warning mint-warning--soft">{pendingNote}</p> : null}
-            <p className="mint-meta">
-              Keep this desktop page open. Scan with the device camera or the CorePass in-app scanner, approve inside
-              CorePass, and then continue from this desktop browser.
-            </p>
           </div>
         </div>
       )}
@@ -741,7 +735,6 @@ export default function MintWorkflow({ config }) {
           }
           highlightedNotice="QR 1 of 2: wallet bind only, no funds move."
           request={session.identify}
-          pendingNote="Scan QR 1 of 2 with CorePass. The phone should stay inside CorePass after approval, while this desktop page waits for the callback."
           completedLabel={authorizeRejected && rejectedSession ? rejectedSession.step1Label : `CoreID confirmed: ${session.identify.coreId}`}
           completedNote={authorizeRejected && rejectedSession ? rejectedSession.step1Note : "QR 1 of 2 is complete. Stay on this desktop page for QR 2 of 2."}
           completeTone={authorizeRejected ? "blocked" : "done"}
@@ -793,7 +786,6 @@ export default function MintWorkflow({ config }) {
           }
           highlightedNotice="QR 2 of 2: real mint transaction, small XCB gas required."
           request={session.commit}
-          pendingNote="Scan QR 2 of 2 to approve the real commit transaction in CorePass."
           completedLabel={commitCompletedLabel}
           completedNote={commitCompletedNote}
           completeTone={authorizationExpired ? "blocked" : "done"}
