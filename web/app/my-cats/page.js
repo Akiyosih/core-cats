@@ -2,7 +2,7 @@ import MyCatsBrowser from "../../components/my-cats-browser";
 import { getCollection } from "../../lib/viewer-data";
 import { getCorePublicConfig } from "../../lib/server/core-env";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 export default async function MyCatsPage() {
   const { launchState, statusSnapshotUrl } = getCorePublicConfig();
