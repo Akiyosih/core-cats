@@ -198,6 +198,15 @@ One mainnet `CCATTEST` mint already succeeded via a self-only pilot path using a
 
 That evidence remains valuable, but it does not count as proof of the real public `/mint` rehearsal path.
 
+### D-1a. Current matrix status update
+The following checkpoint is already complete and should not be re-consumed by accident during the remaining Wallet A block:
+
+1. `LT-01`
+   - passed on `2026-03-12`
+   - confirmed through the private canary origin with a real Wallet A quantity-`1` success
+   - private-canary host migration smoke also passed on the same run
+   - the next functional Wallet A step is now `LT-02`
+
 ### D-2. Wallet labels for rehearsal
 Use generic labels in public records:
 
@@ -401,9 +410,7 @@ If the operator wants to avoid re-entering seed phrases and switching wallets re
 
 3. Wallet A block:
    - `LT-01`
-     - quantity: `1`
-     - QR1 path: `device standard camera`
-     - QR2 path: `continue inside CorePass`
+     - already complete; do not spend another Wallet A mint here
    - `LT-02`
      - quantity: `2` or `3`
      - QR1 path: `device standard camera`

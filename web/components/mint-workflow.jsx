@@ -386,15 +386,7 @@ export default function MintWorkflow({ config }) {
   const finalizePending = commitConfirmed && !finalizeConfirmed;
   const commitExpiryMs = Number(session?.commit?.expiry || 0) * 1000;
   const authorizationExpired = Boolean(session?.commit && !commitSubmitted && commitExpiryMs > 0 && commitExpiryMs <= Date.now());
-  const bridgeRefreshAnchorMs = session?.commit && !commitSubmitted
-    ? session?.updatedAt
-      ? Date.parse(session.updatedAt)
-      : session?.createdAt
-        ? Date.parse(session.createdAt)
-        : 0
-    : session?.identify?.completedAt
-      ? Date.parse(session.identify.completedAt)
-      : 0;
+  const bridgeRefreshAnchorMs = session?.identify?.completedAt ? Date.parse(session.identify.completedAt) : 0;
   const bridgeRefreshElapsedMs = bridgeRefreshAnchorMs > 0 ? Math.max(0, Date.now() - bridgeRefreshAnchorMs) : 0;
   const currentStateLabel = authorizationExpired ? "Commit authorization expired" : formatSessionState(currentState);
   const authorizeRejected = currentState === "authorize_rejected";
@@ -402,16 +394,25 @@ export default function MintWorkflow({ config }) {
   const displayedError = error || (authorizationExpired ? "QR 2 of 2 expired before approval. Start a new mint from the beginning." : "");
   const restartMintVisible = authorizationExpired || displayedError.toLowerCase().includes("start a new mint from the beginning");
   const terminalSession = finalizeConfirmed || authorizationExpired || authorizeRejected || currentState === "commit_failed" || currentState === "finalize_expired";
-  const shouldAutoRefreshBridge = Boolean(
+  const bridgePhase =
     sessionId &&
-      session &&
-      !commitSubmitted &&
-      !authorizeRejected &&
-      !terminalSession &&
-      (session?.identify?.completedAt || session?.commit) &&
-      bridgeRefreshElapsedMs < 90_000,
+    session &&
+    !commitSubmitted &&
+    !authorizeRejected &&
+    !terminalSession &&
+    bridgeRefreshAnchorMs > 0
+      ? session?.commit
+        ? "commit"
+        : session?.identify?.completedAt && bridgeRefreshElapsedMs < 30_000
+          ? "identity"
+          : ""
+      : "";
+  const shouldAutoRefreshBridge = Boolean(
+    bridgePhase &&
+      ((bridgePhase === "identity" && bridgeRefreshElapsedMs < 30_000) ||
+        (bridgePhase === "commit" && bridgeRefreshElapsedMs < 180_000)),
   );
-  const bridgeAutoRefreshMs = 5_000;
+  const bridgeAutoRefreshMs = bridgePhase === "commit" ? 15_000 : bridgePhase === "identity" ? 5_000 : 0;
   const shouldAutoRefresh = Boolean(sessionId && !terminalSession && commitSubmitted);
   const autoRefreshMs = session?.finalize?.stuck ? 120_000 : 60_000;
   let phaseCopy = "Session not started.";
@@ -692,11 +693,16 @@ export default function MintWorkflow({ config }) {
             </div>
           ) : null}
           {sessionId && !commitSubmitted && !terminalSession ? (
-            <p className="mint-meta">After you approve in CorePass, use Refresh status if the next step does not appear yet.</p>
+            <p className="mint-meta">If the next step does not appear yet, use Refresh status.</p>
           ) : null}
-          {shouldAutoRefreshBridge ? (
+          {bridgePhase === "identity" ? (
             <p className="mint-meta">
-              This page briefly checks for the next mint step automatically every 5 seconds.
+              After QR 1 of 2, this page briefly checks for QR 2 of 2 automatically every 5 seconds for up to 30 seconds.
+            </p>
+          ) : null}
+          {bridgePhase === "commit" ? (
+            <p className="mint-meta">
+              After QR 2 of 2 is approved, this page briefly checks for the commit return automatically every 15 seconds for up to 3 minutes.
             </p>
           ) : null}
           {shouldAutoRefresh ? (
@@ -830,8 +836,19 @@ export default function MintWorkflow({ config }) {
               <p className="mint-meta">
                 When finalize completes, your cat arrives already revealed.
               </p>
-              <p className="mint-meta">Do not start a new mint or reuse any earlier QR within 30 minutes.</p>
-              <p className="mint-meta">If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.</p>
+              <VerificationDetails summary="If your NFT has not arrived yet">
+                <ul className="plain-list mint-verify-list">
+                  <li>After the QR 2 transaction succeeds, your NFT usually arrives within a few minutes.</li>
+                  <li>
+                    You can also confirm delivery in <a href="/my-cats" className="inline-link">My Cats</a> by entering your wallet address.
+                  </li>
+                  <li>
+                    Do not start a new mint before 30 minutes have passed. If the current session is still live, a new
+                    attempt can fail and waste gas.
+                  </li>
+                  <li>If your NFT still has not arrived after 30 minutes, start a new mint from the beginning.</li>
+                </ul>
+              </VerificationDetails>
             </div>
           </div>
         </article>
