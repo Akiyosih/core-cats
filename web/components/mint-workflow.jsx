@@ -386,7 +386,7 @@ export default function MintWorkflow({ config }) {
   const finalizePending = commitConfirmed && !finalizeConfirmed;
   const commitExpiryMs = Number(session?.commit?.expiry || 0) * 1000;
   const authorizationExpired = Boolean(session?.commit && !commitSubmitted && commitExpiryMs > 0 && commitExpiryMs <= Date.now());
-  const bridgeRefreshAnchorMs = session?.identify?.completedAt ? Date.parse(session.identify.completedAt) : 0;
+  const bridgeRefreshAnchorMs = session?.createdAt ? Date.parse(session.createdAt) : 0;
   const bridgeRefreshElapsedMs = bridgeRefreshAnchorMs > 0 ? Math.max(0, Date.now() - bridgeRefreshAnchorMs) : 0;
   const currentStateLabel = authorizationExpired ? "Commit authorization expired" : formatSessionState(currentState);
   const authorizeRejected = currentState === "authorize_rejected";
@@ -400,19 +400,17 @@ export default function MintWorkflow({ config }) {
     !commitSubmitted &&
     !authorizeRejected &&
     !terminalSession &&
-    bridgeRefreshAnchorMs > 0
+    bridgeRefreshAnchorMs > 0 &&
+    bridgeRefreshElapsedMs < 180_000
       ? session?.commit
         ? "commit"
-        : session?.identify?.completedAt && bridgeRefreshElapsedMs < 30_000
-          ? "identity"
-          : ""
+        : bridgeRefreshElapsedMs < 30_000
+          ? "identity_fast"
+          : "identity_slow"
       : "";
-  const shouldAutoRefreshBridge = Boolean(
-    bridgePhase &&
-      ((bridgePhase === "identity" && bridgeRefreshElapsedMs < 30_000) ||
-        (bridgePhase === "commit" && bridgeRefreshElapsedMs < 180_000)),
-  );
-  const bridgeAutoRefreshMs = bridgePhase === "commit" ? 15_000 : bridgePhase === "identity" ? 5_000 : 0;
+  const shouldAutoRefreshBridge = Boolean(bridgePhase);
+  const bridgeAutoRefreshMs =
+    bridgePhase === "identity_fast" ? 5_000 : bridgePhase === "identity_slow" || bridgePhase === "commit" ? 15_000 : 0;
   const shouldAutoRefresh = Boolean(sessionId && !terminalSession && commitSubmitted);
   const autoRefreshMs = session?.finalize?.stuck ? 120_000 : 60_000;
   let phaseCopy = "Session not started.";
@@ -695,9 +693,14 @@ export default function MintWorkflow({ config }) {
           {sessionId && !commitSubmitted && !terminalSession ? (
             <p className="mint-meta">If the next step does not appear yet, use Refresh status.</p>
           ) : null}
-          {bridgePhase === "identity" ? (
+          {bridgePhase === "identity_fast" ? (
             <p className="mint-meta">
               After QR 1 of 2, this page briefly checks for QR 2 of 2 automatically every 5 seconds for up to 30 seconds.
+            </p>
+          ) : null}
+          {bridgePhase === "identity_slow" ? (
+            <p className="mint-meta">
+              QR 2 of 2 is still being prepared. This page continues checking automatically every 15 seconds for up to 3 minutes from the start of the session.
             </p>
           ) : null}
           {bridgePhase === "commit" ? (
