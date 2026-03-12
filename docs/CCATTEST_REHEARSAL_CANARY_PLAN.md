@@ -277,7 +277,12 @@ Run these from the real public `/mint` UI while the site is in `canary`.
    - QR1 path: `device standard camera`
    - QR2 path: `continue inside CorePass`
    - target: mint one more cat and reach cumulative `3`
-   - note: on the recovered private canary surface, this is also the next plan-aligned success run that should confirm the desktop page advances from `QR 2 of 2` into the post-commit / Step 3 state without a manual reload
+   - note: on the recovered private canary surface, use this run as the full bridge-polling smoke test
+   - note: create the session and watch the desktop page for the first polling hint (`After QR 1 of 2 ... every 5 seconds for up to 30 seconds`)
+   - note: intentionally do not scan `QR 1 of 2` for about `35` to `45` seconds so the slower polling hint can appear (`QR 2 of 2 is still being prepared ... every 15 seconds for up to 3 minutes from the start of the session`)
+   - note: then scan `QR 1 of 2` and confirm `QR 2 of 2` appears without a manual reload
+   - note: once `QR 2 of 2` is visible, confirm the third bridge hint also appears (`After QR 2 of 2 is approved ... every 15 seconds for up to 3 minutes`)
+   - note: then scan `QR 2 of 2` and confirm the desktop page advances into the post-commit / Step 3 state without a manual reload
 4. `LT-04`
    - wallet label: `Wallet A`
    - quantity: `1`
