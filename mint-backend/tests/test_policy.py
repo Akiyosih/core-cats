@@ -20,6 +20,28 @@ class AuthorizationPrecheckTests(unittest.TestCase):
             evaluate_authorization_precheck(wallet_state, 1)
 
         self.assertEqual(raised.exception.code, "wallet_limit_reached")
+        self.assertEqual(
+            str(raised.exception),
+            "A single wallet can mint up to 3 cats through the standard mint path. This request would exceed that cumulative limit.",
+        )
+
+    def test_rejects_request_that_would_exceed_cumulative_limit(self) -> None:
+        wallet_state = WalletMintState(
+            current_block=100,
+            minted=2,
+            reserved=0,
+            effective_reserved=0,
+            pending_commit=PendingCommitState(quantity=0, finalize_block=0, expiry_block=0, commit_hash="0x0"),
+        )
+
+        with self.assertRaises(AuthorizationRejected) as raised:
+            evaluate_authorization_precheck(wallet_state, 2)
+
+        self.assertEqual(raised.exception.code, "wallet_limit_reached")
+        self.assertEqual(
+            str(raised.exception),
+            "A single wallet can mint up to 3 cats through the standard mint path. This request would exceed that cumulative limit.",
+        )
 
     def test_rejects_active_pending_commit_before_authorization(self) -> None:
         wallet_state = WalletMintState(

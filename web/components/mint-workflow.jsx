@@ -198,7 +198,7 @@ function describeCallbackError(code) {
     case "canary_wallet_not_allowed":
       return "This wallet is not on the current rehearsal canary allowlist, so the site did not prepare a commit transaction.";
     case "wallet_limit_reached":
-      return "This wallet is already at the 3-cat limit for the standard mint path, so no new commit transaction was prepared.";
+      return "A single wallet can mint up to 3 cats through the standard mint path. This request would exceed that cumulative limit, so no new commit transaction was prepared.";
     case "pending_commit_exists":
       return "This wallet already has a commit waiting for finalize. Finish that session before starting another one.";
     case "invalid_minter":
@@ -230,10 +230,10 @@ function describeRejectedSession(code) {
   switch (String(code || "").trim()) {
     case "wallet_limit_reached":
       return {
-        phaseCopy: "Wallet confirmed, but this wallet is already at the 3-cat limit. QR 2 of 2 was not prepared.",
-        step1Label: "Wallet confirmed, but this wallet is already at the 3-cat limit.",
+        phaseCopy: "Wallet confirmed, but this request would exceed the 3-cat cumulative wallet limit. QR 2 of 2 was not prepared.",
+        step1Label: "Wallet confirmed, but this request would exceed the 3-cat cumulative wallet limit.",
         step1Note: "QR 2 of 2 was not prepared. No gas-spending mint transaction was created.",
-        commitDetail: "No commit transaction was prepared because this wallet is already at the standard 3-cat limit.",
+        commitDetail: "No commit transaction was prepared because a single wallet can mint only up to 3 cats through the standard mint path.",
       };
     case "pending_commit_exists":
       return {

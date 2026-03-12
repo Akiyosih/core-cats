@@ -37,7 +37,7 @@ def evaluate_authorization_precheck(wallet_state: WalletMintState, quantity: int
     if total_after_request > MAX_PER_ADDRESS:
         raise AuthorizationRejected(
             "wallet_limit_reached",
-            "This wallet is already at the maximum of 3 cats for the standard mint path.",
+            "A single wallet can mint up to 3 cats through the standard mint path. This request would exceed that cumulative limit.",
         )
 
     return AuthorizationPrecheckResult(
