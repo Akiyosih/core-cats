@@ -30,7 +30,7 @@ Expected public routes:
 
 Public teaser behavior:
 1. `Mint` stays closed and shows `Soon`
-2. `/mint` does not start the CorePass flow
+2. `/mint` is not deployed on the public teaser origin
 3. bots are discouraged from indexing `/mint` and `/api/`
 4. live ownership comes from the public snapshot URL, not from a request-time Vercel function
 
@@ -97,7 +97,7 @@ Current UI labels can vary, but the flow should be:
 Before relaunching the public teaser:
 
 1. `Mint` in the header shows `Soon` and is not clickable.
-2. `/mint` renders the closed browse-only explanation.
+2. `/mint` returns the teaser-origin not-found response instead of opening CorePass session flow.
 3. `/collection` loads minted status from the public snapshot URL.
 4. `/my-cats` can look up ownership through the public snapshot URL.
 5. `/robots.txt` disallows `/mint` and `/api/`.
