@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { normalizeCallbackBodyPayload } from "../../../../../lib/server/corepass-callback-body.js";
+import { getCorePublicConfig } from "../../../../../lib/server/core-env.js";
 
 export async function readCallbackBody(request) {
   const contentType = String(request.headers.get("content-type") || "").toLowerCase();
@@ -33,7 +34,8 @@ export async function readCallbackBody(request) {
 }
 
 export function redirectToMint(request, sessionId, errorCode = "") {
-  const target = new URL("/mint", request.url);
+  const config = getCorePublicConfig();
+  const target = new URL("/mint", config.siteBaseUrl || request.url);
   if (sessionId) {
     target.searchParams.set("sessionId", sessionId);
   }
