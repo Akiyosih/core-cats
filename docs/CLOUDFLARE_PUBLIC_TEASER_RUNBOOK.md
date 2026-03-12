@@ -92,6 +92,9 @@ Current UI labels can vary, but the flow should be:
 8. add the public teaser environment values
 9. deploy without a custom domain first
 
+The static teaser app also includes a `_headers` file in `web-public-teaser/public/_headers` so Cloudflare Pages can
+cache `viewer_v1` art assets and the teaser images aggressively after each deploy.
+
 ## Verification Checklist
 
 Before relaunching the public teaser:
@@ -103,6 +106,7 @@ Before relaunching the public teaser:
 5. `/robots.txt` disallows `/mint` and `/api/`.
 6. `/transparency` shows the correct `Site surface`.
 7. `/viewer_v1/collection-index.json` loads from the static teaser origin.
+8. image responses under `/viewer_v1/png/` and `/viewer_v1/svg/` return long-lived cache headers.
 
 ## After Relaunch
 

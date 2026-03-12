@@ -24,6 +24,7 @@ npm run build
 ```
 
 The build script syncs shared viewer assets from `../web/public` and writes a static export to `./out`.
+It also ships Cloudflare `_headers` rules so the teaser images and shared viewer assets are cached aggressively.
 
 ## Environment
 

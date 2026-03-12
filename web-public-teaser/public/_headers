@@ -1,0 +1,17 @@
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/viewer_v1/png/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/viewer_v1/svg/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/teaser/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/viewer_v1/collection-index.json
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/robots.txt
+  Cache-Control: public, max-age=300
