@@ -95,10 +95,13 @@ Current UI labels can vary, but the flow should be:
 9. deploy without a custom domain first
 
 The static teaser app also includes a `_headers` file in `web-public-teaser/public/_headers` so Cloudflare Pages can
-cache `viewer_v1` art assets and the teaser images aggressively after each deploy.
-It also includes a Pages Function at `web-public-teaser/functions/api/public/status.js` so the browser reads
-ownership data from the teaser origin instead of hitting Contabo directly. That function applies a short edge cache
-before returning the upstream JSON.
+cache `viewer_v1` art assets, the white-background avatar PNGs, and the teaser images aggressively after each deploy.
+It also includes Pages Functions at:
+1. `web-public-teaser/functions/api/public/status.js`
+2. `web-public-teaser/functions/api/public/owner.js`
+
+These keep browser ownership reads same-origin on the teaser host instead of hitting Contabo directly. The owner route
+is preferred for `My Cats` because it avoids downloading the full ownership snapshot for one wallet search.
 
 ## Verification Checklist
 
@@ -107,12 +110,14 @@ Before relaunching the public teaser:
 1. `Mint` in the header shows `Soon` and is not clickable.
 2. `/mint` returns the teaser-origin not-found response instead of opening CorePass session flow.
 3. `/api/public/status` returns JSON on the public teaser origin.
-4. `/collection` loads minted status through the same-origin status route.
-5. `/my-cats` can look up ownership through the same-origin status route.
-6. `/robots.txt` disallows `/mint` and `/api/`.
-7. `/transparency` shows the correct `Site surface`.
-8. `/viewer_v1/collection-index.json` loads from the static teaser origin.
-9. image responses under `/viewer_v1/png/` and `/viewer_v1/svg/` return long-lived cache headers.
+4. `/api/public/owner?address=<known-owner>` returns JSON on the public teaser origin.
+5. `/collection` loads minted status through the same-origin status route.
+6. `/my-cats` can look up ownership through the same-origin owner route.
+7. cat detail pages expose both transparent and white-background avatar PNG links.
+8. `/robots.txt` disallows `/mint` and `/api/`.
+9. `/transparency` shows the correct `Site surface`.
+10. `/viewer_v1/collection-index.json` loads from the static teaser origin.
+11. image responses under `/viewer_v1/png/`, `/viewer_v1/png-white/`, and `/viewer_v1/svg/` return long-lived cache headers.
 
 ## After Relaunch
 

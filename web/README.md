@@ -77,13 +77,15 @@ Important variables:
 12. `CORECATS_BACKEND_SHARED_SECRET` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
 13. `CORECATS_INTERNAL_BACKEND_BASE_URL` (optional loopback backend origin for a self-hosted private canary)
 
-When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives a public ownership snapshot URL from:
+When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives public ownership routes from:
 
-`<CORECATS_BACKEND_BASE_URL>/api/public/status`
+1. `<CORECATS_BACKEND_BASE_URL>/api/public/status`
+2. `<CORECATS_BACKEND_BASE_URL>/api/public/owner?address=...`
 
-This lets `/collection`, `/my-cats`, and the public mint counter read live ownership state from the browser without using a Vercel Function on every page view.
+This lets `/collection`, `/cats/[tokenId]`, `/my-cats`, and the public mint counter read live ownership state from the browser without using a Vercel Function on every page view.
 
 For the current Cloudflare Pages teaser path, prefer a same-origin route such as `/api/public/status` and point that route at the upstream public snapshot origin with a host-side binding or equivalent runtime env.
+For `My Cats`, prefer a same-origin owner lookup route such as `/api/public/owner?address=...` so the browser does not fetch the full ownership snapshot just to resolve one wallet.
 Direct browser reads from the upstream public snapshot origin remain acceptable only for simpler browse-only hosts that do not provide a same-origin edge/cache layer.
 
 Useful env templates:
