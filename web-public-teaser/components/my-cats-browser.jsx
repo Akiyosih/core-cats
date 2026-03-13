@@ -81,7 +81,9 @@ export default function MyCatsBrowser({
       <section className="copy-panel my-cats-panel">
         <p className="eyebrow my-cats-eyebrow">My Cats</p>
         <h1>Search by wallet address.</h1>
-        <p className="my-cats-copy">Enter a Core wallet address to see the cats currently held there.</p>
+        <p className="my-cats-copy">
+          Enter a Core wallet address to see the cats currently held there.
+        </p>
         {isCanary ? (
           <p className="my-cats-copy">
             Live ownership follows a short public snapshot interval. Recheck after a brief wait before treating a stale
@@ -110,6 +112,27 @@ export default function MyCatsBrowser({
             </button>
           </div>
         </form>
+
+        <details className="mint-verify-details owner-help-details">
+          <summary>How to show CoreCats in CorePass</summary>
+          <div className="mint-verify-body owner-help-body">
+            <p>In CorePass, open NFTs in your wallet and tap +ADD NFT.</p>
+            <p>In the CBC721 contract address field, tap the QR icon and scan the CoreCats contract QR below.</p>
+            <p>Then tap Import NFT Collection and confirm in CorePass.</p>
+            <div className="owner-help-qr">
+              <img src={coreCatsContractQr} alt="CoreCats contract address QR" width="176" height="176" />
+              <p className="owner-help-address">{coreCatsAddress}</p>
+            </div>
+            <p className="owner-help-note">
+              This step is optional. Even if CoreCats is not shown in CorePass, your NFT can still already be in your
+              wallet.
+            </p>
+            <p className="owner-help-note">
+              CorePass may show the token ID, but it does not display the cat artwork itself.
+            </p>
+            <p className="owner-help-note">To view the artwork, use this site or read the on-chain data directly.</p>
+          </div>
+        </details>
       </section>
 
       {hasSearch && !validOwner ? (
@@ -151,34 +174,9 @@ export default function MyCatsBrowser({
       {validOwner && ownerStatus ? (
         <>
           <section className="results-header owner-results-header">
-            <div>
-              <p className="eyebrow">Owner results</p>
-              <h2>{ownerStatus.tokenIds.length} cats are currently held by this address.</h2>
-              <p className="owner-results-address">{ownerStatus.owner}</p>
-              <p className="owner-results-note">
-                Open any cat to get a raw preview SVG, an avatar-ready PNG, and verification details for that artwork.
-              </p>
-              <details className="mint-verify-details owner-help-details">
-                <summary>How to show CoreCats in CorePass</summary>
-                <div className="mint-verify-body owner-help-body">
-                  <p>In CorePass, open NFTs in your wallet and tap +ADD NFT.</p>
-                  <p>In the CBC721 contract address field, tap the QR icon and scan the CoreCats contract QR below.</p>
-                  <p>Then tap Import NFT Collection and confirm in CorePass.</p>
-                  <div className="owner-help-qr">
-                    <img src={coreCatsContractQr} alt="CoreCats contract address QR" width="176" height="176" />
-                    <p className="owner-help-address">{coreCatsAddress}</p>
-                  </div>
-                  <p className="owner-help-note">
-                    This step is optional. Even if CoreCats is not shown in CorePass, your NFT can still already be in
-                    your wallet.
-                  </p>
-                  <p className="owner-help-note">
-                    CorePass may show the token ID, but it does not display the cat artwork itself.
-                  </p>
-                  <p className="owner-help-note">To view the artwork, use this site or read the on-chain data directly.</p>
-                </div>
-              </details>
-            </div>
+            <p className="eyebrow">Owner results</p>
+            <h2>{ownerStatus.tokenIds.length} cats are currently held by this address.</h2>
+            <p className="owner-results-address">{ownerStatus.owner}</p>
             <div className="owner-results-actions">
               {ownerStatus.explorer ? (
                 <a href={ownerStatus.explorer} target="_blank" rel="noreferrer" className="button button--ghost">
@@ -186,6 +184,9 @@ export default function MyCatsBrowser({
                 </a>
               ) : null}
             </div>
+            <p className="owner-results-note">
+              Open any cat to get a raw preview SVG, an avatar-ready PNG, and verification details for that artwork.
+            </p>
           </section>
 
           {ownerItems.length > 0 ? (

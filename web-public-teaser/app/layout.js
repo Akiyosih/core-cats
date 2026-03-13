@@ -6,7 +6,7 @@ import { getCorePublicConfig } from "../../web/lib/server/core-env";
 export const metadata = {
   title: "Core Cats",
   description:
-    "Core Cats public teaser site for a transparent, mobile-friendly, browse-first full on-chain pixel cat gallery, ownership lookup, and verification surface.",
+    "Core Cats public teaser site for a transparent, mobile-friendly, browse-first full on-chain pixel cat gallery, ownership lookup, verification references, and CorePass helper guidance.",
 };
 
 export default function RootLayout({ children }) {

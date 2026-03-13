@@ -1076,6 +1076,16 @@ main {
   grid-column: 1 / -1;
 }
 
+.transparency-reference-list {
+  columns: 2;
+  column-gap: 32px;
+}
+
+.transparency-reference-list li {
+  break-inside: avoid;
+  margin-bottom: 10px;
+}
+
 .mono-wrap {
   font-family: "Courier New", monospace;
   overflow-wrap: anywhere;
@@ -1543,6 +1553,10 @@ main {
 
   .transparency-section .copy-grid.copy-grid--two {
     grid-template-columns: 1fr;
+  }
+
+  .transparency-reference-list {
+    columns: 1;
   }
 
   .results-header,

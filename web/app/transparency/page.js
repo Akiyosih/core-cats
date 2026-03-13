@@ -76,9 +76,10 @@ export default function TransparencyPage() {
       : networkName === "mainnet"
         ? "Mainnet contract configured"
         : "Devin rehearsal contract configured";
-  const projectLinks = [
+  const verificationLinks = [
     { href: "https://github.com/Akiyosih/core-cats", label: "GitHub repository" },
     { href: explorerBaseUrl, label: "Blockindex explorer" },
+    ...verificationReferences,
   ].filter((item) => item.href);
 
   return (
@@ -241,27 +242,14 @@ export default function TransparencyPage() {
 
       <section className="page-stack transparency-section">
         <SectionHeading eyebrow="References" title="Where to inspect more">
-          Use the project links for the public surface, then use the verification references when you want to inspect
-          the renderer, data tables, manifest, and canary procedure more closely.
+          Use these links to inspect the public project surface, the explorer entry points, and the repository
+          references for renderer logic, data tables, manifests, and canary procedure.
         </SectionHeading>
-        <div className="copy-grid copy-grid--two">
-          <article className="copy-card">
-            <h2>Project links</h2>
-            <ul className="plain-list">
-              {projectLinks.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} target="_blank" rel="noreferrer" className="resource-link">
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </article>
-
-          <article className="copy-card">
+        <div className="copy-grid">
+          <article className="copy-card transparency-card--wide">
             <h2>Verification references</h2>
-            <ul className="plain-list">
-              {verificationReferences.map((item) => (
+            <ul className="plain-list transparency-reference-list">
+              {verificationLinks.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} target="_blank" rel="noreferrer" className="resource-link">
                     {item.label}
