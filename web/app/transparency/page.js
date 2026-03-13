@@ -23,7 +23,7 @@ function buildExplorerAddressUrl(explorerBaseUrl, address) {
   return `${String(explorerBaseUrl || "").replace(/\/$/, "")}/address/${address}`;
 }
 
-const repositoryFiles = [
+const verificationReferences = [
   {
     href: "https://github.com/Akiyosih/core-cats/blob/main/README.md",
     label: "Repository overview",
@@ -33,16 +33,12 @@ const repositoryFiles = [
     label: "Work procedure",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md",
-    label: "Mainnet closed launch runbook",
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/DECISIONS/ADR-0002-randomness-strategy.md",
+    label: "Randomness strategy ADR",
   },
   {
     href: "https://github.com/Akiyosih/core-cats/blob/main/docs/CCATTEST_REHEARSAL_CANARY_PLAN.md",
     label: "CCATTEST rehearsal canary plan",
-  },
-  {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/DECISIONS/ADR-0002-randomness-strategy.md",
-    label: "Randomness strategy ADR",
   },
   {
     href: "https://github.com/Akiyosih/core-cats/blob/main/manifests/final_1000_manifest_v1.json",
@@ -80,14 +76,9 @@ export default function TransparencyPage() {
       : networkName === "mainnet"
         ? "Mainnet contract configured"
         : "Devin rehearsal contract configured";
-  const publicLinks = [
-    { href: config.siteBaseUrl, label: "Official website" },
+  const projectLinks = [
     { href: "https://github.com/Akiyosih/core-cats", label: "GitHub repository" },
     { href: explorerBaseUrl, label: "Blockindex explorer" },
-    {
-      href: "https://github.com/Akiyosih/core-cats/blob/main/docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md",
-      label: "Vercel mainnet cutover checklist",
-    },
   ].filter((item) => item.href);
 
   return (
@@ -250,13 +241,14 @@ export default function TransparencyPage() {
 
       <section className="page-stack transparency-section">
         <SectionHeading eyebrow="References" title="Where to inspect more">
-          If you want to go deeper than the quick checks above, use these public links and repository documents.
+          Use the project links for the public surface, then use the verification references when you want to inspect
+          the renderer, data tables, manifest, and canary procedure more closely.
         </SectionHeading>
         <div className="copy-grid copy-grid--two">
           <article className="copy-card">
-            <h2>Official links</h2>
+            <h2>Project links</h2>
             <ul className="plain-list">
-              {publicLinks.map((item) => (
+              {projectLinks.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} target="_blank" rel="noreferrer" className="resource-link">
                     {item.label}
@@ -267,9 +259,9 @@ export default function TransparencyPage() {
           </article>
 
           <article className="copy-card">
-            <h2>Key repository files</h2>
+            <h2>Verification references</h2>
             <ul className="plain-list">
-              {repositoryFiles.map((item) => (
+              {verificationReferences.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} target="_blank" rel="noreferrer" className="resource-link">
                     {item.label}
