@@ -277,14 +277,12 @@ Run these from the real public `/mint` UI while the site is in `canary`.
    - QR1 path: `device standard camera`
    - QR2 path: `continue inside CorePass`
    - target: mint one more cat and reach cumulative `3`
-   - note: on the recovered private canary surface, use this run as the full bridge-polling and host-path smoke test
-   - note: create the session and wait about `35` to `45` seconds before scanning `QR 1 of 2`
-   - note: confirm the pre-QR1 helper text changes from the initial fast-update hint to the slower follow-up hint before any manual reload
-   - note: then scan `QR 1 of 2` and confirm `QR 2 of 2` appears without a manual reload
-   - note: after `QR 2 of 2` is shown, confirm the commit-bridge helper text appears before approval
-   - note: then scan `QR 2 of 2` and confirm the desktop page advances into the post-commit / Step 3 state without a manual reload
-   - note: confirm the callback/success path stays on the private canary origin and does not jump to the public teaser origin or any localhost/internal host
-   - note: if this run passes, treat the remaining host-specific mint proof before public launch as one final exact-host smoke mint on the future public-mint origin
+   - status: complete on `2026-03-13`
+   - note: this run closed the recovered private canary bridge-polling and host-path smoke checks
+   - note: `QR 1 of 2 -> QR 2 of 2` advanced without a manual reload
+   - note: `QR 2 of 2 -> Step 3` advanced without a manual reload
+   - note: the callback/success path stayed on the private canary origin and did not jump to the public teaser origin or any localhost/internal host
+   - note: the remaining host-specific mint proof before public launch can now be limited to one final exact-host smoke mint on the future public-mint origin
 4. `LT-04`
    - wallet label: `Wallet A`
    - quantity: `1`
@@ -425,9 +423,7 @@ If the operator wants to avoid re-entering seed phrases and switching wallets re
      - QR1 path: `device standard camera`
      - QR2 path: `not prepared`
    - `LT-03`
-     - quantity: `1`
-     - QR1 path: `device standard camera`
-     - QR2 path: `continue inside CorePass`
+     - already complete; Wallet A should now be treated as cumulative `3`
    - `LT-04`
      - quantity: `1`
      - QR1 path: `device standard camera`

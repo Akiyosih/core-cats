@@ -686,21 +686,6 @@ export default function MintWorkflow({ config }) {
           {sessionId && !commitSubmitted && !terminalSession ? (
             <p className="mint-meta">If the next step does not appear yet, use Refresh status.</p>
           ) : null}
-          {bridgePhase === "identity_fast" ? (
-            <p className="mint-meta">
-              After QR 1 of 2, this page briefly checks for QR 2 of 2 automatically every 5 seconds for up to 30 seconds.
-            </p>
-          ) : null}
-          {bridgePhase === "identity_slow" ? (
-            <p className="mint-meta">
-              QR 2 of 2 is still being prepared. This page continues checking automatically every 15 seconds for up to 3 minutes from the start of the session.
-            </p>
-          ) : null}
-          {bridgePhase === "commit" ? (
-            <p className="mint-meta">
-              After QR 2 of 2 is approved, this page briefly checks for the commit return automatically every 15 seconds for up to 3 minutes.
-            </p>
-          ) : null}
           {shouldAutoRefresh ? (
             <p className="mint-meta">
               Status now refreshes automatically every {session?.finalize?.stuck ? "2 minutes" : "minute"} while commit/finalize is still pending.

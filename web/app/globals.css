@@ -951,7 +951,8 @@ main {
 }
 
 .owner-results-header {
-  align-items: center;
+  align-items: flex-start;
+  gap: 24px;
 }
 
 .owner-results-actions {
@@ -959,6 +960,12 @@ main {
   flex-wrap: wrap;
   gap: 12px;
   justify-content: flex-end;
+  flex: 0 0 auto;
+  align-self: flex-start;
+}
+
+.owner-results-header > :first-child {
+  flex: 1 1 52rem;
 }
 
 .owner-results-address {
@@ -971,7 +978,7 @@ main {
 
 .owner-results-note {
   margin: 12px 0 0;
-  max-width: 42rem;
+  max-width: 56rem;
   color: var(--ink-soft);
   font-size: 0.95rem;
   line-height: 1.55;
@@ -994,7 +1001,7 @@ main {
 
 .owner-help-details {
   margin-top: 16px;
-  max-width: 42rem;
+  max-width: 56rem;
 }
 
 .owner-help-body {
