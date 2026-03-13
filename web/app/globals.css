@@ -285,7 +285,7 @@ main {
 
 .hero-panel {
   display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
+  grid-template-columns: 1.05fr 0.95fr;
   gap: 32px;
   padding: 40px;
   border-radius: var(--radius-lg);
@@ -392,7 +392,7 @@ main {
 
 .curated-gallery__grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
   align-content: start;
 }
@@ -1597,6 +1597,10 @@ main {
 
   .hero-panel__copy {
     gap: 14px;
+  }
+
+  .copy-grid.copy-grid--two {
+    grid-template-columns: 1fr;
   }
 
   .curated-gallery__header h2 {
