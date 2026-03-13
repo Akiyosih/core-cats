@@ -951,21 +951,15 @@ main {
 }
 
 .owner-results-header {
-  align-items: flex-start;
-  gap: 24px;
+  display: grid;
+  gap: 14px;
 }
 
 .owner-results-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  justify-content: flex-end;
-  flex: 0 0 auto;
-  align-self: flex-start;
-}
-
-.owner-results-header > :first-child {
-  flex: 1 1 52rem;
+  justify-content: flex-start;
 }
 
 .owner-results-address {
@@ -977,7 +971,7 @@ main {
 }
 
 .owner-results-note {
-  margin: 12px 0 0;
+  margin: 0;
   max-width: 56rem;
   color: var(--ink-soft);
   font-size: 0.95rem;
@@ -1000,7 +994,7 @@ main {
 }
 
 .owner-help-details {
-  margin-top: 16px;
+  margin-top: 4px;
   max-width: 56rem;
 }
 
