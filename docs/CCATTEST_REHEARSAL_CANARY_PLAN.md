@@ -322,6 +322,7 @@ Run these from the real public `/mint` UI while the site is in `canary`.
    - QR2 path: `continue inside CorePass`
    - operator action: exercise duplicate callback or near-duplicate finalize handling
    - target: confirm the session remains coherent and does not regress
+   - note: do not combine this with same-device mobile mint testing; if mobile same-device is explored later, run it as a separate follow-on matrix so duplicate-event handling and mobile app-link/browser-return issues stay distinguishable
 
 ### D-6. Ownership, transparency, and metadata tests
 1. `OT-01`
@@ -527,6 +528,29 @@ Reserve these for the later official `CCAT` canary:
 1. official contract address and signing-domain wiring
 2. final env replacement accuracy
 3. one full mint success on the official contract
+
+### F-3. Optional same-device mobile evaluation is a separate track
+If same-device mobile mint is explored at all, treat it as a separate follow-on track after the `CCATTEST rehearsal canary`, not as part of `FR-04`.
+
+1. keep the release primary path desktop-first unless the separate mobile matrix proves otherwise
+2. use fresh wallets for the mobile matrix
+3. if `FR-04` is still needed, spend one fresh-wallet mint on that duplicate-event test first, then use separate fresh-wallet runs for mobile same-device evaluation
+4. if mobile same-device succeeds, disclose it only as a secondary supported path until the final public-mint host has also proven it
+5. if mobile same-device does not prove cleanly, keep the release path desktop-first and do not block the launch on it
+
+### F-4. Official CCAT release sequence after the rehearsal closes
+After the `CCATTEST rehearsal canary` is closed:
+
+1. optionally finish the separate same-device mobile matrix
+2. if a CorePass KYC zero-knowledge release appears in time, evaluate it as a separate addition; otherwise keep the current mint path and do not block the release on that feature
+3. finalize the official `CCAT` super-rare decision:
+   - use the approved logo individuals if permission arrives in time, or
+   - replace them with newly prepared super-rare individuals
+4. deploy the official `CCAT` contract
+5. run one exact-host smoke mint on the final public-mint origin:
+   - final host: the intended Vercel Pro public-mint origin
+   - prove `QR 1`, `QR 2`, callback return, Step `3`, finalize, `My Cats`, and transparency/explorer links on that exact host/origin
+6. open the later public mint only after that exact-host smoke succeeds
 
 ## Recommended Execution Order
 1. lock the rehearsal-canary env target

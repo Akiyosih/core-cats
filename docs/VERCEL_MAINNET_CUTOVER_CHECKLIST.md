@@ -112,7 +112,8 @@ Move to `public` only after at least one successful canary mint.
 
 1. Change `NEXT_PUBLIC_LAUNCH_STATE=public`.
 2. Redeploy Vercel.
-3. Confirm:
+3. Set a spend cap before exposing the public-mint host.
+4. Confirm:
    - `/mint` shows the public-live banner
    - relayer status shown to users matches actual backend behavior
    - transparency and explorer links still point at mainnet
@@ -139,6 +140,20 @@ Before treating a Vercel deployment as release-ready, confirm:
    - a clear contract address or contract explorer surface
    - a next step to `My Cats`
 7. the public UI does not require a visible manual-finalize or third-QR recovery path
+
+## Exact-Host Official Smoke
+Before opening the general mint on Vercel Pro, run one official `CCAT` smoke mint on that exact public-mint origin.
+
+1. use the deployed official `CCAT` contract, not `CCATTEST`
+2. prove on the final public-mint host:
+   - `QR 1`
+   - `QR 2`
+   - callback return on the same public origin
+   - Step `3`
+   - finalize success
+   - `My Cats`
+   - transparency and explorer links
+3. if same-device mobile is later disclosed at all, treat it as a secondary path until that exact final host has also proven it
 
 ## Rollback Levers
 If something is wrong on the public site:
