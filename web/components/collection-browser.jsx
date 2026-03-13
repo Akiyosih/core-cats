@@ -217,21 +217,42 @@ function Pagination({ page, totalPages, searchParams, teaserEnabled }) {
   if (totalPages <= 1) return null;
 
   const pages = [];
-  for (let i = 1; i <= totalPages; i += 1) {
-    pages.push(i);
+  const nearCurrent = [page - 1, page, page + 1].filter((value) => value >= 1 && value <= totalPages);
+  const anchors = new Set([1, totalPages, ...nearCurrent]);
+  const orderedPages = Array.from(anchors).sort((left, right) => left - right);
+  let previousPage = null;
+
+  for (const pageNumber of orderedPages) {
+    if (previousPage && pageNumber - previousPage > 1) {
+      pages.push({ type: "ellipsis", key: `ellipsis-${previousPage}-${pageNumber}` });
+    }
+    pages.push({ type: "page", value: pageNumber, key: `page-${pageNumber}` });
+    previousPage = pageNumber;
   }
 
   return (
     <nav className="pagination" aria-label="Collection pages">
-      {pages.map((pageNumber) => (
-        <Link
-          key={pageNumber}
-          href={buildSearchHref(searchParams, { page: pageNumber }, teaserEnabled)}
-          className={`page-pill ${page === pageNumber ? "page-pill--active" : ""}`}
-        >
-          {pageNumber}
-        </Link>
-      ))}
+      {pages.map((entry) => {
+        if (entry.type === "ellipsis") {
+          return (
+            <span key={entry.key} className="page-ellipsis" aria-hidden="true">
+              …
+            </span>
+          );
+        }
+
+        const pageNumber = entry.value;
+        return (
+          <Link
+            key={entry.key}
+            href={buildSearchHref(searchParams, { page: pageNumber }, teaserEnabled)}
+            className={`page-pill ${page === pageNumber ? "page-pill--active" : ""}`}
+            aria-current={page === pageNumber ? "page" : undefined}
+          >
+            {pageNumber}
+          </Link>
+        );
+      })}
     </nav>
   );
 }
