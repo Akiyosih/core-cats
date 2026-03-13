@@ -88,7 +88,7 @@ export default async function CatDetailPage({ params }) {
             )}
           </p>
           <p>
-            <strong>Avatar PNG (transparent):</strong>{" "}
+            <strong>Avatar PNG (transparent background):</strong>{" "}
             {item.image_preview_src ? (
               <a href={item.image_preview_src} target="_blank" rel="noreferrer" className="detail-external-link">
                 Open 384×384 PNG
