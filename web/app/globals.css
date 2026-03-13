@@ -995,12 +995,16 @@ main {
 
 .owner-help-details {
   margin-top: 4px;
+  margin-inline: auto;
   max-width: 56rem;
+  width: 100%;
 }
 
 .owner-help-body {
   display: grid;
   gap: 12px;
+  justify-items: center;
+  text-align: center;
 }
 
 .owner-help-body p {
@@ -1010,7 +1014,7 @@ main {
 .owner-help-qr {
   display: grid;
   gap: 10px;
-  justify-items: start;
+  justify-items: center;
 }
 
 .owner-help-qr img {
@@ -1026,10 +1030,15 @@ main {
   font-size: 0.88rem;
   color: var(--ink-soft);
   overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .owner-help-note {
   color: var(--ink-soft);
+}
+
+.owner-help-details summary {
+  text-align: center;
 }
 
 .collection-filter-toggle {
