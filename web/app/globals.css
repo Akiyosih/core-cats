@@ -1638,6 +1638,13 @@ main {
     background: rgba(255, 255, 255, 0.68);
   }
 
+  .sort-pill--active,
+  .page-pill--active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: white;
+  }
+
   .page-ellipsis {
     min-width: 38px;
     padding: 12px 10px;
