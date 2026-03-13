@@ -491,6 +491,14 @@ main {
   gap: 20px;
 }
 
+.content-grid > *,
+.copy-grid > *,
+.detail-layout > *,
+.collection-layout > *,
+.results-header > * {
+  min-width: 0;
+}
+
 .metric-strip {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -979,6 +987,11 @@ main {
   line-height: 1.75;
 }
 
+.plain-list li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .owner-help-details {
   margin-top: 16px;
   max-width: 42rem;
@@ -1028,6 +1041,8 @@ main {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 0.18em;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .resource-link:hover {
@@ -1523,6 +1538,10 @@ main {
 
   .metric-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .transparency-section .copy-grid.copy-grid--two {
+    grid-template-columns: 1fr;
   }
 
   .results-header,
