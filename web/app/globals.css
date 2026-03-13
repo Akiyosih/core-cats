@@ -425,6 +425,10 @@ main {
   gap: 10px;
 }
 
+.pagination--mobile {
+  display: none;
+}
+
 .button,
 .sort-pill,
 .page-pill {
@@ -1572,6 +1576,14 @@ main {
   .site-header {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .pagination--desktop {
+    display: none;
+  }
+
+  .pagination--mobile {
+    display: flex;
   }
 }
 

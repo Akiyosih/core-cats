@@ -213,12 +213,15 @@ function DerivedCollarBlock({ searchParams, activeValue, contextualValues, tease
   );
 }
 
-function Pagination({ page, totalPages, searchParams, teaserEnabled }) {
-  if (totalPages <= 1) return null;
-
+function buildPaginationEntries(page, totalPages, density) {
   const pages = [];
-  const nearCurrent = [page - 1, page, page + 1].filter((value) => value >= 1 && value <= totalPages);
-  const anchors = new Set([1, totalPages, ...nearCurrent]);
+  const nearCurrent = density === "desktop"
+    ? [page - 2, page - 1, page, page + 1, page + 2]
+    : [page - 1, page, page + 1];
+  const edgePages = density === "desktop" ? [1, 2, totalPages - 1, totalPages] : [1, totalPages];
+  const anchors = new Set(
+    [...edgePages, ...nearCurrent].filter((value) => value >= 1 && value <= totalPages),
+  );
   const orderedPages = Array.from(anchors).sort((left, right) => left - right);
   let previousPage = null;
 
@@ -230,9 +233,13 @@ function Pagination({ page, totalPages, searchParams, teaserEnabled }) {
     previousPage = pageNumber;
   }
 
+  return pages;
+}
+
+function PaginationNav({ className, entries, page, searchParams, teaserEnabled }) {
   return (
-    <nav className="pagination" aria-label="Collection pages">
-      {pages.map((entry) => {
+    <nav className={`pagination ${className}`} aria-label="Collection pages">
+      {entries.map((entry) => {
         if (entry.type === "ellipsis") {
           return (
             <span key={entry.key} className="page-ellipsis" aria-hidden="true">
@@ -254,6 +261,32 @@ function Pagination({ page, totalPages, searchParams, teaserEnabled }) {
         );
       })}
     </nav>
+  );
+}
+
+function Pagination({ page, totalPages, searchParams, teaserEnabled }) {
+  if (totalPages <= 1) return null;
+
+  const desktopPages = buildPaginationEntries(page, totalPages, "desktop");
+  const mobilePages = buildPaginationEntries(page, totalPages, "mobile");
+
+  return (
+    <>
+      <PaginationNav
+        className="pagination--desktop"
+        entries={desktopPages}
+        page={page}
+        searchParams={searchParams}
+        teaserEnabled={teaserEnabled}
+      />
+      <PaginationNav
+        className="pagination--mobile"
+        entries={mobilePages}
+        page={page}
+        searchParams={searchParams}
+        teaserEnabled={teaserEnabled}
+      />
+    </>
   );
 }
 
