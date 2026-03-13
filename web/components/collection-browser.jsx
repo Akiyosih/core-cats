@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import CollectionCard from "./collection-card";
@@ -274,6 +275,7 @@ function applyMintStateFilter(items, statusSnapshot, mintState) {
 
 export default function CollectionBrowser({ collection, filtersDoc, teaserEnabled, statusSnapshotUrl }) {
   const searchParams = useSearchParams();
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const params = sanitizeTeaserSearchParams(searchParamsToObject(searchParams), teaserEnabled);
   const { snapshot: statusSnapshot, error: snapshotError } = usePublicStatusSnapshot(statusSnapshotUrl);
   const activeFilters = normalizeFilterState(params, teaserEnabled);
@@ -331,6 +333,15 @@ export default function CollectionBrowser({ collection, filtersDoc, teaserEnable
               Clear all
             </Link>
           </div>
+          <button
+            type="button"
+            className="button button--ghost button--inline collection-filter-toggle"
+            aria-expanded={mobileFiltersOpen}
+            aria-controls="collection-filter-stack"
+            onClick={() => setMobileFiltersOpen((open) => !open)}
+          >
+            {mobileFiltersOpen ? "Hide filters" : "Show filters"}
+          </button>
           {statusSnapshotUrl ? (
             <p className="mint-meta">
               Live ownership badges and Mint Status filters follow a short public snapshot interval.
@@ -342,27 +353,31 @@ export default function CollectionBrowser({ collection, filtersDoc, teaserEnable
             </p>
           ) : null}
         </div>
-
-        <FilterBlock title="Coat Pattern" filterKey="pattern" values={contextualFilters.pattern.values} searchParams={params} activeValue={activeFilters.pattern} teaserEnabled={teaserEnabled} />
-        <GroupedColorwayBlock
-          paletteValues={contextualFilters.palette_id.values}
-          categoryValues={contextualFilters.category.values}
-          searchParams={params}
-          activeCategory={activeFilters.category}
-          activePalette={activeFilters.palette_id}
-          teaserEnabled={teaserEnabled}
-        />
-        <DerivedCollarBlock
-          searchParams={params}
-          activeValue={activeFilters.collar}
-          contextualValues={contextualFilters.collar.values}
-          teaserEnabled={teaserEnabled}
-        />
-        {statusSnapshot ? (
-          <MintStateBlock searchParams={params} activeValue={mintState || null} counts={mintStateCounts} teaserEnabled={teaserEnabled} />
-        ) : null}
-        <FilterBlock title="Tier" filterKey="rarity_tier" values={contextualFilters.rarity_tier.values} searchParams={params} activeValue={activeFilters.rarity_tier} teaserEnabled={teaserEnabled} />
-        <FilterBlock title="Special Trait" filterKey="rarity_type" values={contextualFilters.rarity_type.values} searchParams={params} activeValue={activeFilters.rarity_type} teaserEnabled={teaserEnabled} />
+        <div
+          id="collection-filter-stack"
+          className={`filter-stack ${mobileFiltersOpen ? "filter-stack--open" : ""}`}
+        >
+          <FilterBlock title="Coat Pattern" filterKey="pattern" values={contextualFilters.pattern.values} searchParams={params} activeValue={activeFilters.pattern} teaserEnabled={teaserEnabled} />
+          <GroupedColorwayBlock
+            paletteValues={contextualFilters.palette_id.values}
+            categoryValues={contextualFilters.category.values}
+            searchParams={params}
+            activeCategory={activeFilters.category}
+            activePalette={activeFilters.palette_id}
+            teaserEnabled={teaserEnabled}
+          />
+          <DerivedCollarBlock
+            searchParams={params}
+            activeValue={activeFilters.collar}
+            contextualValues={contextualFilters.collar.values}
+            teaserEnabled={teaserEnabled}
+          />
+          {statusSnapshot ? (
+            <MintStateBlock searchParams={params} activeValue={mintState || null} counts={mintStateCounts} teaserEnabled={teaserEnabled} />
+          ) : null}
+          <FilterBlock title="Tier" filterKey="rarity_tier" values={contextualFilters.rarity_tier.values} searchParams={params} activeValue={activeFilters.rarity_tier} teaserEnabled={teaserEnabled} />
+          <FilterBlock title="Special Trait" filterKey="rarity_type" values={contextualFilters.rarity_type.values} searchParams={params} activeValue={activeFilters.rarity_type} teaserEnabled={teaserEnabled} />
+        </div>
       </aside>
 
       <section className="results-column">
