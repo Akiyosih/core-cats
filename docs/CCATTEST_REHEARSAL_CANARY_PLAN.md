@@ -289,6 +289,8 @@ Run these from the real public `/mint` UI while the site is in `canary`.
    - QR1 path: `device standard camera`
    - QR2 path: `not prepared`
    - target: confirm another mint is refused before a gas-spending commit transaction is prepared once Wallet A is full
+   - status: complete on `2026-03-13`
+   - note: the refusal appears before `QR 2 of 2` is prepared and uses the cumulative wallet-limit wording
 
 ### D-5. Finalize and recovery tests
 1. `FR-01`
@@ -374,6 +376,7 @@ Run these from the real public `/mint` UI while the site is in `canary`.
 1. `OF-01`
    - transfer a minted `CCATTEST` token to another wallet
    - confirm `My Cats` follows the ownership change after the status cache refreshes
+   - status: complete on `2026-03-13`
 
 This is not a minimum mint gate, but it is high-value if `My Cats` is presented as a real ownership page.
 
