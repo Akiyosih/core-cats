@@ -4,7 +4,7 @@ import json
 import secrets
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from .config import Config, load_config, normalize_core_address_key
 from .finalize_worker import FinalizeManager, FinalizeWorker
@@ -73,7 +73,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         return self.server.ownership_snapshot_cache  # type: ignore[attr-defined]
 
     def _require_auth(self) -> bool:
-        if normalized_path(self.path) in {"/healthz", "/api/public/status"}:
+        if normalized_path(self.path) in {"/healthz", "/api/public/status", "/api/public/owner"}:
             return True
 
         expected = self.config.shared_secret
@@ -128,6 +128,37 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             self,
             200,
             self.ownership_snapshot_cache.snapshot(),
+            cache_control="public, max-age=60, stale-while-revalidate=60",
+            extra_headers=self._public_status_headers(),
+        )
+
+    def _handle_public_owner(self) -> None:
+        owner = str(parse_qs(urlparse(self.path).query).get("address", [""])[0] or "").strip()
+        if not owner:
+            json_response(
+                self,
+                400,
+                {"error": "owner_address_required", "detail": "owner address is required"},
+                cache_control="public, max-age=30, stale-while-revalidate=30",
+                extra_headers=self._public_status_headers(),
+            )
+            return
+        try:
+            payload = self.ownership_snapshot_cache.owner_lookup(owner)
+        except ValueError as error:
+            json_response(
+                self,
+                400,
+                {"error": "invalid_owner_address", "detail": str(error)},
+                cache_control="public, max-age=30, stale-while-revalidate=30",
+                extra_headers=self._public_status_headers(),
+            )
+            return
+
+        json_response(
+            self,
+            200,
+            payload,
             cache_control="public, max-age=60, stale-while-revalidate=60",
             extra_headers=self._public_status_headers(),
         )
@@ -265,6 +296,8 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             return self._handle_healthz()
         if normalized_path(self.path) == "/api/public/status":
             return self._handle_public_status()
+        if normalized_path(self.path) == "/api/public/owner":
+            return self._handle_public_owner()
         if not self._require_auth():
             return
 
@@ -275,7 +308,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         json_response(self, 404, {"error": "not_found"})
 
     def do_OPTIONS(self) -> None:  # noqa: N802
-        if normalized_path(self.path) == "/api/public/status":
+        if normalized_path(self.path) in {"/api/public/status", "/api/public/owner"}:
             self.send_response(204)
             for key, value in self._public_status_headers().items():
                 self.send_header(key, value)

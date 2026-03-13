@@ -18,6 +18,15 @@ const nextConfig = {
         ],
       },
       {
+        source: "/viewer_v1/png-white/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
         source: "/viewer_v1/svg/:path*",
         headers: [
           {

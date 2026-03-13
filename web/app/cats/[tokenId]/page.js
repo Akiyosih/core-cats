@@ -88,13 +88,23 @@ export default async function CatDetailPage({ params }) {
             )}
           </p>
           <p>
-            <strong>Avatar PNG:</strong>{" "}
+            <strong>Avatar PNG (transparent):</strong>{" "}
             {item.image_preview_src ? (
               <a href={item.image_preview_src} target="_blank" rel="noreferrer" className="detail-external-link">
                 Open 384×384 PNG
               </a>
             ) : (
               item.image_preview_file || "not available"
+            )}
+          </p>
+          <p>
+            <strong>Avatar PNG (white background):</strong>{" "}
+            {item.image_preview_white_src ? (
+              <a href={item.image_preview_white_src} target="_blank" rel="noreferrer" className="detail-external-link">
+                Open 384×384 PNG
+              </a>
+            ) : (
+              item.image_preview_white_file || "not available"
             )}
           </p>
         </div>

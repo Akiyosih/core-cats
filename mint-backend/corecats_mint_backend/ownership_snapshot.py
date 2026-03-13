@@ -5,12 +5,14 @@ import threading
 import time
 import urllib.request
 from datetime import datetime, timezone
+import re
 from typing import Any, Callable
 
 from .config import Config
 
 ZERO_ADDRESS = "00000000000000000000000000000000000000000000"
 BLOCKINDEX_USER_AGENT = "Mozilla/5.0 CoreCats/1.0"
+CORE_ADDRESS_RE = re.compile(r"^(?:ab|cb)[0-9a-f]{42}$", re.IGNORECASE)
 Urlopen = Callable[..., Any]
 
 
@@ -20,6 +22,13 @@ def now_iso() -> str:
 
 def _normalize_address(value: str) -> str:
     return str(value or "").strip().lower()
+
+
+def _normalize_owner_lookup(value: str) -> str:
+    normalized = _normalize_address(value)
+    if not CORE_ADDRESS_RE.match(normalized):
+        raise ValueError("owner address must be a valid Core wallet address")
+    return normalized
 
 
 def _to_int(value: Any) -> int:
@@ -200,3 +209,27 @@ class OwnershipSnapshotCache:
             self._snapshot = snapshot
             self._expires_at = now + self._config.public_status_cache_seconds
             return snapshot
+
+    def owner_lookup(self, owner: str) -> dict[str, Any]:
+        normalized_owner = _normalize_owner_lookup(owner)
+        snapshot = self.snapshot()
+        owner_bucket = snapshot.get("byOwner", {}).get(normalized_owner) or {
+            "owner": normalized_owner,
+            "explorer": _explorer_address_url(self._config.explorer_base_url, normalized_owner),
+            "tokenIds": [],
+        }
+        token_ids = [int(token_id) for token_id in owner_bucket.get("tokenIds", [])]
+        by_token = {
+            str(token_id): snapshot.get("byToken", {}).get(str(token_id))
+            for token_id in token_ids
+            if snapshot.get("byToken", {}).get(str(token_id))
+        }
+        return {
+            "fetchedAt": snapshot.get("fetchedAt", now_iso()),
+            "errorMessage": snapshot.get("errorMessage", ""),
+            "cacheTtlSeconds": snapshot.get("cacheTtlSeconds", self._config.public_status_cache_seconds),
+            "explorerBaseUrl": snapshot.get("explorerBaseUrl", self._config.explorer_base_url),
+            "coreCatsAddress": snapshot.get("coreCatsAddress", self._config.corecats_address),
+            "owner": owner_bucket,
+            "byToken": by_token,
+        }

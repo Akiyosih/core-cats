@@ -5,6 +5,7 @@ import { Buffer } from "node:buffer";
 const DEFAULT_OUT_DIR = "manifests/viewer_v1";
 const DEFAULT_PUBLIC_SVG_DIR = "web/public/viewer_v1/svg";
 const DEFAULT_PUBLIC_PNG_DIR = "web/public/viewer_v1/png";
+const DEFAULT_PUBLIC_PNG_WHITE_DIR = "web/public/viewer_v1/png-white";
 const DEFAULT_PUBLIC_COLLECTION_INDEX_PATH = "web/public/viewer_v1/collection-index.json";
 const TRAIT_FILTER_ORDER = [
   ["pattern", "Pattern"],
@@ -44,6 +45,7 @@ function parseArgs(argv) {
     emitSvgFiles: true,
     publicSvgDir: DEFAULT_PUBLIC_SVG_DIR,
     publicPngDir: DEFAULT_PUBLIC_PNG_DIR,
+    publicPngWhiteDir: DEFAULT_PUBLIC_PNG_WHITE_DIR,
     publicCollectionIndexPath: DEFAULT_PUBLIC_COLLECTION_INDEX_PATH,
     embedDataUri: false,
   };
@@ -64,6 +66,11 @@ function parseArgs(argv) {
       opts.publicPngDir = argv[++i];
       if (!opts.publicPngDir) {
         throw new Error("--public-png-dir requires a value");
+      }
+    } else if (arg === "--public-png-white-dir") {
+      opts.publicPngWhiteDir = argv[++i];
+      if (!opts.publicPngWhiteDir) {
+        throw new Error("--public-png-white-dir requires a value");
       }
     } else if (arg === "--public-collection-index-path") {
       opts.publicCollectionIndexPath = argv[++i];
@@ -232,6 +239,8 @@ function buildDetailIndexDoc(collectionItems, root, outDir) {
       image_svg_file: item.image_svg_file,
       image_preview_src: item.image_preview_src,
       image_preview_file: item.image_preview_file,
+      image_preview_white_src: item.image_preview_white_src,
+      image_preview_white_file: item.image_preview_white_file,
       display_attributes: item.display_attributes,
       trait_values: item.trait_values,
       render_recipe: {
@@ -437,6 +446,7 @@ function main() {
   const outDir = path.resolve(root, opts.outDir);
   const publicSvgDir = path.resolve(root, opts.publicSvgDir);
   const publicPngDir = path.resolve(root, opts.publicPngDir);
+  const publicPngWhiteDir = path.resolve(root, opts.publicPngWhiteDir);
   const publicCollectionIndexPath = path.resolve(root, opts.publicCollectionIndexPath);
 
   ensureDir(outDir);
@@ -487,6 +497,7 @@ function main() {
     const imageSvgPublicPath = imageSvgFile ? `/viewer_v1/svg/${imageSvgFile}` : null;
     const imagePngFile = `${String(tokenId).padStart(4, "0")}.png`;
     const imagePngPublicPath = `/viewer_v1/png/${imagePngFile}`;
+    const imagePngWhitePublicPath = `/viewer_v1/png-white/${imagePngFile}`;
     if (imageSvgFile) {
       fs.writeFileSync(path.join(publicSvgDir, imageSvgFile), svg);
     }
@@ -500,6 +511,8 @@ function main() {
       image_svg_file: imageSvgFile ? normalizeRel(root, path.join(publicSvgDir, imageSvgFile)) : null,
       image_preview_src: imagePngPublicPath,
       image_preview_file: normalizeRel(root, path.join(publicPngDir, imagePngFile)),
+      image_preview_white_src: imagePngWhitePublicPath,
+      image_preview_white_file: normalizeRel(root, path.join(publicPngWhiteDir, imagePngFile)),
       trait_values: buildTraitValues(manifestItem),
       color_tuple: manifestItem.color_tuple ?? null,
       slots: manifestItem.slots ?? null,

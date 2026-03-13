@@ -5,10 +5,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import CollectionCard from "./collection-card";
 import { isCoreAddress } from "../lib/collection-utils";
-import { usePublicStatusSnapshot } from "../lib/public-status-client";
+import { usePublicOwnerLookup } from "../lib/public-status-client";
 
 function normalizeOwnerInput(value) {
   return String(value || "").trim();
+}
+
+function buildOwnerLookupUrl(baseUrl, owner) {
+  if (!baseUrl || !owner) return "";
+  const url = new URL(baseUrl, "https://corecats.local");
+  url.pathname = url.pathname.replace(/\/status$/, "/owner");
+  url.searchParams.set("address", owner);
+  return url.toString().replace("https://corecats.local", "");
 }
 
 export default function MyCatsBrowser({
@@ -22,42 +30,50 @@ export default function MyCatsBrowser({
   const searchParams = useSearchParams();
   const initialOwner = normalizeOwnerInput(searchParams.get("owner") || "");
   const [ownerQuery, setOwnerQuery] = useState(initialOwner);
-  const hasSearch = ownerQuery.length > 0;
-  const validOwner = hasSearch ? isCoreAddress(ownerQuery) : false;
-  const { snapshot, loading, error, refresh } = usePublicStatusSnapshot(validOwner ? statusSnapshotUrl : "");
+  const [activeOwner, setActiveOwner] = useState(initialOwner);
+  const hasSearch = activeOwner.length > 0;
+  const validOwner = hasSearch ? isCoreAddress(activeOwner) : false;
+  const ownerLookupUrl = useMemo(
+    () => (validOwner ? buildOwnerLookupUrl(statusSnapshotUrl, activeOwner) : ""),
+    [activeOwner, statusSnapshotUrl, validOwner],
+  );
+  const { ownerLookup, loading, error } = usePublicOwnerLookup(ownerLookupUrl);
   const isCanary = launchState === "canary";
 
   useEffect(() => {
     setOwnerQuery(initialOwner);
+    setActiveOwner(initialOwner);
   }, [initialOwner]);
 
   const ownerStatus = useMemo(() => {
-    if (!validOwner || !snapshot) return null;
-    return snapshot.byOwner?.[ownerQuery.toLowerCase()] || {
-      owner: ownerQuery,
-      explorer: snapshot.explorerBaseUrl ? `${snapshot.explorerBaseUrl.replace(/\/$/, "")}/address/${ownerQuery}` : null,
+    if (!validOwner || !ownerLookup) return null;
+    return ownerLookup.owner || {
+      owner: activeOwner,
+      explorer: ownerLookup.explorerBaseUrl
+        ? `${ownerLookup.explorerBaseUrl.replace(/\/$/, "")}/address/${activeOwner}`
+        : null,
       tokenIds: [],
     };
-  }, [ownerQuery, snapshot, validOwner]);
+  }, [activeOwner, ownerLookup, validOwner]);
 
   const ownerItems = useMemo(() => {
-    if (!ownerStatus || !snapshot) return [];
+    if (!ownerStatus || !ownerLookup) return [];
     const itemMap = new Map(collection.items.map((item) => [item.token_id, item]));
     return ownerStatus.tokenIds
       .map((tokenId) => itemMap.get(tokenId))
       .filter(Boolean)
       .map((item) => ({
         ...item,
-        mint_status: snapshot.byToken?.[String(item.token_id)] || null,
+        mint_status: ownerLookup.byToken?.[String(item.token_id)] || null,
       }));
-  }, [collection.items, ownerStatus, snapshot]);
+  }, [collection.items, ownerLookup, ownerStatus]);
 
   function handleSubmit(event) {
     event.preventDefault();
     const nextOwner = normalizeOwnerInput(ownerQuery);
+    setActiveOwner(nextOwner);
     const href = nextOwner ? `/my-cats?owner=${encodeURIComponent(nextOwner)}` : "/my-cats";
-    router.push(href);
-    refresh(false);
+    router.replace(href, { scroll: false });
   }
 
   return (
@@ -105,7 +121,7 @@ export default function MyCatsBrowser({
         </section>
       ) : null}
 
-      {hasSearch && validOwner && !statusSnapshotUrl ? (
+      {hasSearch && validOwner && !ownerLookupUrl && !statusSnapshotUrl ? (
         <section className="copy-grid my-cats-grid">
           <article className="copy-card my-cats-card">
             <h2>Live ownership is unavailable</h2>
@@ -114,7 +130,7 @@ export default function MyCatsBrowser({
         </section>
       ) : null}
 
-      {hasSearch && validOwner && statusSnapshotUrl && loading && !snapshot ? (
+      {hasSearch && validOwner && ownerLookupUrl && loading && !ownerLookup ? (
         <section className="copy-grid my-cats-grid">
           <article className="copy-card my-cats-card">
             <h2>Loading live ownership...</h2>
@@ -123,7 +139,7 @@ export default function MyCatsBrowser({
         </section>
       ) : null}
 
-      {hasSearch && validOwner && statusSnapshotUrl && error && !snapshot ? (
+      {hasSearch && validOwner && ownerLookupUrl && error && !ownerLookup ? (
         <section className="copy-grid my-cats-grid">
           <article className="copy-card my-cats-card">
             <h2>Live ownership is temporarily unavailable</h2>

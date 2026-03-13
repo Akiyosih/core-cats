@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 const snapshotCache = new Map();
 
-async function loadSnapshot(url) {
+async function loadJson(url) {
   const response = await fetch(url);
   const payload = await response.json();
   if (!response.ok) {
@@ -13,15 +13,15 @@ async function loadSnapshot(url) {
   return payload;
 }
 
-export function usePublicStatusSnapshot(url) {
+function useCachedJson(url) {
   const cached = url ? snapshotCache.get(url) : null;
-  const [snapshot, setSnapshot] = useState(cached?.snapshot || null);
+  const [data, setData] = useState(cached?.data || null);
   const [loading, setLoading] = useState(Boolean(url && !cached));
   const [error, setError] = useState("");
 
   async function refresh(force = false) {
     if (!url) {
-      setSnapshot(null);
+      setData(null);
       setLoading(false);
       setError("");
       return null;
@@ -30,23 +30,23 @@ export function usePublicStatusSnapshot(url) {
     const cachedEntry = snapshotCache.get(url);
     const now = Date.now();
     if (!force && cachedEntry && cachedEntry.expiresAt > now) {
-      setSnapshot(cachedEntry.snapshot);
+      setData(cachedEntry.data);
       setLoading(false);
-      setError(cachedEntry.snapshot?.errorMessage || "");
-      return cachedEntry.snapshot;
+      setError(cachedEntry.data?.errorMessage || "");
+      return cachedEntry.data;
     }
 
     setLoading(true);
     try {
-      const nextSnapshot = await loadSnapshot(url);
-      const ttlSeconds = Number(nextSnapshot.cacheTtlSeconds || 120);
+      const nextData = await loadJson(url);
+      const ttlSeconds = Number(nextData.cacheTtlSeconds || 120);
       snapshotCache.set(url, {
-        snapshot: nextSnapshot,
+        data: nextData,
         expiresAt: now + (Number.isFinite(ttlSeconds) && ttlSeconds > 0 ? ttlSeconds * 1000 : 120_000),
       });
-      setSnapshot(nextSnapshot);
-      setError(nextSnapshot.errorMessage || "");
-      return nextSnapshot;
+      setData(nextData);
+      setError(nextData.errorMessage || "");
+      return nextData;
     } catch (loadError) {
       const message = loadError instanceof Error ? loadError.message : "Failed to load live status";
       setError(message);
@@ -60,5 +60,15 @@ export function usePublicStatusSnapshot(url) {
     refresh(false);
   }, [url]);
 
-  return { snapshot, loading, error, refresh };
+  return { data, loading, error, refresh };
+}
+
+export function usePublicStatusSnapshot(url) {
+  const { data, loading, error, refresh } = useCachedJson(url);
+  return { snapshot: data, loading, error, refresh };
+}
+
+export function usePublicOwnerLookup(url) {
+  const { data, loading, error, refresh } = useCachedJson(url);
+  return { ownerLookup: data, loading, error, refresh };
 }
