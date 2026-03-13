@@ -91,7 +91,7 @@ export default function TransparencyPage() {
   ].filter((item) => item.href);
 
   return (
-    <div className="page-stack narrow-stack">
+    <div className="page-stack">
       <section className="copy-panel">
         <p className="eyebrow">Transparency</p>
         <h1>Check the live contract surface and public artifacts.</h1>

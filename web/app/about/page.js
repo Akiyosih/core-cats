@@ -1,6 +1,6 @@
 export default function AboutPage() {
   return (
-    <div className="page-stack narrow-stack">
+    <div className="page-stack">
       <section className="copy-panel">
         <p className="eyebrow">About</p>
         <h1>Why Core Cats exists</h1>
