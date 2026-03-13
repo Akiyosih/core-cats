@@ -7,11 +7,6 @@ import { useSearchParams } from "next/navigation";
 import { applyCollectionFilters, sortCollection } from "../lib/collection-utils";
 import { usePublicStatusSnapshot } from "../lib/public-status-client";
 
-function shortenAddress(value) {
-  if (!value) return "";
-  return `${value.slice(0, 8)}...${value.slice(-6)}`;
-}
-
 function buildExplorerAddressUrl(explorerBaseUrl, address) {
   if (!explorerBaseUrl || !address) return null;
   return `${explorerBaseUrl.replace(/\/$/, "")}/address/${address}`;
@@ -175,8 +170,7 @@ export default function CatDetailBrowser({
         <p><strong>Mint status:</strong> {mintStatus.minted ? "minted" : "unminted"}</p>
         {mintStatus.minted ? (
           <p>
-            <strong>Current owner:</strong> {mintStatus.owner || "not available"}{" "}
-            {mintStatus.owner ? <span className="detail-meta__short">({shortenAddress(mintStatus.owner)})</span> : null}
+            <strong>Current owner:</strong> {mintStatus.owner || "not available"}
           </p>
         ) : null}
         {statusUnavailable ? (
