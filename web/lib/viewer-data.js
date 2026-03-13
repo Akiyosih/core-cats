@@ -10,6 +10,7 @@ import {
 } from "./collection-utils";
 import {
   applyTeaserPresentationToCollection,
+  applyTeaserPresentationToItem,
   applyTeaserPresentationToFilters,
   sanitizeTeaserSearchParams,
 } from "./server/teaser-display.js";
@@ -54,5 +55,5 @@ export async function getSummary() {
 export async function getCollectionItem(tokenId) {
   const detailIndex = await readJson("detail-index.json");
   const item = detailIndex.items[tokenId - 1];
-  return item?.token_id === tokenId ? item : null;
+  return item?.token_id === tokenId ? applyTeaserPresentationToItem(item) : null;
 }
