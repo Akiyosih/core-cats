@@ -21,9 +21,13 @@ It assumes:
    - `public`
 5. mainnet CoreCats contract address once deploy is complete
 
+Before editing Vercel, also fill the one-page replacement map in:
+`docs/OFFICIAL_CCAT_CUTOVER_NOTE.md`
+
 ## Source References
 1. Mainnet RPC URL family: https://github.com/core-coin/foxar/blob/master/utils/src/rpc.rs
 2. Blockindex mainnet base URL family: https://github.com/core-coin/corebc-rs/blob/master/corebc-core/src/types/network.rs
+3. Official contract + Vercel replacement map: `docs/OFFICIAL_CCAT_CUTOVER_NOTE.md`
 
 ## Recommended Vercel Environment
 Use `web/.env.production.example` as the template.

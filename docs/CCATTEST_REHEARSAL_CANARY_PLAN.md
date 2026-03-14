@@ -537,7 +537,10 @@ Examples:
 ## Phase F: Prepare the Official CCAT Cutover Review
 
 ### F-1. One-page replacement map
-Prepare a cutover note that lists:
+The cutover note now lives in:
+`docs/OFFICIAL_CCAT_CUTOVER_NOTE.md`
+
+Keep it current so it continues to list:
 
 1. `CCATTEST` address -> official `CCAT` address
 2. launch state at first official deploy

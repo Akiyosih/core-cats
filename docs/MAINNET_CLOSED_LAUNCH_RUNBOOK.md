@@ -88,26 +88,37 @@ Pilot success reduces risk, but it does not replace the official final canary be
 Run these steps in order.
 
 1. Confirm launch state is `closed`.
-2. Deploy:
+2. Stage the official deploy defaults locally before any broadcast:
+   - source `foxar/.env.mainnet-official.example`
+   - keep `CORECATS_ALLOW_NONSTANDARD_LABELS=0`
+   - keep `CORECATS_SUPERRARE_PLACEHOLDER=0`
+   - keep the official labels as `CoreCats` / `CCAT`
+   - if the two logo-bearing superrares are still unresolved, finalize that art decision before broadcast rather than silently carrying pilot placeholder mode into the official deploy
+3. Dry-run the deploy script without `--broadcast` first:
+   - `spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript --fork-url "$CORE_MAINNET_RPC_URL" --network-id 1 --wallet-network mainnet --keystore "$DEPLOYER_KEYSTORE_PATH" --password-file "$DEPLOYER_PASSWORD_FILE"`
+   - use this to confirm the constructor inputs and mainnet label guard before the real deploy window
+4. Keep the one-page replacement map at hand:
+   - `docs/OFFICIAL_CCAT_CUTOVER_NOTE.md`
+5. Deploy:
    - `CoreCatsOnchainData`
    - `CoreCatsMetadataRenderer`
    - `CoreCats`
    - for the official mainnet release, keep `CORECATS_COLLECTION_NAME=CoreCats` and `CORECATS_SYMBOL=CCAT`
    - `foxar/script/CoreCatsDeploy.s.sol` now rejects nonstandard mainnet labels unless `CORECATS_ALLOW_NONSTANDARD_LABELS=1` is set intentionally for a pilot-style deploy
-3. Record:
+6. Record:
    - deployer address
    - contract addresses
    - deployment tx hashes
    - commit SHA
-4. Attempt explorer verification.
+7. Attempt explorer verification.
    - if automated verify works, record links
    - if not, submit or stage the manual verify packet
-5. Update the public site with:
+8. Update the public site with:
    - mainnet contract addresses
    - explorer links
    - verify status
-6. Confirm signer and finalizer configuration is pointed at mainnet, not Devin.
-7. Keep public signature issuance disabled.
+9. Confirm signer and finalizer configuration is pointed at mainnet, not Devin.
+10. Keep public signature issuance disabled.
 
 ## 5. Canary Mint Checklist
 This is the first real production-path mint.
