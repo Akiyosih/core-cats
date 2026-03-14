@@ -11,6 +11,7 @@ Reference URLs:
 3. Cloudflare Pages static teaser runbook: `docs/CLOUDFLARE_PUBLIC_TEASER_RUNBOOK.md`
 4. Caddy `basic_auth` directive: https://caddyserver.com/docs/caddyfile/directives/basic_auth
 5. Caddy `reverse_proxy` directive: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy
+6. Next.js 16 upgrade/runtime requirements: https://nextjs.org/docs/app/guides/upgrading/version-16
 
 ## Target Surface
 
@@ -78,6 +79,11 @@ npm install
 node --test ./scripts/check-production-env.test.mjs
 npm run build
 ```
+
+Runtime prerequisite:
+1. use Node.js `20.9+` for `next build` and `next start`
+2. current Contabo private-canary runtime is Node.js 22
+3. if the host is still on Node.js 18, upgrade the runtime before attempting a rebuild or restart
 
 Before deployment:
 1. stage the target env in a local file
