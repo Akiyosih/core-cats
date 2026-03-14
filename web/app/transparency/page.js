@@ -248,7 +248,7 @@ export default function TransparencyPage() {
             <ul className="plain-list">
               <li>The top-level CoreCats contract file is not the whole review surface; imported dependency contracts also matter.</li>
               <li>The active contract build path uses the Core-specific Ylem / Foxar / Spark toolchain, not a generic Ethereum-only path.</li>
-              <li>Owner-controlled surfaces such as `signer` and `metadataRenderer` still exist until a later freeze or renounce step is publicly executed.</li>
+              <li>The remaining launch-critical owner surface is signer control and its later lock/renounce timing; the intended official renderer path should be constructor-fixed and verified from deployed source.</li>
               <li>If the explorer verification is missing, wait for the published verify packet or equivalent reproducibility evidence before treating the deployment as fully inspectable.</li>
             </ul>
           </article>

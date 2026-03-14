@@ -107,4 +107,4 @@ See [Public Document Language Policy](docs/PUBLIC_DOCUMENT_LANGUAGE_POLICY.md).
 **Operation Policy**:
 - Fully free project, no secondary sale royalties  
 - No operational control to change total supply or per-wallet mint limit after deployment
-- Signer rotation, renderer rotation, and backend-assisted mint operations remain explicit trust surfaces unless a later freeze/renounce policy is publicly executed
+- Signer rotation/lock timing and backend-assisted mint operations remain explicit trust surfaces unless a later freeze/renounce policy is publicly executed

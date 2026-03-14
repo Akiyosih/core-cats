@@ -19,12 +19,14 @@ contract MockMetadataRenderer {
 
 contract CoreCatsTest is Test {
     CoreCats private _coreCats;
+    MockMetadataRenderer private _renderer;
     address private _signer;
     string private _signerKey;
     address private _minter;
 
     function setUp() public {
-        _coreCats = new CoreCats("CoreCats", "CCAT");
+        _renderer = new MockMetadataRenderer("data:application/json;base64,Zm9v");
+        _coreCats = new CoreCats("CoreCats", "CCAT", address(_renderer));
         (_signer, _signerKey) = makeAddrAndKey("signer");
         _minter = makeAddr("minter");
         _coreCats.setSigner(_signer);
@@ -117,21 +119,15 @@ contract CoreCatsTest is Test {
         _coreCats.commitMint(2, keccak256(abi.encodePacked(bytes32(uint256(41)))), 41, expiry, sigB);
     }
 
-    function testTokenURIRevertsWhenRendererUnset() public {
-        _commitAndFinalize(_minter, makeAddr("relayer-b"), 1, 21, keccak256("seed-uri-unset"));
-        uint256 tokenId = _ownedTokenId(_minter);
-
-        vm.expectRevert(bytes("renderer not set"));
-        _coreCats.tokenURI(tokenId);
+    function testConstructorRejectsZeroRenderer() public {
+        vm.expectRevert(bytes("renderer required"));
+        new CoreCats("CoreCats", "CCAT", address(0));
     }
 
     function testTokenURIDelegatesToRenderer() public {
-        string memory expected = "data:application/json;base64,Zm9v";
-        MockMetadataRenderer renderer = new MockMetadataRenderer(expected);
-        _coreCats.setMetadataRenderer(address(renderer));
-
         _commitAndFinalize(_minter, makeAddr("relayer-c"), 1, 22, keccak256("seed-uri-set"));
 
+        string memory expected = "data:application/json;base64,Zm9v";
         string memory actual = _coreCats.tokenURI(_ownedTokenId(_minter));
         assertEq(actual, expected);
         assertTrue(_startsWith(actual, "data:application/json;base64,"));
@@ -146,13 +142,26 @@ contract CoreCatsTest is Test {
         _coreCats.setSigner(anotherSigner);
     }
 
-    function testSetMetadataRendererOnlyOwner() public {
-        address nonOwner = makeAddr("non-owner");
-        MockMetadataRenderer renderer = new MockMetadataRenderer("data:application/json;base64,Zm9v");
+    function testMetadataRendererPinnedAtDeploy() public {
+        assertEq(_coreCats.metadataRenderer(), address(_renderer));
+    }
 
+    function testLockSignerOnlyOwner() public {
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
-        vm.prank(nonOwner);
-        _coreCats.setMetadataRenderer(address(renderer));
+        vm.prank(makeAddr("non-owner"));
+        _coreCats.lockSigner();
+    }
+
+    function testLockSignerPreventsFurtherRotation() public {
+        _coreCats.lockSigner();
+
+        vm.expectRevert(bytes("signer locked"));
+        _coreCats.setSigner(makeAddr("another-signer"));
+    }
+
+    function testSetSignerRejectsZeroAddress() public {
+        vm.expectRevert(bytes("signer required"));
+        _coreCats.setSigner(address(0));
     }
 
     function testFinalizeTooEarlyReverts() public {
@@ -263,10 +272,11 @@ contract CoreCatsTest is Test {
     }
 
     function testConstructorSupportsCustomCollectionLabels() public {
-        CoreCats custom = new CoreCats("CCATTEST", "CCATTEST");
+        CoreCats custom = new CoreCats("CCATTEST", "CCATTEST", address(_renderer));
 
         assertEq(custom.name(), "CCATTEST");
         assertEq(custom.symbol(), "CCATTEST");
+        assertEq(custom.metadataRenderer(), address(_renderer));
     }
 
     function _commitAndFinalize(address to, address finalizer, uint8 quantity, uint256 nonce, bytes32 seed) internal {

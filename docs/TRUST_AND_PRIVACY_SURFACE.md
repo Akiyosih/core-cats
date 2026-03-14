@@ -49,11 +49,13 @@ Important operator-controlled surfaces still exist:
 
 1. the contract owner can call `setSigner(address)`  
    This changes which off-chain signer is allowed to issue mint authorizations.
-2. the contract owner can call `setMetadataRenderer(address)`  
-   This means the renderer address is still owner-controlled unless a later freeze/renounce policy is publicly executed.
+2. the contract owner can call `lockSigner()`  
+   This is the one-way action that permanently disables later signer rotation once launch stability is proven.
 3. mint authorization is currently signature-gated  
    That means mint eligibility depends on the backend signer issuing a valid authorization for the contract.
-4. the preferred production flow includes a relayer/finalizer backend  
+4. the intended official contract fixes `metadataRenderer` in the constructor rather than rotating it after deploy  
+   Outside readers should still verify the deployed source and constructor wiring on the explorer or from the published verify packet.
+5. the preferred production flow includes a relayer/finalizer backend  
    This is operational convenience, not a hidden mint right, because `finalizeMint(minter)` remains permissionless and a manual CorePass fallback is kept in the UX.
 
 Relevant references:
@@ -165,7 +167,7 @@ Before or at the mainnet canary/public opening stage, the project should publish
 If you are reviewing Core Cats before mint:
 
 1. trust the fixed supply/limit/randomness properties only to the extent they are visible in the published contract and launch artifacts
-2. treat signer rotation, renderer rotation, and backend issuance as explicit operational trust surfaces
+2. treat signer rotation, signer-lock timing, and backend issuance as explicit operational trust surfaces
 3. do not assume the current mint flow is privacy-preserving in the anonymity sense
 4. do not treat the top-level contract file as the whole review surface; imported dependencies and the active Core toolchain also matter
 5. do expect the project to publish enough addresses, tx hashes, manifests, verify artifacts, and runbooks for outside inspection

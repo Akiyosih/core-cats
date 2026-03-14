@@ -6,7 +6,7 @@ Status: Rehearsed once on Core Devin (verify pending)
 Deploy and verify the current CoreCats Phase A contracts on Core testnet with reproducible steps:
 1. `CoreCatsOnchainData`
 2. `CoreCatsMetadataRenderer`
-3. `CoreCats` (then `setMetadataRenderer`)
+3. `CoreCats` with the renderer address pinned in the constructor
 
 ## 2. Preconditions
 1. Work branch is up to date and tests are green.
@@ -71,9 +71,10 @@ Without it, signing may fail with `Invalid network id prefix in address`.
 ## 7. Post-Deploy Checks
 1. Confirm `CoreCats.metadataRenderer()` equals deployed renderer address.
 2. Confirm `CoreCats.signer()` equals the intended mint signer address.
-3. Run one commit/finalize mint rehearsal.
-4. Confirm `tokenURI(tokenId)` returns `data:application/json;base64,...`.
-5. Decode metadata and confirm `image` is `data:image/svg+xml;base64,...`.
+3. Confirm `CoreCats.signerLocked()` is `false` unless you intentionally already locked it.
+4. Run one commit/finalize mint rehearsal.
+5. Confirm `tokenURI(tokenId)` returns `data:application/json;base64,...`.
+6. Decode metadata and confirm `image` is `data:image/svg+xml;base64,...`.
 
 ### 7.1 Static Configuration Check
 

@@ -6,12 +6,14 @@ Status: public-facing policy note for the current mainnet launch path
 Explain how Core Cats intends to handle owner/admin powers after mainnet deployment.
 
 ## Current Contract Reality
-The active `CoreCats` contract keeps two owner-only actions:
+The intended official `CoreCats` contract keeps one launch-critical owner-controlled action:
 
 1. `setSigner(address)`
-2. `setMetadataRenderer(address)`
+2. `lockSigner()`
 
-That means the current contract is not "fully renounced at deploy" by default.
+The official `metadataRenderer` address is intended to be fixed in the constructor rather than rotated after deploy.
+
+That means the official contract is still not "fully renounced at deploy" by default, but the main mutable launch surface is signer control rather than renderer rotation.
 
 Relevant local reference:
 1. `foxar/src/CoreCats.sol`
@@ -57,7 +59,7 @@ During mainnet closed launch, canary, and any live public mint window:
 Reason:
 1. the current release path is still signature-gated
 2. signer rotation may be needed if a real launch problem appears
-3. renderer rotation may be needed only if a launch-critical rendering issue is discovered
+3. once signer stability is proven, the owner can irreversibly call `lockSigner()`
 
 ## Renounce Policy
 Core Cats does not promise automatic immediate renounce at the first deploy block.
@@ -65,8 +67,9 @@ Core Cats does not promise automatic immediate renounce at the first deploy bloc
 Instead, the current public policy is:
 
 1. do not renounce before the mainnet canary is complete
-2. do not renounce while the team still believes signer or renderer rotation may realistically be needed for the active mint phase
+2. do not renounce while the team still believes signer rotation may realistically be needed for the active mint phase
 3. once the live mint phase is stable or complete, choose one of these public end states:
+   - call `lockSigner()` and publish the tx hash
    - renounce ownership and publish the renounce tx hash
    - or keep ownership on the cold wallet and publicly explain why ownership is still being retained
 
@@ -77,6 +80,7 @@ Regardless of later owner policy, the active contract already fixes:
 2. per-address mint limit at `3`
 
 So the main remaining trust surface is not supply inflation. It is operator control over signer/renderer configuration.
+So the main remaining trust surface is not supply inflation or post-deploy renderer replacement. It is operator control over signer configuration until `lockSigner()` and any later ownership decision.
 
 ## Public Reader Summary
 Current policy in plain language:

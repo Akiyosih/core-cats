@@ -8,7 +8,14 @@ contract CoreCatsReadStateScript is Script {
     function run()
         external
         view
-        returns (uint256 totalSupply, uint256 availableSupply, uint256 reservedSupply, address metadataRenderer, address signer)
+        returns (
+            uint256 totalSupply,
+            uint256 availableSupply,
+            uint256 reservedSupply,
+            address metadataRenderer,
+            address signer,
+            bool signerLocked
+        )
     {
         address coreCatsAddress = vm.envAddress("CORECATS_ADDRESS");
         CoreCats coreCats = CoreCats(coreCatsAddress);
@@ -18,5 +25,6 @@ contract CoreCatsReadStateScript is Script {
         reservedSupply = coreCats.reservedSupply();
         metadataRenderer = coreCats.metadataRenderer();
         signer = coreCats.signer();
+        signerLocked = coreCats.signerLocked();
     }
 }

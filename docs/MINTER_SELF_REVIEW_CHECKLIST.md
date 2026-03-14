@@ -75,7 +75,7 @@ Core Cats is not currently a fully trustless mint.
 Before minting, understand that:
 
 1. the owner can still change `signer`
-2. the owner can still change `metadataRenderer`
+2. the official `metadataRenderer` should be constructor-fixed rather than owner-rotated, but you should still verify that from the deployed source / explorer evidence
 3. mint authorization is signature-gated
 4. the preferred production path includes a relayer/finalizer backend for convenience
 5. same-device mobile is a secondary supported path, not the primary release path

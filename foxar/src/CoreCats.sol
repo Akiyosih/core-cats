@@ -31,9 +31,12 @@ contract CoreCats is CRC721, Ownable {
     mapping(uint256 => uint256) private _tokenMatrix;
 
     address public signer;
-    address public metadataRenderer;
+    address public immutable metadataRenderer;
+    bool public signerLocked;
     uint256 public reservedSupply;
 
+    event SignerUpdated(address indexed previousSigner, address indexed newSigner);
+    event SignerLocked(address indexed finalSigner);
     event MintCommitted(
         address indexed minter,
         uint8 quantity,
@@ -45,18 +48,29 @@ contract CoreCats is CRC721, Ownable {
     event MintFinalized(address indexed minter, address indexed finalizer, uint8 quantity, bytes32 entropy);
     event TokenAssigned(address indexed minter, uint256 indexed tokenId, uint256 indexed drawIndex, bytes32 entropy);
 
-    constructor(string memory collectionName_, string memory collectionSymbol_) CRC721(collectionName_, collectionSymbol_) {
+    constructor(string memory collectionName_, string memory collectionSymbol_, address metadataRenderer_)
+        CRC721(collectionName_, collectionSymbol_)
+    {
         require(bytes(collectionName_).length != 0, "name required");
         require(bytes(collectionSymbol_).length != 0, "symbol required");
+        require(metadataRenderer_ != address(0), "renderer required");
         signer = msg.sender;
+        metadataRenderer = metadataRenderer_;
+        emit SignerUpdated(address(0), signer);
     }
 
     function setSigner(address newSigner) external onlyOwner {
+        require(!signerLocked, "signer locked");
+        require(newSigner != address(0), "signer required");
+        address previousSigner = signer;
         signer = newSigner;
+        emit SignerUpdated(previousSigner, newSigner);
     }
 
-    function setMetadataRenderer(address newRenderer) external onlyOwner {
-        metadataRenderer = newRenderer;
+    function lockSigner() external onlyOwner {
+        require(!signerLocked, "signer locked");
+        signerLocked = true;
+        emit SignerLocked(signer);
     }
 
     function totalSupply() public view returns (uint256) {
@@ -155,7 +169,6 @@ contract CoreCats is CRC721, Ownable {
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         _requireMinted(tokenId);
-        require(metadataRenderer != address(0), "renderer not set");
         return ICoreCatsMetadataRenderer(metadataRenderer).tokenURI(tokenId);
     }
 

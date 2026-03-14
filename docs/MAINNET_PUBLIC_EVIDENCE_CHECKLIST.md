@@ -40,6 +40,7 @@ Publish these when the official `CCAT` contract is deployed and the public site 
 10. the live owner / signer / `metadataRenderer` values, either:
    - as explorer links, or
    - as published read results with tx/evidence links
+   - including whether `signerLocked` is still `false` or has already been permanently set to `true`
 11. the public trust-policy links:
    - trust surface note
    - freeze / renounce policy
@@ -70,9 +71,9 @@ Do not open the general mint until these are public.
 If the project keeps any mutable or operator-controlled surface, keep publishing updates.
 
 1. ownership transfer transaction hash when ownership moves
-2. renounce transaction hash if ownership is later renounced
-3. any `setSigner(...)` change with tx hash and reason
-4. any `setMetadataRenderer(...)` change with tx hash and reason
+2. signer-lock transaction hash when `lockSigner()` is later executed
+3. renounce transaction hash if ownership is later renounced
+4. any `setSigner(...)` change with tx hash and reason
 5. delayed explorer verification once it becomes available
 6. any user-visible mint incident or regression that affects mint safety or correctness
 
@@ -96,5 +97,5 @@ Before minting, a careful reader should be able to answer all of these from publ
 1. what exact contract is live
 2. what repo commit and artifacts produced it
 3. whether explorer verification or a verify packet exists
-4. who still controls signer / renderer / ownership
+4. who still controls signer / ownership, and whether renderer was constructor-pinned
 5. whether an official exact-host mint already succeeded

@@ -37,8 +37,7 @@ contract CoreCatsDeployScript is Script {
         renderer = new CoreCatsMetadataRenderer(
             address(data), tokenNamePrefix, tokenDescription, superrarePlaceholderEnabled
         );
-        coreCats = new CoreCats(collectionName, collectionSymbol);
-        coreCats.setMetadataRenderer(address(renderer));
+        coreCats = new CoreCats(collectionName, collectionSymbol, address(renderer));
 
         vm.stopBroadcast();
     }
