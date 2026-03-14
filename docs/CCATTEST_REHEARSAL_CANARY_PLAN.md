@@ -148,6 +148,20 @@ The mint UI should explain the expected transport:
 6. unless a test explicitly says otherwise, `QR 2 of 2` should continue inside CorePass after `QR 1 of 2`
 7. still keep one dedicated smoke test that uses the device standard camera for `QR 2 of 2`
 
+### B-4a. Same-device mobile UI additions for the current branch
+The current remaining UI work is to expose the already-generated mobile app-link path without weakening the desktop-first release path.
+
+1. keep `desktop-first` as the default and recommended route
+2. add an explicit route choice before session creation:
+   - `Desktop QR`
+   - `Same-device mobile`
+3. when `Same-device mobile` is selected, expose at minimum:
+   - `Open QR 1 in CorePass`
+   - `Open QR 2 in CorePass`
+4. on app return, refresh the active session automatically and keep `Refresh status` as the manual fallback
+5. keep Step `3` as the same relayer-driven finalize path; do not turn same-device support into a visible manual-finalize flow
+6. if same-device mobile remains secondary at release time, say that clearly in the live UI instead of hiding the route completely
+
 ### B-5. Success state
 The success state should surface:
 
@@ -472,6 +486,27 @@ This split keeps the plan aligned with the practical wallet-switch-minimizing wo
 2. avoid switching back into old wallets just to re-open pages that were already available during the successful mint
 3. finish with the checks that can still be closed cleanly from Wallet A
 
+### D-11. Separate same-device mobile track
+Run this as its own private-canary track after the `/mint` UI exposes the app-link route. Do not merge it into `FR-04`.
+
+1. use fresh wallets that are not shared with the duplicate-event test
+2. keep desktop-first as the release primary path unless the separate mobile matrix proves otherwise
+3. baseline cases for the first pass:
+   - `SM-01`: fresh wallet, quantity `1`, same-device success path
+   - `SM-02`: confirm `QR 1 of 2 -> QR 2 of 2` advances after app return without relying on a manual reload
+   - `SM-03`: confirm `QR 2 of 2 -> Step 3` advances after app return without relying on a manual reload
+4. only extend to quantity `2 / 3` after the quantity-`1` same-device baseline is clean
+5. even if this track passes, disclose same-device only as a secondary supported path until the final public-mint host also proves it
+
+### D-12. Current remaining focus as of `2026-03-14`
+Treat the already-passed checks as closed unless a regression appears. The remaining execution priority is:
+
+1. land the same-device mobile `/mint` UI branch on the private canary surface
+2. run the separate fresh-wallet same-device matrix
+3. run `FR-04` as its own duplicate callback / near-duplicate finalize handling check
+4. fix only the cases that regress or block those remaining tracks
+5. move on to the official `CCAT` cutover review after the remaining private-canary evidence is either closed or explicitly deferred as non-blocking
+
 ## Phase E: Fix, Re-Test, and Keep the Bug Bar Honest
 
 ### E-1. P0: do not proceed
@@ -529,19 +564,19 @@ Reserve these for the later official `CCAT` canary:
 2. final env replacement accuracy
 3. one full mint success on the official contract
 
-### F-3. Optional same-device mobile evaluation is a separate track
-If same-device mobile mint is explored at all, treat it as a separate follow-on track after the `CCATTEST rehearsal canary`, not as part of `FR-04`.
+### F-3. Same-device mobile stays separate from `FR-04`
+The current branch should expose same-device mobile through the real `/mint` UI, but keep it as a separate evidence track from duplicate-event handling.
 
 1. keep the release primary path desktop-first unless the separate mobile matrix proves otherwise
 2. use fresh wallets for the mobile matrix
-3. if `FR-04` is still needed, spend one fresh-wallet mint on that duplicate-event test first, then use separate fresh-wallet runs for mobile same-device evaluation
+3. if `FR-04` is still needed, spend one fresh-wallet mint on that duplicate-event test separately instead of mixing both concerns into one session
 4. if mobile same-device succeeds, disclose it only as a secondary supported path until the final public-mint host has also proven it
 5. if mobile same-device does not prove cleanly, keep the release path desktop-first and do not block the launch on it
 
 ### F-4. Official CCAT release sequence after the rehearsal closes
 After the `CCATTEST rehearsal canary` is closed:
 
-1. optionally finish the separate same-device mobile matrix
+1. close the separate same-device mobile matrix, or explicitly defer it without changing the desktop-first release path
 2. if a CorePass KYC zero-knowledge release appears in time, evaluate it as a separate addition; otherwise keep the current mint path and do not block the release on that feature
 3. finalize the official `CCAT` super-rare decision:
    - use the approved logo individuals if permission arrives in time, or
@@ -553,15 +588,14 @@ After the `CCATTEST rehearsal canary` is closed:
 6. open the later public mint only after that exact-host smoke succeeds
 
 ## Recommended Execution Order
-1. lock the rehearsal-canary env target
-2. finish the remaining mint-critical UI copy and success-state work
-3. verify `My Cats` and transparency against the `CCATTEST` mainnet contract
-4. verify durable session and finalize behavior on the real proxy/backend path
-5. switch the public site to `canary` while still pointing at `CCATTEST`
-6. run the rehearsal-canary smoke checks
-7. run the full rehearsal-canary matrix
-8. fix issues and re-test until `P0` is zero and `P1` is acceptably small
-9. prepare the later official `CCAT` cutover review
+1. keep the already-passed checks closed unless a regression appears
+2. land the same-device mobile `/mint` UI branch on the private canary surface
+3. run the separate fresh-wallet same-device matrix
+4. run `FR-04` as its own duplicate-event handling check
+5. fix only the affected paths and re-test only the affected cases
+6. prepare the later official `CCAT` cutover review
+7. deploy the official `CCAT` contract
+8. run one exact-host smoke mint on the final Vercel Pro public-mint origin
 
 ## Done Conditions
 The `CCATTEST rehearsal canary` can be treated as complete only if all of the following are true:

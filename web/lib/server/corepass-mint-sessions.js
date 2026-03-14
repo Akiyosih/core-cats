@@ -212,6 +212,10 @@ function corePassReturnType(handoff) {
   return handoff === "desktop-qr" ? "callback" : "app-link";
 }
 
+function normalizeHandoffMode(value) {
+  return String(value || "").trim().toLowerCase() === "same-device" ? "same-device" : "desktop";
+}
+
 async function buildSignRequest(request, session) {
   const deadline = Math.floor(session.expiresAtMs / 1000);
   const callbackConn = buildCallbackUrl(request, session.id, "identify");
@@ -536,6 +540,7 @@ function serializeSession(session) {
   const meta = sessionPublicMeta();
   return {
     sessionId: session.id,
+    handoffMode: normalizeHandoffMode(session.handoffMode),
     status: session.status,
     quantity: session.quantity,
     minter: session.minter || null,
@@ -600,13 +605,14 @@ function serializeSession(session) {
   };
 }
 
-export async function createMintSession(request, { quantity }) {
+export async function createMintSession(request, { quantity, handoffMode }) {
   cleanupExpiredSessions();
   cleanupSessionReadCache();
   const env = getCoreServerEnv();
 
   const session = {
     id: crypto.randomUUID(),
+    handoffMode: normalizeHandoffMode(handoffMode),
     quantity,
     status: "awaiting_identity",
     minter: "",
@@ -658,6 +664,19 @@ export async function readMintSession(request, sessionId, { force = false } = {}
       cacheMissingSession(sessionId, error);
     }
     throw error;
+  }
+}
+
+export async function resolveMintSessionHandoffMode(request, sessionId) {
+  const normalizedSessionId = String(sessionId || "").trim();
+  if (!normalizedSessionId) {
+    return "";
+  }
+  try {
+    const session = await readMintSession(request, normalizedSessionId);
+    return normalizeHandoffMode(session?.handoffMode) === "same-device" ? "same-device" : "";
+  } catch {
+    return "";
   }
 }
 

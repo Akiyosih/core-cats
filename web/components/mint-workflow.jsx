@@ -4,6 +4,33 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";
+const HANDOFF_DESKTOP = "desktop";
+const HANDOFF_SAME_DEVICE = "same-device";
+const HANDOFF_MODE_STORAGE_KEY = "corecats.mint.handoffMode";
+
+function normalizeHandoffMode(value) {
+  return String(value || "").trim().toLowerCase() === HANDOFF_SAME_DEVICE ? HANDOFF_SAME_DEVICE : HANDOFF_DESKTOP;
+}
+
+function isSameDeviceMode(value) {
+  return normalizeHandoffMode(value) === HANDOFF_SAME_DEVICE;
+}
+
+function readStoredHandoffMode() {
+  if (typeof window === "undefined") return HANDOFF_DESKTOP;
+  try {
+    return normalizeHandoffMode(window.sessionStorage.getItem(HANDOFF_MODE_STORAGE_KEY) || "");
+  } catch {
+    return HANDOFF_DESKTOP;
+  }
+}
+
+function writeStoredHandoffMode(value) {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(HANDOFF_MODE_STORAGE_KEY, normalizeHandoffMode(value));
+  } catch {}
+}
 
 function preferredScrollBehavior() {
   if (typeof window === "undefined") return "auto";
@@ -128,7 +155,7 @@ async function getJson(url, options = {}) {
   return payload;
 }
 
-function DesktopQrAction({
+function MintApprovalAction({
   eyebrow,
   stepBadge,
   title,
@@ -140,9 +167,14 @@ function DesktopQrAction({
   completeTone = "done",
   resolved = false,
   sectionRef = null,
+  handoffMode = HANDOFF_DESKTOP,
+  actionLabel = "Open in CorePass",
+  actionNote = "",
+  onOpenMobile = null,
 }) {
   if (!request) return null;
   const complete = Boolean(request.completedAt || request.txHash || resolved);
+  const sameDeviceMode = isSameDeviceMode(handoffMode);
 
   return (
     <article ref={sectionRef} className="mint-card mint-step-card">
@@ -160,9 +192,23 @@ function DesktopQrAction({
       ) : (
         <div className="mint-action-grid mint-action-grid--desktop">
           <div className="mint-action-panel mint-action-panel--desktop">
-            <p className="mint-action-title">Desktop QR handoff</p>
+            <p className="mint-action-title">{sameDeviceMode ? "Same-device CorePass handoff" : "Desktop QR handoff"}</p>
             {highlightedNotice ? <p className="mint-scan-callout">{highlightedNotice}</p> : null}
-            {request.qrDataUrl ? <img src={request.qrDataUrl} alt={`${title} QR`} className="mint-qr" /> : null}
+            {sameDeviceMode ? (
+              <>
+                <button
+                  type="button"
+                  className="button button--primary button--wide"
+                  onClick={() => onOpenMobile?.(request.mobileUri)}
+                  disabled={!request.mobileUri}
+                >
+                  {actionLabel}
+                </button>
+                {actionNote ? <p className="mint-meta">{actionNote}</p> : null}
+              </>
+            ) : request.qrDataUrl ? (
+              <img src={request.qrDataUrl} alt={`${title} QR`} className="mint-qr" />
+            ) : null}
           </div>
         </div>
       )}
@@ -256,9 +302,12 @@ function describeRejectedSession(code) {
 export default function MintWorkflow({ config }) {
   const searchParams = useSearchParams();
   const initialSessionId = searchParams.get("sessionId") || "";
+  const modeParam = String(searchParams.get("mode") || "");
+  const initialHandoffMode = normalizeHandoffMode(modeParam);
   const callbackError = searchParams.get("callbackError") || "";
 
   const [sessionId, setSessionId] = useState(initialSessionId);
+  const [handoffMode, setHandoffMode] = useState(initialHandoffMode);
   const [session, setSession] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -270,6 +319,7 @@ export default function MintWorkflow({ config }) {
   const step3Ref = useRef(null);
   const successRef = useRef(null);
   const lastErrorScrollKeyRef = useRef("");
+  const lastReturnRefreshAtRef = useRef(0);
   const scrollMarksRef = useRef({
     sessionId: "",
     step1: false,
@@ -303,6 +353,24 @@ export default function MintWorkflow({ config }) {
   }, [initialSessionId]);
 
   useEffect(() => {
+    if (modeParam) {
+      setHandoffMode(initialHandoffMode);
+      return;
+    }
+    const storedMode = readStoredHandoffMode();
+    setHandoffMode((currentMode) => (currentMode === storedMode ? currentMode : storedMode));
+  }, [initialHandoffMode, modeParam]);
+
+  useEffect(() => {
+    if (!session?.handoffMode) return;
+    setHandoffMode(normalizeHandoffMode(session.handoffMode));
+  }, [session?.handoffMode]);
+
+  useEffect(() => {
+    writeStoredHandoffMode(handoffMode);
+  }, [handoffMode]);
+
+  useEffect(() => {
     scrollMarksRef.current = {
       sessionId,
       step1: false,
@@ -334,7 +402,7 @@ export default function MintWorkflow({ config }) {
         setSession(null);
         setSessionId("");
         if (typeof window !== "undefined") {
-          window.history.replaceState({}, "", "/mint");
+          window.history.replaceState({}, "", mintUrlFor("", session?.handoffMode || handoffMode));
         }
         setError("Mint session not found or expired. Start a new mint from the beginning.");
         return;
@@ -352,19 +420,39 @@ export default function MintWorkflow({ config }) {
     refreshSession(sessionId);
   }, [sessionId, session]);
 
+  function mintUrlFor(nextSessionId, nextHandoffMode) {
+    const search = new URLSearchParams();
+    if (nextSessionId) {
+      search.set("sessionId", nextSessionId);
+    }
+    if (normalizeHandoffMode(nextHandoffMode) === HANDOFF_SAME_DEVICE) {
+      search.set("mode", HANDOFF_SAME_DEVICE);
+    }
+    const suffix = search.toString();
+    return suffix ? `/mint?${suffix}` : "/mint";
+  }
+
   async function handleBegin() {
     setLoading(true);
     setError("");
     try {
-      const payload = await postJson("/api/mint/corepass/session", { quantity });
+      const nextHandoffMode = normalizeHandoffMode(handoffMode);
+      const payload = await postJson("/api/mint/corepass/session", { quantity, handoffMode: nextHandoffMode });
       setSession(payload);
       setSessionId(payload.sessionId);
-      window.history.replaceState({}, "", `/mint?sessionId=${encodeURIComponent(payload.sessionId)}`);
+      setHandoffMode(nextHandoffMode);
+      window.history.replaceState({}, "", mintUrlFor(payload.sessionId, nextHandoffMode));
     } catch (createError) {
       setError(createError.message || "Failed to create CorePass mint session");
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleOpenMobile(uri) {
+    if (!uri || typeof window === "undefined") return;
+    setError("");
+    window.location.assign(uri);
   }
 
   const currentState = session?.status || "idle";
@@ -388,6 +476,10 @@ export default function MintWorkflow({ config }) {
   const displayedError = error || (authorizationExpired ? "QR 2 of 2 expired before approval. Start a new mint from the beginning." : "");
   const restartMintVisible = authorizationExpired || displayedError.toLowerCase().includes("start a new mint from the beginning");
   const terminalSession = finalizeConfirmed || authorizationExpired || authorizeRejected || currentState === "commit_failed" || currentState === "finalize_expired";
+  const activeHandoffMode = normalizeHandoffMode(session?.handoffMode || handoffMode);
+  const sameDeviceMode = isSameDeviceMode(activeHandoffMode);
+  const restartMintHref = mintUrlFor("", activeHandoffMode);
+  const routeSelectionLocked = Boolean(sessionId && !terminalSession);
   const bridgePhase =
     sessionId &&
     session &&
@@ -418,7 +510,9 @@ export default function MintWorkflow({ config }) {
     phaseCopy = rejectedSession.phaseCopy;
   }
   if (session?.commit) {
-    phaseCopy = "Wallet confirmed on desktop. QR 2 of 2 is now ready for the commit transaction.";
+    phaseCopy = sameDeviceMode
+      ? "Wallet confirmed. Open QR 2 of 2 in CorePass to send the commit transaction."
+      : "Wallet confirmed on desktop. QR 2 of 2 is now ready for the commit transaction.";
   }
   if (authorizationExpired) {
     phaseCopy = "QR 2 of 2 expired before approval. Start a new mint from the beginning.";
@@ -451,14 +545,16 @@ export default function MintWorkflow({ config }) {
     : authorizationExpired
       ? "QR 2 of 2 is no longer valid. Do not scan or reuse it. Start a new mint from the beginning."
     : commitSubmitted
-      ? "CorePass returned the commit transaction. This desktop page is now waiting for the chain receipt."
-      : "Return to this desktop page, then scan QR 2 of 2 to approve the real commit transaction in CorePass.";
+      ? "CorePass returned the commit transaction. This mint page is now waiting for the chain receipt."
+      : sameDeviceMode
+        ? "Return to this mint page, then open QR 2 of 2 in CorePass to approve the real commit transaction."
+        : "Return to this mint page, then scan QR 2 of 2 to approve the real commit transaction in CorePass.";
   const relayerNote = finalizeConfirmed
     ? "Finalize completed. The mint is now delivered."
     : commitSubmitted && !commitConfirmed
-      ? "CorePass returned the commit transaction, but the desktop session is still waiting for an on-chain receipt before automatic finalize can begin."
-    : session?.finalize?.stuck
-      ? "Automatic finalize is taking longer than expected. Do not start a new mint or reuse any earlier QR within 30 minutes."
+      ? "CorePass returned the commit transaction, but this mint session is still waiting for an on-chain receipt before automatic finalize can begin."
+      : session?.finalize?.stuck
+        ? "Automatic finalize is taking longer than expected. Do not start a new mint or reuse any earlier QR within 30 minutes."
       : finalizeStatus === "submitted"
         ? "Automatic finalize was sent by the backend and is now waiting for chain confirmation."
         : finalizeStatus === "retrying" || finalizeStatus === "awaiting_finalize"
@@ -507,6 +603,27 @@ export default function MintWorkflow({ config }) {
   }, [bridgeAutoRefreshMs, sessionId, shouldAutoRefreshBridge]);
 
   useEffect(() => {
+    if (!sessionId || !sameDeviceMode || terminalSession) return;
+
+    function refreshOnReturn() {
+      if (document.visibilityState === "hidden") return;
+      const now = Date.now();
+      if (now - lastReturnRefreshAtRef.current < 3_000) return;
+      lastReturnRefreshAtRef.current = now;
+      refreshSession(sessionId, { force: true });
+    }
+
+    window.addEventListener("focus", refreshOnReturn);
+    window.addEventListener("pageshow", refreshOnReturn);
+    document.addEventListener("visibilitychange", refreshOnReturn);
+    return () => {
+      window.removeEventListener("focus", refreshOnReturn);
+      window.removeEventListener("pageshow", refreshOnReturn);
+      document.removeEventListener("visibilitychange", refreshOnReturn);
+    };
+  }, [sameDeviceMode, sessionId, terminalSession]);
+
+  useEffect(() => {
     if (!displayedError) return;
     const scrollKey = `${sessionId || "no-session"}:${displayedError}`;
     if (lastErrorScrollKeyRef.current === scrollKey) return;
@@ -553,7 +670,9 @@ export default function MintWorkflow({ config }) {
       label: "Wallet confirmed",
       detail: session?.identify?.completedAt
         ? `CoreID confirmed: ${session.identify.coreId}`
-        : "Scan QR 1 of 2 to sign the short CorePass message and bind this session to one wallet.",
+        : sameDeviceMode
+          ? "Open QR 1 of 2 in CorePass to sign the short message and bind this session to one wallet."
+          : "Scan QR 1 of 2 to sign the short CorePass message and bind this session to one wallet.",
       tone: session?.identify?.completedAt ? "done" : session ? "active" : "waiting",
     },
     {
@@ -567,7 +686,9 @@ export default function MintWorkflow({ config }) {
         : authorizeRejected && rejectedSession
           ? rejectedSession.commitDetail
         : session?.commit
-          ? "Scan QR 2 of 2 to approve the commit transaction in CorePass."
+          ? sameDeviceMode
+            ? "Open QR 2 of 2 in CorePass to approve the commit transaction."
+            : "Scan QR 2 of 2 to approve the commit transaction in CorePass."
           : "QR 2 of 2 is only prepared after wallet confirmation succeeds.",
       tone: commitConfirmed ? "done" : authorizationExpired || authorizeRejected ? "blocked" : session?.commit ? "active" : "waiting",
     },
@@ -591,12 +712,36 @@ export default function MintWorkflow({ config }) {
       <section>
         <article className="mint-card">
           <p className="eyebrow">Start</p>
-          <h2>Choose quantity and begin on desktop</h2>
+          <h2>{sameDeviceMode ? "Choose quantity and mint on this phone" : "Choose quantity and begin on desktop"}</h2>
           <div className="mint-copy-stack">
-            <p>Pick 1 to 3 cats and start a CorePass mint session from this desktop browser.</p>
+            <p>
+              {sameDeviceMode
+                ? "Pick 1 to 3 cats and start a CorePass mint session from the same phone that will open CorePass."
+                : "Pick 1 to 3 cats and start a CorePass mint session from this desktop browser."}
+            </p>
             <p>QR 1 of 2 binds your wallet with a signature.</p>
             <p>QR 2 of 2 sends the mint transaction.</p>
             <p>Each wallet can mint up to 3 cats.</p>
+          </div>
+          <div className="mint-route-grid" role="group" aria-label="Mint route">
+            <button
+              type="button"
+              className={`mint-route-card ${!sameDeviceMode ? "mint-route-card--active" : ""}`}
+              onClick={() => setHandoffMode(HANDOFF_DESKTOP)}
+              disabled={routeSelectionLocked}
+            >
+              <span className="mint-route-title">Desktop QR</span>
+              <span className="mint-route-copy">Open this page on desktop or tablet, then scan both QR steps in CorePass.</span>
+            </button>
+            <button
+              type="button"
+              className={`mint-route-card ${sameDeviceMode ? "mint-route-card--active" : ""}`}
+              onClick={() => setHandoffMode(HANDOFF_SAME_DEVICE)}
+              disabled={routeSelectionLocked}
+            >
+              <span className="mint-route-title">Same-device mobile</span>
+              <span className="mint-route-copy">Open each step directly in CorePass on this phone, then return here for status.</span>
+            </button>
           </div>
           <p className="mint-meta">
             If you want to verify the published contract address and public artifacts first, you can review{" "}
@@ -621,12 +766,30 @@ export default function MintWorkflow({ config }) {
             {loading ? "Preparing CorePass session..." : "Start with CorePass"}
           </button>
           <div className="mint-step-summary mint-step-summary--route">
-            <p className="mint-step-summary-title">Desktop-first path</p>
-            <p className="mint-meta">
-              Open this mint page on a browser device separate from the phone running CorePass, then scan and approve
-              both QR steps in CorePass. Desktop or tablet is recommended.
-            </p>
-            <p className="mint-meta">Same-device mobile mint is not supported in this stage.</p>
+            <p className="mint-step-summary-title">{sameDeviceMode ? "Same-device mobile path" : "Desktop-first path"}</p>
+            {sameDeviceMode ? (
+              <>
+                <p className="mint-meta">
+                  This route opens CorePass directly from the current phone for both approvals, then returns here to
+                  continue the same session.
+                </p>
+                <p className="mint-meta">
+                  Desktop-first remains the primary release path. Same-device mobile is a secondary canary track until
+                  the final public mint host proves it cleanly.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="mint-meta">
+                  Open this mint page on a browser device separate from the phone running CorePass, then scan and
+                  approve both QR steps in CorePass. Desktop or tablet is recommended.
+                </p>
+                <p className="mint-meta">
+                  Same-device mobile is available as a separate secondary path, but desktop-first remains the primary
+                  release flow.
+                </p>
+              </>
+            )}
           </div>
           {showTestnetNotice ? (
             <p className="mint-warning">
@@ -658,7 +821,7 @@ export default function MintWorkflow({ config }) {
           <p className="mint-error">{displayedError}</p>
           {restartMintVisible ? (
             <div className="mint-link-grid">
-              <a href="/mint" className="button button--primary">
+              <a href={restartMintHref} className="button button--primary">
                 Start a new mint
               </a>
             </div>
@@ -670,10 +833,15 @@ export default function MintWorkflow({ config }) {
         <article className="mint-card">
           <p className="eyebrow">Progress</p>
           <h2>What stage this mint is in</h2>
-          <p>This desktop page tracks the current mint attempt while CorePass handles each approval.</p>
+          <p>
+            {sameDeviceMode
+              ? "This mint page refreshes when CorePass returns to the browser on the same phone."
+              : "This mint page tracks the current mint attempt while CorePass handles each approval."}
+          </p>
           <div className="mint-progress-summary">
             <StatusLine label="Session state" value={currentStateLabel} />
             <StatusLine label="Mint progress" value={phaseCopy} />
+            <StatusLine label="Mint route" value={sameDeviceMode ? "Same-device mobile" : "Desktop QR"} />
             <StatusLine label="Bound wallet" value={boundWallet} mono />
           </div>
           {sessionId && !terminalSession ? (
@@ -684,7 +852,11 @@ export default function MintWorkflow({ config }) {
             </div>
           ) : null}
           {sessionId && !commitSubmitted && !terminalSession ? (
-            <p className="mint-meta">If the next step does not appear yet, use Refresh status.</p>
+            <p className="mint-meta">
+              {sameDeviceMode
+                ? "If CorePass returns but the next step does not appear yet, use Refresh status."
+                : "If the next step does not appear yet, use Refresh status."}
+            </p>
           ) : null}
           {shouldAutoRefresh ? (
             <p className="mint-meta">
@@ -700,7 +872,7 @@ export default function MintWorkflow({ config }) {
       </section>
 
       {session ? (
-        <DesktopQrAction
+        <MintApprovalAction
           sectionRef={step1Ref}
           eyebrow="Step 1"
           stepBadge="QR 1 of 2"
@@ -721,13 +893,27 @@ export default function MintWorkflow({ config }) {
           highlightedNotice="QR 1 of 2: wallet bind only, no funds move."
           request={session.identify}
           completedLabel={authorizeRejected && rejectedSession ? rejectedSession.step1Label : `CoreID confirmed: ${session.identify.coreId}`}
-          completedNote={authorizeRejected && rejectedSession ? rejectedSession.step1Note : "QR 1 of 2 is complete. Stay on this desktop page for QR 2 of 2."}
+          completedNote={
+            authorizeRejected && rejectedSession
+              ? rejectedSession.step1Note
+              : sameDeviceMode
+                ? "QR 1 of 2 is complete. Return here, then open QR 2 of 2 in CorePass."
+                : "QR 1 of 2 is complete. Stay on this mint page for QR 2 of 2."
+          }
           completeTone={authorizeRejected ? "blocked" : "done"}
+          handoffMode={activeHandoffMode}
+          actionLabel="Open QR 1 in CorePass"
+          actionNote={
+            sameDeviceMode
+              ? "After you approve in CorePass, this page should refresh when the browser returns. If not, use Refresh status."
+              : ""
+          }
+          onOpenMobile={handleOpenMobile}
         />
       ) : null}
 
       {session?.commit ? (
-        <DesktopQrAction
+        <MintApprovalAction
           sectionRef={step2Ref}
           eyebrow="Step 2"
           stepBadge="QR 2 of 2"
@@ -775,6 +961,14 @@ export default function MintWorkflow({ config }) {
           completedNote={commitCompletedNote}
           completeTone={authorizationExpired ? "blocked" : "done"}
           resolved={authorizationExpired}
+          handoffMode={activeHandoffMode}
+          actionLabel="Open QR 2 in CorePass"
+          actionNote={
+            sameDeviceMode
+              ? "Approve the real mint transaction in CorePass, then return here for commit confirmation and finalize status."
+              : ""
+          }
+          onOpenMobile={handleOpenMobile}
         />
       ) : null}
 

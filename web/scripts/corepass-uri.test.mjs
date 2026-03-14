@@ -50,11 +50,26 @@ test("mint session uses callback for desktop QR identify and app-link for same-d
   const query = uri.slice(uri.indexOf("?") + 1);
   const conn = new URL(new URLSearchParams(query).get("conn"));
 
+  assert.equal(session.handoffMode, "desktop");
   assert.match(uri, /type=callback/);
   assert.match(session.identify.mobileUri, /type=app-link/);
   assert.notEqual(uri, session.identify.mobileUri);
   assert.match(conn.pathname, /^\/api\/mint\/corepass\/callback\/[0-9a-f-]+\/identify$/);
   assert.equal(conn.search, "");
+});
+
+test("mint session stores same-device handoff mode when requested", async () => {
+  const request = new Request("https://core-cats.vercel.app/api/mint/corepass/session", {
+    headers: {
+      host: "core-cats.vercel.app",
+      "x-forwarded-proto": "https",
+    },
+  });
+
+  const session = await createMintSession(request, { quantity: 1, handoffMode: "same-device" });
+
+  assert.equal(session.handoffMode, "same-device");
+  assert.match(session.identify.mobileUri, /type=app-link/);
 });
 
 test("finalize calldata builder supports Core cb addresses for manual fallback", () => {

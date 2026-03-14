@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { normalizeCallbackBodyPayload } from "../../../../../lib/server/corepass-callback-body.js";
 import { getCorePublicConfig } from "../../../../../lib/server/core-env.js";
+import { resolveMintSessionHandoffMode } from "../../../../../lib/server/corepass-mint-sessions.js";
 
 export async function readCallbackBody(request) {
   const contentType = String(request.headers.get("content-type") || "").toLowerCase();
@@ -33,16 +34,27 @@ export async function readCallbackBody(request) {
   return { raw };
 }
 
-export function redirectToMint(request, sessionId, errorCode = "") {
+export function redirectToMint(request, sessionId, errorCode = "", handoffMode = "") {
   const config = getCorePublicConfig();
   const target = new URL("/mint", config.siteBaseUrl || request.url);
   if (sessionId) {
     target.searchParams.set("sessionId", sessionId);
   }
+  if (String(handoffMode || "").trim().toLowerCase() === "same-device") {
+    target.searchParams.set("mode", "same-device");
+  }
   if (errorCode) {
     target.searchParams.set("callbackError", errorCode);
   }
   return NextResponse.redirect(target);
+}
+
+export async function resolveRedirectHandoffMode(request, sessionId, fallback = "") {
+  const normalizedFallback = String(fallback || "").trim().toLowerCase();
+  if (normalizedFallback === "same-device") {
+    return "same-device";
+  }
+  return resolveMintSessionHandoffMode(request, sessionId);
 }
 
 export async function resolveCallbackPathParams(context) {

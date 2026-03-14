@@ -1489,6 +1489,53 @@ main {
   color: var(--ink);
 }
 
+.mint-route-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mint-route-card {
+  appearance: none;
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(41, 36, 31, 0.08);
+  background: rgba(255, 255, 255, 0.62);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.mint-route-card:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(20, 143, 138, 0.24);
+}
+
+.mint-route-card:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.mint-route-card--active {
+  border-color: rgba(20, 143, 138, 0.3);
+  background: linear-gradient(135deg, rgba(20, 143, 138, 0.12), rgba(255, 255, 255, 0.82));
+  box-shadow: 0 10px 24px rgba(20, 143, 138, 0.08);
+}
+
+.mint-route-title {
+  margin: 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.mint-route-copy {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
 .quantity-row {
   display: flex;
   flex-wrap: wrap;
@@ -1561,6 +1608,7 @@ main {
   .copy-grid,
   .mint-grid,
   .mint-action-grid,
+  .mint-route-grid,
   .mint-link-grid,
   .mint-policy-grid {
     grid-template-columns: 1fr;

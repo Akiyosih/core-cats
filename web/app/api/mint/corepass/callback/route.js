@@ -1,6 +1,6 @@
 import { getCorePublicConfig } from "../../../../../lib/server/core-env.js";
 import { applyCorePassCallback } from "../../../../../lib/server/corepass-mint-sessions.js";
-import { readCallbackBody, redirectToMint } from "./shared.js";
+import { readCallbackBody, redirectToMint, resolveRedirectHandoffMode } from "./shared.js";
 
 export const runtime = "nodejs";
 
@@ -12,10 +12,11 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const sessionId = String(searchParams.get("sessionId") || "").trim();
   try {
-    await applyCorePassCallback(request, Object.fromEntries(searchParams.entries()));
-    return redirectToMint(request, sessionId);
+    const session = await applyCorePassCallback(request, Object.fromEntries(searchParams.entries()));
+    return redirectToMint(request, sessionId, "", session?.handoffMode || "");
   } catch (error) {
-    return redirectToMint(request, sessionId, error.code || "callback_failed");
+    const handoffMode = await resolveRedirectHandoffMode(request, sessionId);
+    return redirectToMint(request, sessionId, error.code || "callback_failed", handoffMode);
   }
 }
 

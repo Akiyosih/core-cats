@@ -12,12 +12,17 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const quantity = Number(body?.quantity || 0);
+    const handoffMode = String(body?.handoffMode || "").trim();
 
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > 3) {
       return Response.json({ error: "quantity must be 1, 2, or 3" }, { status: 400 });
     }
 
-    const session = await createMintSession(request, { quantity });
+    if (handoffMode && handoffMode !== "desktop" && handoffMode !== "same-device") {
+      return Response.json({ error: "handoffMode must be desktop or same-device" }, { status: 400 });
+    }
+
+    const session = await createMintSession(request, { quantity, handoffMode });
     return Response.json(session);
   } catch (error) {
     return Response.json(
