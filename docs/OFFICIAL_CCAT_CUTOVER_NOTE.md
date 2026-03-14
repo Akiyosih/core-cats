@@ -9,6 +9,21 @@ Use this together with:
 1. `docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md`
 2. `docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md`
 
+## Current Operator Order
+As of `2026-03-14`, the intended next sequence is:
+
+1. finalize the official super-rare decision:
+   - keep the approved logo-bearing super-rares only if branding permission arrives in time, or
+   - replace those two official super-rares before the official deploy inputs are finalized
+2. run the official `CCAT` deploy dry-run:
+   - source `foxar/.env.mainnet-official.example`
+   - add the live RPC / keystore / password inputs in the local shell
+   - run `spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript ...` without `--broadcast`
+3. if the dry-run is clean, proceed to:
+   - the real official `CCAT` deploy
+   - the Vercel Pro `closed` cutover with the official contract address
+   - the later exact-host official smoke mint before opening the public mint
+
 ## Source References
 1. Mainnet RPC URL family: https://github.com/core-coin/foxar/blob/master/utils/src/rpc.rs
 2. Blockindex mainnet base URL family: https://github.com/core-coin/corebc-rs/blob/master/corebc-core/src/types/network.rs
