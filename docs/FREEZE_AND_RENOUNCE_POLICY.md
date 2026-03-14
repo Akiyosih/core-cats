@@ -79,7 +79,6 @@ Regardless of later owner policy, the active contract already fixes:
 1. total supply at `1000`
 2. per-address mint limit at `3`
 
-So the main remaining trust surface is not supply inflation. It is operator control over signer/renderer configuration.
 So the main remaining trust surface is not supply inflation or post-deploy renderer replacement. It is operator control over signer configuration until `lockSigner()` and any later ownership decision.
 
 ## Public Reader Summary
