@@ -511,7 +511,7 @@ export default function MintWorkflow({ config }) {
   }
   if (session?.commit) {
     phaseCopy = sameDeviceMode
-      ? "Wallet confirmed. Open QR 2 of 2 in CorePass to send the commit transaction."
+      ? "Wallet confirmed. Return to this browser, then open QR 2 of 2 in CorePass to send the commit transaction."
       : "Wallet confirmed on desktop. QR 2 of 2 is now ready for the commit transaction.";
   }
   if (authorizationExpired) {
@@ -546,8 +546,8 @@ export default function MintWorkflow({ config }) {
       ? "QR 2 of 2 is no longer valid. Do not scan or reuse it. Start a new mint from the beginning."
     : commitSubmitted
       ? "CorePass returned the commit transaction. This mint page is now waiting for the chain receipt."
-      : sameDeviceMode
-        ? "Return to this mint page, then open QR 2 of 2 in CorePass to approve the real commit transaction."
+    : sameDeviceMode
+        ? "Return to this browser tab, then open QR 2 of 2 in CorePass to approve the real commit transaction."
         : "Return to this mint page, then scan QR 2 of 2 to approve the real commit transaction in CorePass.";
   const relayerNote = finalizeConfirmed
     ? "Finalize completed. The mint is now delivered."
@@ -687,7 +687,7 @@ export default function MintWorkflow({ config }) {
           ? rejectedSession.commitDetail
         : session?.commit
           ? sameDeviceMode
-            ? "Open QR 2 of 2 in CorePass to approve the commit transaction."
+            ? "Return to this browser tab, then open QR 2 of 2 in CorePass to approve the commit transaction."
             : "Scan QR 2 of 2 to approve the commit transaction in CorePass."
           : "QR 2 of 2 is only prepared after wallet confirmation succeeds.",
       tone: commitConfirmed ? "done" : authorizationExpired || authorizeRejected ? "blocked" : session?.commit ? "active" : "waiting",
@@ -770,8 +770,8 @@ export default function MintWorkflow({ config }) {
             {sameDeviceMode ? (
               <>
                 <p className="mint-meta">
-                  This route opens CorePass directly from the current phone for both approvals, then returns here to
-                  continue the same session.
+                  This route opens CorePass directly from the current phone for both approvals. After each approval,
+                  return to this browser tab to continue the same session.
                 </p>
                 <p className="mint-meta">
                   Desktop-first remains the primary release path. Same-device mobile is a secondary canary track until
@@ -835,7 +835,7 @@ export default function MintWorkflow({ config }) {
           <h2>What stage this mint is in</h2>
           <p>
             {sameDeviceMode
-              ? "This mint page refreshes when CorePass returns to the browser on the same phone."
+              ? "This mint page refreshes when you return to this browser on the same phone after each CorePass approval."
               : "This mint page tracks the current mint attempt while CorePass handles each approval."}
           </p>
           <div className="mint-progress-summary">
@@ -854,7 +854,7 @@ export default function MintWorkflow({ config }) {
           {sessionId && !commitSubmitted && !terminalSession ? (
             <p className="mint-meta">
               {sameDeviceMode
-                ? "If CorePass returns but the next step does not appear yet, use Refresh status."
+                ? "After you return to this browser, use Refresh status if the next step does not appear yet."
                 : "If the next step does not appear yet, use Refresh status."}
             </p>
           ) : null}
@@ -905,7 +905,7 @@ export default function MintWorkflow({ config }) {
           actionLabel="Open QR 1 in CorePass"
           actionNote={
             sameDeviceMode
-              ? "After you approve in CorePass, this page should refresh when the browser returns. If not, use Refresh status."
+              ? "Approve in CorePass, then switch back to this browser tab. The page should refresh when the tab becomes active. If not, use Refresh status."
               : ""
           }
           onOpenMobile={handleOpenMobile}
@@ -965,7 +965,7 @@ export default function MintWorkflow({ config }) {
           actionLabel="Open QR 2 in CorePass"
           actionNote={
             sameDeviceMode
-              ? "Approve the real mint transaction in CorePass, then return here for commit confirmation and finalize status."
+              ? "Approve the real mint transaction in CorePass, then switch back to this browser tab for commit confirmation and finalize status."
               : ""
           }
           onOpenMobile={handleOpenMobile}

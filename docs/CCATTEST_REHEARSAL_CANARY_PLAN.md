@@ -141,7 +141,7 @@ The critical rule is that "waiting" and "failed" must not look the same.
 The mint UI should explain the expected transport:
 
 1. desktop: show QR and explain the device-camera handoff to CorePass
-2. mobile: show the direct app-link path
+2. mobile: show the direct on-device CorePass path
 3. if the CorePass in-app QR scanner is also supported, say so clearly
 4. if any path is unreliable, disclose the limitation in the live UI before public launch
 5. for rehearsal planning, `device standard camera` versus `CorePass in-app QR scanner` refers to the `QR 1 of 2` entry path unless a test explicitly says otherwise
@@ -149,7 +149,7 @@ The mint UI should explain the expected transport:
 7. still keep one dedicated smoke test that uses the device standard camera for `QR 2 of 2`
 
 ### B-4a. Same-device mobile UI additions for the current branch
-The current remaining UI work is to expose the already-generated mobile app-link path without weakening the desktop-first release path.
+The current remaining UI work is to expose the already-generated mobile CorePass path without weakening the desktop-first release path.
 
 1. keep `desktop-first` as the default and recommended route
 2. add an explicit route choice before session creation:
@@ -158,9 +158,10 @@ The current remaining UI work is to expose the already-generated mobile app-link
 3. when `Same-device mobile` is selected, expose at minimum:
    - `Open QR 1 in CorePass`
    - `Open QR 2 in CorePass`
-4. on app return, refresh the active session automatically and keep `Refresh status` as the manual fallback
-5. keep Step `3` as the same relayer-driven finalize path; do not turn same-device support into a visible manual-finalize flow
-6. if same-device mobile remains secondary at release time, say that clearly in the live UI instead of hiding the route completely
+4. prefer callback-style returns so approvals stay inside CorePass and the user returns manually to the browser tab instead of minting inside a CorePass webview
+5. when the browser tab becomes active again, refresh the active session automatically and keep `Refresh status` as the manual fallback
+6. keep Step `3` as the same relayer-driven finalize path; do not turn same-device support into a visible manual-finalize flow
+7. if same-device mobile remains secondary at release time, say that clearly in the live UI instead of hiding the route completely
 
 ### B-5. Success state
 The success state should surface:
@@ -336,7 +337,7 @@ Run these from the real public `/mint` UI while the site is in `canary`.
    - QR2 path: `continue inside CorePass`
    - operator action: exercise duplicate callback or near-duplicate finalize handling
    - target: confirm the session remains coherent and does not regress
-   - note: do not combine this with same-device mobile mint testing; if mobile same-device is explored later, run it as a separate follow-on matrix so duplicate-event handling and mobile app-link/browser-return issues stay distinguishable
+   - note: do not combine this with same-device mobile mint testing; if mobile same-device is explored later, run it as a separate follow-on matrix so duplicate-event handling and mobile browser-return issues stay distinguishable
 
 ### D-6. Ownership, transparency, and metadata tests
 1. `OT-01`
@@ -487,7 +488,7 @@ This split keeps the plan aligned with the practical wallet-switch-minimizing wo
 3. finish with the checks that can still be closed cleanly from Wallet A
 
 ### D-11. Separate same-device mobile track
-Run this as its own private-canary track after the `/mint` UI exposes the app-link route. Do not merge it into `FR-04`.
+Run this as its own private-canary track after the `/mint` UI exposes the same-device on-device route. Do not merge it into `FR-04`.
 
 1. use fresh wallets that are not shared with the duplicate-event test
 2. keep desktop-first as the release primary path unless the separate mobile matrix proves otherwise

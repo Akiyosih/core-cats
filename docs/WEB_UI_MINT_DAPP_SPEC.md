@@ -116,7 +116,7 @@ The external draft needs these corrections:
 9. UI must explain the two-step mint clearly enough that users understand:
    - commit does not immediately reveal the assigned cat
    - finalize happens after the required future block boundary
-   - desktop and mobile use different CorePass transports (`QR + callback` vs `app-link`)
+   - desktop enters CorePass by QR while same-device opens CorePass directly on the phone, and both paths should return to the browser tab without relying on a CorePass webview mint surface
 10. Current implementation detail:
    - CorePass mint session state is stored in-memory in the Next.js server runtime
    - that is acceptable for local/testnet iteration
@@ -227,7 +227,7 @@ UI rule:
 Initial public UI should not be blocked on CorePass/KYC integration.
 
 Current policy:
-1. initial public path: CorePass QR / app-link mint using protocol-level `sign` and `tx` requests
+1. initial public path: CorePass QR / direct-launch mint using protocol-level `sign` and `tx` requests
 2. future extension: CorePass Authorization / KYC gating
 3. do not block the public mint flow on full Connector/Auth integration before the rest of the system is proven
 4. if KYC gating is added later, it should extend the existing CorePass-first mint session rather than replace it with an unrelated wallet flow
@@ -283,6 +283,6 @@ Implications:
 3. Signature API contract compatibility is tested
 4. Launch-state behavior (`closed`, `canary`, `public`) is implemented
 5. Owner indexing method for `/my-cats` is explicitly chosen
-6. CorePass callback/app-link behavior is tested on both desktop and mobile paths with a wallet that can actually transact on the target network
+6. CorePass callback/browser-return behavior is tested on both desktop and mobile paths with a wallet that can actually transact on the target network
 7. Transparency page links are real and reproducible
 8. If the public launch exposes quantity `2 / 3`, that quantity path has been validated on the target network, or the UI is temporarily constrained to quantity `1`
