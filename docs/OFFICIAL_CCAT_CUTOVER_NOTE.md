@@ -79,6 +79,9 @@ Expected official values:
 5. `CORECATS_ALLOW_NONSTANDARD_LABELS=0`
 6. `CORECATS_SUPERRARE_PLACEHOLDER=0`
 
+Before the real official broadcast, re-review the exact permanent `CORECATS_TOKEN_DESCRIPTION` wording.
+The current repo value is only a staging default and should be treated as an explicit pre-deploy decision, not as untouchable final copy.
+
 Keep these secrets or live values outside the repository:
 1. mainnet RPC URL
 2. deployer keystore path

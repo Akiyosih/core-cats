@@ -1,5 +1,6 @@
 import { getCorePublicConfig } from "../../../../../../../lib/server/core-env.js";
 import { applyCorePassCallback } from "../../../../../../../lib/server/corepass-mint-sessions.js";
+import { mintRuntimeMisconfiguredResponse } from "../../../../../../../lib/server/mint-surface.js";
 import { readCallbackBody, redirectToMint, resolveCallbackPathParams, resolveRedirectHandoffMode } from "../../shared.js";
 
 export const runtime = "nodejs";
@@ -8,6 +9,9 @@ export async function GET(request, context) {
   const config = getCorePublicConfig();
   if (!config.mintSurfaceEnabled) {
     return redirectToMint(request, "", "mint_surface_closed");
+  }
+  if (!config.mintRuntimeReady) {
+    return mintRuntimeMisconfiguredResponse(config);
   }
   const { searchParams } = new URL(request.url);
   const { sessionId, step } = await resolveCallbackPathParams(context);
@@ -36,6 +40,9 @@ export async function POST(request, context) {
       },
       { status: 404 },
     );
+  }
+  if (!config.mintRuntimeReady) {
+    return mintRuntimeMisconfiguredResponse(config);
   }
   const { sessionId, step } = await resolveCallbackPathParams(context);
 

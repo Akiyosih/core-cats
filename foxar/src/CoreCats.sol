@@ -111,9 +111,10 @@ contract CoreCats is CRC721 {
 
         for (uint256 i = 0; i < quantity; i++) {
             uint256 remaining = MAX_SUPPLY - (mintedBefore + i);
-            uint256 tokenId = _drawRandomTokenId(uint256(keccak256(abi.encodePacked(entropy, i))), remaining);
+            uint256 randomWord = uint256(keccak256(abi.encodePacked(entropy, i)));
+            (uint256 tokenId, uint256 drawIndex) = _drawRandomTokenId(randomWord, remaining);
             _safeMint(minter, tokenId);
-            emit TokenAssigned(minter, tokenId, i, entropy);
+            emit TokenAssigned(minter, tokenId, drawIndex, entropy);
         }
     }
 
@@ -147,8 +148,8 @@ contract CoreCats is CRC721 {
         emit MintCommitExpired(minter, commitData.quantity, commitData.finalizeBlock, commitData.expiryBlock);
     }
 
-    function _drawRandomTokenId(uint256 randomWord, uint256 remaining) internal returns (uint256) {
-        uint256 drawIndex = randomWord % remaining;
+    function _drawRandomTokenId(uint256 randomWord, uint256 remaining) internal returns (uint256 tokenId, uint256 drawIndex) {
+        drawIndex = randomWord % remaining;
         uint256 lastIndex = remaining - 1;
 
         uint256 selected = _tokenMatrix[drawIndex];
@@ -163,6 +164,6 @@ contract CoreCats is CRC721 {
             delete _tokenMatrix[lastIndex];
         }
 
-        return tokenIndex + 1;
+        tokenId = tokenIndex + 1;
     }
 }

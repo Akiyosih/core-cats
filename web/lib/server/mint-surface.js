@@ -19,3 +19,22 @@ export function mintSurfaceClosedResponse(config = getCorePublicConfig()) {
     { status: 404 },
   );
 }
+
+export function describeMintRuntimeMisconfiguration(config = getCorePublicConfig()) {
+  const errors = Array.isArray(config.mintRuntimeErrors) ? config.mintRuntimeErrors : [];
+  if (errors.length > 0) {
+    return errors[0];
+  }
+  return "Mint is temporarily unavailable because this deployment is missing required runtime configuration.";
+}
+
+export function mintRuntimeMisconfiguredResponse(config = getCorePublicConfig()) {
+  return Response.json(
+    {
+      error: "mint_runtime_misconfigured",
+      detail: describeMintRuntimeMisconfiguration(config),
+      errors: Array.isArray(config.mintRuntimeErrors) ? config.mintRuntimeErrors : [],
+    },
+    { status: 503 },
+  );
+}

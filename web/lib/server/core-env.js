@@ -179,6 +179,41 @@ export function getCoreServerEnv() {
   };
 }
 
+export function getMintRuntimeConfigErrors(state = getCoreServerEnv()) {
+  const mintSurfaceEnabled = isMintSurfaceEnabled({
+    launchState: state.launchState,
+    siteSurface: state.siteSurface,
+  });
+
+  if (!mintSurfaceEnabled) {
+    return [];
+  }
+
+  const errors = [];
+  const siteBaseUrl = normalizeUrl(state.siteBaseUrl || "");
+  const coreCatsAddress = String(state.coreCatsAddress || "").trim();
+
+  if (!siteBaseUrl) {
+    errors.push("NEXT_PUBLIC_SITE_BASE_URL or CORECATS_SITE_BASE_URL must be explicitly set when the mint surface is enabled.");
+  }
+
+  if (!coreCatsAddress) {
+    errors.push("NEXT_PUBLIC_CORECATS_ADDRESS or CORECATS_ADDRESS must be explicitly set when the mint surface is enabled.");
+  } else if (looksLikePlaceholder(coreCatsAddress)) {
+    errors.push("The mint surface must not use a placeholder CoreCats contract address.");
+  } else {
+    try {
+      if (normalizeCoreAddressKey(coreCatsAddress) === normalizeCoreAddressKey(DEFAULT_DEVIN_CORECATS_ADDRESS)) {
+        errors.push("The mint surface must not fall back to the Devin rehearsal CoreCats address.");
+      }
+    } catch {
+      errors.push("The mint surface CoreCats contract address is not a supported Core address format.");
+    }
+  }
+
+  return errors;
+}
+
 export function isMintSurfaceEnabled(config) {
   const state = config || getCorePublicConfig();
   return state.launchState !== "closed" && (state.siteSurface === "private-canary" || state.siteSurface === "public-mint");
@@ -190,6 +225,7 @@ export function getCorePublicConfig() {
     env.backendMode === "proxy" ? process.env.CORECATS_RELAYER_ENABLED !== "false" : Boolean(env.finalizerPrivateKey);
   const siteSurface = env.siteSurface;
   const mintSurfaceEnabled = isMintSurfaceEnabled({ launchState: env.launchState, siteSurface });
+  const mintRuntimeErrors = getMintRuntimeConfigErrors(env);
   return {
     chainId: env.chainId,
     networkName: env.networkName,
@@ -199,6 +235,8 @@ export function getCorePublicConfig() {
     privateCanarySite: siteSurface === "private-canary",
     publicMintSite: siteSurface === "public-mint",
     mintSurfaceEnabled,
+    mintRuntimeReady: mintRuntimeErrors.length === 0,
+    mintRuntimeErrors,
     siteBaseUrl: env.siteBaseUrl,
     coreCatsAddress: env.coreCatsAddress,
     explorerBaseUrl: env.explorerBaseUrl,

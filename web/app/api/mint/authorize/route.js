@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 
 import { getCorePublicConfig, getCoreServerEnv, normalizeCoreAddressKey } from "../../../../lib/server/core-env.js";
-import { mintSurfaceClosedResponse } from "../../../../lib/server/mint-surface.js";
+import { mintRuntimeMisconfiguredResponse, mintSurfaceClosedResponse } from "../../../../lib/server/mint-surface.js";
 import { issueMintAuthorization } from "../../../../lib/server/core-spark.js";
 import { isExternalMintBackendEnabled, proxyMintBackendRequest } from "../../../../lib/server/mint-backend-proxy.js";
 
@@ -15,6 +15,9 @@ export async function POST(request) {
   const config = getCorePublicConfig();
   if (!config.mintSurfaceEnabled) {
     return mintSurfaceClosedResponse(config);
+  }
+  if (!config.mintRuntimeReady) {
+    return mintRuntimeMisconfiguredResponse(config);
   }
   if (isExternalMintBackendEnabled()) {
     return proxyMintBackendRequest(request, "/api/mint/authorize");

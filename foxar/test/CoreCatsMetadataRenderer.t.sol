@@ -5,6 +5,19 @@ import "spark-std/Test.sol";
 import "../src/CoreCatsMetadataRenderer.sol";
 import "../src/CoreCatsOnchainData.sol";
 
+contract TestableCoreCatsMetadataRenderer is CoreCatsMetadataRenderer {
+    constructor(
+        address dataAddress,
+        string memory tokenNamePrefix_,
+        string memory tokenDescription_,
+        bool superrarePlaceholderEnabled_
+    ) CoreCatsMetadataRenderer(dataAddress, tokenNamePrefix_, tokenDescription_, superrarePlaceholderEnabled_) {}
+
+    function exposedEscapeJsonString(string memory value) external pure returns (string memory) {
+        return _escapeJsonString(value);
+    }
+}
+
 contract CoreCatsMetadataRendererTest is Test {
     uint256 private constant PING_SUPERRARE_TOKEN_ID = 999;
     uint256 private constant CORE_SUPERRARE_TOKEN_ID = 1000;
@@ -36,6 +49,16 @@ contract CoreCatsMetadataRendererTest is Test {
         assertFalse(_sameString(baselinePing, placeholderPing));
         assertFalse(_sameString(baselineCore, placeholderCore));
         assertFalse(_sameString(placeholderPing, placeholderCore));
+    }
+
+    function testJsonEscapeHandlesQuotesBackslashesAndNewlines() public {
+        CoreCatsOnchainData data = new CoreCatsOnchainData();
+        TestableCoreCatsMetadataRenderer renderer = new TestableCoreCatsMetadataRenderer(
+            address(data), "Core\"Cats", "Line 1\nLine \"2\" \\", false
+        );
+
+        assertEq(renderer.exposedEscapeJsonString("Core\"Cats"), "Core\\\"Cats");
+        assertEq(renderer.exposedEscapeJsonString("Line 1\nLine \"2\" \\"), "Line 1\\nLine \\\"2\\\" \\\\");
     }
 
     function _sameString(string memory a, string memory b) internal pure returns (bool) {

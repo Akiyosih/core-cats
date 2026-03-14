@@ -13,6 +13,30 @@ import {
   createMintSession,
   tryEncodeFinalizeMintData,
 } from "../lib/server/corepass-mint-sessions.js";
+import { getMintRuntimeConfigErrors } from "../lib/server/core-env.js";
+
+async function withEnv(overrides, fn) {
+  const previous = new Map();
+  for (const [key, value] of Object.entries(overrides)) {
+    previous.set(key, Object.prototype.hasOwnProperty.call(process.env, key) ? process.env[key] : undefined);
+    if (value === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = value;
+    }
+  }
+  try {
+    return await fn();
+  } finally {
+    for (const [key, value] of previous.entries()) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+  }
+}
 
 test("sign URI keeps a slash when coreId is omitted", () => {
   const uri = buildCorePassUri("sign", "", {
@@ -45,17 +69,19 @@ test("mint session uses callback for both desktop QR and same-device identify", 
     },
   });
 
-  const session = await createMintSession(request, { quantity: 1 });
-  const uri = session.identify.desktopUri;
-  const query = uri.slice(uri.indexOf("?") + 1);
-  const conn = new URL(new URLSearchParams(query).get("conn"));
+  await withEnv({ NEXT_PUBLIC_SITE_BASE_URL: "https://core-cats.vercel.app" }, async () => {
+    const session = await createMintSession(request, { quantity: 1 });
+    const uri = session.identify.desktopUri;
+    const query = uri.slice(uri.indexOf("?") + 1);
+    const conn = new URL(new URLSearchParams(query).get("conn"));
 
-  assert.equal(session.handoffMode, "desktop");
-  assert.match(uri, /type=callback/);
-  assert.match(session.identify.mobileUri, /type=callback/);
-  assert.equal(uri, session.identify.mobileUri);
-  assert.match(conn.pathname, /^\/api\/mint\/corepass\/callback\/[0-9a-f-]+\/identify$/);
-  assert.equal(conn.search, "");
+    assert.equal(session.handoffMode, "desktop");
+    assert.match(uri, /type=callback/);
+    assert.match(session.identify.mobileUri, /type=callback/);
+    assert.equal(uri, session.identify.mobileUri);
+    assert.match(conn.pathname, /^\/api\/mint\/corepass\/callback\/[0-9a-f-]+\/identify$/);
+    assert.equal(conn.search, "");
+  });
 });
 
 test("mint session stores same-device handoff mode when requested", async () => {
@@ -66,10 +92,41 @@ test("mint session stores same-device handoff mode when requested", async () => 
     },
   });
 
-  const session = await createMintSession(request, { quantity: 1, handoffMode: "same-device" });
+  await withEnv({ NEXT_PUBLIC_SITE_BASE_URL: "https://core-cats.vercel.app" }, async () => {
+    const session = await createMintSession(request, { quantity: 1, handoffMode: "same-device" });
 
-  assert.equal(session.handoffMode, "same-device");
-  assert.match(session.identify.mobileUri, /type=callback/);
+    assert.equal(session.handoffMode, "same-device");
+    assert.match(session.identify.mobileUri, /type=callback/);
+  });
+});
+
+test("mint runtime requires an explicit site base URL on non-local hosts", async () => {
+  const request = new Request("https://core-cats.vercel.app/api/mint/corepass/session", {
+    headers: {
+      host: "core-cats.vercel.app",
+      "x-forwarded-proto": "https",
+    },
+  });
+
+  await withEnv({ NEXT_PUBLIC_SITE_BASE_URL: undefined }, async () => {
+    await assert.rejects(
+      () => createMintSession(request, { quantity: 1 }),
+      /NEXT_PUBLIC_SITE_BASE_URL or CORECATS_SITE_BASE_URL must be explicitly set/,
+    );
+  });
+});
+
+test("mint runtime config errors flag missing site base URL and Devin fallback address when mint is enabled", () => {
+  const errors = getMintRuntimeConfigErrors({
+    launchState: "canary",
+    siteSurface: "private-canary",
+    siteBaseUrl: "",
+    coreCatsAddress: "ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba",
+  });
+
+  assert.equal(errors.length, 2);
+  assert.match(errors[0], /NEXT_PUBLIC_SITE_BASE_URL/);
+  assert.match(errors[1], /Devin rehearsal CoreCats address/);
 });
 
 test("finalize calldata builder supports Core cb addresses for manual fallback", () => {

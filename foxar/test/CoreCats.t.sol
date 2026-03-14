@@ -179,6 +179,42 @@ contract CoreCatsTest is Test {
         _coreCats.commitMint(1, bytes32(0));
     }
 
+    function testTokenAssignedEventUsesActualDrawIndex() public {
+        bytes32 seed = keccak256("seed-draw-index");
+
+        vm.prank(_minter);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seed)));
+
+        vm.roll(block.number + _coreCats.FINALIZE_DELAY_BLOCKS() + 1);
+        vm.recordLogs();
+        vm.prank(makeAddr("draw-index-relayer"));
+        _coreCats.finalizeMint(_minter);
+
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        bytes32 targetTopic = keccak256("TokenAssigned(address,uint256,uint256,bytes32)");
+        bytes32 expectedEntropy = keccak256(
+            abi.encodePacked(
+                keccak256(abi.encodePacked(seed)),
+                blockhash(block.number - 1),
+                _minter,
+                address(_coreCats),
+                block.chainid,
+                uint64(block.number - 1)
+            )
+        );
+
+        for (uint256 i = 0; i < entries.length; i++) {
+            if (entries[i].topics.length == 4 && entries[i].topics[0] == targetTopic) {
+                uint256 expectedDrawIndex = uint256(keccak256(abi.encodePacked(expectedEntropy, uint256(0))))
+                    % _coreCats.MAX_SUPPLY();
+                assertEq(uint256(entries[i].topics[3]), expectedDrawIndex);
+                return;
+            }
+        }
+
+        fail("TokenAssigned event not found");
+    }
+
     function testConstructorSupportsCustomCollectionLabels() public {
         CoreCats custom = new CoreCats("CCATTEST2", "CCATTEST2", address(_renderer));
 

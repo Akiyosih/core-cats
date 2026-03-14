@@ -77,6 +77,26 @@ export default async function MintPage() {
   const showMintCounter = launchState === "public";
   const summary = showMintCounter ? await getSummary() : null;
 
+  if (!config.mintRuntimeReady) {
+    return (
+      <div className="page-stack narrow-stack">
+        <section className="copy-panel">
+          <p className="eyebrow">Mint</p>
+          <h1>Mint is temporarily unavailable on this deployment.</h1>
+          <p>
+            The mint surface is enabled, but a required runtime value is still missing. The deployment should fail
+            closed until the final site origin and contract address are configured explicitly.
+          </p>
+          <div className="copy-panel__actions">
+            <a href="/transparency" className="button button--ghost">
+              Check transparency
+            </a>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="page-stack narrow-stack">
       {launchState === "closed" && (

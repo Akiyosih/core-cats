@@ -103,8 +103,8 @@ contract CoreCatsMetadataRenderer {
 
         string memory image = _buildImageData(d, rec);
         string memory attributes = _buildAttributes(rec);
-        string memory name = string(abi.encodePacked(tokenNamePrefix, " #", tokenId.toString()));
-        string memory description = tokenDescription;
+        string memory name = _escapeJsonString(string(abi.encodePacked(tokenNamePrefix, " #", tokenId.toString())));
+        string memory description = _escapeJsonString(tokenDescription);
 
         bytes memory json = abi.encodePacked(
             '{"name":"',
@@ -119,6 +119,40 @@ contract CoreCatsMetadataRenderer {
         );
 
         return string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
+    }
+
+    function _escapeJsonString(string memory value) internal pure returns (string memory) {
+        bytes memory input = bytes(value);
+        bytes memory output = "";
+
+        for (uint256 i = 0; i < input.length; i++) {
+            bytes1 ch = input[i];
+            if (ch == bytes1(uint8(0x22))) {
+                output = abi.encodePacked(output, "\\\"");
+            } else if (ch == bytes1(uint8(0x5c))) {
+                output = abi.encodePacked(output, "\\\\");
+            } else if (ch == bytes1(uint8(0x08))) {
+                output = abi.encodePacked(output, "\\b");
+            } else if (ch == bytes1(uint8(0x0c))) {
+                output = abi.encodePacked(output, "\\f");
+            } else if (ch == bytes1(uint8(0x0a))) {
+                output = abi.encodePacked(output, "\\n");
+            } else if (ch == bytes1(uint8(0x0d))) {
+                output = abi.encodePacked(output, "\\r");
+            } else if (ch == bytes1(uint8(0x09))) {
+                output = abi.encodePacked(output, "\\t");
+            } else if (uint8(ch) < 0x20) {
+                output = abi.encodePacked(output, "\\u00", _hexChar(uint8(ch) >> 4), _hexChar(uint8(ch) & 0x0f));
+            } else {
+                output = abi.encodePacked(output, ch);
+            }
+        }
+
+        return string(output);
+    }
+
+    function _hexChar(uint8 nibble) internal pure returns (bytes1) {
+        return nibble < 10 ? bytes1(nibble + 0x30) : bytes1(nibble + 0x57);
     }
 
     function _loadData() internal view returns (DataBundle memory d) {

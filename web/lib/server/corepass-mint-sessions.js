@@ -161,7 +161,15 @@ function buildAbsoluteUrl(request, pathname, search = "") {
   }
   const forwardedProto = request.headers.get("x-forwarded-proto");
   const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
-  const protocol = forwardedProto || (host?.startsWith("localhost") || host?.startsWith("127.0.0.1") ? "http" : "https");
+  const isLocalHost = host?.startsWith("localhost") || host?.startsWith("127.0.0.1");
+  if (!isLocalHost || !host) {
+    const error = new Error(
+      "NEXT_PUBLIC_SITE_BASE_URL or CORECATS_SITE_BASE_URL must be explicitly set before mint callback URLs are generated.",
+    );
+    error.code = "mint_runtime_misconfigured";
+    throw error;
+  }
+  const protocol = forwardedProto || "http";
   return `${protocol}://${host}${pathname}${search}`;
 }
 

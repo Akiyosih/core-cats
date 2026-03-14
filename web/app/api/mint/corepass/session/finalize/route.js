@@ -1,6 +1,6 @@
 import { attemptSessionFinalize } from "../../../../../../lib/server/corepass-mint-sessions.js";
 import { getCorePublicConfig } from "../../../../../../lib/server/core-env.js";
-import { mintSurfaceClosedResponse } from "../../../../../../lib/server/mint-surface.js";
+import { mintRuntimeMisconfiguredResponse, mintSurfaceClosedResponse } from "../../../../../../lib/server/mint-surface.js";
 
 export const runtime = "nodejs";
 
@@ -18,6 +18,9 @@ export async function POST(request) {
   const config = getCorePublicConfig();
   if (!config.mintSurfaceEnabled) {
     return mintSurfaceClosedResponse(config);
+  }
+  if (!config.mintRuntimeReady) {
+    return mintRuntimeMisconfiguredResponse(config);
   }
   try {
     const body = await request.json();
