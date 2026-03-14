@@ -117,6 +117,7 @@ Run these steps in order.
    - mainnet contract addresses
    - explorer links
    - verify status
+   - the public evidence items listed in `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
 9. Confirm signer and finalizer configuration is pointed at mainnet, not Devin.
 10. Keep public signature issuance disabled.
 
@@ -237,6 +238,7 @@ After canary success:
    - verify links or verify status
    - GitHub repository links
    - reproducibility docs
+   - the canary/smoke evidence listed in `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
 6. Perform the repository clarity pass:
    - `core-cats` is the production-facing repo
    - `core-cats-eth` is labeled as historical archive only

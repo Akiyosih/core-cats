@@ -23,6 +23,7 @@ Representative random sample grid from the current 1,000-cat artwork review set.
 - [Core Testnet Deploy Runbook](docs/CORE_TESTNET_DEPLOY_RUNBOOK.md)
 - [Public Trust + Privacy Notes](docs/TRUST_AND_PRIVACY_SURFACE.md)
 - [Minter Self-Review Checklist](docs/MINTER_SELF_REVIEW_CHECKLIST.md)
+- [Mainnet Public Evidence Checklist](docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
 - [Freeze / Renounce Policy](docs/FREEZE_AND_RENOUNCE_POLICY.md)
 - [Minter Privacy Note](docs/MINTER_PRIVACY_NOTE.md)
 - [Public Document Language Policy](docs/PUBLIC_DOCUMENT_LANGUAGE_POLICY.md)

@@ -8,6 +8,7 @@ Provide the one-page replacement map for moving from the completed `CCATTEST reh
 Use this together with:
 1. `docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md`
 2. `docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md`
+3. `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
 
 ## Current Operator Order
 As of `2026-03-14`, the intended next sequence is:
@@ -22,6 +23,7 @@ As of `2026-03-14`, the intended next sequence is:
 3. if the dry-run is clean, proceed to:
    - the real official `CCAT` deploy
    - the Vercel Pro `closed` cutover with the official contract address
+   - publication of the minimum public evidence set in `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
    - the later exact-host official smoke mint before opening the public mint
 
 ## Source References

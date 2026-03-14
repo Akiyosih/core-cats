@@ -40,6 +40,7 @@ Relevant references:
 1. `.gitmodules`
 2. `foxar/spark.toml`
 3. `docs/MINTER_SELF_REVIEW_CHECKLIST.md`
+4. `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
 
 ## What Is Still An Explicit Trust Surface
 The current release path is not fully trustless.
@@ -157,6 +158,8 @@ Before or at the mainnet canary/public opening stage, the project should publish
    - signer policy
    - relayer/finalizer policy
 7. canary evidence before public opening
+8. the public evidence packet/checklist itself:
+   - `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
 
 ## Practical Reader Summary
 If you are reviewing Core Cats before mint:
