@@ -488,25 +488,26 @@ This split keeps the plan aligned with the practical wallet-switch-minimizing wo
 3. finish with the checks that can still be closed cleanly from Wallet A
 
 ### D-11. Separate same-device mobile track
-Run this as its own private-canary track after the `/mint` UI exposes the same-device on-device route. Do not merge it into `FR-04`.
+This private-canary track is now closed as of `2026-03-14`. It stayed separate from `FR-04`.
 
-1. use fresh wallets that are not shared with the duplicate-event test
-2. keep desktop-first as the release primary path unless the separate mobile matrix proves otherwise
-3. baseline cases for the first pass:
-   - `SM-01`: fresh wallet, quantity `1`, same-device success path
-   - `SM-02`: confirm `QR 1 of 2 -> QR 2 of 2` advances after app return without relying on a manual reload
-   - `SM-03`: confirm `QR 2 of 2 -> Step 3` advances after app return without relying on a manual reload
-4. only extend to quantity `2 / 3` after the quantity-`1` same-device baseline is clean
-5. even if this track passes, disclose same-device only as a secondary supported path until the final public-mint host also proves it
+1. the same-device `/mint` route was exposed on the private canary surface and tested on one mobile device
+2. `SM-01` passed with quantity `1`
+3. `SM-02` and `SM-03` passed:
+   - after each CorePass approval, the tester manually returned to the browser tab
+   - the session advanced to the next step without relying on `Refresh status`
+4. follow-on same-device quantity `2` and quantity `3` runs also passed
+5. release posture remains unchanged:
+   - keep desktop-first as the primary route
+   - disclose same-device only as a secondary supported path until the final public-mint host also proves it
 
 ### D-12. Current remaining focus as of `2026-03-14`
 Treat the already-passed checks as closed unless a regression appears. The remaining execution priority is:
 
-1. land the same-device mobile `/mint` UI branch on the private canary surface
-2. run the separate fresh-wallet same-device matrix
-3. run `FR-04` as its own duplicate callback / near-duplicate finalize handling check
-4. fix only the cases that regress or block those remaining tracks
-5. move on to the official `CCAT` cutover review after the remaining private-canary evidence is either closed or explicitly deferred as non-blocking
+1. treat the `CCATTEST` rehearsal canary as closed unless a regression appears
+2. prepare the official `CCAT` cutover review
+3. fix only regressions that affect the official deploy path
+4. deploy the official `CCAT` contract when the release checklist is ready
+5. run one exact-host smoke mint on the final Vercel Pro public-mint origin before opening the later public mint
 
 ## Phase E: Fix, Re-Test, and Keep the Bug Bar Honest
 
@@ -566,18 +567,18 @@ Reserve these for the later official `CCAT` canary:
 3. one full mint success on the official contract
 
 ### F-3. Same-device mobile stays separate from `FR-04`
-The current branch should expose same-device mobile through the real `/mint` UI, but keep it as a separate evidence track from duplicate-event handling.
+The rehearsal kept same-device mobile on the real `/mint` UI as a separate evidence track from duplicate-event handling, and both tracks are now closed.
 
-1. keep the release primary path desktop-first unless the separate mobile matrix proves otherwise
-2. use fresh wallets for the mobile matrix
-3. if `FR-04` is still needed, spend one fresh-wallet mint on that duplicate-event test separately instead of mixing both concerns into one session
-4. if mobile same-device succeeds, disclose it only as a secondary supported path until the final public-mint host has also proven it
-5. if mobile same-device does not prove cleanly, keep the release path desktop-first and do not block the launch on it
+1. the release primary path stays desktop-first
+2. same-device mobile proved cleanly enough to keep as a secondary supported path on the rehearsal host
+3. `FR-04` stayed separate and passed as its own duplicate callback / near-duplicate finalize handling check
+4. same-device should still be disclosed only as a secondary path until the final public-mint host also proves it
+5. if a later host-specific regression appears, do not let same-device block the public launch path
 
 ### F-4. Official CCAT release sequence after the rehearsal closes
 After the `CCATTEST rehearsal canary` is closed:
 
-1. close the separate same-device mobile matrix, or explicitly defer it without changing the desktop-first release path
+1. keep the separate same-device mobile matrix and `FR-04` marked closed unless a regression appears
 2. if a CorePass KYC zero-knowledge release appears in time, evaluate it as a separate addition; otherwise keep the current mint path and do not block the release on that feature
 3. finalize the official `CCAT` super-rare decision:
    - use the approved logo individuals if permission arrives in time, or
@@ -590,13 +591,9 @@ After the `CCATTEST rehearsal canary` is closed:
 
 ## Recommended Execution Order
 1. keep the already-passed checks closed unless a regression appears
-2. land the same-device mobile `/mint` UI branch on the private canary surface
-3. run the separate fresh-wallet same-device matrix
-4. run `FR-04` as its own duplicate-event handling check
-5. fix only the affected paths and re-test only the affected cases
-6. prepare the later official `CCAT` cutover review
-7. deploy the official `CCAT` contract
-8. run one exact-host smoke mint on the final Vercel Pro public-mint origin
+2. prepare the later official `CCAT` cutover review
+3. deploy the official `CCAT` contract
+4. run one exact-host smoke mint on the final Vercel Pro public-mint origin
 
 ## Done Conditions
 The `CCATTEST rehearsal canary` can be treated as complete only if all of the following are true:
