@@ -1,11 +1,16 @@
 # Core Cats Public Trust + Privacy Notes
 
-Status: working public-facing note for the current mainnet launch path
+Status: working public-facing note for the current live / rehearsal trust surface
 
 ## Purpose
 This note explains the practical trust surface and privacy expectations of the current Core Cats release path.
 
 It is meant to sit next to the art, manifest, and randomness disclosures so readers can judge the project from the outside.
+
+Important distinction:
+1. this note describes the current live, canary, or historical trust surface
+2. the intended official `CCAT` philosophy is documented separately in `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md`
+3. if the two differ, this note should be read as disclosure of the current surface, not as the final official philosophy claim
 
 ## What Is Fixed On-Chain
 These properties are part of the active `CoreCats` contract shape:
@@ -43,7 +48,7 @@ Relevant references:
 4. `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
 
 ## What Is Still An Explicit Trust Surface
-The current release path is not fully trustless.
+The current live / rehearsal release path is not fully trustless.
 
 Important operator-controlled surfaces still exist:
 

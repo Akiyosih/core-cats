@@ -6,6 +6,7 @@ Status: public-safe checklist for what should be published at official `CCAT` la
 This note lists the minimum public evidence the project should publish so outside readers can inspect the live mainnet release without needing operator-only details.
 
 Use this together with:
+1. `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md`
 1. `docs/TRUST_AND_PRIVACY_SURFACE.md`
 2. `docs/FREEZE_AND_RENOUNCE_POLICY.md`
 3. `docs/OFFICIAL_CCAT_CUTOVER_NOTE.md`
@@ -37,11 +38,13 @@ Publish these when the official `CCAT` contract is deployed and the public site 
    - Foxar / Spark versioning
    - imported dependency path family
    - pinned submodule commit or equivalent verify artifact
-10. the live owner / signer / `metadataRenderer` values, either:
-   - as explorer links, or
-   - as published read results with tx/evidence links
-   - including whether `signerLocked` is still `false` or has already been permanently set to `true`
+10. evidence that the official contract matches the stated launch-principles surface:
+   - no retained owner/admin path
+   - no signer-gated mint requirement
+   - fixed renderer / on-chain data wiring if separate contracts are used
+   - as explorer links, published read results, ABI/source links, or equivalent verify evidence
 11. the public trust-policy links:
+   - official launch principles
    - trust surface note
    - freeze / renounce policy
    - minter self-review checklist
@@ -62,20 +65,16 @@ Do not open the general mint until these are public.
 8. if same-device mobile is disclosed publicly:
    - explicit disclosure that it is a secondary path, or
    - exact-host evidence for that path too
-9. the public-facing statement of current operational trust surfaces:
-   - owner policy
-   - signer policy
-   - relayer/finalizer policy
+9. the public-facing statement of any remaining operational trust surfaces:
+   - if the official target is achieved, state that contract-layer owner/admin and signer gating are absent
+   - disclose any relayer/finalizer or web-host convenience layers separately
 
 ## C. Required After Launch While Trust Surfaces Still Exist
 If the project keeps any mutable or operator-controlled surface, keep publishing updates.
 
-1. ownership transfer transaction hash when ownership moves
-2. signer-lock transaction hash when `lockSigner()` is later executed
-3. renounce transaction hash if ownership is later renounced
-4. any `setSigner(...)` change with tx hash and reason
-5. delayed explorer verification once it becomes available
-6. any user-visible mint incident or regression that affects mint safety or correctness
+1. delayed explorer verification once it becomes available
+2. any user-visible mint incident or regression that affects mint safety or correctness
+3. if the deployed contract does retain any mutable/admin surface contrary to the target philosophy, every related admin transaction hash and explanation
 
 ## What This Checklist Does And Does Not Solve
 Publishing this evidence materially improves transparency, but it does not remove every trust surface.
@@ -87,9 +86,9 @@ It helps outside readers verify:
 4. what operational policy is still in force
 
 It does not prove:
-1. that an owner-controlled change will never be made before freeze or renounce
-2. that a dependency is harmless without explorer verification or reproducible build evidence
-3. that the backend will never have an outage or policy change
+1. that a dependency is harmless without explorer verification or reproducible build evidence
+2. that the web or backend convenience layers will never have an outage or policy change
+3. that a contract truly matches the no-owner / no-signer target unless the published source and evidence prove it
 
 ## Short Reader Summary
 Before minting, a careful reader should be able to answer all of these from public evidence:
@@ -97,5 +96,5 @@ Before minting, a careful reader should be able to answer all of these from publ
 1. what exact contract is live
 2. what repo commit and artifacts produced it
 3. whether explorer verification or a verify packet exists
-4. who still controls signer / ownership, and whether renderer was constructor-pinned
+4. whether the official deployed contract truly has no retained owner/admin path and no signer gate
 5. whether an official exact-host mint already succeeded

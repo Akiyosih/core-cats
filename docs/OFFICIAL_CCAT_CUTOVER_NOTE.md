@@ -5,6 +5,11 @@ Status: Prepared before the official `CCAT` deploy
 ## Purpose
 Provide the one-page replacement map for moving from the completed `CCATTEST rehearsal canary` into the official `CCAT` deploy and the later Vercel Pro exact-host smoke.
 
+Architecture note:
+1. this cutover note still contains earlier signer-gated official assumptions in some sections
+2. `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md` is now the authoritative public philosophy target for the official release
+3. contract-specific cutover steps should be refreshed again once the no-owner / no-signer official bytecode redesign is implemented
+
 Use this together with:
 1. `docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md`
 2. `docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md`

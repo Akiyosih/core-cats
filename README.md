@@ -15,6 +15,7 @@ Representative random sample grid from the current 1,000-cat artwork review set.
 
 ## Project Docs
 - [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
+- [Official CCAT Launch Principles](docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md)
 - [Final 1000 Trait Schema](docs/FINAL1000_TRAIT_SCHEMA.md)
 - [Web UI / Mint DApp Spec](docs/WEB_UI_MINT_DAPP_SPEC.md)
 - [Core Blockchain Work Procedure / Launch Path](docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
@@ -31,6 +32,10 @@ Representative random sample grid from the current 1,000-cat artwork review set.
 - [ADR-0002: Randomness Strategy](docs/DECISIONS/ADR-0002-randomness-strategy.md)
 - [Core Cats ETH: Project Status (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/PROJECT_STATUS.md)
 - [Core Cats ETH: Roadmap (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)
+
+Important distinction:
+1. `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md` states the intended final official `CCAT` standard
+2. some rehearsal/current-state notes still document the already-proven signer-gated `CCATTEST` path and should not be mistaken for the final official philosophy
 
 ## Mirrored Final Artifacts
 - `manifests/base1000_no_rare_latest.json`
@@ -54,7 +59,8 @@ Public readers should treat `foxar/` as the contract source/build/deploy workspa
 
 - 🧱 Built with Solidity for the Core ecosystem
 - 🎨 Features 100% on-chain SVG artwork
-- 🔐 Signature-gated free mint is the current public path; CorePass/KYC is a later extension target
+- 🔐 Official `CCAT` target: permissionless free mint with on-chain `1000 total / 3 per wallet`
+- 🧭 Public promises are limited to what outside readers can verify on-chain or from published evidence
 - 📦 Open-source, transparent, and designed for public review
 
 
@@ -72,9 +78,9 @@ See [Public Document Language Policy](docs/PUBLIC_DOCUMENT_LANGUAGE_POLICY.md).
 **Blockchain**: Core Blockchain  
 **Token Standard**: CRC721 / ERC721-compatible  
 **Total Supply**: **1,000 (immutable)**  
-**Mint Limit per User**: **3 per wallet address (current path, immutable)**  
+**Mint Limit per User**: **3 per wallet address (official rule, immutable)**  
 **Artwork Specs**: **24×24 SVG pixel art** / Fully on-chain storage / Unique generation via part combination  
-**Mint Condition**: Signature-gated free mint first; CorePass/KYC-gated mode is a future extension target  
+**Mint Condition**: **Official `CCAT` target is permissionless free mint with no allowlist and no signer gate**  
 **Mint Price**: **Free (no primary sale fee)**  
 **Secondary Sale Fee**: **None**  
 **Transparency Policy**: All contract code, generation logic, and deployment history will be publicly available on GitHub  
@@ -84,11 +90,14 @@ See [Public Document Language Policy](docs/PUBLIC_DOCUMENT_LANGUAGE_POLICY.md).
    - Same algorithm on Core Devin rehearsal and Core production path  
    - Assignment process is designed to be replay-verifiable from on-chain data  
    - `RandomSource` abstraction keeps future VRF migration possible without NFT semantic changes  
-2. **Immutability**: Total supply and per-user limit fixed at the contract level  
+2. **Immutability**:
+   - Total supply and per-wallet limit fixed at the contract level
+   - Official `CCAT` target is deploy-time immutability for the NFT object, not a later admin lock
 3. **Trust & Openness**:  
    - Full source code and art parts published on GitHub  
    - Open review process instead of formal audit (cost-saving)  
-   - Current owner/admin powers and backend trust assumptions must be disclosed separately from the fixed supply claim
+   - Public promises are limited to on-chain-verifiable guarantees and published evidence
+   - Any current live/rehearsal trust surface must be disclosed separately from the official `CCAT` target philosophy
 
 **Development Steps**:
 1. **MVP Smart Contract**:  
@@ -107,4 +116,4 @@ See [Public Document Language Policy](docs/PUBLIC_DOCUMENT_LANGUAGE_POLICY.md).
 **Operation Policy**:
 - Fully free project, no secondary sale royalties  
 - No operational control to change total supply or per-wallet mint limit after deployment
-- Signer rotation/lock timing and backend-assisted mint operations remain explicit trust surfaces unless a later freeze/renounce policy is publicly executed
+- Official `CCAT` target leaves no retained owner/admin path and no signer-gated mint authority after deploy

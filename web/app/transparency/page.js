@@ -41,6 +41,10 @@ const verificationReferences = [
     label: "CCATTEST rehearsal canary plan",
   },
   {
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md",
+    label: "Official CCAT launch principles",
+  },
+  {
     href: "https://github.com/Akiyosih/core-cats/blob/main/manifests/final_1000_manifest_v1.json",
     label: "Final 1000 manifest",
   },
@@ -138,6 +142,35 @@ export default function TransparencyPage() {
                   ? "Verification depends on the final published contract address."
                   : "Check the explorer contract page and the published repository artifacts together."}
               </li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section className="page-stack transparency-section">
+        <SectionHeading eyebrow="Official CCAT Target" title="What the final release is meant to guarantee">
+          These are the intended principles for the official `CCAT` contract. Compare them with the current live
+          surface above rather than assuming the currently published rehearsal contract already matches them.
+        </SectionHeading>
+        <div className="copy-grid copy-grid--two">
+          <article className="copy-card">
+            <h2>Intended on-chain guarantees</h2>
+            <ul className="plain-list">
+              <li>Minted cats should not change after mint: image, name, description, and attributes are meant to stay fixed.</li>
+              <li>The official release target is deploy-time immutability rather than a later admin lock.</li>
+              <li>The intended on-chain rule is `1000` total cats and `3` cats per wallet.</li>
+              <li>The intended official mint policy is permissionless rather than allowlist or signer gated.</li>
+              <li>The intended official contract posture is no retained owner/admin path after deploy.</li>
+            </ul>
+          </article>
+
+          <article className="copy-card">
+            <h2>Verification boundary</h2>
+            <ul className="plain-list">
+              <li>`Fully on-chain` is meant to describe the NFT object and mint rule, not the web UI itself.</li>
+              <li>The mint website, collection browser, and callback UX are convenience layers, not the NFT.</li>
+              <li>`3 per wallet` is the stated rule; Core Cats does not claim to enforce `3 per human` under the current architecture.</li>
+              <li>Public promises should stay limited to what the chain, source, and published evidence can actually prove.</li>
             </ul>
           </article>
         </div>
@@ -246,9 +279,10 @@ export default function TransparencyPage() {
           <article className="copy-card transparency-card--wide">
             <h2>What this page does not prove for you</h2>
             <ul className="plain-list">
+              <li>This page shows both the current live surface and the intended official philosophy; do not assume they already match until the official deployed contract and evidence do.</li>
               <li>The top-level CoreCats contract file is not the whole review surface; imported dependency contracts also matter.</li>
               <li>The active contract build path uses the Core-specific Ylem / Foxar / Spark toolchain, not a generic Ethereum-only path.</li>
-              <li>The remaining launch-critical owner surface is signer control and its later lock/renounce timing; the intended official renderer path should be constructor-fixed and verified from deployed source.</li>
+              <li>If the currently published contract still retains owner, signer, or other admin-controlled mint surfaces, treat them as explicit trust surfaces until the official no-owner, no-signer release is the deployed and verified one.</li>
               <li>If the explorer verification is missing, wait for the published verify packet or equivalent reproducibility evidence before treating the deployment as fully inspectable.</li>
             </ul>
           </article>

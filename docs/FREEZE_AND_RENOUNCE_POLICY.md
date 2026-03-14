@@ -1,91 +1,63 @@
 # Core Cats Freeze / Renounce Policy
 
-Status: public-facing policy note for the current mainnet launch path
+Status: public-facing policy note for the intended official `CCAT` admin posture
 
 ## Purpose
-Explain how Core Cats intends to handle owner/admin powers after mainnet deployment.
+Explain whether Core Cats intends to retain any owner/admin path after the official `CCAT` contract is deployed.
 
-## Current Contract Reality
-The intended official `CoreCats` contract keeps one launch-critical owner-controlled action:
+## Official Policy Target
+The intended official `CCAT` release should not rely on a later freeze or renounce step to become trustworthy.
 
-1. `setSigner(address)`
-2. `lockSigner()`
+The target posture is:
+1. no retained owner/admin after deploy
+2. no signer rotation path after deploy
+3. no post-deploy admin sequence that the public must wait for before the contract matches the stated philosophy
 
-The official `metadataRenderer` address is intended to be fixed in the constructor rather than rotated after deploy.
+This aligns with the project's stated launch principles in:
+1. `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md`
 
-That means the official contract is still not "fully renounced at deploy" by default, but the main mutable launch surface is signer control rather than renderer rotation.
+## What This Means Practically
+If the official contract really matches the intended target, then:
 
-Relevant local reference:
-1. `foxar/src/CoreCats.sol`
+1. there is no long-term owner to transfer
+2. there is no later `lockSigner()` step to wait for
+3. there is no later renounce transaction needed to make the official release "safe"
 
-## Current Operational Policy
-### 1. Deployer is temporary
-The deployer wallet is not intended to remain the long-term owner.
+In other words, the desired end state should exist from the deploy transaction itself.
 
-During the deploy window it may:
-1. deploy the contracts
-2. perform the minimum setup transactions
-3. transfer ownership to the cold owner wallet
+## Historical / Rehearsal Context
+Readers may still encounter older rehearsal notes that mention:
 
-### 2. Cold owner is the default owner after setup
-After the required deploy-window setup is complete, ownership should be transferred to the dedicated cold owner/admin wallet.
+1. signer rotation
+2. signer lock
+3. cold-owner transfer
+4. later renounce
 
-Operationally this means:
-1. Vercel is not the owner
-2. Contabo is not the owner
-3. the relayer/finalizer is not the owner
-4. the deployer should not remain the owner longer than necessary
+Those notes describe earlier rehearsal or intermediate launch designs, not the intended final official `CCAT` posture.
 
-### 3. Public mint should not depend on a hot owner key
-The intended public mint path uses:
-1. a signer key for mint authorization
-2. a finalizer/relayer key for operational convenience
+## What Must Be Publicly Evidenced
+At official launch, the project should publish enough public evidence for outside readers to confirm that no retained admin path exists.
 
-Neither of those keys should hold contract ownership.
+That evidence should include:
 
-## Freeze Policy
-Core Cats intends to use a two-stage posture.
+1. the deployed contract address
+2. verified source or a reproducible verify packet
+3. constructor inputs and linked contract addresses if separate renderer/data contracts are used
+4. ABI/source evidence showing the absence of post-deploy owner/admin setter paths in the official contract
 
-### Stage A: soft freeze during launch / live mint
-During mainnet closed launch, canary, and any live public mint window:
+## If Reality Differs From This Policy
+If the official deployed contract still contains any mutable admin surface, that difference should be disclosed before mint opens.
 
-1. ownership stays on the cold owner wallet
-2. owner actions are treated as exceptional, not routine
-3. if an owner action is needed, the project should publish:
-   - the transaction hash
-   - the reason
-   - the affected setting
+Examples:
+1. retained ownership
+2. retained signer rotation
+3. retained mint-eligibility gating
 
-Reason:
-1. the current release path is still signature-gated
-2. signer rotation may be needed if a real launch problem appears
-3. once signer stability is proven, the owner can irreversibly call `lockSigner()`
-
-## Renounce Policy
-Core Cats does not promise automatic immediate renounce at the first deploy block.
-
-Instead, the current public policy is:
-
-1. do not renounce before the mainnet canary is complete
-2. do not renounce while the team still believes signer rotation may realistically be needed for the active mint phase
-3. once the live mint phase is stable or complete, choose one of these public end states:
-   - call `lockSigner()` and publish the tx hash
-   - renounce ownership and publish the renounce tx hash
-   - or keep ownership on the cold wallet and publicly explain why ownership is still being retained
-
-## What Is Already Fixed Even Before Renounce
-Regardless of later owner policy, the active contract already fixes:
-
-1. total supply at `1000`
-2. per-address mint limit at `3`
-
-So the main remaining trust surface is not supply inflation or post-deploy renderer replacement. It is operator control over signer configuration until `lockSigner()` and any later ownership decision.
+If such a surface exists, the project should not imply that the contract already matches this no-owner target.
 
 ## Public Reader Summary
-Current policy in plain language:
+The intended official policy is simple:
 
-1. the deployer should not remain the long-term owner
-2. ownership should move to the cold owner wallet after setup
-3. owner powers are expected to stay dormant during normal operation
-4. renounce is a later hard-freeze option, not a promise made before the real mainnet flow is proven
-5. if ownership is not renounced later, that should be explicitly disclosed rather than hidden
+1. do not ask readers to trust a future freeze
+2. do not ask readers to wait for a later renounce
+3. make the official contract match the philosophy from deploy
