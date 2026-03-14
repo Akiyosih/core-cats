@@ -48,6 +48,10 @@ const verificationReferences = [
     href: "https://github.com/Akiyosih/core-cats/blob/main/docs/TRUST_AND_PRIVACY_SURFACE.md",
     label: "Trust + privacy notes",
   },
+  {
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/MINTER_SELF_REVIEW_CHECKLIST.md",
+    label: "Minter self-review checklist",
+  },
 ];
 
 function SectionHeading({ eyebrow, title, children }) {
@@ -211,8 +215,9 @@ export default function TransparencyPage() {
                 For the mint call, confirm <span className="mono-wrap">to</span> matches the published contract and{" "}
                 <span className="mono-wrap">value</span> is <span className="mono-wrap">0</span>.
               </li>
+              <li>Stop if the wallet asks for `approve`, `setApprovalForAll`, or a token transfer outside the published mint flow.</li>
               <li>After submission, inspect the transaction result in Blockindex.</li>
-              <li>Compare explorer details and repository artifacts when you want deeper assurance.</li>
+              <li>Compare explorer details, trust notes, and repository artifacts when you want deeper assurance.</li>
             </ol>
           </article>
 
@@ -235,6 +240,16 @@ export default function TransparencyPage() {
                 <strong>About the long 0x field:</strong> it is encoded calldata. It is not meant to be human-readable
                 directly, but it can still be compared against the published ABI and explorer transaction details.
               </li>
+            </ul>
+          </article>
+
+          <article className="copy-card transparency-card--wide">
+            <h2>What this page does not prove for you</h2>
+            <ul className="plain-list">
+              <li>The top-level CoreCats contract file is not the whole review surface; imported dependency contracts also matter.</li>
+              <li>The active contract build path uses the Core-specific Ylem / Foxar / Spark toolchain, not a generic Ethereum-only path.</li>
+              <li>Owner-controlled surfaces such as `signer` and `metadataRenderer` still exist until a later freeze or renounce step is publicly executed.</li>
+              <li>If the explorer verification is missing, wait for the published verify packet or equivalent reproducibility evidence before treating the deployment as fully inspectable.</li>
             </ul>
           </article>
         </div>

@@ -21,6 +21,26 @@ Relevant references:
 3. `docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md`
 4. `docs/FREEZE_AND_RENOUNCE_POLICY.md`
 
+## Dependency And Toolchain Review Surface
+Readers should not treat `foxar/src/CoreCats.sol` as the only source that matters.
+
+The active contract workspace also depends on:
+
+1. imported contract primitives such as `CRC721`, `Ownable`, and `EDDSA`
+2. the pinned submodule path `foxar/lib/corezeppelin-contracts`
+3. the Core-specific Ylem / Foxar / Spark toolchain used to build and deploy the contracts
+
+Practical implication:
+
+1. reviewing only the top-level contract file is not enough for a full outside review
+2. imported dependency sources are part of the real contract surface
+3. published explorer verification or a reproducible verify packet matters because it is the public bridge between this repository and the deployed bytecode
+
+Relevant references:
+1. `.gitmodules`
+2. `foxar/spark.toml`
+3. `docs/MINTER_SELF_REVIEW_CHECKLIST.md`
+
 ## What Is Still An Explicit Trust Surface
 The current release path is not fully trustless.
 
@@ -40,6 +60,7 @@ Relevant references:
 2. `web/components/mint-workflow.jsx`
 3. `docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md`
 4. `docs/FREEZE_AND_RENOUNCE_POLICY.md`
+5. `docs/MINTER_SELF_REVIEW_CHECKLIST.md`
 
 ## What The Current Backend Actually Does
 The current production direction uses:
@@ -127,12 +148,15 @@ Before or at the mainnet canary/public opening stage, the project should publish
 1. the real mainnet contract address
 2. deploy transaction hashes
 3. verify status or manual verify packet path
-4. the current launch state: `closed`, `canary`, or `public`
-5. the current trust surface:
+4. the toolchain / dependency review surface needed to reproduce the contract build:
+   - Ylem / Foxar / Spark versioning
+   - imported dependency paths or the verification packet that already captures them
+5. the current launch state: `closed`, `canary`, or `public`
+6. the current trust surface:
    - owner/admin policy
    - signer policy
    - relayer/finalizer policy
-6. canary evidence before public opening
+7. canary evidence before public opening
 
 ## Practical Reader Summary
 If you are reviewing Core Cats before mint:
@@ -140,4 +164,5 @@ If you are reviewing Core Cats before mint:
 1. trust the fixed supply/limit/randomness properties only to the extent they are visible in the published contract and launch artifacts
 2. treat signer rotation, renderer rotation, and backend issuance as explicit operational trust surfaces
 3. do not assume the current mint flow is privacy-preserving in the anonymity sense
-4. do expect the project to publish enough addresses, tx hashes, manifests, and runbooks for outside inspection
+4. do not treat the top-level contract file as the whole review surface; imported dependencies and the active Core toolchain also matter
+5. do expect the project to publish enough addresses, tx hashes, manifests, verify artifacts, and runbooks for outside inspection
