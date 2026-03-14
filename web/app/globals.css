@@ -1340,9 +1340,14 @@ main {
 .mint-verify-details summary {
   cursor: pointer;
   list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   padding: 16px 18px;
   font-weight: 800;
   color: var(--ink);
+  text-align: center;
 }
 
 .mint-verify-details summary::-webkit-details-marker {
@@ -1351,9 +1356,10 @@ main {
 
 .mint-verify-details summary::after {
   content: "+";
-  float: right;
   color: var(--teal);
   font-size: 1.1rem;
+  line-height: 1;
+  flex: 0 0 auto;
 }
 
 .mint-verify-details[open] summary::after {
