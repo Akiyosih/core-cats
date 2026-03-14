@@ -536,6 +536,41 @@ function appendHistory(session, entry) {
   }
 }
 
+function matchesCallbackTxHash(currentTxHash, nextTxHash) {
+  return (
+    String(currentTxHash || "").trim().toLowerCase() !== "" &&
+    String(currentTxHash || "").trim().toLowerCase() === String(nextTxHash || "").trim().toLowerCase()
+  );
+}
+
+export function applyFinalizeCallbackState(session, txHash) {
+  if (matchesCallbackTxHash(session?.finalize?.txHash, txHash)) {
+    session.error = null;
+    extendSessionExpiry(session);
+    session.updatedAt = nowIso();
+    appendHistory(session, {
+      step: "finalize",
+      event: "duplicate_callback_ignored",
+      txHash: txHash || null,
+    });
+    return { duplicate: true };
+  }
+
+  session.finalize.txHash = txHash;
+  session.finalize.confirmedAt = nowIso();
+  session.finalize.status = "confirmed";
+  session.finalize.mode = "corepass";
+  session.finalize.lastError = "";
+  session.finalize.lastErrorCode = "";
+  session.finalize.stuck = false;
+  session.finalize.stuckSince = "";
+  session.status = "finalized";
+  session.error = null;
+  extendSessionExpiry(session);
+  appendHistory(session, { step: "finalize", event: "confirmed", txHash: txHash || null });
+  return { duplicate: false };
+}
+
 function serializeSession(session) {
   const meta = sessionPublicMeta();
   return {
@@ -795,18 +830,7 @@ export async function applyCorePassCallback(request, payload) {
       error.code = "finalize_not_ready";
       throw error;
     }
-    session.finalize.txHash = parsed.txHash;
-    session.finalize.confirmedAt = nowIso();
-    session.finalize.status = "confirmed";
-    session.finalize.mode = "corepass";
-    session.finalize.lastError = "";
-    session.finalize.lastErrorCode = "";
-    session.finalize.stuck = false;
-    session.finalize.stuckSince = "";
-    session.status = "finalized";
-    session.error = null;
-    extendSessionExpiry(session);
-    appendHistory(session, { step: "finalize", event: "confirmed", txHash: parsed.txHash || null });
+    applyFinalizeCallbackState(session, parsed.txHash);
     await persistSession(request, session);
     return serializeSession(session);
   }
