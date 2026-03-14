@@ -74,8 +74,9 @@ function formatSessionState(value) {
       return "Commit ready for approval";
     case "commit_submitted":
       return "Commit submitted; waiting for chain confirmation";
+    case "precheck_rejected":
     case "authorize_rejected":
-      return "Authorization rejected before commit";
+      return "Wallet checks rejected before QR 2";
     case "commit_confirmed":
       return "Commit confirmed";
     case "commit_failed":
@@ -244,9 +245,10 @@ function describeCallbackError(code) {
     case "invalid_minter":
       return "CorePass returned an unsupported wallet address format for this session.";
     case "wallet_state_unavailable":
-      return "Mint authorization is temporarily unavailable because the backend could not confirm the wallet state.";
+      return "Wallet precheck is temporarily unavailable because the backend could not confirm current on-chain wallet state.";
+    case "precheck_failed":
     case "authorize_failed":
-      return "Mint authorization failed after the wallet was identified.";
+      return "Wallet checks failed after the wallet was identified, so QR 2 of 2 was not prepared.";
     case "mint_surface_closed":
       return "Mint is not available on this deployment. Start from the public teaser or the private canary surface that matches your current stage.";
     default:
@@ -291,10 +293,10 @@ function describeRejectedSession(code) {
       };
     default:
       return {
-        phaseCopy: "Wallet confirmed, but mint authorization was rejected before QR 2 of 2 could be prepared.",
-        step1Label: "Wallet confirmed, but mint authorization was rejected.",
+        phaseCopy: "Wallet confirmed, but wallet checks failed before QR 2 of 2 could be prepared.",
+        step1Label: "Wallet confirmed, but wallet checks failed before QR 2 of 2 could be prepared.",
         step1Note: "QR 2 of 2 was not prepared. No gas-spending mint transaction was created.",
-        commitDetail: "No commit transaction was prepared because mint authorization failed after wallet confirmation.",
+        commitDetail: "No commit transaction was prepared because wallet checks failed after wallet confirmation.",
       };
   }
 }
@@ -456,7 +458,7 @@ export default function MintWorkflow({ config }) {
   }
 
   const currentState = session?.status || "idle";
-  const walletState = session?.commit?.walletState || null;
+  const walletState = session?.walletState || session?.commit?.walletState || null;
   const showTestnetNotice =
     (config.networkName || "").toLowerCase() === "devin" || Number(config.chainId || 0) === 3;
   const finalizeStatus = session?.finalize?.status || "awaiting_finalize";
@@ -470,12 +472,12 @@ export default function MintWorkflow({ config }) {
   const authorizationExpired = Boolean(session?.commit && !commitSubmitted && commitExpiryMs > 0 && commitExpiryMs <= Date.now());
   const bridgeRefreshAnchorMs = session?.createdAt ? Date.parse(session.createdAt) : 0;
   const bridgeRefreshElapsedMs = bridgeRefreshAnchorMs > 0 ? Math.max(0, Date.now() - bridgeRefreshAnchorMs) : 0;
-  const currentStateLabel = authorizationExpired ? "Commit authorization expired" : formatSessionState(currentState);
-  const authorizeRejected = currentState === "authorize_rejected";
-  const rejectedSession = authorizeRejected ? describeRejectedSession(session?.error?.code || callbackError) : null;
+  const currentStateLabel = authorizationExpired ? "QR 2 expired before approval" : formatSessionState(currentState);
+  const precheckRejected = currentState === "precheck_rejected" || currentState === "authorize_rejected";
+  const rejectedSession = precheckRejected ? describeRejectedSession(session?.error?.code || callbackError) : null;
   const displayedError = error || (authorizationExpired ? "QR 2 of 2 expired before approval. Start a new mint from the beginning." : "");
   const restartMintVisible = authorizationExpired || displayedError.toLowerCase().includes("start a new mint from the beginning");
-  const terminalSession = finalizeConfirmed || authorizationExpired || authorizeRejected || currentState === "commit_failed" || currentState === "finalize_expired";
+  const terminalSession = finalizeConfirmed || authorizationExpired || precheckRejected || currentState === "commit_failed" || currentState === "finalize_expired";
   const activeHandoffMode = normalizeHandoffMode(session?.handoffMode || handoffMode);
   const sameDeviceMode = isSameDeviceMode(activeHandoffMode);
   const restartMintHref = mintUrlFor("", activeHandoffMode);
@@ -484,7 +486,7 @@ export default function MintWorkflow({ config }) {
     sessionId &&
     session &&
     !commitSubmitted &&
-    !authorizeRejected &&
+    !precheckRejected &&
     !terminalSession &&
     bridgeRefreshAnchorMs > 0 &&
     bridgeRefreshElapsedMs < 180_000
@@ -504,9 +506,9 @@ export default function MintWorkflow({ config }) {
     phaseCopy = "Session created. Confirm the wallet in CorePass.";
   }
   if (session?.identify?.completedAt) {
-    phaseCopy = "Wallet confirmed. Waiting for mint authorization details.";
+    phaseCopy = "Wallet confirmed. Checking wallet limits before QR 2 of 2 is prepared.";
   }
-  if (authorizeRejected && rejectedSession) {
+  if (precheckRejected && rejectedSession) {
     phaseCopy = rejectedSession.phaseCopy;
   }
   if (session?.commit) {
@@ -536,7 +538,7 @@ export default function MintWorkflow({ config }) {
   const commitCompletedLabel = commitConfirmed
     ? "Commit confirmed. Automatic finalize is now in progress."
     : authorizationExpired
-      ? "Commit authorization expired before approval."
+      ? "QR 2 expired before approval."
     : commitSubmitted
       ? "Commit submitted. Waiting for chain confirmation before finalize can begin."
       : "Commit approval is still required.";
@@ -683,14 +685,14 @@ export default function MintWorkflow({ config }) {
           ? "QR 2 of 2 was submitted from CorePass and is still waiting for an on-chain receipt."
         : authorizationExpired
           ? "QR 2 of 2 expired before approval. Start a new mint from the beginning."
-        : authorizeRejected && rejectedSession
+        : precheckRejected && rejectedSession
           ? rejectedSession.commitDetail
         : session?.commit
           ? sameDeviceMode
             ? "Return to this browser tab, then open QR 2 of 2 in CorePass to approve the commit transaction."
             : "Scan QR 2 of 2 to approve the commit transaction in CorePass."
           : "QR 2 of 2 is only prepared after wallet confirmation succeeds.",
-      tone: commitConfirmed ? "done" : authorizationExpired || authorizeRejected ? "blocked" : session?.commit ? "active" : "waiting",
+      tone: commitConfirmed ? "done" : authorizationExpired || precheckRejected ? "blocked" : session?.commit ? "active" : "waiting",
     },
     {
       label: "Finalize delivered",
@@ -700,10 +702,10 @@ export default function MintWorkflow({ config }) {
           ? "Delivery never started because QR 2 of 2 expired before approval."
         : commitConfirmed
           ? relayerNote
-        : authorizeRejected
+        : precheckRejected
             ? "Delivery never started because no commit transaction was prepared for this session."
           : "Your cat arrives only after the automatic finalize step completes.",
-      tone: finalizeConfirmed ? "done" : authorizationExpired || authorizeRejected ? "blocked" : commitConfirmed ? "active" : "waiting",
+      tone: finalizeConfirmed ? "done" : authorizationExpired || precheckRejected ? "blocked" : commitConfirmed ? "active" : "waiting",
     },
   ];
 
@@ -896,15 +898,15 @@ export default function MintWorkflow({ config }) {
           }
           highlightedNotice="QR 1 of 2: wallet bind only, no funds move."
           request={session.identify}
-          completedLabel={authorizeRejected && rejectedSession ? rejectedSession.step1Label : `CoreID confirmed: ${session.identify.coreId}`}
+          completedLabel={precheckRejected && rejectedSession ? rejectedSession.step1Label : `CoreID confirmed: ${session.identify.coreId}`}
           completedNote={
-            authorizeRejected && rejectedSession
+            precheckRejected && rejectedSession
               ? rejectedSession.step1Note
               : sameDeviceMode
                 ? "QR 1 of 2 is complete. Return here, then open QR 2 of 2 in CorePass."
                 : "QR 1 of 2 is complete. Stay on this mint page for QR 2 of 2."
           }
-          completeTone={authorizeRejected ? "blocked" : "done"}
+          completeTone={precheckRejected ? "blocked" : "done"}
           handoffMode={activeHandoffMode}
           actionLabel="Open QR 1 in CorePass"
           actionNote={

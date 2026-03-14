@@ -245,6 +245,65 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         except Exception as error:  # noqa: BLE001
             json_response(self, 500, {"error": "failed_to_issue_mint_authorization", "detail": str(error)})
 
+    def _handle_precheck(self) -> None:
+        body = self._read_json()
+        minter = str(body.get("minter") or "").strip()
+        quantity = int(body.get("quantity") or 0)
+        if not minter:
+            json_response(self, 400, {"error": "minter is required"})
+            return
+        if quantity not in (1, 2, 3):
+            json_response(self, 400, {"error": "quantity must be 1, 2, or 3"})
+            return
+
+        try:
+            wallet_state = self.rpc.get_wallet_mint_state(self.config.corecats_address, minter=minter)
+            precheck = evaluate_authorization_precheck(wallet_state, quantity)
+            json_response(
+                self,
+                200,
+                {
+                    "walletState": {
+                        "minted": precheck.minted,
+                        "reserved": precheck.reserved,
+                        "availableSlots": precheck.available_slots,
+                        "pendingCommitActive": precheck.pending_commit_active,
+                        "finalizeBlock": precheck.finalize_block,
+                        "expiryBlock": precheck.expiry_block,
+                        "currentBlock": precheck.current_block,
+                        "maxPerAddress": precheck.max_per_address,
+                    },
+                    "coreCatsAddress": self.config.corecats_address,
+                    "networkName": self.config.network_name,
+                    "relayerEnabled": bool(self.config.finalizer_private_key or self.config.finalizer_keystore_path),
+                },
+            )
+        except AuthorizationRejected as error:
+            json_response(
+                self,
+                409,
+                {
+                    "error": error.code,
+                    "detail": str(error),
+                    "walletState": {
+                        "minted": wallet_state.minted,
+                        "reserved": wallet_state.effective_reserved,
+                        "availableSlots": wallet_state.available_slots,
+                        "pendingCommitActive": wallet_state.pending_commit_active,
+                        "finalizeBlock": wallet_state.pending_commit.finalize_block,
+                        "expiryBlock": wallet_state.pending_commit.expiry_block,
+                        "currentBlock": wallet_state.current_block,
+                        "maxPerAddress": 3,
+                    },
+                },
+            )
+        except ValueError as error:
+            json_response(self, 400, {"error": "invalid_minter", "detail": str(error)})
+        except RpcError as error:
+            json_response(self, 503, {"error": "wallet_state_unavailable", "detail": str(error)})
+        except Exception as error:  # noqa: BLE001
+            json_response(self, 500, {"error": "failed_to_run_wallet_precheck", "detail": str(error)})
+
     def _handle_finalize(self) -> None:
         body = self._read_json()
         minter = str(body.get("minter") or "").strip()
@@ -335,6 +394,8 @@ class MintBackendHandler(BaseHTTPRequestHandler):
 
         path = normalized_path(self.path)
 
+        if path == "/api/mint/precheck":
+            return self._handle_precheck()
         if path == "/api/mint/authorize":
             return self._handle_authorize()
         if path == "/api/mint/finalize":

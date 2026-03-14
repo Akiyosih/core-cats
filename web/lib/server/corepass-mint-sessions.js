@@ -12,6 +12,7 @@ import {
   readRemoteMintSession,
   writeRemoteMintSession,
 } from "./mint-backend-proxy.js";
+import { runMintPrecheck } from "./mint-precheck.js";
 
 const SESSION_TTL_MS = Number(process.env.COREPASS_SESSION_TTL_SECONDS || 20 * 60) * 1000;
 const ACTIVE_MINT_SESSION_TTL_MS = Number(process.env.COREPASS_ACTIVE_MINT_SESSION_TTL_SECONDS || 35 * 60) * 1000;
@@ -96,6 +97,7 @@ function isTerminalSession(session) {
   return (
     Boolean(session?.finalize?.confirmedAt) ||
     session?.status === "authorize_rejected" ||
+    session?.status === "precheck_rejected" ||
     session?.status === "commit_failed" ||
     session?.status === "finalize_expired" ||
     isCommitAuthorizationExpired(session)
@@ -273,6 +275,7 @@ async function buildCommitRequest(request, session) {
     status: "awaiting_commit",
     commitHash,
     data,
+    walletState: session.walletState || null,
     desktopUri,
     mobileUri,
     qrDataUrl: await toQrDataUrl(desktopUri),
@@ -561,6 +564,7 @@ function serializeSession(session) {
     status: session.status,
     quantity: session.quantity,
     minter: session.minter || null,
+    walletState: session.walletState || null,
     createdAt: session.createdAt,
     updatedAt: session.updatedAt,
     expiresAt: new Date(session.expiresAtMs).toISOString(),
@@ -586,6 +590,7 @@ function serializeSession(session) {
     commit: session.commit
       ? {
           status: session.commit.status || null,
+          walletState: session.commit.walletState || null,
           expiry: session.commit.expiry,
           messageHash: session.commit.messageHash,
           walletState: session.commit.walletState || null,
@@ -648,6 +653,7 @@ export async function createMintSession(request, { quantity, handoffMode }) {
     commit: null,
     finalize: null,
     error: null,
+    walletState: null,
     history: [],
   };
 
@@ -761,20 +767,25 @@ export async function applyCorePassCallback(request, payload) {
       expectedCoreId: session.identify.expectedCoreId || null,
     });
     try {
+      session.walletState = await runMintPrecheck(request, {
+        minter: resolvedCoreId,
+        quantity: session.quantity,
+      });
       await buildCommitRequest(request, session);
       await persistSession(request, session);
       return serializeSession(session);
     } catch (error) {
-      session.status = "authorize_rejected";
+      session.status = "precheck_rejected";
+      session.walletState = error.walletState || session.walletState || null;
       session.error = {
-        code: error.code || "authorize_failed",
-        message: error.message || "Mint authorization failed",
+        code: error.code || "precheck_failed",
+        message: error.message || "Wallet precheck failed",
       };
       session.updatedAt = nowIso();
       appendHistory(session, {
         step: "commit",
-        event: "authorization_rejected",
-        code: error.code || "authorize_failed",
+        event: "precheck_rejected",
+        code: error.code || "precheck_failed",
       });
       await persistSession(request, session);
       throw error;

@@ -58,6 +58,10 @@ function normalizeUrl(value) {
   return String(value || "").trim().replace(/\/$/, "");
 }
 
+function isLoopbackHttpUrl(value) {
+  return /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(String(value || "").trim());
+}
+
 export function looksLikePlaceholder(value) {
   return /replace-with/i.test(String(value || "").trim());
 }
@@ -192,6 +196,10 @@ export function getMintRuntimeConfigErrors(state = getCoreServerEnv()) {
   const errors = [];
   const siteBaseUrl = normalizeUrl(state.siteBaseUrl || "");
   const coreCatsAddress = String(state.coreCatsAddress || "").trim();
+  const backendBaseUrl = normalizeUrl(state.backendBaseUrl || "");
+  const internalBackendBaseUrl = normalizeUrl(state.internalBackendBaseUrl || "");
+  const backendSharedSecret = String(state.backendSharedSecret || "").trim();
+  const externalOrigin = siteBaseUrl && !isLoopbackHttpUrl(siteBaseUrl);
 
   if (!siteBaseUrl) {
     errors.push("NEXT_PUBLIC_SITE_BASE_URL or CORECATS_SITE_BASE_URL must be explicitly set when the mint surface is enabled.");
@@ -208,6 +216,37 @@ export function getMintRuntimeConfigErrors(state = getCoreServerEnv()) {
       }
     } catch {
       errors.push("The mint surface CoreCats contract address is not a supported Core address format.");
+    }
+  }
+
+  if (externalOrigin && state.backendMode !== "proxy") {
+    errors.push("The mint surface must use CORECATS_BACKEND_MODE=proxy on non-local deployments.");
+  }
+
+  if (state.backendMode === "proxy") {
+    if (!backendBaseUrl && !internalBackendBaseUrl) {
+      errors.push(
+        "CORECATS_BACKEND_BASE_URL or CORECATS_INTERNAL_BACKEND_BASE_URL must be explicitly set when the mint surface uses proxy mode.",
+      );
+    } else {
+      if (backendBaseUrl) {
+        if (looksLikePlaceholder(backendBaseUrl)) {
+          errors.push("The mint surface backend origin must not use a placeholder value.");
+        } else if (!backendBaseUrl.startsWith("https://")) {
+          errors.push("CORECATS_BACKEND_BASE_URL must start with https:// when proxy mode is enabled.");
+        }
+      }
+      if (internalBackendBaseUrl && !isLoopbackHttpUrl(internalBackendBaseUrl)) {
+        errors.push(
+          "CORECATS_INTERNAL_BACKEND_BASE_URL must use a loopback http(s) origin such as http://127.0.0.1:8787.",
+        );
+      }
+    }
+
+    if (!backendSharedSecret) {
+      errors.push("CORECATS_BACKEND_SHARED_SECRET must be explicitly set when the mint surface uses proxy mode.");
+    } else if (looksLikePlaceholder(backendSharedSecret) || backendSharedSecret === "dev-only-secret") {
+      errors.push("The mint surface backend shared secret must not use a placeholder or dev-only value.");
     }
   }
 

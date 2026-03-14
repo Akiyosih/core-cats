@@ -96,9 +96,20 @@ async function fetchMintBackendJson(pathname, request, init = {}) {
     const error = new Error(payload.detail || payload.error || "backend request failed");
     error.code = payload.error || "backend_request_failed";
     error.status = response.status;
+    error.payload = payload;
     throw error;
   }
   return payload;
+}
+
+export async function fetchMintPrecheck(request, body) {
+  return fetchMintBackendJson("/api/mint/precheck", request, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
 }
 
 export async function fetchMintAuthorization(request, body) {

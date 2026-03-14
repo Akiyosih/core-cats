@@ -129,6 +129,23 @@ test("mint runtime config errors flag missing site base URL and Devin fallback a
   assert.match(errors[1], /Devin rehearsal CoreCats address/);
 });
 
+test("mint runtime config errors flag missing proxy backend wiring when mint is enabled", () => {
+  const errors = getMintRuntimeConfigErrors({
+    launchState: "canary",
+    siteSurface: "private-canary",
+    siteBaseUrl: "https://canary.example.com",
+    coreCatsAddress: "cb111111111111111111111111111111111111111111",
+    backendMode: "proxy",
+    backendBaseUrl: "",
+    internalBackendBaseUrl: "",
+    backendSharedSecret: "",
+  });
+
+  assert.equal(errors.length, 2);
+  assert.match(errors[0], /CORECATS_BACKEND_BASE_URL or CORECATS_INTERNAL_BACKEND_BASE_URL/);
+  assert.match(errors[1], /CORECATS_BACKEND_SHARED_SECRET/);
+});
+
 test("finalize calldata builder supports Core cb addresses for manual fallback", () => {
   const encoded = tryEncodeFinalizeMintData("cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416");
 
