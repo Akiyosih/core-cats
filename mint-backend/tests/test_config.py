@@ -45,7 +45,6 @@ class ConfigValidationTests(unittest.TestCase):
         env = self._base_env()
         env["CORECATS_BACKEND_PROFILE"] = "production"
         env["CORECATS_BACKEND_SHARED_SECRET"] = "replace-with-strong-random-secret"
-        env["MINT_SIGNER_PRIVATE_KEY"] = "0" * 114
         env["FINALIZER_PRIVATE_KEY"] = "1" * 114
 
         with patch.dict(os.environ, env, clear=True):
@@ -64,7 +63,6 @@ class ConfigValidationTests(unittest.TestCase):
                 "CORE_NETWORK_NAME": "mainnet",
                 "CORE_EXPLORER_BASE_URL": "https://blockindex.net",
                 "CORECATS_ADDRESS": DUMMY_MAINNET_CORECATS_ADDRESS,
-                "MINT_SIGNER_PRIVATE_KEY": "2" * 114,
                 "FINALIZER_PRIVATE_KEY": "3" * 114,
             }
         )
@@ -86,7 +84,6 @@ class ConfigValidationTests(unittest.TestCase):
                 "CORE_NETWORK_NAME": "mainnet",
                 "CORE_EXPLORER_BASE_URL": "https://blockindex.net",
                 "CORECATS_ADDRESS": DUMMY_MAINNET_CORECATS_ADDRESS,
-                "MINT_SIGNER_PRIVATE_KEY": "2" * 114,
                 "FINALIZER_ADDRESS": DUMMY_FINALIZER_ADDRESS,
                 "FINALIZER_KEYSTORE_PATH": str(self.finalizer_keystore),
                 "FINALIZER_PASSWORD_FILE": str(self.finalizer_password_file),
@@ -112,7 +109,6 @@ class ConfigValidationTests(unittest.TestCase):
                 "CORE_NETWORK_NAME": "mainnet",
                 "CORE_EXPLORER_BASE_URL": "https://blockindex.net",
                 "CORECATS_ADDRESS": DUMMY_MAINNET_CORECATS_ADDRESS,
-                "MINT_SIGNER_PRIVATE_KEY": "2" * 114,
                 "FINALIZER_KEYSTORE_PATH": str(self.finalizer_keystore),
                 "FINALIZER_PASSWORD_FILE": str(self.finalizer_password_file),
             }

@@ -23,18 +23,21 @@ This avoids introducing extra framework/runtime complexity before mainnet canary
 
 1. `CORECATS_BACKEND_SHARED_SECRET`
 2. `CORECATS_ADDRESS`
-3. `MINT_SIGNER_PRIVATE_KEY`
-4. either `FINALIZER_PRIVATE_KEY`, or:
+3. either `FINALIZER_PRIVATE_KEY`, or:
    - `FINALIZER_ADDRESS`
    - `FINALIZER_KEYSTORE_PATH`
    - `FINALIZER_PASSWORD_FILE`
-5. `CORE_RPC_URL` (preferred) or `CORE_TESTNET_RPC_URL` as a legacy alias
-6. `CORE_CHAIN_ID`
-7. `CORE_NETWORK_ID`
-8. `CORE_NETWORK_NAME`
-9. `CORE_EXPLORER_BASE_URL`
-10. `CORECATS_FOXAR_DIR`
-11. `SPARK_PATH`
+4. `CORE_RPC_URL` (preferred) or `CORE_TESTNET_RPC_URL` as a legacy alias
+5. `CORE_CHAIN_ID`
+6. `CORE_NETWORK_ID`
+7. `CORE_NETWORK_NAME`
+8. `CORE_EXPLORER_BASE_URL`
+9. `CORECATS_FOXAR_DIR`
+10. `SPARK_PATH`
+
+Optional legacy-only input:
+
+1. `MINT_SIGNER_PRIVATE_KEY`
 
 ## Repo-side paths
 
@@ -95,12 +98,13 @@ Source references:
    - `CORE_NETWORK_NAME=mainnet`
    - `CORE_EXPLORER_BASE_URL=https://blockindex.net`
    - `CORECATS_ADDRESS=<real-mainnet-corecats-address>`
-   - `MINT_SIGNER_PRIVATE_KEY=<signer-private-key>`
    - either `FINALIZER_PRIVATE_KEY=<finalizer-private-key>`
    - or:
      - `FINALIZER_ADDRESS=<wallet4-cb-address>`
      - `FINALIZER_KEYSTORE_PATH=<root-owned-path-to-finalizer-keystore>`
      - `FINALIZER_PASSWORD_FILE=<root-owned-path-to-finalizer-password-file>`
+   - only if a legacy signer-gated rehearsal flow must still be supported:
+     - `MINT_SIGNER_PRIVATE_KEY=<signer-private-key>`
 8. set env-file permission:
    - `chmod 600 /etc/corecats-mint-backend.env`
 9. install the systemd unit:
@@ -131,12 +135,13 @@ The checker in `mint-backend/systemd/contabo-mainnet-preflight.sh` fails with no
 1. `/etc/corecats-mint-backend.env` or systemd unit is missing
 2. env file permission is not `600`
 3. mainnet constraints are not met (`network/chain/rpc/explorer`)
-4. `CORECATS_BACKEND_SHARED_SECRET`, `CORECATS_ADDRESS`, or `MINT_SIGNER_PRIVATE_KEY` is missing/placeholder
+4. `CORECATS_BACKEND_SHARED_SECRET` or `CORECATS_ADDRESS` is missing/placeholder
 5. finalizer keystore mode is selected but `FINALIZER_ADDRESS` is missing
 6. finalizer keystore mode is selected but keystore/password files are missing or not `600`
 7. neither finalizer raw key mode nor keystore mode is configured
-8. `SPARK_PATH` / `CORECATS_FOXAR_DIR` / DB directory is invalid
-9. backend `load_config()` validation fails
+8. `MINT_SIGNER_PRIVATE_KEY` is present but malformed when legacy signer mode is being used
+9. `SPARK_PATH` / `CORECATS_FOXAR_DIR` / DB directory is invalid
+10. backend `load_config()` validation fails
 
 This script does not print raw secret values.
 
@@ -167,9 +172,10 @@ When the backend is started with `CORECATS_BACKEND_PROFILE=production`, it shoul
 1. the shared secret is set
 2. the RPC / chain / network values are mainnet
 3. the CoreCats contract address is no longer the Devin rehearsal address
-4. signer key is explicitly present
-5. finalizer raw key or finalizer keystore pair is explicitly present
-6. `spark` and `foxar` paths are valid on the server
+4. finalizer raw key or finalizer keystore pair is explicitly present
+5. `spark` and `foxar` paths are valid on the server
+
+If `MINT_SIGNER_PRIVATE_KEY` is set, it is treated as optional legacy compatibility only and must not be mistaken for an official permissionless-mint requirement.
 
 This is intentional and should be treated as a deployment safety feature, not as a bug.
 

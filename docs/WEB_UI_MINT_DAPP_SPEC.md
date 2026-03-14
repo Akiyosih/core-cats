@@ -26,7 +26,7 @@ This document corrects the external Web UI / Mint DApp draft against the current
    - Use `manifests/final_1000_manifest_v1.json` instead.
 4. Explorer/verification wording must be Core explorer / Blockindex centric, not Etherscan centric.
 5. Current contract branch introduces quantity mint and transparent randomness via a two-step flow:
-   - `commitMint(uint8 quantity, bytes32 commitHash, uint256 nonce, uint256 expiry, bytes signature)`
+   - `commitMint(uint8 quantity, bytes32 commitHash)`
    - `finalizeMint(address minter)`
    - Quantity `1 / 2 / 3` is part of this interface.
 6. Current Core Devin rehearsal already covers both the older single-step mint and the newer random assignment branch.
@@ -98,10 +98,9 @@ The external draft needs these corrections:
 3. `finalizeMint(minter)` is permissionless by design.
    - a relayer/service may finalize pending commits
    - the manual fallback path may still ask CorePass to send `finalizeMint(minter)`
-4. Current mint depends on an off-chain signer producing:
-   - `nonce`
-   - `expiry`
-   - `signature`
+4. The intended official contract path is permissionless at the contract layer.
+   - no allowlist
+   - no off-chain mint authorization signature
 5. Active web implementation no longer treats an injected browser wallet as the primary Core path.
 6. `/mint` now uses CorePass protocol requests directly:
    - `corepass:sign` to bind a concrete `coreID` to the mint session
@@ -112,7 +111,7 @@ The external draft needs these corrections:
    - `/api/mint/corepass/session`
    - `/api/mint/corepass/session/finalize`
    - `/api/mint/corepass/callback`
-8. These routes still use `spark` scripts on the server side to preserve the current Core signing path.
+8. Legacy authorization routes may still exist for rehearsal compatibility, but the intended official mint path does not depend on them.
 9. UI must explain the two-step mint clearly enough that users understand:
    - commit does not immediately reveal the assigned cat
    - finalize happens after the required future block boundary
@@ -133,8 +132,8 @@ The UI should support three launch states:
 1. `closed`
    - website is public
    - `/mint` is visible
-   - public signature issuance is disabled
    - copy explains that launch is not open yet
+   - the website-guided mint path is intentionally not opened/promoted yet even though the final official contract design is permissionless
 2. `canary`
    - mint is live only for a small operator allowlist
    - copy explains that controlled mainnet validation is in progress
@@ -208,7 +207,7 @@ These should be resolved at runtime or through a lightweight backend:
 1. minted / unminted status
 2. owner
 3. latest mint history
-4. signature issuance for mint
+4. session persistence / finalize coordination
 
 ## tokenId / artId Rule
 This is now mostly settled for the final mainnet randomness design and must not be hand-waved in UI code.
@@ -234,13 +233,13 @@ Current policy:
 5. CorePass testnet wallet availability must be confirmed before treating Devin/mobile E2E as complete
 
 ## Security Notes for UI/API
-1. signer key must be separate from the deployment owner key in production
+1. finalizer key or keystore material must stay off Vercel in production
 2. `.env` must never be tracked
 3. CorePass session handling must enforce:
    - short session TTL
    - callback/session binding
    - durable storage before public production use
-4. signature issuance must enforce:
+4. if a legacy authorization endpoint is kept for rehearsal compatibility, it must enforce:
    - short expiry
    - one-time nonce usage
    - rate limiting

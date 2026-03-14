@@ -3,7 +3,7 @@ import { AbiCoder } from "ethers";
 // Core/ylm method selectors differ from Ethereum keccak-based selectors.
 // These values come from foxar/out/CoreCats.sol/CoreCats.json methodIdentifiers.
 export const CORECATS_METHOD_SELECTORS = {
-  commitMint: "0xf634ddd1",
+  commitMint: "0x9bf2435b",
   finalizeMint: "0x11709128",
 };
 
@@ -26,10 +26,10 @@ export function normalizeCoreAddressToAbiWord(value) {
   throw new Error(`Unsupported Core address format: ${value}`);
 }
 
-export function encodeCoreCatsCommitMintData({ quantity, commitHash, nonce, expiry, signature }) {
+export function encodeCoreCatsCommitMintData({ quantity, commitHash }) {
   return joinSelectorAndArgs(
     CORECATS_METHOD_SELECTORS.commitMint,
-    abiCoder.encode(["uint8", "bytes32", "uint256", "uint256", "bytes"], [quantity, commitHash, nonce, expiry, signature]),
+    abiCoder.encode(["uint8", "bytes32"], [quantity, commitHash]),
   );
 }
 

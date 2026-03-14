@@ -59,7 +59,6 @@ class ContaboPreflightTests(unittest.TestCase):
             CORECATS_ADDRESS={DUMMY_MAINNET_CORECATS_ADDRESS}
             CORECATS_FOXAR_DIR={self.foxar_dir}
             SPARK_PATH={self.spark_path}
-            MINT_SIGNER_PRIVATE_KEY={"2" * 114}
             """
         )
         if include_finalizer_keystore:
@@ -104,8 +103,6 @@ class ContaboPreflightTests(unittest.TestCase):
         self.assertIn("finalizer_mode=keystore", result.stdout)
         self.assertNotIn("super-secret-value", result.stdout)
         self.assertNotIn("super-secret-value", result.stderr)
-        self.assertNotIn("2" * 114, result.stdout)
-        self.assertNotIn("2" * 114, result.stderr)
 
     def test_preflight_rejects_non_600_env_file(self) -> None:
         env_file = self._write_env_file()

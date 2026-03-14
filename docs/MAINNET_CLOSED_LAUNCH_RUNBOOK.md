@@ -21,15 +21,16 @@ The project should use three operational states for mint:
    - website is public
    - collection/about/transparency are public
    - mint page is visible
-   - general signature issuance is off
-   - only operator-controlled testing may be allowed
+   - public mint is not open yet
+   - no hidden operator-only mint surface should exist under `closed`
 2. `canary`
    - mainnet contracts are deployed
-   - mint is live only for a small allowlist
+   - the exact public mint host is exercised with a deliberately small operational smoke
+   - the contract itself remains permissionless
    - goal is validation, not public release
 3. `public`
-   - general signature issuance is open
-   - normal rate limits and wallet limits apply
+   - general public mint is open
+   - the contract enforces the wallet limit directly on-chain
 
 Website publication and mint opening are separate actions.
 
@@ -40,7 +41,6 @@ Before mainnet launch work begins:
 2. Final 1000 manifest and trait schema are frozen in repository artifacts.
 3. Production roles are separated:
    - deployer key
-   - mint signer key
    - finalizer/relayer key
 4. Mainnet deploy inputs are prepared:
    - constructor args
@@ -57,7 +57,7 @@ Publish the public web app first.
 Required site behavior:
 1. `/`, `/about`, `/collection`, and `/transparency` are public.
 2. `/mint` is public but clearly marked `closed`.
-3. No public signature issuance occurs while closed.
+3. No public mint should be treated as live while `closed`.
 4. Transparency page can show:
    - "mainnet deployment pending" before deploy
    - then switch to the real contract addresses after deploy
@@ -118,14 +118,14 @@ Run these steps in order.
    - explorer links
    - verify status
    - the public evidence items listed in `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
-9. Confirm signer and finalizer configuration is pointed at mainnet, not Devin.
-10. Keep public signature issuance disabled.
+9. Confirm finalizer configuration and any backend session/finalize services are pointed at mainnet, not Devin.
+10. Keep the public mint surface closed until the exact-host smoke is complete.
 
 ## 5. Canary Mint Checklist
 This is the first real production-path mint.
 
 ### Minimum canary
-1. Restrict signature issuance to one operator wallet.
+1. Use one dedicated canary wallet operationally, even though the contract itself remains permissionless.
 2. Start from the public production web app.
 3. Run the intended wallet flow:
    - CorePass sign
@@ -171,7 +171,7 @@ Before the official canary/public launch, apply the lessons from any self-only p
    - official canary/public launch must not depend on one operator wallet
 2. Keep wallet-limit enforcement in the contract as the canonical rule.
    - the contract remains the final authority for quantity and cumulative per-address limits
-   - backend/UI should still refuse over-limit attempts before commit authorization so users do not send gas-spending failures
+   - backend/UI may still refuse obviously over-limit attempts before a gas-spending commit, but that is convenience rather than eligibility control
 3. Run at least one generic-wallet canary after any self-only fallback is removed.
 4. If the public UI exposes quantity `1 / 2 / 3`, run real canaries for each exposed quantity or temporarily hide unvalidated quantities.
 5. Treat both QR entry paths as release checks:
@@ -211,7 +211,7 @@ Move from `closed` to `canary` only if:
 1. mainnet contracts are deployed
 2. contract addresses are recorded
 3. production site is reachable
-4. signer/finalizer config is correct
+4. finalizer/backend config is correct
 
 Move from `canary` to `public` only if:
 1. at least one full canary mint succeeds
@@ -223,23 +223,22 @@ Move from `canary` to `public` only if:
 Do not move to `public` if:
 1. CorePass callback/app-link is unstable
 2. finalize backlog is unresolved
-3. signer issuance is misconfigured
+3. the public mint path still depends on a retained signer/owner surface contrary to the intended official philosophy
 4. site is still pointing at Devin/testnet data anywhere important
 
 ## 8. Public Launch Checklist
 After canary success:
 
 1. Change launch state to `public`.
-2. Open general signature issuance.
-3. Keep rate limiting, nonce, and expiry enforcement active.
-4. Keep relayer/finalize monitoring active.
-5. Publish:
+2. Open the general public mint host.
+3. Keep relayer/finalize monitoring active.
+4. Publish:
    - contract addresses
    - verify links or verify status
    - GitHub repository links
    - reproducibility docs
    - the canary/smoke evidence listed in `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
-6. Perform the repository clarity pass:
+5. Perform the repository clarity pass:
    - `core-cats` is the production-facing repo
    - `core-cats-eth` is labeled as historical archive only
    - public readers are not routed into the archive as if it were an active mint repo

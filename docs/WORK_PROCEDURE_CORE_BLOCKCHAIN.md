@@ -107,7 +107,6 @@ Tasks:
 1. Freeze the final 1000-art provenance inputs and keep manifest-based reproducibility artifacts current.
 2. Finalize production key separation:
    - deployer
-   - mint signer
    - finalizer/relayer
 3. Prepare mainnet deploy and verify inputs:
    - constructor args
@@ -143,7 +142,7 @@ Tasks:
 2. Keep `/mint` visible but logically closed.
 3. Make launch state explicit on the site:
    - `closed`: public can inspect, but mint is not open
-   - `canary`: live testing is happening for a restricted operator set
+   - `canary`: live testing is happening through a deliberately small operational smoke, even though the contract is permissionless
    - `public`: mint is open
 4. Ensure the site can be updated with mainnet contract addresses without changing the mint flow structure.
 5. Keep GitHub, manifest, and transparency links live before mint opens.
@@ -166,9 +165,7 @@ Tasks:
    - otherwise use the prepared manual verify packet path
 4. Update the public site with the real mainnet contract addresses.
 5. Keep launch state at `closed`.
-6. Keep signature issuance restricted.
-   - no general public signing
-   - only operator-controlled allowlist if needed for canary
+6. Do not expose the public mint surface yet.
 
 Exit criteria:
 1. Mainnet contracts exist and are recorded.
@@ -180,7 +177,7 @@ Objective:
 Run a controlled live mint on mainnet before public opening.
 
 Tasks:
-1. Allow only the intended operator wallet(s) to request signatures.
+1. Use one intended operator wallet operationally for the smoke, even though the contract itself is permissionless.
 2. Perform the first live canary mint through the intended production flow.
    - preferred path: CorePass sign -> CorePass commit tx -> relayer finalize, with any manual/operator recovery kept internal-only
 3. Confirm end-to-end behavior:
@@ -205,7 +202,7 @@ Open mint to the public after canary success.
 
 Tasks:
 1. Change launch state from `closed` or `canary` to `public`.
-2. Enable general signature issuance with rate limits and nonce/expiry enforcement.
+2. Open the general public mint path.
 3. Keep finalize monitoring active.
 4. Publish the mainnet contract addresses, verify links or manual-verify status, and reproducibility artifacts.
 5. Execute the repository-clarity pass for public readers:
@@ -226,7 +223,7 @@ Exit criteria:
 
 ## 5. Immediate Next Actions From The Current State
 1. Keep the public site on Vercel in `closed` mode while finishing the separate Contabo mint backend path documented in `docs/MINT_BACKEND_ARCHITECTURE.md`.
-2. Stage the production signing/finalization material on the backend host and keep deployer material off the backend until the actual deploy window.
+2. Stage the production finalization material on the backend host and keep deployer material off the backend until the actual deploy window.
 3. Replace the temporary in-memory CorePass mint session store with SQLite on the backend before the first real mainnet canary.
 4. Execute the official mainnet closed deploy sequence and record deploy/verify evidence.
 5. Decide day-one quantity exposure:

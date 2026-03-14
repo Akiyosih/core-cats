@@ -1,6 +1,6 @@
 # Core Cats Public Trust + Privacy Notes
 
-Status: working public-facing note for the current live / rehearsal trust surface
+Status: public-facing note for the current repository contract surface and remaining operational trust boundary
 
 ## Purpose
 This note explains the practical trust surface and privacy expectations of the current Core Cats release path.
@@ -8,9 +8,9 @@ This note explains the practical trust surface and privacy expectations of the c
 It is meant to sit next to the art, manifest, and randomness disclosures so readers can judge the project from the outside.
 
 Important distinction:
-1. this note describes the current live, canary, or historical trust surface
+1. this note describes the current repository contract surface and the off-chain convenience layers around it
 2. the intended official `CCAT` philosophy is documented separately in `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md`
-3. if the two differ, this note should be read as disclosure of the current surface, not as the final official philosophy claim
+3. older rehearsal notes may still describe historical signer-gated runs; those should not be read as the intended final official contract claim
 
 ## What Is Fixed On-Chain
 These properties are part of the active `CoreCats` contract shape:
@@ -31,7 +31,7 @@ Readers should not treat `foxar/src/CoreCats.sol` as the only source that matter
 
 The active contract workspace also depends on:
 
-1. imported contract primitives such as `CRC721`, `Ownable`, and `EDDSA`
+1. imported contract primitives such as `CRC721` and its dependency tree
 2. the pinned submodule path `foxar/lib/corezeppelin-contracts`
 3. the Core-specific Ylem / Foxar / Spark toolchain used to build and deploy the contracts
 
@@ -47,21 +47,29 @@ Relevant references:
 3. `docs/MINTER_SELF_REVIEW_CHECKLIST.md`
 4. `docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md`
 
+## What Is Fixed At The Contract Layer
+The current repository contract shape for the intended official `CCAT` is narrower than the earlier rehearsal surface:
+
+1. there is no retained owner/admin path in `CoreCats`
+2. mint access is not signer-gated
+3. `metadataRenderer` is fixed in the constructor
+4. `finalizeMint(minter)` remains permissionless
+
+Outside readers should still verify the deployed source and constructor wiring on the explorer or from the published verify packet.
+
 ## What Is Still An Explicit Trust Surface
-The current live / rehearsal release path is not fully trustless.
+The contract is narrower, but the release path is not purely on-chain end to end.
 
-Important operator-controlled surfaces still exist:
+Important off-chain or operational surfaces still exist:
 
-1. the contract owner can call `setSigner(address)`  
-   This changes which off-chain signer is allowed to issue mint authorizations.
-2. the contract owner can call `lockSigner()`  
-   This is the one-way action that permanently disables later signer rotation once launch stability is proven.
-3. mint authorization is currently signature-gated  
-   That means mint eligibility depends on the backend signer issuing a valid authorization for the contract.
-4. the intended official contract fixes `metadataRenderer` in the constructor rather than rotating it after deploy  
-   Outside readers should still verify the deployed source and constructor wiring on the explorer or from the published verify packet.
-5. the preferred production flow includes a relayer/finalizer backend  
+1. the preferred production flow includes a relayer/finalizer backend  
    This is operational convenience, not a hidden mint right, because `finalizeMint(minter)` remains permissionless and a manual CorePass fallback is kept in the UX.
+2. the website and CorePass session flow are convenience layers  
+   They shape UX, callback handling, and status recovery, even though they do not control mint eligibility in the official contract design.
+3. backend session persistence and finalize-attempt history still exist  
+   These are part of durability/recovery, not part of the NFT object itself.
+4. wallet-app/browser return behavior can still vary by device and CorePass build  
+   This is a UX surface, not an on-chain trust claim.
 
 Relevant references:
 1. `foxar/src/CoreCats.sol`
@@ -79,8 +87,8 @@ The current production direction uses:
 
 The backend currently owns:
 1. durable session persistence
-2. mint authorization issuance
-3. relayer-assisted finalize execution
+2. relayer-assisted finalize execution
+3. optional legacy mint-authorization issuance for older rehearsal compatibility only
 
 Relevant references:
 1. `docs/MINT_BACKEND_ARCHITECTURE.md`
@@ -93,7 +101,7 @@ The current design is not a no-data mint path.
 At the application layer, the backend can persist:
 
 1. the mint session blob
-2. issued mint authorizations
+2. optional legacy authorization records
 3. finalize-attempt history
 
 The current session flow includes fields such as:
@@ -137,15 +145,11 @@ Relevant reference:
 1. `docs/COREPASS_PROTOCOL_AND_CONNECTOR_NOTES.md`
 
 ## Freeze / Renounce Policy
-The current public policy is:
+The intended official public policy is:
 
-1. the deployer should not remain the long-term owner
-2. ownership should move to the cold owner wallet after deploy-window setup
-3. owner actions during launch/live mint are treated as exceptional and should be publicly logged
-4. immediate renounce is not promised before canary/live-mint stability is proven
-5. after the active mint phase, either:
-   - renounce ownership and publish the tx hash
-   - or explicitly disclose why ownership is still being retained
+1. the official `CCAT` contract should not retain an owner/admin path after deploy
+2. the public should not be asked to wait for a later signer lock or renounce step
+3. if the deployed contract differs from that target, the difference should be disclosed before mint opens
 
 Relevant reference:
 1. `docs/FREEZE_AND_RENOUNCE_POLICY.md`
@@ -162,7 +166,7 @@ Before or at the mainnet canary/public opening stage, the project should publish
 5. the current launch state: `closed`, `canary`, or `public`
 6. the current trust surface:
    - owner/admin policy
-   - signer policy
+   - permissionless vs gated mint policy
    - relayer/finalizer policy
 7. canary evidence before public opening
 8. the public evidence packet/checklist itself:
@@ -172,7 +176,12 @@ Before or at the mainnet canary/public opening stage, the project should publish
 If you are reviewing Core Cats before mint:
 
 1. trust the fixed supply/limit/randomness properties only to the extent they are visible in the published contract and launch artifacts
-2. treat signer rotation, signer-lock timing, and backend issuance as explicit operational trust surfaces
+2. treat the website, session backend, and relayer/finalizer path as explicit operational trust surfaces distinct from the contract itself
 3. do not assume the current mint flow is privacy-preserving in the anonymity sense
 4. do not treat the top-level contract file as the whole review surface; imported dependencies and the active Core toolchain also matter
 5. do expect the project to publish enough addresses, tx hashes, manifests, verify artifacts, and runbooks for outside inspection
+
+## Historical Note
+Earlier rehearsal runs used a signer-gated surface before the final official philosophy was settled.
+
+Those historical notes remain useful as operational records, but they should not be mistaken for the intended final `CCAT` contract posture.

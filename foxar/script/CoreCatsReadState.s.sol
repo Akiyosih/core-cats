@@ -12,9 +12,7 @@ contract CoreCatsReadStateScript is Script {
             uint256 totalSupply,
             uint256 availableSupply,
             uint256 reservedSupply,
-            address metadataRenderer,
-            address signer,
-            bool signerLocked
+            address metadataRenderer
         )
     {
         address coreCatsAddress = vm.envAddress("CORECATS_ADDRESS");
@@ -24,7 +22,5 @@ contract CoreCatsReadStateScript is Script {
         availableSupply = coreCats.availableSupply();
         reservedSupply = coreCats.reservedSupply();
         metadataRenderer = coreCats.metadataRenderer();
-        signer = coreCats.signer();
-        signerLocked = coreCats.signerLocked();
     }
 }

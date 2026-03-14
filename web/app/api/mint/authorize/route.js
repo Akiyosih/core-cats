@@ -45,6 +45,16 @@ export async function POST(request) {
       }
     }
 
+    if (!env.signerPrivateKey) {
+      return Response.json(
+        {
+          error: "mint_authorization_disabled",
+          detail: "This deployment uses the permissionless commit path and does not issue mint signatures.",
+        },
+        { status: 410 },
+      );
+    }
+
     const nonce = buildNonce();
     const expiry = Math.floor(Date.now() / 1000) + 10 * 60;
     const authorization = await issueMintAuthorization({ minter, quantity, nonce, expiry });

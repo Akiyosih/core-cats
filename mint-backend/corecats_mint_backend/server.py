@@ -178,6 +178,16 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         expiry = int(body.get("expiry") or (int(datetime.now(timezone.utc).timestamp()) + 10 * 60))
 
         try:
+            if not self.config.mint_signer_private_key:
+                json_response(
+                    self,
+                    410,
+                    {
+                        "error": "mint_authorization_disabled",
+                        "detail": "This backend is configured for the permissionless commit path and does not issue mint signatures.",
+                    },
+                )
+                return
             if not is_canary_wallet_allowed(self.config, minter):
                 json_response(
                     self,

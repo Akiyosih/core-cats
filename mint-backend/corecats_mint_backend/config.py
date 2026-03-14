@@ -134,8 +134,6 @@ def validate_config(config: Config) -> None:
             errors.append("CORE_EXPLORER_BASE_URL must not use the default devin explorer in production")
         if _looks_like_placeholder(config.corecats_address) or not config.corecats_address:
             errors.append("CORECATS_ADDRESS must be set to the real mainnet CoreCats contract address in production")
-        if not os.environ.get("MINT_SIGNER_PRIVATE_KEY", "").strip():
-            errors.append("MINT_SIGNER_PRIVATE_KEY must be explicitly set in production")
         has_finalizer_private_key = bool(os.environ.get("FINALIZER_PRIVATE_KEY", "").strip())
         has_finalizer_keystore = bool(config.finalizer_keystore_path and config.finalizer_password_file)
         if not has_finalizer_private_key and not has_finalizer_keystore:
@@ -159,7 +157,7 @@ def load_config() -> Config:
     profile = _normalize_profile(os.environ.get("CORECATS_BACKEND_PROFILE", "development"))
 
     deployer_private_key = os.environ.get("DEPLOYER_PRIVATE_KEY", "").strip()
-    mint_signer_private_key = os.environ.get("MINT_SIGNER_PRIVATE_KEY", "").strip() or deployer_private_key
+    mint_signer_private_key = os.environ.get("MINT_SIGNER_PRIVATE_KEY", "").strip()
     finalizer_keystore_raw = os.environ.get("FINALIZER_KEYSTORE_PATH", "").strip()
     finalizer_password_file_raw = os.environ.get("FINALIZER_PASSWORD_FILE", "").strip()
     finalizer_private_key = os.environ.get("FINALIZER_PRIVATE_KEY", "").strip()

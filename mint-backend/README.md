@@ -7,8 +7,8 @@ It is designed to run on the Contabo Linux server alongside the existing Core fu
 ## Responsibilities
 
 1. durable CorePass mint session storage
-2. mint authorization issuance through `spark`
-3. relayer-assisted `finalizeMint(minter)` through `spark`
+2. relayer-assisted `finalizeMint(minter)` through `spark`
+3. optional legacy mint-authorization issuance for older rehearsal flows
 4. a small internal HTTP API consumed by the Vercel frontend
 5. backend-side finalize retry / receipt tracking / stuck-session detection
 
@@ -73,15 +73,18 @@ For mainnet deployment, prefer `CORE_RPC_URL`.
 
 `CORE_TESTNET_RPC_URL` still works as a legacy alias, but it is semantically the wrong name for the final mainnet service.
 
-The current production shape still expects:
+The intended official production shape expects:
 
-1. `MINT_SIGNER_PRIVATE_KEY` as a raw key
+1. no signer key for the normal permissionless mint path
 2. `FINALIZER_PRIVATE_KEY` as a raw key, or
 3. `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` as the official Foxar keystore alternative for the dedicated finalizer role
 4. when keystore mode is used on Core mainnet, also set `FINALIZER_ADDRESS=<cb...>` so the backend can broadcast with the explicit sender address
 5. optional finalize worker tuning:
    - `CORECATS_FINALIZE_WORKER_INTERVAL_SECONDS`
    - `CORECATS_FINALIZE_STUCK_TIMEOUT_SECONDS`
+
+`MINT_SIGNER_PRIVATE_KEY` is now optional and should stay unset for the intended official `CCAT` release.
+It only exists for legacy signer-gated rehearsal compatibility.
 
 Source reference for the keystore path:
 1. https://foxar.dev/reference/cli/spark/script/
@@ -92,9 +95,8 @@ When `CORECATS_BACKEND_PROFILE=production` is set, the backend now fails closed 
 
 1. it is still pointing at Devin defaults
 2. the shared secret is missing
-3. `MINT_SIGNER_PRIVATE_KEY` is not explicitly set
-4. neither `FINALIZER_PRIVATE_KEY` nor the `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` pair is explicitly set
-5. `spark` or `foxar` paths do not exist
+3. neither `FINALIZER_PRIVATE_KEY` nor the `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` pair is explicitly set
+4. `spark` or `foxar` paths do not exist
 
 This is intentional. The goal is to prevent a Contabo service from silently starting in a misconfigured Devin-like state.
 

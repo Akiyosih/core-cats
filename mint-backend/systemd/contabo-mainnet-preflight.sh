@@ -91,12 +91,13 @@ if is_placeholder "${CORECATS_ADDRESS:-}"; then
   fail "CORECATS_ADDRESS is empty or placeholder-like"
 fi
 
-if is_placeholder "${MINT_SIGNER_PRIVATE_KEY:-}"; then
-  fail "MINT_SIGNER_PRIVATE_KEY is empty or placeholder-like"
-fi
-
-if [[ ! "${MINT_SIGNER_PRIVATE_KEY}" =~ ^(0x)?[0-9a-fA-F]{114}$ ]]; then
-  fail "MINT_SIGNER_PRIVATE_KEY must be a 57-byte key (114 hex chars, optional 0x prefix)"
+if [[ -n "${MINT_SIGNER_PRIVATE_KEY:-}" ]]; then
+  if is_placeholder "${MINT_SIGNER_PRIVATE_KEY:-}"; then
+    fail "MINT_SIGNER_PRIVATE_KEY must not be placeholder-like when set"
+  fi
+  if [[ ! "${MINT_SIGNER_PRIVATE_KEY}" =~ ^(0x)?[0-9a-fA-F]{114}$ ]]; then
+    fail "MINT_SIGNER_PRIVATE_KEY must be a 57-byte key (114 hex chars, optional 0x prefix)"
+  fi
 fi
 
 require_dir "${CORECATS_FOXAR_DIR:-}"

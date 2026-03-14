@@ -6,9 +6,8 @@ Status: Prepared before the official `CCAT` deploy
 Provide the one-page replacement map for moving from the completed `CCATTEST rehearsal canary` into the official `CCAT` deploy and the later Vercel Pro exact-host smoke.
 
 Architecture note:
-1. this cutover note still contains earlier signer-gated official assumptions in some sections
-2. `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md` is now the authoritative public philosophy target for the official release
-3. contract-specific cutover steps should be refreshed again once the no-owner / no-signer official bytecode redesign is implemented
+1. `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md` is the authoritative public philosophy target for the official release
+2. this cutover note assumes the official `CCAT` contract is permissionless and retains no owner/admin path after deploy
 
 Use this together with:
 1. `docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md`
@@ -46,8 +45,8 @@ Replace only the contract-specific and launch-specific surfaces. Keep the alread
 | Callback origin | rehearsal origin | exact final Vercel Pro public-mint origin |
 | Explorer base | `https://blockindex.net` | unchanged |
 | Backend mode | `proxy` | unchanged |
-| Backend execution path | Contabo mint backend | unchanged unless intentionally rotated |
-| Signer direction | dedicated signer path already proven on rehearsal topology | dedicated signer must match official post-deploy check |
+| Backend execution path | Contabo mint backend with session/finalize duties | unchanged unless intentionally rotated |
+| Mint eligibility control | signer-gated rehearsal path | permissionless on-chain rule only |
 | Finalizer direction | relayer / finalize worker on Contabo | unchanged unless intentionally rotated |
 | Transparency contract surface | `CCATTEST` contract/explorer links | replace with official `CCAT` contract/explorer links |
 | Launch copy | rehearsal/canary wording allowed | remove `CCATTEST` and any canary-only wording from public-facing copy |
@@ -85,7 +84,6 @@ Keep these secrets or live values outside the repository:
 2. deployer keystore path
 3. deployer password file
 4. final deployer address
-5. final dedicated signer address
 
 ## Super-Rare Decision Gate
 Do not treat pilot placeholder mode as the default official path.
@@ -133,7 +131,6 @@ Dry-run acceptance:
 After the real deploy, fill:
 1. `CORECATS_ADDRESS`
 2. `EXPECTED_RENDERER_ADDRESS`
-3. `EXPECTED_SIGNER_ADDRESS`
 
 Then run the existing post-deploy check:
 
@@ -170,7 +167,8 @@ The official canary still has to prove the host- and contract-specific pieces th
 
 1. official `CCAT` contract address wiring
 2. final Vercel Pro env replacement accuracy
-3. one full mint on that exact final public origin:
+3. proof that the deployed contract actually matches the no-owner / no-signer official philosophy from published source and verification evidence
+4. one full mint on that exact final public origin:
    - `QR 1`
    - `QR 2`
    - callback return on the same origin

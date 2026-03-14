@@ -70,18 +70,16 @@ Without it, signing may fail with `Invalid network id prefix in address`.
 
 ## 7. Post-Deploy Checks
 1. Confirm `CoreCats.metadataRenderer()` equals deployed renderer address.
-2. Confirm `CoreCats.signer()` equals the intended mint signer address.
-3. Confirm `CoreCats.signerLocked()` is `false` unless you intentionally already locked it.
-4. Run one commit/finalize mint rehearsal.
-5. Confirm `tokenURI(tokenId)` returns `data:application/json;base64,...`.
-6. Decode metadata and confirm `image` is `data:image/svg+xml;base64,...`.
+2. Confirm `totalSupply()` is `0`, `availableSupply()` is `1000`, and `reservedSupply()` is `0`.
+3. Run one commit/finalize mint rehearsal.
+4. Confirm `tokenURI(tokenId)` returns `data:application/json;base64,...`.
+5. Decode metadata and confirm `image` is `data:image/svg+xml;base64,...`.
 
 ### 7.1 Static Configuration Check
 
 ```bash
 CORECATS_ADDRESS="<deployed-corecats-address>" \
 EXPECTED_RENDERER_ADDRESS="<deployed-renderer-address>" \
-EXPECTED_SIGNER_ADDRESS="<expected-signer-address>" \
 spark script script/CoreCatsPostDeployCheck.s.sol:CoreCatsPostDeployCheckScript \
   --fork-url "$CORE_TESTNET_RPC_URL" \
   --network-id 3
@@ -95,16 +93,6 @@ Set a local commit seed once for the rehearsal:
 export MINT_SEED="<32-byte-seed-as-bytes32>"
 export MINT_QUANTITY=1
 ```
-
-If signer and deployer are separated, set the signer key explicitly:
-
-```bash
-export MINT_SIGNER_PRIVATE_KEY="<signer-private-key>"
-```
-
-Important:
-1. `CoreCats._mintMessage(...)` hashes `quantity` as `uint256`, not `uint8`.
-2. Any off-chain signer must hash the same tuple exactly: `(to, quantity, nonce, expiry, chainid, coreCatsAddress)`.
 
 Then commit:
 
@@ -215,9 +203,8 @@ Record in `docs/worklogs/` after each rehearsal:
 2. deployed addresses
 3. verifier links
 4. mint/tokenURI check result
-5. signer mode (`deployer` or dedicated signer)
-6. whether finalize required a higher energy multiplier
-7. pass/fail and next action
+5. whether finalize required a higher energy multiplier
+6. pass/fail and next action
 
 ## 10. Rollback Rule
 If any check fails:
@@ -232,8 +219,7 @@ If any check fails:
 4. Commit/finalize mint is a two-step flow; do not expect a usable `tokenId` until finalize succeeds.
 5. `run-latest.json` includes energy usage but not reliable fee totals in XAB; capture fee from explorer for final reporting.
 6. Writing files from script via cheatcodes may require allowed paths; prefer stdout + shell decode for portability.
-7. `script/CoreCatsCommitMint.s.sol` must hash `quantity` as `uint256`; a `uint8`-encoded signer payload will fail on-chain.
-8. `finalizeMint` may need a higher `--energy-estimate-multiplier` on Core Devin even when simulation succeeds.
+7. `finalizeMint` may need a higher `--energy-estimate-multiplier` on Core Devin even when simulation succeeds.
 
 ## 12. Recorded Rehearsal Snapshot (2026-03-05)
 1. Block hash: `0x2a3a34da50127b9899e7d4f7ef7d838a736a01094cf3abce5a17fb1316fb5f83`

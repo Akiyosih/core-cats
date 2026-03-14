@@ -4,11 +4,10 @@ import QRCode from "qrcode";
 
 import { encodeCoreCatsCommitMintData, encodeCoreCatsFinalizeMintData } from "./core-calldata.js";
 import { getCorePublicConfig, getCoreServerEnv } from "./core-env.js";
-import { issueMintAuthorization, relayFinalizeMint } from "./core-spark.js";
+import { relayFinalizeMint } from "./core-spark.js";
 import {
   deleteRemoteMintSession,
   fetchFinalizeRelay,
-  fetchMintAuthorization,
   isExternalMintBackendEnabled,
   readRemoteMintSession,
   writeRemoteMintSession,
@@ -240,29 +239,10 @@ async function buildSignRequest(request, session) {
 
 async function buildCommitRequest(request, session) {
   const meta = sessionPublicMeta();
-  const nonce = BigInt(`0x${crypto.randomBytes(32).toString("hex")}`).toString(10);
-  const expiry = Math.floor(Date.now() / 1000) + 10 * 60;
   const commitHash = `0x${crypto.randomBytes(32).toString("hex")}`;
-  const authorization = isExternalMintBackendEnabled()
-    ? await fetchMintAuthorization(request, {
-        minter: session.minter,
-        quantity: session.quantity,
-      })
-    : await issueMintAuthorization({
-        minter: session.minter,
-        quantity: session.quantity,
-        nonce,
-        expiry,
-      });
-
-  const resolvedNonce = authorization.nonce || nonce;
-  const resolvedExpiry = authorization.expiry || expiry;
   const data = encodeCoreCatsCommitMintData({
     quantity: session.quantity,
     commitHash,
-    nonce: resolvedNonce,
-    expiry: resolvedExpiry,
-    signature: authorization.signature,
   });
   const callbackConn = buildCallbackUrl(request, session.id, "commit");
 
@@ -271,7 +251,6 @@ async function buildCommitRequest(request, session) {
     to: meta.coreCatsAddress,
     data,
     conn: callbackConn,
-    dl: authorization.expiry,
     type: corePassReturnType(),
   });
   const mobileUri = buildCorePassUri("tx", session.minter, {
@@ -279,16 +258,11 @@ async function buildCommitRequest(request, session) {
     to: meta.coreCatsAddress,
     data,
     conn: callbackConn,
-    dl: authorization.expiry,
     type: corePassReturnType(),
   });
 
   session.commit = {
     status: "awaiting_commit",
-    nonce: resolvedNonce,
-    expiry: resolvedExpiry,
-    messageHash: authorization.messageHash,
-    walletState: authorization.walletState || null,
     commitHash,
     data,
     desktopUri,

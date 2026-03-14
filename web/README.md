@@ -66,16 +66,15 @@ Important variables:
 1. `CORE_RPC_URL` (preferred when local backend mode is used)
 2. `CORE_TESTNET_RPC_URL` (legacy alias still passed through to `spark`)
 3. `DEPLOYER_PRIVATE_KEY`
-4. `MINT_SIGNER_PRIVATE_KEY` (optional, defaults to deployer key)
-5. `FINALIZER_PRIVATE_KEY` (optional, defaults to deployer key)
-6. `NEXT_PUBLIC_CORECATS_ADDRESS` (optional, defaults to the latest Devin rehearsal address)
-7. `NEXT_PUBLIC_SITE_SURFACE` (`public-teaser`, `private-canary`, or `public-mint`)
-8. `NEXT_PUBLIC_SITE_BASE_URL` (optional, recommended for public links / robots / host portability)
-9. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
-10. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
-11. `CORECATS_BACKEND_BASE_URL` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
-12. `CORECATS_BACKEND_SHARED_SECRET` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
-13. `CORECATS_INTERNAL_BACKEND_BASE_URL` (optional loopback backend origin for a self-hosted private canary)
+4. `FINALIZER_PRIVATE_KEY` (optional, defaults to deployer key)
+5. `NEXT_PUBLIC_CORECATS_ADDRESS` (optional, defaults to the latest Devin rehearsal address)
+6. `NEXT_PUBLIC_SITE_SURFACE` (`public-teaser`, `private-canary`, or `public-mint`)
+7. `NEXT_PUBLIC_SITE_BASE_URL` (optional, recommended for public links / robots / host portability)
+8. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
+9. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
+10. `CORECATS_BACKEND_BASE_URL` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
+11. `CORECATS_BACKEND_SHARED_SECRET` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
+12. `CORECATS_INTERNAL_BACKEND_BASE_URL` (optional loopback backend origin for a self-hosted private canary)
 
 When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives public ownership routes from:
 
@@ -139,8 +138,8 @@ Host-sensitive callback note:
 
 The external mint backend owns:
 1. durable session persistence
-2. nonce / expiry / signature issuance
-3. finalize relayer execution
+2. finalize relayer execution
+3. optional legacy authorization issuance for older rehearsal flows only
 4. `spark` / `foxar` execution
 5. the public ownership snapshot consumed directly by collection / ownership pages
 

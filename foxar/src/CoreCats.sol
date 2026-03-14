@@ -2,14 +2,12 @@
 pragma solidity ^1.1.2;
 
 import {CRC721} from "corezeppelin-contracts/token/CRC721/CRC721.sol";
-import {Ownable} from "corezeppelin-contracts/access/Ownable.sol";
-import {EDDSA} from "corezeppelin-contracts/utils/cryptography/EDDSA.sol";
 
 interface ICoreCatsMetadataRenderer {
     function tokenURI(uint256 tokenId) external view returns (string memory);
 }
 
-contract CoreCats is CRC721, Ownable {
+contract CoreCats is CRC721 {
     uint256 public constant MAX_SUPPLY = 1000;
     uint256 public constant MAX_PER_ADDRESS = 3;
     uint64 public constant FINALIZE_DELAY_BLOCKS = 2;
@@ -26,17 +24,12 @@ contract CoreCats is CRC721, Ownable {
 
     mapping(address => uint256) public mintedPerAddress;
     mapping(address => uint256) public reservedPerAddress;
-    mapping(bytes32 => bool) public usedNonce;
     mapping(address => PendingCommit) public pendingCommit;
     mapping(uint256 => uint256) private _tokenMatrix;
 
-    address public signer;
     address public immutable metadataRenderer;
-    bool public signerLocked;
     uint256 public reservedSupply;
 
-    event SignerUpdated(address indexed previousSigner, address indexed newSigner);
-    event SignerLocked(address indexed finalSigner);
     event MintCommitted(
         address indexed minter,
         uint8 quantity,
@@ -54,23 +47,7 @@ contract CoreCats is CRC721, Ownable {
         require(bytes(collectionName_).length != 0, "name required");
         require(bytes(collectionSymbol_).length != 0, "symbol required");
         require(metadataRenderer_ != address(0), "renderer required");
-        signer = msg.sender;
         metadataRenderer = metadataRenderer_;
-        emit SignerUpdated(address(0), signer);
-    }
-
-    function setSigner(address newSigner) external onlyOwner {
-        require(!signerLocked, "signer locked");
-        require(newSigner != address(0), "signer required");
-        address previousSigner = signer;
-        signer = newSigner;
-        emit SignerUpdated(previousSigner, newSigner);
-    }
-
-    function lockSigner() external onlyOwner {
-        require(!signerLocked, "signer locked");
-        signerLocked = true;
-        emit SignerLocked(signer);
     }
 
     function totalSupply() public view returns (uint256) {
@@ -81,31 +58,16 @@ contract CoreCats is CRC721, Ownable {
         return MAX_SUPPLY - totalSupply() - reservedSupply;
     }
 
-    function commitMint(
-        uint8 quantity,
-        bytes32 commitHash,
-        uint256 nonce,
-        uint256 expiry,
-        bytes calldata signature
-    ) external {
+    function commitMint(uint8 quantity, bytes32 commitHash) external {
         address to = msg.sender;
 
         _clearExpiredCommitIfNeeded(to);
 
         require(quantity > 0 && quantity <= MAX_PER_ADDRESS, "invalid quantity");
         require(commitHash != bytes32(0), "commit hash required");
-        require(block.timestamp <= expiry, "signature expired");
         require(pendingCommit[to].quantity == 0, "pending commit exists");
         require(availableSupply() >= quantity, "sold out");
         require(mintedPerAddress[to] + reservedPerAddress[to] + quantity <= MAX_PER_ADDRESS, "address mint limit");
-
-        bytes32 message = _mintMessage(to, quantity, nonce, expiry);
-        require(!usedNonce[message], "nonce used");
-        usedNonce[message] = true;
-
-        bytes32 digest = EDDSA.toCoreSignedMessageHash(message);
-        address recovered = EDDSA.recover(digest, signature);
-        require(recovered == signer, "invalid signature");
 
         uint64 finalizeBlock = uint64(block.number + FINALIZE_DELAY_BLOCKS);
         uint64 expiryBlock = uint64(finalizeBlock + FINALIZE_WINDOW_BLOCKS);
@@ -170,10 +132,6 @@ contract CoreCats is CRC721, Ownable {
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         _requireMinted(tokenId);
         return ICoreCatsMetadataRenderer(metadataRenderer).tokenURI(tokenId);
-    }
-
-    function _mintMessage(address to, uint256 quantity, uint256 nonce, uint256 expiry) internal view returns (bytes32) {
-        return keccak256(abi.encodePacked(to, quantity, nonce, expiry, block.chainid, address(this)));
     }
 
     function _clearExpiredCommitIfNeeded(address minter) internal {

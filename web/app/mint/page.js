@@ -48,8 +48,8 @@ export default async function MintPage() {
               </p>
             ) : (
               <p>
-                Minting will use CorePass, a short session signature, and an on-chain commit/finalize flow that assigns
-                cats at random from the fixed set of 1,000.
+                Minting will use CorePass and an on-chain commit/finalize flow that assigns cats at random from the
+                fixed set of 1,000.
               </p>
             )}
           </article>

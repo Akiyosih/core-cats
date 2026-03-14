@@ -18,7 +18,7 @@ This checklist cannot, by itself, prove:
 
 1. that a deployed contract has already been fully verified on the explorer
 2. that imported dependency contracts are harmless without reviewing their verified source
-3. that a future owner action will never happen before a later freeze or renounce step
+3. that every wallet app / browser / callback path will behave identically on every device
 
 ## Before Minting
 1. check the current network, launch state, and contract address on `/transparency`
@@ -33,7 +33,7 @@ This checklist cannot, by itself, prove:
 ## Dependency And Toolchain Checks
 The top-level CoreCats contract is not the whole review surface.
 
-1. `foxar/src/CoreCats.sol` imports `CRC721`, `Ownable`, and `EDDSA`
+1. `foxar/src/CoreCats.sol` imports `CRC721` and depends on its imported submodule tree
 2. those imports come from the pinned submodule path `foxar/lib/corezeppelin-contracts`
 3. the active build/deploy path uses the Core-specific Ylem / Foxar / Spark toolchain rather than a generic Ethereum-only Solidity path
 
@@ -70,15 +70,14 @@ Stop and re-check before signing if the wallet shows any of these instead:
 4. compare the explorer result, transparency page, and repository artifacts if you want deeper assurance
 
 ## Current Trust Surfaces To Understand
-Core Cats is not currently a fully trustless mint.
+Core Cats aims for a narrow official contract trust surface, but the mint path still includes off-chain convenience layers.
 
 Before minting, understand that:
 
-1. the owner can still change `signer`
-2. the official `metadataRenderer` should be constructor-fixed rather than owner-rotated, but you should still verify that from the deployed source / explorer evidence
-3. mint authorization is signature-gated
-4. the preferred production path includes a relayer/finalizer backend for convenience
-5. same-device mobile is a secondary supported path, not the primary release path
+1. the intended official contract should be no-owner and no-signer, but you should still verify that from the deployed source / explorer evidence
+2. the preferred production path includes a relayer/finalizer backend for convenience
+3. same-device mobile is a secondary supported path, not the primary release path
+4. website/callback behavior is a convenience layer, not the NFT object itself
 
 ## Reader Summary
 If you want the shortest possible rule set:

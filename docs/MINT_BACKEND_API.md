@@ -9,8 +9,8 @@ The browser should continue to use the Vercel origin.
 The external backend does **not** own the public UI flow. It owns:
 
 1. durable session persistence
-2. mint authorization issuance
-3. relayer-assisted finalize execution
+2. relayer-assisted finalize execution
+3. optional legacy mint-authorization issuance for older rehearsal flows only
 
 The Vercel app continues to own:
 
@@ -29,7 +29,8 @@ This secret is shared only between:
 1. Vercel server-side routes
 2. Contabo mint backend
 
-Signing keys remain only on Contabo.
+Finalize keys remain only on Contabo.
+If a legacy signer key is configured for older rehearsal compatibility, it should also remain only on Contabo.
 
 ## Endpoints
 
@@ -48,6 +49,8 @@ Response:
 ```
 
 ### `POST /api/mint/authorize`
+
+Legacy compatibility endpoint. The intended official permissionless mint path does not require this call.
 
 Request:
 
@@ -115,7 +118,7 @@ The first implementation keeps the schema intentionally small:
 1. `mint_sessions`
    - canonical persisted session blob
 2. `mint_authorizations`
-   - issued signed mint authorizations
+   - optional legacy authorization records
 3. `finalize_attempts`
    - relayer submission history
 
@@ -123,4 +126,4 @@ This is enough for:
 
 1. durable recovery after Vercel restart
 2. operator debugging
-3. later audit of authorization/finalize activity
+3. later audit of finalize activity and any legacy authorization activity

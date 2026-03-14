@@ -10,8 +10,8 @@ The production mint path will be split into:
    - host: Contabo Linux server
    - responsibilities:
      - durable CorePass session persistence
-     - nonce / expiry / signature issuance
      - finalize relayer execution
+     - optional legacy authorization issuance for older rehearsal compatibility
      - `spark` / `foxar` execution
 3. **Database**
    - SQLite for the first production iteration
@@ -44,7 +44,7 @@ The current mint implementation is not only a browser-facing Next.js app. It als
 
 1. `spark` CLI execution
 2. `foxar` project files
-3. signing/finalizer private keys
+3. finalizer private keys or keystore material
 4. session state that must survive process restarts
 
 Keeping those concerns on the Contabo Linux server is the shortest path to a safe mainnet launch.
@@ -67,14 +67,14 @@ Vercel remains responsible for:
 10. QR / app-link generation
 11. callback redirects back to `/mint`
 
-Vercel should not hold production signing keys.
+Vercel should not hold production finalize keys or any optional legacy signer key.
 
 ### Contabo backend
 Contabo will run the live mint backend:
 
-1. mint authorization issuance
+1. durable session persistence
 2. finalize relayer actions
-3. durable session persistence
+3. optional legacy authorization issuance
 4. local RPC usage or the intended Core RPC target
 5. internal API for the Vercel app
 
@@ -123,7 +123,8 @@ Recommended mint preparation state:
 
 1. `CORECATS_BACKEND_MODE=proxy`
 2. `CORECATS_BACKEND_BASE_URL=https://...`
-3. signing/finalizer secrets only on Contabo
+3. finalizer secrets only on Contabo
+4. optional legacy signer secret only if an older rehearsal flow still needs it
 
 ## SQLite Scope
 SQLite is the chosen first store because:
@@ -136,12 +137,11 @@ SQLite is the chosen first store because:
 The first SQLite schema should cover:
 
 1. mint sessions
-2. issued authorizations and their status
+2. optional legacy authorizations and their status
 3. relayer/finalize attempts
 
 ## Immediate Next Tasks
 1. stage Contabo production secrets:
-   - signer material
    - finalizer material
 2. expose the backend through HTTPS on Contabo
    - recommended default: Caddy with `mint-backend/reverse-proxy/Caddyfile.example`
