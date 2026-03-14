@@ -979,10 +979,10 @@ export default function MintWorkflow({ config }) {
       {session?.finalize ? (
         <article ref={step3Ref} className="mint-card mint-step-card">
           <p className="eyebrow">Step 3</p>
-          <h2>Finalize and reveal the assigned cat</h2>
+          <h2>Wait for automatic finalize and cat reveal</h2>
           <p>
-            Commit confirmation records the pending mint, but the NFT is delivered only after finalize succeeds and the
-            random assignment is completed on-chain.
+            QR 2 confirmation records the pending mint, but the NFT is delivered only after the automatic finalize step
+            succeeds and the assigned cat is revealed on-chain.
           </p>
           <p className="mint-meta">Automatic finalize usually completes within a few minutes. Please wait.</p>
           {finalizeUserNote && !finalizeConfirmed ? (
