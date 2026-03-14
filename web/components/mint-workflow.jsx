@@ -712,12 +712,11 @@ export default function MintWorkflow({ config }) {
       <section>
         <article className="mint-card">
           <p className="eyebrow">Start</p>
-          <h2>{sameDeviceMode ? "Choose quantity and mint on this phone" : "Choose quantity and begin on desktop"}</h2>
+          <h2>Choose how to mint, then choose quantity</h2>
           <div className="mint-copy-stack">
             <p>
-              {sameDeviceMode
-                ? "Pick 1 to 3 cats and start a CorePass mint session from the same phone that will open CorePass."
-                : "Pick 1 to 3 cats and start a CorePass mint session from this desktop browser."}
+              First choose Desktop QR or Same-device mobile. Then pick 1 to 3 cats and start a CorePass mint
+              session.
             </p>
             <p>QR 1 of 2 binds your wallet with a signature.</p>
             <p>QR 2 of 2 sends the mint transaction.</p>
@@ -740,7 +739,7 @@ export default function MintWorkflow({ config }) {
               disabled={routeSelectionLocked}
             >
               <span className="mint-route-title">Same-device mobile</span>
-              <span className="mint-route-copy">Open each step directly in CorePass on this phone, then return here for status.</span>
+              <span className="mint-route-copy">Open each step directly in CorePass on this phone, then return to this browser tab for status.</span>
             </button>
           </div>
           <p className="mint-meta">
@@ -776,6 +775,11 @@ export default function MintWorkflow({ config }) {
                 <p className="mint-meta">
                   Desktop-first remains the primary release path. Same-device mobile is a secondary canary track until
                   the final public mint host proves it cleanly.
+                </p>
+                <p className="mint-meta">
+                  Same-device has been rehearsed as much as practical, but browser/app return behavior can still vary
+                  by device and CorePass build. If the session does not resume cleanly on your phone, switch to
+                  Desktop QR instead.
                 </p>
               </>
             ) : (
