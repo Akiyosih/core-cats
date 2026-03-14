@@ -593,7 +593,6 @@ function serializeSession(session) {
           walletState: session.commit.walletState || null,
           expiry: session.commit.expiry,
           messageHash: session.commit.messageHash,
-          walletState: session.commit.walletState || null,
           desktopUri: session.commit.desktopUri,
           mobileUri: session.commit.mobileUri,
           qrDataUrl: session.commit.qrDataUrl,
