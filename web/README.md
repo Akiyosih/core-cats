@@ -70,11 +70,13 @@ Important variables:
 5. `NEXT_PUBLIC_CORECATS_ADDRESS` (optional, defaults to the latest Devin rehearsal address)
 6. `NEXT_PUBLIC_SITE_SURFACE` (`public-teaser`, `private-canary`, or `public-mint`)
 7. `NEXT_PUBLIC_SITE_BASE_URL` (optional, recommended for public links / robots / host portability)
-8. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
-9. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
-10. `CORECATS_BACKEND_BASE_URL` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
-11. `CORECATS_BACKEND_SHARED_SECRET` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
-12. `CORECATS_INTERNAL_BACKEND_BASE_URL` (optional loopback backend origin for a self-hosted private canary)
+8. `NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST` / `CORECATS_MINT_ONLY_HOST` (`1` or `true` when this deployment should serve mint only)
+9. `NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL` / `CORECATS_BROWSE_BASE_URL` (required when mint-only host mode is enabled)
+10. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
+11. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
+12. `CORECATS_BACKEND_BASE_URL` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
+13. `CORECATS_BACKEND_SHARED_SECRET` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
+14. `CORECATS_INTERNAL_BACKEND_BASE_URL` (optional loopback backend origin for a self-hosted private canary)
 
 When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives public ownership routes from:
 
@@ -101,13 +103,21 @@ The same app can be deployed in three public-facing modes:
    Separate rehearsal surface for operator-led canary testing. Mint routes stay enabled, but this surface should not
    be linked from the public teaser site.
 3. `public-mint`
-   Final public release mode. The community-facing site opens `/mint` on the same origin people already know.
+   Final public release mode. This can either be the community-facing site itself or a mint-only host linked from the
+   browse site.
 
 For long-lived teaser hosting, the current direction is:
 1. use `web-public-teaser/` as the preferred static browse-only app for the community-facing teaser origin
 2. use `web/` for `private-canary` and later `public-mint`
 3. feed live ownership from the public snapshot URL
 4. keep `private-canary` separate from the community-facing teaser origin
+
+For the current mainnet direction, `public-mint` should be treated as a mint-support surface rather than a full browse host:
+1. keep the full browse site on Cloudflare
+2. point the browse-site mint CTA at the Vercel mint host
+3. set `NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST=1`
+4. set `NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL=https://<cloudflare-browse-origin>`
+5. let `/` serve the mint entry while non-mint browse routes on the Vercel host hand off to the browse origin
 
 ## Current Mint Flow
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCorePublicConfig } from "../lib/server/core-env";
+import { buildBrowseHref, isAbsoluteHref } from "../lib/site-surface-links.js";
 
 const links = [
   { href: "/", label: "Home" },
@@ -13,18 +14,20 @@ const links = [
 export default function SiteHeader() {
   const config = getCorePublicConfig();
   const showSoonBadge = !config.mintSurfaceEnabled;
+  const brandHref = buildBrowseHref(config, "/");
 
   return (
     <header className="site-header">
-      <Link href="/" className="brand-mark">
+      <a href={brandHref} className="brand-mark">
         <span className="brand-mark__eyebrow">Core Cats</span>
         <span className="brand-mark__title">Full On-Chain Pixel Cats</span>
-      </Link>
+      </a>
 
       <nav className="main-nav" aria-label="Primary">
         {links.map((link) => {
           const mintDisabled = link.soonBeforePublic && !config.mintSurfaceEnabled;
           const badge = link.soonBeforePublic && showSoonBadge ? <span className="main-nav__badge">Soon</span> : null;
+          const href = link.href === "/mint" ? link.href : buildBrowseHref(config, link.href);
 
           if (mintDisabled) {
             return (
@@ -35,8 +38,17 @@ export default function SiteHeader() {
             );
           }
 
+          if (isAbsoluteHref(href)) {
+            return (
+              <a key={link.href} href={href} className="main-nav__item">
+                <span>{link.label}</span>
+                {badge}
+              </a>
+            );
+          }
+
           return (
-            <Link key={link.href} href={link.href} className="main-nav__item">
+            <Link key={link.href} href={href} className="main-nav__item">
               <span>{link.label}</span>
               {badge}
             </Link>

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { buildBrowseHref } from "../lib/site-surface-links.js";
 
 const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";
 const HANDOFF_DESKTOP = "desktop";
@@ -52,9 +53,9 @@ function explorerAddressUrl(explorerBaseUrl, address) {
   return `${explorerBaseUrl.replace(/\/$/, "")}/address/${address}`;
 }
 
-function myCatsHref(owner) {
-  if (!owner) return "/my-cats";
-  return `/my-cats?owner=${encodeURIComponent(owner)}`;
+function myCatsHref(owner, config) {
+  if (!owner) return buildBrowseHref(config, "/my-cats");
+  return buildBrowseHref(config, `/my-cats?owner=${encodeURIComponent(owner)}`);
 }
 
 function formatDateTime(value) {
@@ -351,7 +352,9 @@ export default function MintWorkflow({ config }) {
     () => explorerAddressUrl(session?.explorerBaseUrl || config.explorerBaseUrl, session?.coreCatsAddress || config.coreCatsAddress),
     [config.coreCatsAddress, config.explorerBaseUrl, session],
   );
-  const ownerHref = useMemo(() => myCatsHref(session?.minter || ""), [session]);
+  const ownerHref = useMemo(() => myCatsHref(session?.minter || "", config), [config, session]);
+  const transparencyHref = useMemo(() => buildBrowseHref(config, "/transparency"), [config]);
+  const myCatsLandingHref = useMemo(() => buildBrowseHref(config, "/my-cats"), [config]);
   useEffect(() => {
     if (callbackError) {
       setError(describeCallbackError(callbackError));
@@ -755,7 +758,7 @@ export default function MintWorkflow({ config }) {
           </div>
           <p className="mint-meta">
             If you want to verify the published contract address and public artifacts first, you can review{" "}
-            <a href="/transparency" className="inline-link">
+            <a href={transparencyHref} className="inline-link">
               Transparency
             </a>{" "}
             before approving in CorePass.
@@ -959,7 +962,7 @@ export default function MintWorkflow({ config }) {
                     )}
                   </li>
                   <li>
-                    Review the public references: <a href="/transparency" className="inline-link">Transparency</a> and{" "}
+                    Review the public references: <a href={transparencyHref} className="inline-link">Transparency</a> and{" "}
                     <a href={PROJECT_REPOSITORY_URL} target="_blank" rel="noreferrer" className="inline-link">
                       GitHub
                     </a>
@@ -1028,7 +1031,7 @@ export default function MintWorkflow({ config }) {
                 <ul className="plain-list mint-verify-list">
                   <li>After the QR 2 transaction succeeds, your NFT usually arrives within a few minutes.</li>
                   <li>
-                    You can also confirm delivery in <a href="/my-cats" className="inline-link">My Cats</a> by entering your wallet address.
+                    You can also confirm delivery in <a href={myCatsLandingHref} className="inline-link">My Cats</a> by entering your wallet address.
                   </li>
                   <li>
                     Do not start a new mint before 30 minutes have passed. If the current session is still live, a new

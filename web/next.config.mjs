@@ -1,3 +1,7 @@
+const mintOnlyHost = /^(1|true|yes|on)$/i.test(
+  String(process.env.NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST || process.env.CORECATS_MINT_ONLY_HOST || "").trim(),
+);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -52,6 +56,18 @@ const nextConfig = {
             value: "public, max-age=3600, stale-while-revalidate=86400",
           },
         ],
+      },
+    ];
+  },
+  async rewrites() {
+    if (!mintOnlyHost) {
+      return [];
+    }
+
+    return [
+      {
+        source: "/",
+        destination: "/mint",
       },
     ];
   },

@@ -18,6 +18,8 @@ const DEFAULTS = {
   launchState: "closed",
   siteSurface: "public-teaser",
   siteBaseUrl: "",
+  browseBaseUrl: "",
+  mintOnlyHost: false,
   coreCatsAddress: DEFAULT_DEVIN_CORECATS_ADDRESS,
   explorerBaseUrl: DEFAULT_DEVIN_EXPLORER_BASE_URL,
   backendMode: "local",
@@ -52,6 +54,11 @@ function normalizeBackendMode(value) {
     return value;
   }
   return DEFAULTS.backendMode;
+}
+
+function normalizeBoolean(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
 }
 
 function normalizeUrl(value) {
@@ -187,6 +194,12 @@ export function getCoreServerEnv() {
     launchState,
     siteSurface,
     siteBaseUrl: normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || process.env.CORECATS_SITE_BASE_URL || ""),
+    browseBaseUrl: normalizeUrl(
+      process.env.NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL || process.env.CORECATS_BROWSE_BASE_URL || DEFAULTS.browseBaseUrl,
+    ),
+    mintOnlyHost: normalizeBoolean(
+      process.env.NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST || process.env.CORECATS_MINT_ONLY_HOST || DEFAULTS.mintOnlyHost,
+    ),
     backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
     backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
     internalBackendBaseUrl: (
@@ -236,9 +249,22 @@ export function getMintRuntimeConfigErrors(state = getCoreServerEnv()) {
   const backendSharedSecret = String(state.backendSharedSecret || "").trim();
   const siteBaseUrlError = getSiteBaseUrlConfigError(siteBaseUrl);
   const externalOrigin = !siteBaseUrlError && siteBaseUrl && !isLoopbackHttpUrl(siteBaseUrl);
+  const browseBaseUrl = normalizeUrl(state.browseBaseUrl || "");
 
   if (siteBaseUrlError) {
     errors.push(siteBaseUrlError);
+  }
+
+  if (state.mintOnlyHost) {
+    const browseBaseUrlError = getSiteBaseUrlConfigError(browseBaseUrl).replace(
+      /NEXT_PUBLIC_SITE_BASE_URL or CORECATS_SITE_BASE_URL/g,
+      "NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL or CORECATS_BROWSE_BASE_URL",
+    );
+    if (browseBaseUrlError) {
+      errors.push(browseBaseUrlError);
+    } else if (siteBaseUrl && browseBaseUrl && normalizeUrl(siteBaseUrl) === normalizeUrl(browseBaseUrl)) {
+      errors.push("The mint-only host must not use the same origin for NEXT_PUBLIC_SITE_BASE_URL and NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL.");
+    }
   }
 
   if (!coreCatsAddress) {
@@ -313,6 +339,8 @@ export function getCorePublicConfig() {
     mintRuntimeReady: mintRuntimeErrors.length === 0,
     mintRuntimeErrors,
     siteBaseUrl: env.siteBaseUrl,
+    browseBaseUrl: env.browseBaseUrl,
+    mintOnlyHost: env.mintOnlyHost,
     coreCatsAddress: env.coreCatsAddress,
     explorerBaseUrl: env.explorerBaseUrl,
     relayerEnabled,

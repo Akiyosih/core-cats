@@ -1,6 +1,13 @@
 import Link from "next/link";
 
+import { getCorePublicConfig } from "../lib/server/core-env";
+import { buildBrowseHref, isAbsoluteHref } from "../lib/site-surface-links.js";
+
 export default function NotFoundPage() {
+  const config = getCorePublicConfig();
+  const homeHref = buildBrowseHref(config, "/");
+  const collectionHref = buildBrowseHref(config, "/collection");
+
   return (
     <div className="page-stack narrow-stack">
       <section className="copy-panel">
@@ -10,12 +17,24 @@ export default function NotFoundPage() {
           The page may have moved, or the token id may be outside the published Core Cats collection range.
         </p>
         <div className="copy-panel__actions">
-          <Link href="/" className="button button--ghost">
-            Go home
-          </Link>
-          <Link href="/collection" className="button button--ghost">
-            Browse collection
-          </Link>
+          {isAbsoluteHref(homeHref) ? (
+            <a href={homeHref} className="button button--ghost">
+              Go home
+            </a>
+          ) : (
+            <Link href={homeHref} className="button button--ghost">
+              Go home
+            </Link>
+          )}
+          {isAbsoluteHref(collectionHref) ? (
+            <a href={collectionHref} className="button button--ghost">
+              Browse collection
+            </a>
+          ) : (
+            <Link href={collectionHref} className="button button--ghost">
+              Browse collection
+            </Link>
+          )}
         </div>
       </section>
     </div>

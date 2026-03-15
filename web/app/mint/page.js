@@ -2,12 +2,15 @@ import MintWorkflow from "../../components/mint-workflow";
 import MintCounterBanner from "../../components/mint-counter-banner";
 import { getCorePublicConfig } from "../../lib/server/core-env";
 import { getSummary } from "../../lib/viewer-data";
+import { buildBrowseHref } from "../../lib/site-surface-links.js";
 
 export const dynamic = "force-dynamic";
 
 export default async function MintPage() {
   const config = getCorePublicConfig();
   const launchState = config.launchState;
+  const collectionHref = buildBrowseHref(config, "/collection");
+  const transparencyHref = buildBrowseHref(config, "/transparency");
 
   if (launchState === "closed" || !config.mintSurfaceEnabled) {
     const isPublicTeaser = config.publicTeaserSite && launchState !== "closed";
@@ -29,10 +32,10 @@ export default async function MintPage() {
             </p>
           )}
           <div className="copy-panel__actions">
-            <a href="/collection" className="button button--ghost">
+            <a href={collectionHref} className="button button--ghost">
               Browse collection
             </a>
-            <a href="/transparency" className="button button--ghost">
+            <a href={transparencyHref} className="button button--ghost">
               Check transparency
             </a>
           </div>
@@ -88,7 +91,7 @@ export default async function MintPage() {
             closed until the final site origin, contract address, and backend proxy wiring are configured explicitly.
           </p>
           <div className="copy-panel__actions">
-            <a href="/transparency" className="button button--ghost">
+            <a href={transparencyHref} className="button button--ghost">
               Check transparency
             </a>
           </div>

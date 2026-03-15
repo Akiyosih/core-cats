@@ -1,7 +1,20 @@
 import { getCorePublicConfig } from "../lib/server/core-env";
 
 export default function robots() {
-  const { siteBaseUrl, privateCanarySite, publicMintSite } = getCorePublicConfig();
+  const { siteBaseUrl, privateCanarySite, publicMintSite, mintOnlyHost } = getCorePublicConfig();
+
+  if (mintOnlyHost) {
+    return {
+      rules: [
+        {
+          userAgent: "*",
+          allow: ["/", "/mint"],
+          disallow: ["/api/", "/about", "/collection", "/my-cats", "/transparency", "/cats/"],
+        },
+      ],
+      host: siteBaseUrl || undefined,
+    };
+  }
 
   if (privateCanarySite) {
     return {

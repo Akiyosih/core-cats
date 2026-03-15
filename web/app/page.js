@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getCollection, getSummary } from "../lib/viewer-data";
 import { getCorePublicConfig } from "../lib/server/core-env";
 import { isTeaserDisplayEnabled } from "../lib/server/teaser-display.js";
+import { buildBrowseHref, hasBrowseOrigin } from "../lib/site-surface-links.js";
 
 const HOME_NATURAL_IDS = [272, 241, 690, 647, 322, 818, 515, 102, 922, 415];
 const HOME_SPECIAL_IDS = [48, 305, 714, 25, 903, 939, 479, 489, 1000, 999];
@@ -17,6 +19,9 @@ function Metric({ value, label }) {
 
 export default async function HomePage() {
   const [collection, summary, config] = await Promise.all([getCollection(), getSummary(), getCorePublicConfig()]);
+  if (hasBrowseOrigin(config)) {
+    redirect(buildBrowseHref(config, "/"));
+  }
   const teaserMode = isTeaserDisplayEnabled();
   const mintStatusHref = config.mintSurfaceEnabled ? "/mint" : "/transparency";
   const mintStatusLabel = config.mintSurfaceEnabled ? "Mint Status" : "Launch Status";

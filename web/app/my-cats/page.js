@@ -1,14 +1,23 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import QRCode from "qrcode";
 
 import MyCatsBrowser from "../../components/my-cats-browser";
 import { getCollection } from "../../lib/viewer-data";
 import { getCorePublicConfig } from "../../lib/server/core-env";
+import { buildBrowseHref, hasBrowseOrigin } from "../../lib/site-surface-links.js";
 
 export const dynamic = "force-static";
 
-export default async function MyCatsPage() {
-  const { launchState, statusSnapshotUrl, coreCatsAddress } = getCorePublicConfig();
+export default async function MyCatsPage({ searchParams }) {
+  const config = getCorePublicConfig();
+  if (hasBrowseOrigin(config)) {
+    const resolvedSearchParams = await searchParams;
+    const owner = String(resolvedSearchParams?.owner || "").trim();
+    const query = owner ? `?owner=${encodeURIComponent(owner)}` : "";
+    redirect(buildBrowseHref(config, `/my-cats${query}`));
+  }
+  const { launchState, statusSnapshotUrl, coreCatsAddress } = config;
 
   if (launchState === "closed") {
     return (

@@ -1,9 +1,10 @@
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import CatDetailLive from "../../../components/cat-detail-live";
 import { getCollectionItem, getSummary } from "../../../lib/viewer-data";
 import { getCorePublicConfig } from "../../../lib/server/core-env";
+import { buildBrowseHref, hasBrowseOrigin } from "../../../lib/site-surface-links.js";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -29,6 +30,9 @@ export default async function CatDetailPage({ params }) {
   }
 
   const [item, config] = await Promise.all([getCollectionItem(tokenId), getCorePublicConfig()]);
+  if (hasBrowseOrigin(config)) {
+    redirect(buildBrowseHref(config, `/cats/${tokenId}`));
+  }
 
   if (!item) {
     notFound();
