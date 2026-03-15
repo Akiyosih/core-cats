@@ -31,18 +31,17 @@ The fallback path is justified only when the pilot meaningfully reduces release 
 4. Pilot success does not replace the official final canary.
 
 ## Why Official Final Canary Is Still Required
-1. The mint authorization message includes `address(this)`.
-2. A different contract address means a different signing domain.
+1. The commit/finalize flow still binds randomness and token assignment to `address(this)`.
+2. A different contract address still means a different on-chain instance and a different final public transparency surface.
 3. Therefore, a pilot proves the wallet flow and the mainnet environment, but it does not fully prove the final official contract path by itself.
 
 ## What Should Stay Identical
 1. Mint logic
-2. Signature verification logic
-3. Replay protection assumptions
-4. Random assignment logic
-5. Quantity mint behavior (`1 / 2 / 3`)
-6. Supply logic (`MAX_SUPPLY = 1000`)
-7. `tokenURI` structure and on-chain SVG generation, except for human-facing pilot labels if used
+2. Commit/finalize state machine
+3. Random assignment logic
+4. Quantity mint behavior (`1 / 2 / 3`)
+5. Supply logic (`MAX_SUPPLY = 1000`)
+6. `tokenURI` structure and on-chain SVG generation, except for human-facing pilot labels if used
 
 Do not create a pilot that passes only because it is materially simpler than production.
 

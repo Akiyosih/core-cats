@@ -13,9 +13,8 @@ It is not the official `CCAT` release runbook.
 1. The project has explicitly chosen the optional pilot fallback.
 2. The pilot remains self-only and clearly non-official.
 3. The active contract workspace is `core-cats/foxar`.
-4. A dedicated deployer account is available on the Foxar keystore path for deploy/admin transactions.
-5. A dedicated mint signer account is available for any backend-backed pilot validation.
-6. If the full web/backend/CorePass path will be tested, the signer/finalizer material is already staged on the backend host.
+4. A dedicated deployer account is available on the Foxar keystore path for deploy transactions.
+5. If the full web/backend/CorePass path will be tested, the backend/finalizer material is already staged on the backend host.
 
 ## Pilot Labels
 Use these values unless there is a specific reason to change them:
@@ -41,15 +40,10 @@ The explicit `CORECATS_ALLOW_NONSTANDARD_LABELS=1` opt-in is required so the mai
    - `DEPLOYER_PASSWORD_FILE`
 4. Deployer address for recordkeeping:
    - `DEPLOYER_ADDRESS`
-5. Signer address:
-   - `SIGNER_ADDRESS`
-6. Optional script-only mint path inputs:
-   - `MINT_SIGNER_PRIVATE_KEY`
+5. Optional script-only mint path inputs:
    - `MINT_TO`
    - `MINTER_ADDRESS`
    - `MINT_SECRET` or `MINT_SEED`
-
-If using the real backend path, do not put signer raw material into this repository.
 
 ## Recommended Session Setup
 From `core-cats/foxar`, load the non-secret pilot labels first:
@@ -67,7 +61,6 @@ export CORE_MAINNET_RPC_URL="<mainnet-rpc-url>"
 export DEPLOYER_KEYSTORE_PATH="<local-path-to-deployer-keystore>"
 export DEPLOYER_PASSWORD_FILE="<local-path-to-deployer-password-file>"
 export DEPLOYER_ADDRESS="<deployer-address>"
-export SIGNER_ADDRESS="<signer-address>"
 ```
 
 `DEPLOYER_ADDRESS` must match the keystore-resolved deployer address when using `--keystore` / `--password-file`.
@@ -140,13 +133,12 @@ Also record:
 3. deployer address
 4. the exact pilot label values used
 
-## Post-Deploy Check Before Signer Rotation
-Immediately confirm the deployed state while the contract signer is still the deployer:
+## Post-Deploy Check
+Immediately confirm the deployed state:
 
 ```bash
 export CORECATS_ADDRESS="<pilot-corecats-address>"
 export EXPECTED_RENDERER_ADDRESS="<pilot-renderer-address>"
-export EXPECTED_SIGNER_ADDRESS="$DEPLOYER_ADDRESS"
 export EXPECTED_COLLECTION_NAME=CCATTEST
 export EXPECTED_COLLECTION_SYMBOL=CCATTEST
 
@@ -157,36 +149,10 @@ spark script script/CoreCatsPostDeployCheck.s.sol:CoreCatsPostDeployCheckScript 
 
 Expected:
 1. renderer matches
-2. signer is still the deployer
-3. collection name/symbol are `CCATTEST`
-4. total supply is `0`
-
-## Signer Rotation
-For any backend-backed pilot validation, rotate the contract signer to the dedicated signer:
-
-```bash
-export NEW_SIGNER_ADDRESS="$SIGNER_ADDRESS"
-
-spark script script/CoreCatsSetSigner.s.sol:CoreCatsSetSignerScript \
-  --fork-url "$CORE_MAINNET_RPC_URL" \
-  --network-id 1 \
-  --wallet-network mainnet \
-  --keystore "$DEPLOYER_KEYSTORE_PATH" \
-  --password-file "$DEPLOYER_PASSWORD_FILE" \
-  --broadcast
-```
-
-Then re-run the post-deploy check:
-
-```bash
-export EXPECTED_SIGNER_ADDRESS="$SIGNER_ADDRESS"
-
-spark script script/CoreCatsPostDeployCheck.s.sol:CoreCatsPostDeployCheckScript \
-  --fork-url "$CORE_MAINNET_RPC_URL" \
-  --network-id 1
-```
-
-Expected: signer now matches the dedicated signer.
+2. collection name/symbol are `CCATTEST`
+3. total supply is `0`
+4. available supply is `1000`
+5. reserved supply is `0`
 
 ## Preferred Validation Path: Backend + Closed Site
 Use this when the goal is to validate the real Contabo/Vercel/CorePass path on mainnet.
@@ -216,17 +182,17 @@ This path is the most meaningful pilot because it validates the real mainnet wal
 ## Script-Only Validation Path
 Use this only if you need direct on-chain validation before the backend/site cutover decision.
 
-Issue an authorization locally:
+Stage the self-only minter inputs locally:
 
 ```bash
 export MINT_TO="<self-only-minter-address>"
 export MINTER_ADDRESS="$MINT_TO"
 ```
 
-Then issue the authorization:
+Prepare the commit hash locally:
 
 ```bash
-spark script script/CoreCatsIssueMintAuthorization.s.sol:CoreCatsIssueMintAuthorizationScript \
+spark script script/CoreCatsPrepareMint.s.sol:CoreCatsPrepareMintScript \
   --fork-url "$CORE_MAINNET_RPC_URL" \
   --network-id 1
 ```
@@ -285,13 +251,12 @@ Important:
 ## Evidence To Save
 Record separately from the official release:
 1. deploy tx hashes
-2. signer-rotation tx hash
-3. deployed addresses
-4. assigned pilot token ids
-5. commit/finalize tx hashes
-6. decoded `tokenURI` evidence
-7. the exact pilot labels used
-8. whether validation was:
+2. deployed addresses
+3. assigned pilot token ids
+4. commit/finalize tx hashes
+5. decoded `tokenURI` evidence
+6. the exact pilot labels used
+7. whether validation was:
    - script-only
    - or backend + closed-site
 
