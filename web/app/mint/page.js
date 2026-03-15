@@ -6,8 +6,7 @@ import { buildBrowseHref } from "../../lib/site-surface-links.js";
 
 export const dynamic = "force-dynamic";
 
-export default async function MintPage() {
-  const config = getCorePublicConfig();
+export async function MintPageContent({ config }) {
   const launchState = config.launchState;
   const collectionHref = buildBrowseHref(config, "/collection");
   const transparencyHref = buildBrowseHref(config, "/transparency");
@@ -142,4 +141,9 @@ export default async function MintPage() {
       <MintWorkflow config={config} />
     </div>
   );
+}
+
+export default async function MintPage() {
+  const config = getCorePublicConfig();
+  return MintPageContent({ config });
 }

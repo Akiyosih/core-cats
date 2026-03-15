@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { MintPageContent } from "./mint/page.js";
 import { getCollection, getSummary } from "../lib/viewer-data";
 import { getCorePublicConfig } from "../lib/server/core-env";
 import { isTeaserDisplayEnabled } from "../lib/server/teaser-display.js";
@@ -18,10 +19,14 @@ function Metric({ value, label }) {
 }
 
 export default async function HomePage() {
-  const [collection, summary, config] = await Promise.all([getCollection(), getSummary(), getCorePublicConfig()]);
+  const config = getCorePublicConfig();
+  if (config.mintOnlyHost && config.publicMintSite) {
+    return MintPageContent({ config });
+  }
   if (hasBrowseOrigin(config)) {
     redirect(buildBrowseHref(config, "/"));
   }
+  const [collection, summary] = await Promise.all([getCollection(), getSummary()]);
   const teaserMode = isTeaserDisplayEnabled();
   const mintStatusHref = config.mintSurfaceEnabled ? "/mint" : "/transparency";
   const mintStatusLabel = config.mintSurfaceEnabled ? "Mint Status" : "Launch Status";
