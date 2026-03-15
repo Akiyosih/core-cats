@@ -85,7 +85,7 @@ export default async function MintPage() {
           <h1>Mint is temporarily unavailable on this deployment.</h1>
           <p>
             The mint surface is enabled, but a required runtime value is still missing. The deployment should fail
-            closed until the final site origin and contract address are configured explicitly.
+            closed until the final site origin, contract address, and backend proxy wiring are configured explicitly.
           </p>
           <div className="copy-panel__actions">
             <a href="/transparency" className="button button--ghost">

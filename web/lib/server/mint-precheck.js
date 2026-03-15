@@ -3,6 +3,7 @@ import { fetchMintPrecheck, isExternalMintBackendEnabled } from "./mint-backend-
 
 const CALL_METHODS = ["xcb_call", "eth_call"];
 const BLOCK_NUMBER_METHODS = ["xcb_blockNumber", "eth_blockNumber"];
+const AVAILABLE_SUPPLY_SELECTOR = "0x1c34eb83";
 const MINTED_PER_ADDRESS_SELECTOR = "0x5539b96a";
 const RESERVED_PER_ADDRESS_SELECTOR = "0xe64f7f28";
 const PENDING_COMMIT_SELECTOR = "0xf622d4c8";
@@ -56,7 +57,7 @@ function decodeUintWord(data, index) {
   return Number.parseInt(words[index], 16);
 }
 
-function buildWalletState(currentBlock, minted, reserved, pendingCommit) {
+function buildWalletState(currentBlock, minted, reserved, pendingCommit, availableSupply) {
   const pendingCommitActive = pendingCommit.quantity > 0 && currentBlock <= pendingCommit.expiryBlock;
   const effectiveReserved =
     pendingCommit.quantity > 0 && currentBlock > pendingCommit.expiryBlock
@@ -66,6 +67,7 @@ function buildWalletState(currentBlock, minted, reserved, pendingCommit) {
   return {
     minted,
     reserved: effectiveReserved,
+    availableSupply,
     availableSlots: Math.max(0, MAX_PER_ADDRESS - minted - effectiveReserved),
     pendingCommitActive,
     finalizeBlock: pendingCommit.finalizeBlock,
@@ -92,6 +94,7 @@ function normalizeWalletState(payload) {
   return {
     minted: Number(payload.minted || 0),
     reserved: Number(payload.reserved || 0),
+    availableSupply: Number(payload.availableSupply || 0),
     availableSlots: Number(payload.availableSlots || 0),
     pendingCommitActive: Boolean(payload.pendingCommitActive),
     finalizeBlock: Number(payload.finalizeBlock || 0),
@@ -111,6 +114,14 @@ export function evaluateMintPrecheck(walletState, quantity) {
     throw createPrecheckError(
       "pending_commit_exists",
       "This wallet already has a pending commit waiting for finalize.",
+      normalized,
+    );
+  }
+
+  if (normalized.availableSupply < quantity) {
+    throw createPrecheckError(
+      "sold_out",
+      "The remaining unreserved supply is lower than this requested quantity, so QR 2 of 2 was not prepared.",
       normalized,
     );
   }
@@ -204,6 +215,7 @@ async function ethCall(rpcUrl, contractAddress, data) {
 
 async function readWalletStateViaRpc({ rpcUrl, contractAddress, minter }) {
   const currentBlock = parseHexInt(await requestJsonRpc(rpcUrl, BLOCK_NUMBER_METHODS, []));
+  const availableSupply = decodeUintWord(await ethCall(rpcUrl, contractAddress, AVAILABLE_SUPPLY_SELECTOR), 0);
   const minted = decodeUintWord(await ethCall(rpcUrl, contractAddress, encodeAddressCall(MINTED_PER_ADDRESS_SELECTOR, minter)), 0);
   const reserved = decodeUintWord(
     await ethCall(rpcUrl, contractAddress, encodeAddressCall(RESERVED_PER_ADDRESS_SELECTOR, minter)),
@@ -218,7 +230,7 @@ async function readWalletStateViaRpc({ rpcUrl, contractAddress, minter }) {
     commitHash: pendingWords[3] ? `0x${pendingWords[3]}` : "0x0",
   };
 
-  return buildWalletState(currentBlock, minted, reserved, pendingCommit);
+  return buildWalletState(currentBlock, minted, reserved, pendingCommit, availableSupply);
 }
 
 export async function runMintPrecheck(request, { minter, quantity }) {

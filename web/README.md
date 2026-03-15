@@ -113,9 +113,10 @@ For long-lived teaser hosting, the current direction is:
 
 1. Create a CorePass mint session on `/mint`
 2. CorePass signs a random challenge to bind a concrete `coreID`
-3. CorePass sends the `commitMint(...)` transaction
-4. the server tries relayer-assisted `finalizeMint(minter)`
-5. the desktop page keeps a lightweight status view and directs users to wait or retry from the beginning if finalize never completes
+3. the server checks wallet state and remaining unreserved supply before `QR 2 of 2` is prepared
+4. CorePass sends the `commitMint(...)` transaction
+5. the server tries relayer-assisted `finalizeMint(minter)`
+6. the desktop page keeps a lightweight status view and directs users to wait or retry from the beginning if finalize never completes
 
 ## Production Note
 
@@ -139,7 +140,7 @@ Host-sensitive callback note:
 The external mint backend owns:
 1. durable session persistence
 2. finalize relayer execution
-3. optional legacy authorization issuance for older rehearsal flows only
+3. optional legacy authorization issuance for older rehearsal tooling only; the intended official path is permissionless and should not rely on signer or allowlist gating
 4. `spark` / `foxar` execution
 5. the public ownership snapshot consumed directly by collection / ownership pages
 

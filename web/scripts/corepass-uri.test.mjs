@@ -146,6 +146,22 @@ test("mint runtime config errors flag missing proxy backend wiring when mint is 
   assert.match(errors[1], /CORECATS_BACKEND_SHARED_SECRET/);
 });
 
+test("mint runtime config errors reject a malformed explicit site base URL", () => {
+  const errors = getMintRuntimeConfigErrors({
+    launchState: "canary",
+    siteSurface: "private-canary",
+    siteBaseUrl: "core-cats.vercel.app",
+    coreCatsAddress: "cb111111111111111111111111111111111111111111",
+    backendMode: "proxy",
+    backendBaseUrl: "https://backend.example.com",
+    internalBackendBaseUrl: "",
+    backendSharedSecret: "super-secret-value",
+  });
+
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /must be an absolute http\(s\) URL/);
+});
+
 test("finalize calldata builder supports Core cb addresses for manual fallback", () => {
   const encoded = tryEncodeFinalizeMintData("cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416");
 

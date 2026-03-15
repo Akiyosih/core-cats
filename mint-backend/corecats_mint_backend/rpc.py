@@ -12,6 +12,7 @@ CALL_METHODS = ("xcb_call", "eth_call")
 BLOCK_NUMBER_METHODS = ("xcb_blockNumber", "eth_blockNumber")
 RECEIPT_METHODS = ("xcb_getTransactionReceipt", "eth_getTransactionReceipt")
 
+AVAILABLE_SUPPLY_SELECTOR = "0x1c34eb83"
 MINTED_PER_ADDRESS_SELECTOR = "0x5539b96a"
 RESERVED_PER_ADDRESS_SELECTOR = "0xe64f7f28"
 PENDING_COMMIT_SELECTOR = "0xf622d4c8"
@@ -44,6 +45,7 @@ class WalletMintState:
     reserved: int
     effective_reserved: int
     pending_commit: PendingCommitState
+    available_supply: int = 0
 
     @property
     def pending_commit_active(self) -> bool:
@@ -215,6 +217,7 @@ class CoreRpcClient:
 
     def get_wallet_mint_state(self, contract_address: str, minter: str) -> WalletMintState:
         current_block = self.get_block_number()
+        available_supply = _decode_uint_word(self.eth_call(contract_address, AVAILABLE_SUPPLY_SELECTOR), 0)
         minted = _decode_uint_word(self.eth_call(contract_address, _encode_address_call(MINTED_PER_ADDRESS_SELECTOR, minter)), 0)
         reserved = _decode_uint_word(
             self.eth_call(contract_address, _encode_address_call(RESERVED_PER_ADDRESS_SELECTOR, minter)),
@@ -239,6 +242,7 @@ class CoreRpcClient:
             reserved=reserved,
             effective_reserved=effective_reserved,
             pending_commit=pending_commit,
+            available_supply=available_supply,
         )
 
     def get_transaction_receipt(self, tx_hash: str) -> TransactionReceipt | None:

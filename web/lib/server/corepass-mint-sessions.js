@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import QRCode from "qrcode";
 
 import { encodeCoreCatsCommitMintData, encodeCoreCatsFinalizeMintData } from "./core-calldata.js";
-import { getCorePublicConfig, getCoreServerEnv } from "./core-env.js";
+import { getCorePublicConfig, getCoreServerEnv, getSiteBaseUrlConfigError } from "./core-env.js";
 import { relayFinalizeMint } from "./core-spark.js";
 import {
   deleteRemoteMintSession,
@@ -159,6 +159,12 @@ async function getRequiredSession(request, sessionId) {
 function buildAbsoluteUrl(request, pathname, search = "") {
   const config = getCorePublicConfig();
   if (config.siteBaseUrl) {
+    const siteBaseUrlError = getSiteBaseUrlConfigError(config.siteBaseUrl);
+    if (siteBaseUrlError) {
+      const error = new Error(siteBaseUrlError);
+      error.code = "mint_runtime_misconfigured";
+      throw error;
+    }
     return `${config.siteBaseUrl}${pathname}${search}`;
   }
   const forwardedProto = request.headers.get("x-forwarded-proto");

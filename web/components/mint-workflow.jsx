@@ -237,7 +237,9 @@ function StatusLine({ label, value, mono = false }) {
 function describeCallbackError(code) {
   switch (String(code || "").trim()) {
     case "canary_wallet_not_allowed":
-      return "This wallet is not on the current rehearsal canary allowlist, so the site did not prepare a commit transaction.";
+      return "This deployment still has a legacy rehearsal allowlist restriction enabled. The official permissionless mint path should not require it.";
+    case "sold_out":
+      return "The remaining unreserved supply is lower than this requested quantity, so QR 2 of 2 was not prepared.";
     case "wallet_limit_reached":
       return "A single wallet can mint up to 3 cats through the standard mint path. This request would exceed that cumulative limit, so no new commit transaction was prepared.";
     case "pending_commit_exists":
@@ -286,10 +288,17 @@ function describeRejectedSession(code) {
       };
     case "canary_wallet_not_allowed":
       return {
-        phaseCopy: "Wallet confirmed, but this wallet is not on the current rehearsal canary allowlist.",
-        step1Label: "Wallet confirmed, but this wallet is not on the current rehearsal canary allowlist.",
+        phaseCopy: "Wallet confirmed, but this deployment still has a legacy rehearsal allowlist restriction enabled.",
+        step1Label: "Wallet confirmed, but this deployment still has a legacy rehearsal allowlist restriction enabled.",
         step1Note: "QR 2 of 2 was not prepared. No gas-spending mint transaction was created.",
-        commitDetail: "No commit transaction was prepared because this wallet is not allowed on the current rehearsal canary path.",
+        commitDetail: "No commit transaction was prepared because this deployment still has a legacy allowlist restriction enabled.",
+      };
+    case "sold_out":
+      return {
+        phaseCopy: "Wallet confirmed, but the remaining unreserved supply is lower than this requested quantity. QR 2 of 2 was not prepared.",
+        step1Label: "Wallet confirmed, but the remaining unreserved supply is lower than this requested quantity.",
+        step1Note: "QR 2 of 2 was not prepared. No gas-spending mint transaction was created.",
+        commitDetail: "No commit transaction was prepared because the remaining unreserved supply was already too low for this quantity.",
       };
     default:
       return {

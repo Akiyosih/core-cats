@@ -227,6 +227,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
                     "walletState": {
                         "minted": precheck.minted,
                         "reserved": precheck.reserved,
+                        "availableSupply": precheck.available_supply,
                         "availableSlots": precheck.available_slots,
                         "pendingCommitActive": precheck.pending_commit_active,
                         "finalizeBlock": precheck.finalize_block,
@@ -266,6 +267,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
                     "walletState": {
                         "minted": precheck.minted,
                         "reserved": precheck.reserved,
+                        "availableSupply": precheck.available_supply,
                         "availableSlots": precheck.available_slots,
                         "pendingCommitActive": precheck.pending_commit_active,
                         "finalizeBlock": precheck.finalize_block,
@@ -288,6 +290,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
                     "walletState": {
                         "minted": wallet_state.minted,
                         "reserved": wallet_state.effective_reserved,
+                        "availableSupply": wallet_state.available_supply,
                         "availableSlots": wallet_state.available_slots,
                         "pendingCommitActive": wallet_state.pending_commit_active,
                         "finalizeBlock": wallet_state.pending_commit.finalize_block,

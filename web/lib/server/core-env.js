@@ -62,6 +62,41 @@ function isLoopbackHttpUrl(value) {
   return /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(String(value || "").trim());
 }
 
+function parseAbsoluteHttpUrl(value) {
+  const normalized = normalizeUrl(value);
+  if (!normalized) return null;
+  try {
+    const parsed = new URL(normalized);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+export function getSiteBaseUrlConfigError(value) {
+  const normalized = normalizeUrl(value);
+  if (!normalized) {
+    return "NEXT_PUBLIC_SITE_BASE_URL or CORECATS_SITE_BASE_URL must be explicitly set when the mint surface is enabled.";
+  }
+  if (looksLikePlaceholder(normalized)) {
+    return "The mint surface site base URL must not use a placeholder value.";
+  }
+
+  const parsed = parseAbsoluteHttpUrl(normalized);
+  if (!parsed) {
+    return "NEXT_PUBLIC_SITE_BASE_URL or CORECATS_SITE_BASE_URL must be an absolute http(s) URL when the mint surface is enabled.";
+  }
+
+  if (!isLoopbackHttpUrl(parsed.origin) && parsed.protocol !== "https:") {
+    return "NEXT_PUBLIC_SITE_BASE_URL or CORECATS_SITE_BASE_URL must start with https:// when the mint surface is enabled.";
+  }
+
+  return "";
+}
+
 export function looksLikePlaceholder(value) {
   return /replace-with/i.test(String(value || "").trim());
 }
@@ -199,10 +234,11 @@ export function getMintRuntimeConfigErrors(state = getCoreServerEnv()) {
   const backendBaseUrl = normalizeUrl(state.backendBaseUrl || "");
   const internalBackendBaseUrl = normalizeUrl(state.internalBackendBaseUrl || "");
   const backendSharedSecret = String(state.backendSharedSecret || "").trim();
-  const externalOrigin = siteBaseUrl && !isLoopbackHttpUrl(siteBaseUrl);
+  const siteBaseUrlError = getSiteBaseUrlConfigError(siteBaseUrl);
+  const externalOrigin = !siteBaseUrlError && siteBaseUrl && !isLoopbackHttpUrl(siteBaseUrl);
 
-  if (!siteBaseUrl) {
-    errors.push("NEXT_PUBLIC_SITE_BASE_URL or CORECATS_SITE_BASE_URL must be explicitly set when the mint surface is enabled.");
+  if (siteBaseUrlError) {
+    errors.push(siteBaseUrlError);
   }
 
   if (!coreCatsAddress) {

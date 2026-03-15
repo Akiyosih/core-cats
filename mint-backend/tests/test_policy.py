@@ -14,6 +14,7 @@ class AuthorizationPrecheckTests(unittest.TestCase):
             reserved=0,
             effective_reserved=0,
             pending_commit=PendingCommitState(quantity=0, finalize_block=0, expiry_block=0, commit_hash="0x0"),
+            available_supply=100,
         )
 
         with self.assertRaises(AuthorizationRejected) as raised:
@@ -32,6 +33,7 @@ class AuthorizationPrecheckTests(unittest.TestCase):
             reserved=0,
             effective_reserved=0,
             pending_commit=PendingCommitState(quantity=0, finalize_block=0, expiry_block=0, commit_hash="0x0"),
+            available_supply=100,
         )
 
         with self.assertRaises(AuthorizationRejected) as raised:
@@ -50,6 +52,7 @@ class AuthorizationPrecheckTests(unittest.TestCase):
             reserved=1,
             effective_reserved=1,
             pending_commit=PendingCommitState(quantity=1, finalize_block=101, expiry_block=300, commit_hash="0xabc"),
+            available_supply=100,
         )
 
         with self.assertRaises(AuthorizationRejected) as raised:
@@ -64,12 +67,33 @@ class AuthorizationPrecheckTests(unittest.TestCase):
             reserved=2,
             effective_reserved=0,
             pending_commit=PendingCommitState(quantity=2, finalize_block=101, expiry_block=300, commit_hash="0xabc"),
+            available_supply=100,
         )
 
         result = evaluate_authorization_precheck(wallet_state, 2)
         self.assertEqual(result.minted, 1)
         self.assertEqual(result.reserved, 0)
         self.assertEqual(result.available_slots, 2)
+        self.assertEqual(result.available_supply, 100)
+
+    def test_rejects_when_remaining_unreserved_supply_is_lower_than_quantity(self) -> None:
+        wallet_state = WalletMintState(
+            current_block=100,
+            minted=0,
+            reserved=0,
+            effective_reserved=0,
+            pending_commit=PendingCommitState(quantity=0, finalize_block=0, expiry_block=0, commit_hash="0x0"),
+            available_supply=1,
+        )
+
+        with self.assertRaises(AuthorizationRejected) as raised:
+            evaluate_authorization_precheck(wallet_state, 2)
+
+        self.assertEqual(raised.exception.code, "sold_out")
+        self.assertEqual(
+            str(raised.exception),
+            "The remaining unreserved supply is lower than this requested quantity.",
+        )
 
 
 if __name__ == "__main__":
