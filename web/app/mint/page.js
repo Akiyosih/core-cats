@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import MintWorkflow from "../../components/mint-workflow";
 import MintCounterBanner from "../../components/mint-counter-banner";
 import { getCorePublicConfig } from "../../lib/server/core-env";
@@ -138,7 +140,9 @@ export async function MintPageContent({ config }) {
         </div>
       </details>
 
-      <MintWorkflow config={config} />
+      <Suspense fallback={null}>
+        <MintWorkflow config={config} />
+      </Suspense>
     </div>
   );
 }
