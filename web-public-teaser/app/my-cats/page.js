@@ -38,7 +38,7 @@ export default async function MyCatsPage() {
     <Suspense fallback={null}>
       <MyCatsBrowser
         collection={collection}
-        coreCatsAddress={coreCatsAddress}
+        coreCatsAddress={statusSnapshotUrl ? "" : coreCatsAddress}
         launchState={launchState}
         statusSnapshotUrl={statusSnapshotUrl}
       />
