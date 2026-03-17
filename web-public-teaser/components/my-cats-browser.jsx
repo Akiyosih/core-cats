@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import QRCode from "qrcode";
 
 import CollectionCard from "./collection-card";
 import { isCoreAddress } from "../lib/collection-utils";
-import { usePublicOwnerLookup } from "../lib/public-status-client";
+import { usePublicOwnerLookup, usePublicStatusSnapshot } from "../lib/public-status-client";
 
 function normalizeOwnerInput(value) {
   return String(value || "").trim();
@@ -22,7 +23,6 @@ function buildOwnerLookupUrl(baseUrl, owner) {
 export default function MyCatsBrowser({
   collection,
   coreCatsAddress,
-  coreCatsContractQr,
   launchState,
   statusSnapshotUrl,
 }) {
@@ -37,13 +37,56 @@ export default function MyCatsBrowser({
     () => (validOwner ? buildOwnerLookupUrl(statusSnapshotUrl, activeOwner) : ""),
     [activeOwner, statusSnapshotUrl, validOwner],
   );
+  const { snapshot: publicStatus, loading: contractLoading, error: contractError } =
+    usePublicStatusSnapshot(statusSnapshotUrl);
   const { ownerLookup, loading, error } = usePublicOwnerLookup(ownerLookupUrl);
+  const [coreCatsContractQr, setCoreCatsContractQr] = useState("");
   const isCanary = launchState === "canary";
+  const liveCoreCatsAddress = useMemo(
+    () => normalizeOwnerInput(publicStatus?.coreCatsAddress),
+    [publicStatus?.coreCatsAddress],
+  );
+  const displayCoreCatsAddress = statusSnapshotUrl ? liveCoreCatsAddress : normalizeOwnerInput(coreCatsAddress);
 
   useEffect(() => {
     setOwnerQuery(initialOwner);
     setActiveOwner(initialOwner);
   }, [initialOwner]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function buildContractQr() {
+      if (!displayCoreCatsAddress) {
+        setCoreCatsContractQr("");
+        return;
+      }
+
+      try {
+        const nextQr = await QRCode.toDataURL(displayCoreCatsAddress, {
+          errorCorrectionLevel: "M",
+          margin: 1,
+          scale: 8,
+          color: {
+            dark: "#111111",
+            light: "#ffffff",
+          },
+        });
+        if (!cancelled) {
+          setCoreCatsContractQr(nextQr);
+        }
+      } catch {
+        if (!cancelled) {
+          setCoreCatsContractQr("");
+        }
+      }
+    }
+
+    buildContractQr();
+    return () => {
+      cancelled = true;
+    };
+  }, [displayCoreCatsAddress]);
 
   const ownerStatus = useMemo(() => {
     if (!validOwner || !ownerLookup) return null;
@@ -120,9 +163,19 @@ export default function MyCatsBrowser({
             <p>In the CBC721 contract address field, tap the QR icon and scan the CoreCats contract QR below.</p>
             <p>Then tap Import NFT Collection and confirm in CorePass.</p>
             <div className="owner-help-qr">
-              <img src={coreCatsContractQr} alt="CoreCats contract address QR" width="176" height="176" />
-              <p className="owner-help-address">{coreCatsAddress}</p>
+              {coreCatsContractQr ? (
+                <img src={coreCatsContractQr} alt="CoreCats contract address QR" width="176" height="176" />
+              ) : null}
+              {displayCoreCatsAddress ? <p className="owner-help-address">{displayCoreCatsAddress}</p> : null}
             </div>
+            {!displayCoreCatsAddress && contractLoading ? (
+              <p className="owner-help-note">Loading the current CoreCats contract address for this deployment.</p>
+            ) : null}
+            {!displayCoreCatsAddress && !contractLoading ? (
+              <p className="owner-help-note">
+                {contractError || "The current CoreCats contract address is temporarily unavailable."}
+              </p>
+            ) : null}
             <p className="owner-help-note">
               This step is optional. Even if CoreCats is not shown in CorePass, your NFT can still already be in your
               wallet.

@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import QRCode from "qrcode";
 
 import MyCatsBrowser from "../../components/my-cats-browser";
 import { getCollection } from "../../lib/viewer-data";
@@ -44,22 +43,11 @@ export default async function MyCatsPage({ searchParams }) {
   }
 
   const collection = await getCollection();
-  const coreCatsContractQr = await QRCode.toDataURL(coreCatsAddress, {
-    errorCorrectionLevel: "M",
-    margin: 1,
-    scale: 8,
-    color: {
-      dark: "#111111",
-      light: "#ffffff",
-    },
-  });
-
   return (
     <Suspense fallback={null}>
       <MyCatsBrowser
         collection={collection}
         coreCatsAddress={coreCatsAddress}
-        coreCatsContractQr={coreCatsContractQr}
         launchState={launchState}
         statusSnapshotUrl={statusSnapshotUrl}
       />
