@@ -6,6 +6,8 @@ import { getCorePublicConfig } from "../lib/server/core-env";
 import { isTeaserDisplayEnabled } from "../lib/server/teaser-display.js";
 import { buildBrowseHref, hasBrowseOrigin } from "../lib/site-surface-links.js";
 
+export const dynamic = "force-dynamic";
+
 const HOME_NATURAL_IDS = [272, 241, 690, 647, 322, 818, 515, 102, 922, 415];
 const HOME_SPECIAL_IDS = [48, 305, 714, 25, 903, 939, 479, 489, 1000, 999];
 
