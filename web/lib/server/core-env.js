@@ -27,6 +27,9 @@ const DEFAULTS = {
   internalBackendBaseUrl: "",
   backendSharedSecret: "",
   statusSnapshotUrl: "",
+  privateCanaryBadgeText: "PRIVATE CANARY",
+  privateCanaryTitleText: "Private rehearsal canary",
+  privateCanaryWarningText: "NOT PUBLIC MINT",
 };
 
 function normalizeLaunchState(value) {
@@ -214,6 +217,15 @@ export function getCoreServerEnv() {
           : ""
       )
     ).trim(),
+    privateCanaryBadgeText: (
+      process.env.NEXT_PUBLIC_PRIVATE_CANARY_BADGE_TEXT || DEFAULTS.privateCanaryBadgeText
+    ).trim(),
+    privateCanaryTitleText: (
+      process.env.NEXT_PUBLIC_PRIVATE_CANARY_TITLE_TEXT || DEFAULTS.privateCanaryTitleText
+    ).trim(),
+    privateCanaryWarningText: (
+      process.env.NEXT_PUBLIC_PRIVATE_CANARY_WARNING_TEXT || DEFAULTS.privateCanaryWarningText
+    ).trim(),
     canaryAllowedCoreIds: parseCanaryAllowedCoreIds(process.env.CORECATS_CANARY_ALLOWED_CORE_IDS || ""),
     corePassExpectedCoreId: (process.env.COREPASS_EXPECTED_CORE_ID || "").trim(),
     coreCatsAddress:
@@ -345,5 +357,8 @@ export function getCorePublicConfig() {
     explorerBaseUrl: env.explorerBaseUrl,
     relayerEnabled,
     statusSnapshotUrl: env.statusSnapshotUrl,
+    privateCanaryBadgeText: env.privateCanaryBadgeText,
+    privateCanaryTitleText: env.privateCanaryTitleText,
+    privateCanaryWarningText: env.privateCanaryWarningText,
   };
 }

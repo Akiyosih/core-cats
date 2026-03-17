@@ -3,6 +3,18 @@ import { getCorePublicConfig } from "../lib/server/core-env";
 export default function robots() {
   const { siteBaseUrl, privateCanarySite, publicMintSite, mintOnlyHost } = getCorePublicConfig();
 
+  if (privateCanarySite) {
+    return {
+      rules: [
+        {
+          userAgent: "*",
+          disallow: "/",
+        },
+      ],
+      host: siteBaseUrl || undefined,
+    };
+  }
+
   if (mintOnlyHost) {
     return {
       rules: [
@@ -10,18 +22,6 @@ export default function robots() {
           userAgent: "*",
           allow: ["/", "/mint"],
           disallow: ["/api/", "/about", "/collection", "/my-cats", "/transparency", "/cats/"],
-        },
-      ],
-      host: siteBaseUrl || undefined,
-    };
-  }
-
-  if (privateCanarySite) {
-    return {
-      rules: [
-        {
-          userAgent: "*",
-          disallow: "/",
         },
       ],
       host: siteBaseUrl || undefined,

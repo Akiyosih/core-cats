@@ -20,7 +20,7 @@ function Metric({ value, label }) {
 
 export default async function HomePage() {
   const config = getCorePublicConfig();
-  if (config.mintOnlyHost && config.publicMintSite) {
+  if (config.mintOnlyHost && config.mintSurfaceEnabled) {
     return MintPageContent({ config });
   }
   if (hasBrowseOrigin(config)) {

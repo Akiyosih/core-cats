@@ -5,6 +5,9 @@ Purpose:
 2. keep the community-facing teaser site browse-only
 3. make the canary host easy to retire once the public mint surface is ready
 
+If the canary should run on a stable Vercel alias while the official public mint host stays untouched, use
+`docs/CCATTEST2_PRIVATE_CANARY_PREVIEW.md` first. This runbook remains the self-hosted / Contabo-oriented path.
+
 Reference URLs:
 1. Core Blockchain project surface: https://coreblockchain.net/
 2. Foxar toolchain intro: https://foxar.dev/intro/

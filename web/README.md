@@ -69,7 +69,7 @@ Important variables:
 4. `FINALIZER_PRIVATE_KEY` (optional, defaults to deployer key)
 5. `NEXT_PUBLIC_CORECATS_ADDRESS` (optional, defaults to the latest Devin rehearsal address)
 6. `NEXT_PUBLIC_SITE_SURFACE` (`public-teaser`, `private-canary`, or `public-mint`)
-7. `NEXT_PUBLIC_SITE_BASE_URL` (optional, recommended for public links / robots / host portability)
+7. `NEXT_PUBLIC_SITE_BASE_URL` (required when the mint surface is enabled; used for callback URLs, robots, canonical links, and host portability)
 8. `NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST` / `CORECATS_MINT_ONLY_HOST` (`1` or `true` when this deployment should serve mint only)
 9. `NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL` / `CORECATS_BROWSE_BASE_URL` (required when mint-only host mode is enabled)
 10. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
@@ -77,6 +77,8 @@ Important variables:
 12. `CORECATS_BACKEND_BASE_URL` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
 13. `CORECATS_BACKEND_SHARED_SECRET` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
 14. `CORECATS_INTERNAL_BACKEND_BASE_URL` (optional loopback backend origin for a self-hosted private canary)
+15. `NEXT_PUBLIC_PRIVATE_CANARY_BADGE_TEXT`, `NEXT_PUBLIC_PRIVATE_CANARY_TITLE_TEXT`, `NEXT_PUBLIC_PRIVATE_CANARY_WARNING_TEXT` (optional UI-only labels for a private canary host)
+16. `NEXT_PUBLIC_PRIVATE_CANARY_ENFORCE_CANONICAL_HOST` / `CORECATS_PRIVATE_CANARY_ENFORCE_CANONICAL_HOST` (optional page-only redirect to the stable private canary alias; API and callback routes stay untouched)
 
 When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives public ownership routes from:
 
@@ -119,6 +121,13 @@ For the current mainnet direction, `public-mint` should be treated as a mint-sup
 4. set `NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL=https://<cloudflare-browse-origin>`
 5. let `/` serve the mint entry while non-mint browse routes on the Vercel host hand off to the browse origin
 
+For a private canary with outside testers, prefer the same split:
+1. keep the official public mint host reserved for `public-mint`
+2. give `private-canary` its own stable canary-only alias
+3. set `NEXT_PUBLIC_SITE_BASE_URL` to that canary alias, not to the official host and not to a raw preview deployment URL
+4. if the canary host is mint-only, also set `NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST=1`
+5. optionally set `NEXT_PUBLIC_PRIVATE_CANARY_ENFORCE_CANONICAL_HOST=1` so page traffic is pushed onto that stable alias while `/api/mint/corepass/callback/*` stays reachable
+
 ## Current Mint Flow
 
 1. Create a CorePass mint session on `/mint`
@@ -157,6 +166,7 @@ The external mint backend owns:
 See `../docs/MINT_BACKEND_ARCHITECTURE.md`.
 Use `./.env.production.example` and `../docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md` for the Vercel-side mainnet switch.
 Use `./.env.private-canary.example` and `../docs/PRIVATE_CANARY_DEPLOY_RUNBOOK.md` for the temporary private canary surface.
+Use `../docs/CCATTEST2_PRIVATE_CANARY_PREVIEW.md` when the private canary should run on a stable Vercel alias without touching the official public mint host.
 
 Before copying the final values into Vercel, stage them in a local file such as `.env.production.local` and run:
 

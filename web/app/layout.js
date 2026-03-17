@@ -3,13 +3,32 @@ import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { getCorePublicConfig } from "../lib/server/core-env";
 
+function resolveMetadataBase(siteBaseUrl) {
+  if (!siteBaseUrl) return undefined;
+  try {
+    return new URL(siteBaseUrl);
+  } catch {
+    return undefined;
+  }
+}
+
 export function generateMetadata() {
-  const { privateCanarySite } = getCorePublicConfig();
+  const config = getCorePublicConfig();
+  const metadataBase = resolveMetadataBase(config.siteBaseUrl);
+  const description = config.privateCanarySite
+    ? `${config.privateCanaryBadgeText}. ${config.privateCanaryTitleText}. ${config.privateCanaryWarningText}. This host is for a separate mainnet rehearsal and is not the official public mint.`
+    : "Core Cats web UI foundation for a transparent, full on-chain pixel cat collection.";
 
   return {
-    title: "Core Cats",
-    description: "Core Cats web UI foundation for a transparent, full on-chain pixel cat collection.",
-    robots: privateCanarySite
+    metadataBase,
+    alternates: metadataBase
+      ? {
+          canonical: "/",
+        }
+      : undefined,
+    title: config.privateCanarySite ? `${config.privateCanaryTitleText} | Core Cats` : "Core Cats",
+    description,
+    robots: config.privateCanarySite
       ? {
           index: false,
           follow: false,
@@ -25,15 +44,16 @@ export function generateMetadata() {
 }
 
 export default function RootLayout({ children }) {
-  const { launchState, publicTeaserSite, privateCanarySite } = getCorePublicConfig();
+  const config = getCorePublicConfig();
+  const { launchState, publicTeaserSite, privateCanarySite } = config;
   const siteNotice =
     launchState === "closed"
       ? "Pre-mainnet teaser. Core Cats is still in final preparation. Mainnet deployment and public mint are not live yet."
       : publicTeaserSite
         ? "Public mint is not open yet. This public site is browse-only while the private mainnet rehearsal canary continues separately."
         : privateCanarySite
-          ? "Private rehearsal canary. Public mint is not open yet."
-        : "";
+          ? `${config.privateCanaryBadgeText} · ${config.privateCanaryTitleText} · ${config.privateCanaryWarningText}. Public mint is not open yet.`
+          : "";
 
   return (
     <html lang="en">

@@ -67,6 +67,44 @@ test("private canary accepts loopback internal backend without external backend 
   assert.deepEqual(result.errors, []);
 });
 
+test("mint surface rejects missing site base url", () => {
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_SITE_SURFACE: "private-canary",
+      NEXT_PUBLIC_SITE_BASE_URL: "",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+    }),
+  );
+  assert.match(result.errors.join("\n"), /NEXT_PUBLIC_SITE_BASE_URL is required/);
+});
+
+test("mint-only canary requires browse origin", () => {
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_SITE_SURFACE: "private-canary",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST: "1",
+      NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL: "",
+    }),
+  );
+  assert.match(result.errors.join("\n"), /NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL is required/);
+});
+
+test("mint-only canary rejects matching browse and site origins", () => {
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_SITE_SURFACE: "private-canary",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST: "1",
+      NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL: "https://teaser.example.com",
+    }),
+  );
+  assert.match(result.errors.join("\n"), /must not match NEXT_PUBLIC_SITE_BASE_URL/);
+});
+
 test("rejects private keys in Vercel env", () => {
   const result = validateProductionEnv(buildBaseEnv({ MINT_SIGNER_PRIVATE_KEY: "deadbeef" }));
   assert.match(result.errors.join("\n"), /MINT_SIGNER_PRIVATE_KEY must not be present/);

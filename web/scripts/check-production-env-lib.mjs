@@ -46,6 +46,11 @@ function normalizedUrl(value) {
   return normalized(value).replace(/\/$/, "");
 }
 
+function normalizedBoolean(value) {
+  const raw = normalized(value).toLowerCase();
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
 function isLoopbackHttpUrl(value) {
   return /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(value);
 }
@@ -71,6 +76,8 @@ export function validateProductionEnv(env) {
   const internalBackendBaseUrl = normalizedUrl(env.CORECATS_INTERNAL_BACKEND_BASE_URL);
   const backendSharedSecret = normalized(env.CORECATS_BACKEND_SHARED_SECRET);
   const publicStatusUrl = normalizedUrl(env.NEXT_PUBLIC_CORECATS_STATUS_URL);
+  const mintOnlyHost = normalizedBoolean(env.NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST || env.CORECATS_MINT_ONLY_HOST);
+  const browseBaseUrl = normalizedUrl(env.NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL || env.CORECATS_BROWSE_BASE_URL);
   const relayerEnabled = normalized(env.CORECATS_RELAYER_ENABLED || "true").toLowerCase();
   const expectedCoreId = normalized(env.COREPASS_EXPECTED_CORE_ID);
 
@@ -92,15 +99,18 @@ export function validateProductionEnv(env) {
   if (explorerBaseUrl !== "https://blockindex.net") {
     errors.push("NEXT_PUBLIC_CORE_EXPLORER_BASE_URL must be https://blockindex.net");
   }
-  if (siteBaseUrl && !siteBaseUrl.startsWith("https://")) {
-    errors.push("NEXT_PUBLIC_SITE_BASE_URL must start with https:// when set");
-  }
 
   const mintSurfaceEnabled = launchState !== "closed" && (siteSurface === "private-canary" || siteSurface === "public-mint");
   const hasInternalBackend = Boolean(internalBackendBaseUrl);
   const requiresExternalBackend = mintSurfaceEnabled && siteSurface === "public-mint";
 
   if (mintSurfaceEnabled) {
+    if (!siteBaseUrl) {
+      errors.push("NEXT_PUBLIC_SITE_BASE_URL is required when the mint surface is enabled");
+    } else if (!siteBaseUrl.startsWith("https://")) {
+      errors.push("NEXT_PUBLIC_SITE_BASE_URL must start with https:// when the mint surface is enabled");
+    }
+
     if (backendMode !== "proxy") {
       errors.push("CORECATS_BACKEND_MODE must be proxy when the mint surface is enabled");
     }
@@ -125,6 +135,9 @@ export function validateProductionEnv(env) {
       errors.push("CORECATS_BACKEND_SHARED_SECRET must not use a placeholder or dev-only value");
     }
   } else {
+    if (siteBaseUrl && !siteBaseUrl.startsWith("https://")) {
+      errors.push("NEXT_PUBLIC_SITE_BASE_URL must start with https:// when set");
+    }
     if (backendMode && backendMode !== "proxy") {
       warnings.push("CORECATS_BACKEND_MODE is set on a browse-only surface; mint routes stay closed there");
     }
@@ -139,6 +152,18 @@ export function validateProductionEnv(env) {
     }
     if (internalBackendBaseUrl && !isLoopbackHttpUrl(internalBackendBaseUrl)) {
       errors.push("CORECATS_INTERNAL_BACKEND_BASE_URL must use a loopback http(s) origin such as http://127.0.0.1:8787");
+    }
+  }
+
+  if (mintOnlyHost) {
+    if (!browseBaseUrl) {
+      errors.push("NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL is required when NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST=1");
+    } else if (!browseBaseUrl.startsWith("https://")) {
+      errors.push("NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL must start with https:// when NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST=1");
+    } else if (siteBaseUrl && browseBaseUrl === siteBaseUrl) {
+      errors.push(
+        "NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL must not match NEXT_PUBLIC_SITE_BASE_URL when NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST=1",
+      );
     }
   }
 
@@ -201,6 +226,8 @@ export function validateProductionEnv(env) {
       backendBaseUrl,
       internalBackendBaseUrl,
       publicStatusUrl,
+      mintOnlyHost,
+      browseBaseUrl,
       relayerEnabled,
       expectedCoreId,
     },

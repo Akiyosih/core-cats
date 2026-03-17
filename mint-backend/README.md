@@ -14,6 +14,11 @@ It is designed to run on the Contabo Linux server alongside the existing Core fu
 
 The public browser should continue to use the Vercel origin. The Vercel app keeps the UI flow, CorePass callback URL, and QR/app-link generation. This backend only handles durable storage and privileged mint operations.
 
+For a separate `private-canary` rehearsal host, keep the same backend contract/secret pairing and move only the web-side origin values:
+1. the canary host should have its own `NEXT_PUBLIC_SITE_BASE_URL`
+2. the official public mint host should keep its own production env
+3. callback separation is therefore handled on the web side, not by changing the backend API shape
+
 ## API shape
 
 Implemented endpoints:
