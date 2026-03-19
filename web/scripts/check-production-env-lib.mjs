@@ -80,6 +80,7 @@ export function validateProductionEnv(env) {
   const browseBaseUrl = normalizedUrl(env.NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL || env.CORECATS_BROWSE_BASE_URL);
   const relayerEnabled = normalized(env.CORECATS_RELAYER_ENABLED || "true").toLowerCase();
   const expectedCoreId = normalized(env.COREPASS_EXPECTED_CORE_ID);
+  const identifyMethod = normalized(env.COREPASS_IDENTIFY_METHOD || "sign").toLowerCase();
 
   if (!VALID_LAUNCH_STATES.has(launchState)) {
     errors.push("NEXT_PUBLIC_LAUNCH_STATE must be one of: closed, canary, public");
@@ -187,6 +188,9 @@ export function validateProductionEnv(env) {
       errors.push("COREPASS_EXPECTED_CORE_ID must be removed before canary/public launch");
     }
   }
+  if (identifyMethod !== "sign" && identifyMethod !== "login") {
+    errors.push("COREPASS_IDENTIFY_METHOD must be either sign or login when set");
+  }
 
   if (launchState === "public" && siteSurface && siteSurface !== "public-mint") {
     errors.push("NEXT_PUBLIC_SITE_SURFACE must be public-mint when NEXT_PUBLIC_LAUNCH_STATE=public");
@@ -230,6 +234,7 @@ export function validateProductionEnv(env) {
       browseBaseUrl,
       relayerEnabled,
       expectedCoreId,
+      identifyMethod,
     },
   };
 }

@@ -52,7 +52,7 @@ The collection and homepage use the static PNG previews for browsing speed, whil
 ## Mint Environment
 
 The mint routes use:
-1. CorePass protocol URIs for wallet-facing `sign` / `tx` requests
+1. CorePass protocol URIs for wallet-facing `sign` / `login` / `tx` requests
 2. local server-side execution of `spark` scripts to preserve the current Core signing path
 3. an in-memory session store for CorePass callback state during local/testnet iteration
 
@@ -79,7 +79,8 @@ Important variables:
 14. `CORECATS_INTERNAL_BACKEND_BASE_URL` (optional loopback backend origin for a self-hosted private canary)
 15. `NEXT_PUBLIC_PRIVATE_CANARY_BADGE_TEXT`, `NEXT_PUBLIC_PRIVATE_CANARY_TITLE_TEXT`, `NEXT_PUBLIC_PRIVATE_CANARY_WARNING_TEXT` (optional UI-only labels for a private canary host)
 16. `NEXT_PUBLIC_PRIVATE_CANARY_ENFORCE_CANONICAL_HOST` / `CORECATS_PRIVATE_CANARY_ENFORCE_CANONICAL_HOST` (optional page-only redirect to the stable private canary alias; API and callback routes stay untouched)
-17. `COREPASS_IDENTIFY_USE_SIGNATURE_RECOVERY` (optional private-canary experiment; if `1`, the server prefers the QR1 signature-recovered signer over the callback `coreID` and stores both values for diagnosis)
+17. `COREPASS_IDENTIFY_METHOD` (optional; `sign` by default, `login` for the QR1 comparison experiment while keeping QR2 and finalize unchanged)
+18. `COREPASS_IDENTIFY_USE_SIGNATURE_RECOVERY` (optional private-canary experiment; if `1` and `COREPASS_IDENTIFY_METHOD=sign`, the server prefers the QR1 signature-recovered signer over the callback `coreID` and stores both values for diagnosis)
 
 When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives public ownership routes from:
 
@@ -132,7 +133,7 @@ For a private canary with outside testers, prefer the same split:
 ## Current Mint Flow
 
 1. Create a CorePass mint session on `/mint`
-2. CorePass signs a random challenge to bind a concrete `coreID`
+2. QR 1 binds a concrete `coreID` using either a CorePass sign request or login request, depending on `COREPASS_IDENTIFY_METHOD`
 3. the server checks wallet state and remaining unreserved supply before `QR 2 of 2` is prepared
 4. CorePass sends the `commitMint(...)` transaction
 5. the server tries relayer-assisted `finalizeMint(minter)`

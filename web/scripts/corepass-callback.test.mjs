@@ -62,3 +62,21 @@ test("parseCallbackPayload unwraps nested urlencoded callback envelopes", () => 
   assert.equal(parsed.coreId, "cbdef0");
   assert.equal(parsed.signature, "0xform");
 });
+
+test("parseCallbackPayload preserves the login protocol session alongside the route session id", () => {
+  const searchParams = new URLSearchParams("sessionId=session-5&step=identify");
+  const parsed = parseCallbackPayload(
+    "https://core-cats.vercel.app/api/mint/corepass/callback/session-5/identify",
+    {
+      sessionId: "session-5",
+      step: "identify",
+      session: "protocol-session-5",
+      coreID: "cb1234",
+    },
+    searchParams,
+  );
+
+  assert.equal(parsed.sessionId, "session-5");
+  assert.equal(parsed.protocolSession, "protocol-session-5");
+  assert.equal(parsed.coreId, "cb1234");
+});

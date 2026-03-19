@@ -240,6 +240,10 @@ function isIdentifySignatureRecoveryEnabled() {
   return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
 }
 
+function normalizeIdentifyMethod(value) {
+  return String(value || "").trim().toLowerCase() === "login" ? "login" : "sign";
+}
+
 function coreAddressPrefixForChainId(chainId) {
   const normalized = Number(chainId || 0);
   if (normalized === 1) return "cb";
@@ -303,6 +307,34 @@ async function buildSignRequest(request, session) {
   session.identify.desktopUri = desktopUri;
   session.identify.mobileUri = mobileUri;
   session.identify.qrDataUrl = await toQrDataUrl(desktopUri);
+}
+
+async function buildLoginRequest(request, session) {
+  const callbackConn = buildCallbackUrl(request, session.id, "identify");
+  const requestedCoreId = normalizeCoreId(session.identify.expectedCoreId);
+  const loginSession = String(session.identify.loginSession || session.id).trim();
+  const desktopUri = buildCorePassUri("login", requestedCoreId, {
+    sess: loginSession,
+    conn: callbackConn,
+    type: corePassReturnType(),
+  });
+  const mobileUri = buildCorePassUri("login", requestedCoreId, {
+    sess: loginSession,
+    conn: callbackConn,
+    type: corePassReturnType(),
+  });
+
+  session.identify.desktopUri = desktopUri;
+  session.identify.mobileUri = mobileUri;
+  session.identify.qrDataUrl = await toQrDataUrl(desktopUri);
+}
+
+async function buildIdentifyRequest(request, session) {
+  if (normalizeIdentifyMethod(session.identify.method) === "login") {
+    await buildLoginRequest(request, session);
+    return;
+  }
+  await buildSignRequest(request, session);
 }
 
 async function buildCommitRequest(request, session) {
@@ -651,6 +683,7 @@ function serializeSession(session) {
         }
       : null,
     identify: {
+      method: normalizeIdentifyMethod(session.identify.method),
       challengeHex: session.identify.challengeHex,
       desktopUri: session.identify.desktopUri,
       mobileUri: session.identify.mobileUri,
@@ -715,7 +748,9 @@ export async function createMintSession(request, { quantity, handoffMode }) {
     updatedAt: nowIso(),
     expiresAtMs: Date.now() + SESSION_TTL_MS,
     identify: {
+      method: normalizeIdentifyMethod(env.corePassIdentifyMethod),
       challengeHex: `0x${crypto.randomBytes(32).toString("hex")}`,
+      loginSession: "",
       desktopUri: "",
       mobileUri: "",
       qrDataUrl: "",
@@ -732,8 +767,9 @@ export async function createMintSession(request, { quantity, handoffMode }) {
     walletState: null,
     history: [],
   };
+  session.identify.loginSession = session.id;
 
-  await buildSignRequest(request, session);
+  await buildIdentifyRequest(request, session);
   appendHistory(session, { step: "identify", event: "session_created" });
   await persistSession(request, session);
   return serializeSession(session);
@@ -784,6 +820,7 @@ export function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
   const fields = collectCallbackSearchParams(searchParams, collectCallbackFields(source));
   return {
     sessionId: pickCallbackField(fields, ["sessionId", "session_id", "session"]),
+    protocolSession: pickCallbackField(fields, ["session"]),
     step: pickCallbackField(fields, ["step"]),
     coreId: normalizeCoreId(
       pickCallbackField(fields, ["coreID", "coreId", "coreid", "core_id", "user", "from", "minter"]),
@@ -834,16 +871,38 @@ export async function applyCorePassCallback(request, payload) {
   const session = await getRequiredSession(request, parsed.sessionId);
 
   if (parsed.step === "identify") {
+    const identifyMethod = normalizeIdentifyMethod(session.identify.method);
+    if (identifyMethod === "login") {
+      const expectedLoginSession = String(session.identify.loginSession || "").trim();
+      const providedLoginSession = String(parsed.protocolSession || "").trim();
+      if (expectedLoginSession && providedLoginSession && providedLoginSession !== expectedLoginSession) {
+        const error = new Error("CorePass login callback session does not match the active mint session");
+        error.code = "session_token_mismatch";
+        session.error = {
+          code: error.code,
+          message: error.message,
+        };
+        session.updatedAt = nowIso();
+        appendHistory(session, {
+          step: "identify",
+          event: "callback_session_mismatch",
+          expectedLoginSession,
+          providedLoginSession,
+        });
+        await persistSession(request, session);
+        throw error;
+      }
+    }
+
     const meta = sessionPublicMeta();
     const callbackCoreId = normalizeCoreId(parsed.coreId);
-    const recoveredCoreId = recoverIdentifyCoreIdFromSignature(
-      session.identify.challengeHex,
-      parsed.signature,
-      meta.chainId,
-    );
+    const recoveredCoreId =
+      identifyMethod === "sign"
+        ? recoverIdentifyCoreIdFromSignature(session.identify.challengeHex, parsed.signature, meta.chainId)
+        : "";
     const resolution = resolveIdentifyCoreIdOutcome(callbackCoreId, session.identify.expectedCoreId, {
       recoveredCoreId,
-      preferRecoveredSignature: isIdentifySignatureRecoveryEnabled(),
+      preferRecoveredSignature: identifyMethod === "sign" && isIdentifySignatureRecoveryEnabled(),
     });
     const resolvedCoreId = resolution.coreId;
 

@@ -59,6 +59,10 @@ function normalizeBackendMode(value) {
   return DEFAULTS.backendMode;
 }
 
+function normalizeIdentifyMethod(value) {
+  return String(value || "").trim().toLowerCase() === "login" ? "login" : "sign";
+}
+
 function normalizeBoolean(value) {
   const normalized = String(value || "").trim().toLowerCase();
   return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
@@ -228,6 +232,7 @@ export function getCoreServerEnv() {
     ).trim(),
     canaryAllowedCoreIds: parseCanaryAllowedCoreIds(process.env.CORECATS_CANARY_ALLOWED_CORE_IDS || ""),
     corePassExpectedCoreId: (process.env.COREPASS_EXPECTED_CORE_ID || "").trim(),
+    corePassIdentifyMethod: normalizeIdentifyMethod(process.env.COREPASS_IDENTIFY_METHOD || ""),
     coreCatsAddress:
       process.env.NEXT_PUBLIC_CORECATS_ADDRESS ||
       process.env.CORECATS_ADDRESS ||

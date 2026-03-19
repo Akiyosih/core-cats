@@ -141,6 +141,11 @@ test("rejects self-only CoreID pinning for canary launch", () => {
   assert.match(result.errors.join("\n"), /COREPASS_EXPECTED_CORE_ID must be removed/);
 });
 
+test("rejects unsupported identify method values", () => {
+  const result = validateProductionEnv(buildBaseEnv({ COREPASS_IDENTIFY_METHOD: "typed-data" }));
+  assert.match(result.errors.join("\n"), /COREPASS_IDENTIFY_METHOD must be either sign or login/);
+});
+
 test("rejects non-public mint surface for public launch", () => {
   const result = validateProductionEnv(
     buildBaseEnv({

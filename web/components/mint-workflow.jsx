@@ -492,6 +492,7 @@ export default function MintWorkflow({ config }) {
   const terminalSession = finalizeConfirmed || authorizationExpired || precheckRejected || currentState === "commit_failed" || currentState === "finalize_expired";
   const activeHandoffMode = normalizeHandoffMode(session?.handoffMode || handoffMode);
   const sameDeviceMode = isSameDeviceMode(activeHandoffMode);
+  const identifyMethod = session?.identify?.method === "login" ? "login" : "sign";
   const restartMintHref = mintUrlFor("", activeHandoffMode);
   const routeSelectionLocked = Boolean(sessionId && !terminalSession);
   const bridgePhase =
@@ -685,8 +686,8 @@ export default function MintWorkflow({ config }) {
       detail: session?.identify?.completedAt
         ? `CoreID confirmed: ${session.identify.coreId}`
         : sameDeviceMode
-          ? "Open QR 1 of 2 in CorePass to sign the short message and bind this session to one wallet."
-          : "Scan QR 1 of 2 to sign the short CorePass message and bind this session to one wallet.",
+          ? "Open QR 1 of 2 in CorePass to confirm and bind this session to one wallet."
+          : "Scan QR 1 of 2 in CorePass to confirm and bind this session to one wallet.",
       tone: session?.identify?.completedAt ? "done" : session ? "active" : "waiting",
     },
     {
@@ -732,7 +733,7 @@ export default function MintWorkflow({ config }) {
               First choose Desktop QR or Same-device mobile. Then pick 1 to 3 cats and start a CorePass mint
               session.
             </p>
-            <p>QR 1 of 2 binds your wallet with a signature.</p>
+            <p>QR 1 of 2 confirms and binds your wallet to this mint session.</p>
             <p>QR 2 of 2 sends the mint transaction.</p>
             <p>Each wallet can mint up to 3 cats.</p>
           </div>
@@ -897,12 +898,24 @@ export default function MintWorkflow({ config }) {
           title="Bind your wallet"
           body={
             <>
-              <p>This step asks CorePass to sign a wallet-binding message. It proves that you control this wallet.</p>
-              <p>No funds are transferred in this step. You are only signing a message.</p>
+              <p>
+                {identifyMethod === "login"
+                  ? "This step asks CorePass to confirm a login-style wallet session. It binds this mint to one wallet before QR 2 is prepared."
+                  : "This step asks CorePass to sign a wallet-binding message. It proves that you control this wallet before QR 2 is prepared."}
+              </p>
+              <p>No funds are transferred in this step.</p>
               <VerificationDetails summary="What this looks like in CorePass">
                 <ul className="plain-list mint-verify-list">
-                  <li>You may see a &quot;Sign transaction&quot; style screen.</li>
-                  <li>The long <span className="mono-wrap">0x...</span> string is the challenge message to sign for wallet binding.</li>
+                  <li>
+                    {identifyMethod === "login"
+                      ? "You may see a login or wallet-confirmation style screen."
+                      : "You may see a sign-message or sign-transaction style screen."}
+                  </li>
+                  {identifyMethod === "sign" ? (
+                    <li>The long <span className="mono-wrap">0x...</span> string is the challenge message used for wallet binding.</li>
+                  ) : (
+                    <li>The session identifier is for wallet binding only. This is still not a token transfer.</li>
+                  )}
                   <li>This is not a token transfer.</li>
                 </ul>
               </VerificationDetails>
