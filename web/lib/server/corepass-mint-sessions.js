@@ -195,7 +195,7 @@ export function buildCorePassUri(action, pathValue, params) {
 }
 
 function buildCorePassLoginUri(pathValue, params) {
-  const base = pathValue ? `corepass:login/${pathValue}` : "corepass:login";
+  const base = pathValue ? `corepass:login/${pathValue}` : "corepass:login/";
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params || {})) {
     if (value === undefined || value === null || value === "") continue;
@@ -321,11 +321,7 @@ async function buildSignRequest(request, session) {
 }
 
 async function buildLoginRequest(request, session) {
-  const callbackConn = buildAbsoluteUrl(
-    request,
-    "/api/mint/corepass/callback",
-    `?sessionId=${encodeURIComponent(session.id)}&step=identify`,
-  );
+  const callbackConn = buildAbsoluteUrl(request, "/api/mint/corepass/callback");
   const requestedCoreId = normalizeCoreId(session.identify.expectedCoreId);
   const loginSession = String(session.identify.loginSession || session.id).trim();
   const desktopUri = buildCorePassLoginUri(requestedCoreId, {
@@ -493,6 +489,25 @@ async function buildFinalizeRequest(request, session) {
 
 function normalizeCoreId(value) {
   return String(value || "").trim();
+}
+
+function normalizeLoginSessionToken(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/-/g, "");
+}
+
+function loginSessionFromMintSessionId(sessionId) {
+  return normalizeLoginSessionToken(sessionId);
+}
+
+function mintSessionIdFromLoginSession(sessionToken) {
+  const normalized = normalizeLoginSessionToken(sessionToken);
+  if (!/^[0-9a-f]{32}$/.test(normalized)) {
+    return "";
+  }
+  return `${normalized.slice(0, 8)}-${normalized.slice(8, 12)}-${normalized.slice(12, 16)}-${normalized.slice(16, 20)}-${normalized.slice(20)}`;
 }
 
 function coreIdsMatch(left, right) {
@@ -782,7 +797,7 @@ export async function createMintSession(request, { quantity, handoffMode }) {
     walletState: null,
     history: [],
   };
-  session.identify.loginSession = session.id;
+  session.identify.loginSession = loginSessionFromMintSessionId(session.id);
 
   await buildIdentifyRequest(request, session);
   appendHistory(session, { step: "identify", event: "session_created" });
@@ -833,9 +848,11 @@ export async function resolveMintSessionHandoffMode(request, sessionId) {
 export function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
   const source = payload && typeof payload === "object" ? payload : {};
   const fields = collectCallbackSearchParams(searchParams, collectCallbackFields(source));
+  const explicitSessionId = pickCallbackField(fields, ["sessionId", "session_id"]);
+  const protocolSession = pickCallbackField(fields, ["session"]);
   return {
-    sessionId: pickCallbackField(fields, ["sessionId", "session_id", "session"]),
-    protocolSession: pickCallbackField(fields, ["session"]),
+    sessionId: explicitSessionId || mintSessionIdFromLoginSession(protocolSession) || protocolSession,
+    protocolSession,
     step: pickCallbackField(fields, ["step"]),
     coreId: normalizeCoreId(
       pickCallbackField(fields, ["coreID", "coreId", "coreid", "core_id", "user", "from", "minter"]),
@@ -888,8 +905,8 @@ export async function applyCorePassCallback(request, payload) {
   if (parsed.step === "identify") {
     const identifyMethod = normalizeIdentifyMethod(session.identify.method);
     if (identifyMethod === "login") {
-      const expectedLoginSession = String(session.identify.loginSession || "").trim();
-      const providedLoginSession = String(parsed.protocolSession || "").trim();
+      const expectedLoginSession = normalizeLoginSessionToken(session.identify.loginSession);
+      const providedLoginSession = normalizeLoginSessionToken(parsed.protocolSession);
       if (expectedLoginSession && providedLoginSession && providedLoginSession !== expectedLoginSession) {
         appendHistory(session, {
           step: "identify",

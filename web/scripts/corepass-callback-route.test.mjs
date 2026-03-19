@@ -121,21 +121,19 @@ test("login identify mode keeps the two-step mint flow while changing only QR1",
       }, async () => {
         const session = await createMintSession(sessionRequest, { quantity: 1, handoffMode: "desktop" });
         assert.equal(session.identify.method, "login");
-        assert.match(session.identify.desktopUri, /^corepass:login\?/);
-        assert.match(session.identify.desktopUri, new RegExp(`sess=${session.sessionId}`));
+        const loginSession = session.sessionId.replaceAll("-", "");
+        assert.match(session.identify.desktopUri, /^corepass:login\/\?/);
+        assert.match(session.identify.desktopUri, new RegExp(`sess=${loginSession}`));
         assert.match(
           session.identify.desktopUri,
-          new RegExp(encodeURIComponent(`/api/mint/corepass/callback?sessionId=${session.sessionId}&step=identify`)),
+          new RegExp(encodeURIComponent("/api/mint/corepass/callback")),
         );
 
-        const callbackRequest = buildRequest(
-          `https://core-cats.vercel.app/api/mint/corepass/callback?sessionId=${session.sessionId}&step=identify`,
-        );
+        const callbackRequest = buildRequest("https://core-cats.vercel.app/api/mint/corepass/callback");
 
         await applyCorePassCallback(callbackRequest, {
-          sessionId: session.sessionId,
           step: "identify",
-          session: session.sessionId,
+          session: loginSession,
           coreID: "cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416",
         });
 

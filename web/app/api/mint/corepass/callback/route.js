@@ -15,9 +15,13 @@ export async function GET(request) {
   }
   const { searchParams } = new URL(request.url);
   const sessionId = String(searchParams.get("sessionId") || "").trim();
+  const step = String(searchParams.get("step") || "").trim() || "identify";
   try {
-    const session = await applyCorePassCallback(request, Object.fromEntries(searchParams.entries()));
-    return redirectToMint(request, sessionId, "", session?.handoffMode || "");
+    const session = await applyCorePassCallback(request, {
+      ...Object.fromEntries(searchParams.entries()),
+      step,
+    });
+    return redirectToMint(request, session?.sessionId || sessionId, "", session?.handoffMode || "");
   } catch (error) {
     const handoffMode = await resolveRedirectHandoffMode(request, sessionId);
     return redirectToMint(request, sessionId, error.code || "callback_failed", handoffMode);
@@ -40,7 +44,10 @@ export async function POST(request) {
   }
   try {
     const body = await readCallbackBody(request);
-    const session = await applyCorePassCallback(request, body);
+    const session = await applyCorePassCallback(request, {
+      ...body,
+      step: String(body?.step || "").trim() || "identify",
+    });
     return Response.json({ ok: true, session });
   } catch (error) {
     const status = error.code === "session_not_found" ? 404 : 400;
