@@ -42,3 +42,4 @@ ignition/deployments/chain-31337
 *.py[cod]
 /mint-backend/data/*.db
 .vercel
+.env*.local
