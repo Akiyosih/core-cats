@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { Wallet, getBytes } from "ethers";
+
 import {
   applyCorePassCallback,
   createMintSession,
@@ -200,6 +202,78 @@ test("identify callback rejects sold-out quantities before QR 2 is prepared", as
         assert.equal(persisted.status, "precheck_rejected");
         assert.equal(persisted.commit, null);
         assert.equal(persisted.walletState?.availableSupply, 1);
+      });
+    },
+  );
+});
+
+test("identify callback can prefer the recovered signer over callback coreID during the canary experiment", async () => {
+  const sessionRequest = buildRequest("https://core-cats.vercel.app/api/mint/corepass/session");
+  const walletB = new Wallet("0x59c6995e998f97a5a0044966f0945382d7f4f0b5fb4d7f112544112d4b6d8f38");
+  const walletBCoreId = "cb68c2c7abcdd3a71cb2b811b7cf817478dbe0f94a17";
+  const walletACoreId = "cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416";
+
+  await withEnv(
+    {
+      NEXT_PUBLIC_SITE_BASE_URL: "https://core-cats.vercel.app",
+      NEXT_PUBLIC_CORE_CHAIN_ID: "1",
+      CORE_RPC_URL: "https://rpc.example.com",
+      CORECATS_BACKEND_MODE: "local",
+      CORECATS_BACKEND_BASE_URL: undefined,
+      CORECATS_INTERNAL_BACKEND_BASE_URL: undefined,
+      CORECATS_BACKEND_SHARED_SECRET: undefined,
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      COREPASS_IDENTIFY_USE_SIGNATURE_RECOVERY: "1",
+    },
+    async () => {
+      await withFetchMock(async (_url, init) => {
+        const payload = JSON.parse(init?.body || "{}");
+        switch (payload.method) {
+          case "xcb_blockNumber":
+            return jsonRpcResponse("0x64");
+          case "xcb_call": {
+            const data = payload?.params?.[0]?.data || "";
+            if (data === "0x1c34eb83") {
+              return jsonRpcResponse(`0x${"0".repeat(62)}64`);
+            }
+            if (data.startsWith("0x5539b96a")) {
+              return jsonRpcResponse(`0x${"0".repeat(64)}`);
+            }
+            if (data.startsWith("0xe64f7f28")) {
+              return jsonRpcResponse(`0x${"0".repeat(64)}`);
+            }
+            if (data.startsWith("0xf622d4c8")) {
+              return jsonRpcResponse(`0x${"0".repeat(64 * 4)}`);
+            }
+            throw new Error(`unexpected xcb_call selector: ${data}`);
+          }
+          default:
+            throw new Error(`unexpected RPC method: ${payload.method}`);
+        }
+      }, async () => {
+        const session = await createMintSession(sessionRequest, { quantity: 1, handoffMode: "desktop" });
+        const callbackRequest = buildRequest(
+          `https://core-cats.vercel.app/api/mint/corepass/callback?sessionId=${session.sessionId}&step=identify`,
+        );
+        const signature = await walletB.signMessage(getBytes(session.identify.challengeHex));
+
+        await applyCorePassCallback(callbackRequest, {
+          sessionId: session.sessionId,
+          step: "identify",
+          coreID: walletACoreId,
+          signature,
+        });
+
+        const persisted = await readMintSession(sessionRequest, session.sessionId, { force: true });
+        assert.equal(persisted.status, "awaiting_commit");
+        assert.equal(persisted.minter, walletBCoreId);
+        assert.equal(persisted.identify.coreId, walletBCoreId);
+        assert.equal(persisted.identify.callbackCoreId, walletACoreId);
+        assert.equal(persisted.identify.recoveredCoreId, walletBCoreId);
+        assert.equal(persisted.identify.resolutionSource, "recovered_signature");
+        assert.ok(persisted.commit?.desktopUri.includes(`corepass:tx/${walletBCoreId}?`));
+        assert.ok(persisted.history.some((entry) => entry.event === "callback_signature_mismatch"));
       });
     },
   );

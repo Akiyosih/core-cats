@@ -79,6 +79,7 @@ Important variables:
 14. `CORECATS_INTERNAL_BACKEND_BASE_URL` (optional loopback backend origin for a self-hosted private canary)
 15. `NEXT_PUBLIC_PRIVATE_CANARY_BADGE_TEXT`, `NEXT_PUBLIC_PRIVATE_CANARY_TITLE_TEXT`, `NEXT_PUBLIC_PRIVATE_CANARY_WARNING_TEXT` (optional UI-only labels for a private canary host)
 16. `NEXT_PUBLIC_PRIVATE_CANARY_ENFORCE_CANONICAL_HOST` / `CORECATS_PRIVATE_CANARY_ENFORCE_CANONICAL_HOST` (optional page-only redirect to the stable private canary alias; API and callback routes stay untouched)
+17. `COREPASS_IDENTIFY_USE_SIGNATURE_RECOVERY` (optional private-canary experiment; if `1`, the server prefers the QR1 signature-recovered signer over the callback `coreID` and stores both values for diagnosis)
 
 When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives public ownership routes from:
 

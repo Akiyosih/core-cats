@@ -1,9 +1,10 @@
 import crypto from "node:crypto";
 
+import { getBytes, verifyMessage } from "ethers";
 import QRCode from "qrcode";
 
 import { encodeCoreCatsCommitMintData, encodeCoreCatsFinalizeMintData } from "./core-calldata.js";
-import { getCorePublicConfig, getCoreServerEnv, getSiteBaseUrlConfigError } from "./core-env.js";
+import { getCorePublicConfig, getCoreServerEnv, getSiteBaseUrlConfigError, normalizeCoreAddressKey } from "./core-env.js";
 import { relayFinalizeMint } from "./core-spark.js";
 import {
   deleteRemoteMintSession,
@@ -19,6 +20,7 @@ const ACTIVE_MINT_SESSION_TTL_MS = Number(process.env.COREPASS_ACTIVE_MINT_SESSI
 const SESSION_READ_CACHE_TTL_MS = Number(process.env.COREPASS_SESSION_READ_CACHE_SECONDS || 15) * 1000;
 const TERMINAL_SESSION_READ_CACHE_TTL_MS = Number(process.env.COREPASS_TERMINAL_SESSION_READ_CACHE_SECONDS || 60 * 60) * 1000;
 const MISSING_SESSION_READ_CACHE_TTL_MS = Number(process.env.COREPASS_MISSING_SESSION_CACHE_SECONDS || 60) * 1000;
+const HEX_40_RE = /^[0-9a-f]{40}$/;
 const store = globalThis.__coreCatsCorePassMintSessions || new Map();
 const sessionReadCache = globalThis.__coreCatsCorePassMintSessionReadCache || new Map();
 
@@ -231,6 +233,56 @@ function normalizeHandoffMode(value) {
   return String(value || "").trim().toLowerCase() === "same-device" ? "same-device" : "desktop";
 }
 
+function isIdentifySignatureRecoveryEnabled() {
+  const normalized = String(process.env.COREPASS_IDENTIFY_USE_SIGNATURE_RECOVERY || "")
+    .trim()
+    .toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
+}
+
+function coreAddressPrefixForChainId(chainId) {
+  const normalized = Number(chainId || 0);
+  if (normalized === 1) return "cb";
+  if (normalized === 3) return "ab";
+  return "ce";
+}
+
+function calculateCoreChecksum(addressHex, prefixHex) {
+  const addrString = `${addressHex}${prefixHex}00`.toUpperCase();
+  let mods = "";
+  for (const character of addrString) {
+    const code = character.charCodeAt(0);
+    mods += code > 64 && code < 91 ? String(code - 55) : character;
+  }
+  const remainder = BigInt(mods) % 97n;
+  const checksum = 98n - remainder;
+  return checksum < 10n ? `0${checksum}` : String(checksum);
+}
+
+export function coreHexAddressToCoreId(value, chainId = 1) {
+  const raw = String(value || "").trim().toLowerCase();
+  const body = raw.startsWith("0x") ? raw.slice(2) : raw;
+  if (!HEX_40_RE.test(body)) {
+    throw new Error(`Unsupported 20-byte signer address format: ${value}`);
+  }
+  const prefix = coreAddressPrefixForChainId(chainId);
+  return `${prefix}${calculateCoreChecksum(body, prefix)}${body}`;
+}
+
+export function recoverIdentifyCoreIdFromSignature(challengeHex, signature, chainId = 1) {
+  const normalizedChallenge = String(challengeHex || "").trim();
+  const normalizedSignature = String(signature || "").trim();
+  if (!normalizedChallenge || !normalizedSignature) {
+    return "";
+  }
+  try {
+    const signer = verifyMessage(getBytes(normalizedChallenge), normalizedSignature);
+    return coreHexAddressToCoreId(signer, chainId);
+  } catch {
+    return "";
+  }
+}
+
 async function buildSignRequest(request, session) {
   const deadline = Math.floor(session.expiresAtMs / 1000);
   const callbackConn = buildCallbackUrl(request, session.id, "identify");
@@ -394,6 +446,19 @@ async function buildFinalizeRequest(request, session) {
 
 function normalizeCoreId(value) {
   return String(value || "").trim();
+}
+
+function coreIdsMatch(left, right) {
+  const normalizedLeft = normalizeCoreId(left);
+  const normalizedRight = normalizeCoreId(right);
+  if (!normalizedLeft || !normalizedRight) {
+    return false;
+  }
+  try {
+    return normalizeCoreAddressKey(normalizedLeft) === normalizeCoreAddressKey(normalizedRight);
+  } catch {
+    return normalizedLeft.toLowerCase() === normalizedRight.toLowerCase();
+  }
 }
 
 function isPlainObject(value) {
@@ -591,6 +656,9 @@ function serializeSession(session) {
       mobileUri: session.identify.mobileUri,
       qrDataUrl: session.identify.qrDataUrl,
       coreId: session.identify.coreId || null,
+      callbackCoreId: session.identify.callbackCoreId || null,
+      recoveredCoreId: session.identify.recoveredCoreId || null,
+      resolutionSource: session.identify.resolutionSource || null,
       completedAt: session.identify.completedAt || null,
     },
     commit: session.commit
@@ -652,6 +720,9 @@ export async function createMintSession(request, { quantity, handoffMode }) {
       mobileUri: "",
       qrDataUrl: "",
       coreId: "",
+      callbackCoreId: "",
+      recoveredCoreId: "",
+      resolutionSource: "",
       expectedCoreId: normalizeCoreId(env.corePassExpectedCoreId),
       completedAt: "",
     },
@@ -725,12 +796,36 @@ export function parseCallbackPayload(requestUrl, payload = {}, searchParams) {
   };
 }
 
-export function resolveIdentifyCoreId(parsedCoreId, expectedCoreId) {
+export function resolveIdentifyCoreIdOutcome(parsedCoreId, expectedCoreId, options = {}) {
   const callbackCoreId = normalizeCoreId(parsedCoreId);
-  if (callbackCoreId) {
-    return callbackCoreId;
+  const recoveredCoreId = normalizeCoreId(options.recoveredCoreId);
+  if (options.preferRecoveredSignature && recoveredCoreId) {
+    return {
+      coreId: recoveredCoreId,
+      source: "recovered_signature",
+    };
   }
-  return normalizeCoreId(expectedCoreId);
+  if (callbackCoreId) {
+    return {
+      coreId: callbackCoreId,
+      source: "callback_coreid",
+    };
+  }
+  const normalizedExpectedCoreId = normalizeCoreId(expectedCoreId);
+  if (normalizedExpectedCoreId) {
+    return {
+      coreId: normalizedExpectedCoreId,
+      source: "expected_coreid",
+    };
+  }
+  return {
+    coreId: "",
+    source: "",
+  };
+}
+
+export function resolveIdentifyCoreId(parsedCoreId, expectedCoreId, options = {}) {
+  return resolveIdentifyCoreIdOutcome(parsedCoreId, expectedCoreId, options).coreId;
 }
 
 export async function applyCorePassCallback(request, payload) {
@@ -739,7 +834,31 @@ export async function applyCorePassCallback(request, payload) {
   const session = await getRequiredSession(request, parsed.sessionId);
 
   if (parsed.step === "identify") {
-    const resolvedCoreId = resolveIdentifyCoreId(parsed.coreId, session.identify.expectedCoreId);
+    const meta = sessionPublicMeta();
+    const callbackCoreId = normalizeCoreId(parsed.coreId);
+    const recoveredCoreId = recoverIdentifyCoreIdFromSignature(
+      session.identify.challengeHex,
+      parsed.signature,
+      meta.chainId,
+    );
+    const resolution = resolveIdentifyCoreIdOutcome(callbackCoreId, session.identify.expectedCoreId, {
+      recoveredCoreId,
+      preferRecoveredSignature: isIdentifySignatureRecoveryEnabled(),
+    });
+    const resolvedCoreId = resolution.coreId;
+
+    session.identify.callbackCoreId = callbackCoreId;
+    session.identify.recoveredCoreId = recoveredCoreId;
+    session.identify.resolutionSource = resolution.source;
+
+    if (callbackCoreId && recoveredCoreId && !coreIdsMatch(callbackCoreId, recoveredCoreId)) {
+      appendHistory(session, {
+        step: "identify",
+        event: "callback_signature_mismatch",
+        callbackCoreId,
+        recoveredCoreId,
+      });
+    }
 
     if (!resolvedCoreId) {
       const error = new Error("CorePass identify callback did not include coreID");
@@ -752,6 +871,8 @@ export async function applyCorePassCallback(request, payload) {
       appendHistory(session, {
         step: "identify",
         event: "callback_missing_coreid",
+        callbackCoreId: callbackCoreId || null,
+        recoveredCoreId: recoveredCoreId || null,
         payloadKeys: parsed.debug.payloadKeys,
         searchParamKeys: parsed.debug.searchParamKeys,
         fieldKeys: parsed.debug.fieldKeys,
@@ -768,8 +889,10 @@ export async function applyCorePassCallback(request, payload) {
       step: "identify",
       event: "completed",
       coreId: resolvedCoreId,
-      callbackCoreId: parsed.coreId || null,
+      callbackCoreId: callbackCoreId || null,
+      recoveredCoreId: recoveredCoreId || null,
       expectedCoreId: session.identify.expectedCoreId || null,
+      resolutionSource: resolution.source || null,
     });
     try {
       session.walletState = await runMintPrecheck(request, {
