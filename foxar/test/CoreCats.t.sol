@@ -17,6 +17,8 @@ contract MockMetadataRenderer {
 }
 
 contract CoreCatsTest is Test {
+    using stdStorage for StdStorage;
+
     CoreCats private _coreCats;
     MockMetadataRenderer private _renderer;
     address private _minter;
@@ -179,6 +181,14 @@ contract CoreCatsTest is Test {
         _coreCats.commitMint(1, bytes32(0));
     }
 
+    function testCommitRevertsWhenCollectionSoldOut() public {
+        stdstore.target(address(_coreCats)).sig("totalSupply()").checked_write(_coreCats.MAX_SUPPLY());
+
+        vm.expectRevert(bytes("sold out"));
+        vm.prank(_minter);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(bytes32(uint256(7)))));
+    }
+
     function testTokenAssignedEventUsesActualDrawIndex() public {
         bytes32 seed = keccak256("seed-draw-index");
 
@@ -221,6 +231,29 @@ contract CoreCatsTest is Test {
         assertEq(custom.name(), "CCATTEST2");
         assertEq(custom.symbol(), "CCATTEST2");
         assertEq(custom.metadataRenderer(), address(_renderer));
+    }
+
+    function testCommitAutoClearsExpiredCommitBeforeRecommit() public {
+        bytes32 seedA = keccak256("seed-auto-clear-a");
+        bytes32 seedB = keccak256("seed-auto-clear-b");
+        bytes32 commitHashB = keccak256(abi.encodePacked(seedB));
+
+        vm.prank(_minter);
+        _coreCats.commitMint(1, keccak256(abi.encodePacked(seedA)));
+
+        vm.roll(block.number + _coreCats.FINALIZE_DELAY_BLOCKS() + _coreCats.FINALIZE_WINDOW_BLOCKS() + 2);
+
+        vm.prank(_minter);
+        _coreCats.commitMint(1, commitHashB);
+
+        (uint8 quantity,, uint64 expiryBlock, bytes32 commitHash) = _coreCats.pendingCommit(_minter);
+
+        assertEq(quantity, 1);
+        assertGt(expiryBlock, block.number);
+        assertEq(commitHash, commitHashB);
+        assertEq(_coreCats.reservedSupply(), 1);
+        assertEq(_coreCats.reservedPerAddress(_minter), 1);
+        assertEq(_coreCats.mintedPerAddress(_minter), 0);
     }
 
     function _commitAndFinalize(address to, address finalizer, uint8 quantity, bytes32 seed) internal {

@@ -61,6 +61,18 @@ contract CoreCatsMetadataRendererTest is Test {
         assertEq(renderer.exposedEscapeJsonString("Line 1\nLine \"2\" \\"), "Line 1\\nLine \\\"2\\\" \\\\");
     }
 
+    function testTokenURIRevertsOutsideSupplyRange() public {
+        CoreCatsOnchainData data = new CoreCatsOnchainData();
+        CoreCatsMetadataRenderer renderer =
+            new CoreCatsMetadataRenderer(address(data), "CCATTEST2", "CCATTEST2 renderer boundary test.", true);
+
+        vm.expectRevert(bytes("token out of range"));
+        renderer.tokenURI(0);
+
+        vm.expectRevert(bytes("token out of range"));
+        renderer.tokenURI(1001);
+    }
+
     function _sameString(string memory a, string memory b) internal pure returns (bool) {
         return keccak256(bytes(a)) == keccak256(bytes(b));
     }
