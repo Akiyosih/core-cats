@@ -194,6 +194,17 @@ export function buildCorePassUri(action, pathValue, params) {
   return suffix ? `${base}?${suffix}` : base;
 }
 
+function buildCorePassLoginUri(pathValue, params) {
+  const base = pathValue ? `corepass:login/${pathValue}` : "corepass:login";
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params || {})) {
+    if (value === undefined || value === null || value === "") continue;
+    search.set(key, String(value));
+  }
+  const suffix = search.toString();
+  return suffix ? `${base}?${suffix}` : base;
+}
+
 async function toQrDataUrl(value) {
   return QRCode.toDataURL(value, {
     width: 320,
@@ -310,15 +321,19 @@ async function buildSignRequest(request, session) {
 }
 
 async function buildLoginRequest(request, session) {
-  const callbackConn = buildCallbackUrl(request, session.id, "identify");
+  const callbackConn = buildAbsoluteUrl(
+    request,
+    "/api/mint/corepass/callback",
+    `?sessionId=${encodeURIComponent(session.id)}&step=identify`,
+  );
   const requestedCoreId = normalizeCoreId(session.identify.expectedCoreId);
   const loginSession = String(session.identify.loginSession || session.id).trim();
-  const desktopUri = buildCorePassUri("login", requestedCoreId, {
+  const desktopUri = buildCorePassLoginUri(requestedCoreId, {
     sess: loginSession,
     conn: callbackConn,
     type: corePassReturnType(),
   });
-  const mobileUri = buildCorePassUri("login", requestedCoreId, {
+  const mobileUri = buildCorePassLoginUri(requestedCoreId, {
     sess: loginSession,
     conn: callbackConn,
     type: corePassReturnType(),
@@ -876,21 +891,12 @@ export async function applyCorePassCallback(request, payload) {
       const expectedLoginSession = String(session.identify.loginSession || "").trim();
       const providedLoginSession = String(parsed.protocolSession || "").trim();
       if (expectedLoginSession && providedLoginSession && providedLoginSession !== expectedLoginSession) {
-        const error = new Error("CorePass login callback session does not match the active mint session");
-        error.code = "session_token_mismatch";
-        session.error = {
-          code: error.code,
-          message: error.message,
-        };
-        session.updatedAt = nowIso();
         appendHistory(session, {
           step: "identify",
           event: "callback_session_mismatch",
           expectedLoginSession,
           providedLoginSession,
         });
-        await persistSession(request, session);
-        throw error;
       }
     }
 

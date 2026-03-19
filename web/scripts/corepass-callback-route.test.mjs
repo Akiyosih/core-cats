@@ -121,8 +121,12 @@ test("login identify mode keeps the two-step mint flow while changing only QR1",
       }, async () => {
         const session = await createMintSession(sessionRequest, { quantity: 1, handoffMode: "desktop" });
         assert.equal(session.identify.method, "login");
-        assert.match(session.identify.desktopUri, /^corepass:login\//);
+        assert.match(session.identify.desktopUri, /^corepass:login\?/);
         assert.match(session.identify.desktopUri, new RegExp(`sess=${session.sessionId}`));
+        assert.match(
+          session.identify.desktopUri,
+          new RegExp(encodeURIComponent(`/api/mint/corepass/callback?sessionId=${session.sessionId}&step=identify`)),
+        );
 
         const callbackRequest = buildRequest(
           `https://core-cats.vercel.app/api/mint/corepass/callback?sessionId=${session.sessionId}&step=identify`,
@@ -144,7 +148,7 @@ test("login identify mode keeps the two-step mint flow while changing only QR1",
   );
 });
 
-test("login identify mode rejects callbacks whose protocol session does not match the mint session", async () => {
+test("login identify mode records protocol-session mismatches but still binds the route-addressed mint session", async () => {
   const sessionRequest = buildRequest("https://core-cats.vercel.app/api/mint/corepass/session");
 
   await withEnv(
@@ -160,25 +164,48 @@ test("login identify mode rejects callbacks whose protocol session does not matc
       CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
     },
     async () => {
-      const session = await createMintSession(sessionRequest, { quantity: 1, handoffMode: "desktop" });
-      const callbackRequest = buildRequest(
-        `https://core-cats.vercel.app/api/mint/corepass/callback?sessionId=${session.sessionId}&step=identify`,
-      );
+      await withFetchMock(async (_url, init) => {
+        const payload = JSON.parse(init?.body || "{}");
+        switch (payload.method) {
+          case "xcb_blockNumber":
+            return jsonRpcResponse("0x64");
+          case "xcb_call": {
+            const data = payload?.params?.[0]?.data || "";
+            if (data === "0x1c34eb83") {
+              return jsonRpcResponse(`0x${"0".repeat(62)}64`);
+            }
+            if (data.startsWith("0x5539b96a")) {
+              return jsonRpcResponse(`0x${"0".repeat(64)}`);
+            }
+            if (data.startsWith("0xe64f7f28")) {
+              return jsonRpcResponse(`0x${"0".repeat(64)}`);
+            }
+            if (data.startsWith("0xf622d4c8")) {
+              return jsonRpcResponse(`0x${"0".repeat(64 * 4)}`);
+            }
+            throw new Error(`unexpected xcb_call selector: ${data}`);
+          }
+          default:
+            throw new Error(`unexpected RPC method: ${payload.method}`);
+        }
+      }, async () => {
+        const session = await createMintSession(sessionRequest, { quantity: 1, handoffMode: "desktop" });
+        const callbackRequest = buildRequest(
+          `https://core-cats.vercel.app/api/mint/corepass/callback?sessionId=${session.sessionId}&step=identify`,
+        );
 
-      await assert.rejects(
-        () =>
-          applyCorePassCallback(callbackRequest, {
-            sessionId: session.sessionId,
-            step: "identify",
-            session: "wrong-session-token",
-            coreID: "cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416",
-          }),
-        (error) => error?.code === "session_token_mismatch",
-      );
+        await applyCorePassCallback(callbackRequest, {
+          sessionId: session.sessionId,
+          step: "identify",
+          session: "wrong-session-token",
+          coreID: "cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416",
+        });
 
-      const persisted = await readMintSession(sessionRequest, session.sessionId, { force: true });
-      assert.equal(persisted.status, "awaiting_identity");
-      assert.equal(persisted.error?.code, "session_token_mismatch");
+        const persisted = await readMintSession(sessionRequest, session.sessionId, { force: true });
+        assert.equal(persisted.status, "awaiting_commit");
+        assert.equal(persisted.error, null);
+        assert.ok(persisted.history.some((entry) => entry.event === "callback_session_mismatch"));
+      });
     },
   );
 });
