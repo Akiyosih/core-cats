@@ -128,13 +128,12 @@ test("GET callback acknowledges precheck rejections without redirecting into a b
           ),
         );
 
-        assert.equal(response.status, 200);
+        assert.equal(response.status, 204);
         assert.equal(response.headers.get("location"), null);
         assert.equal(response.headers.get("cache-control"), "no-store");
-        assert.equal(response.headers.get("content-type"), "text/plain; charset=utf-8");
         assert.equal(response.headers.get("x-corecats-session-id"), session.sessionId);
         assert.equal(response.headers.get("x-corecats-callback-error"), "wallet_limit_reached");
-        assert.match(await response.text(), /up to 3 cats/i);
+        assert.equal(await response.text(), "");
 
         const persisted = await readMintSession(sessionRequest, session.sessionId, { force: true });
         assert.equal(persisted.status, "precheck_rejected");
