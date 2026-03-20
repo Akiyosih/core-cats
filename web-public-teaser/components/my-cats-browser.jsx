@@ -23,6 +23,8 @@ function buildOwnerLookupUrl(baseUrl, owner) {
 export default function MyCatsBrowser({
   collection,
   coreCatsAddress,
+  initialCoreCatsAddress = "",
+  initialCoreCatsContractQr = "",
   launchState,
   statusSnapshotUrl,
 }) {
@@ -40,14 +42,16 @@ export default function MyCatsBrowser({
   const { snapshot: publicStatus, loading: contractLoading, error: contractError } =
     usePublicStatusSnapshot(statusSnapshotUrl);
   const { ownerLookup, loading, error } = usePublicOwnerLookup(ownerLookupUrl);
-  const [coreCatsContractQr, setCoreCatsContractQr] = useState("");
+  const normalizedInitialCoreCatsAddress = normalizeOwnerInput(initialCoreCatsAddress);
+  const [coreCatsContractQr, setCoreCatsContractQr] = useState(initialCoreCatsContractQr);
+  const [qrAddress, setQrAddress] = useState(normalizedInitialCoreCatsAddress);
   const isCanary = launchState === "canary";
   const liveCoreCatsAddress = useMemo(
     () => normalizeOwnerInput(publicStatus?.coreCatsAddress),
     [publicStatus?.coreCatsAddress],
   );
   const fallbackCoreCatsAddress = normalizeOwnerInput(coreCatsAddress);
-  const displayCoreCatsAddress = liveCoreCatsAddress || fallbackCoreCatsAddress;
+  const displayCoreCatsAddress = liveCoreCatsAddress || normalizedInitialCoreCatsAddress || fallbackCoreCatsAddress;
 
   useEffect(() => {
     setOwnerQuery(initialOwner);
@@ -60,6 +64,11 @@ export default function MyCatsBrowser({
     async function buildContractQr() {
       if (!displayCoreCatsAddress) {
         setCoreCatsContractQr("");
+        setQrAddress("");
+        return;
+      }
+
+      if (coreCatsContractQr && qrAddress === displayCoreCatsAddress) {
         return;
       }
 
@@ -75,10 +84,12 @@ export default function MyCatsBrowser({
         });
         if (!cancelled) {
           setCoreCatsContractQr(nextQr);
+          setQrAddress(displayCoreCatsAddress);
         }
       } catch {
         if (!cancelled) {
           setCoreCatsContractQr("");
+          setQrAddress("");
         }
       }
     }
@@ -87,7 +98,7 @@ export default function MyCatsBrowser({
     return () => {
       cancelled = true;
     };
-  }, [displayCoreCatsAddress]);
+  }, [coreCatsContractQr, displayCoreCatsAddress, qrAddress]);
 
   const ownerStatus = useMemo(() => {
     if (!validOwner || !ownerLookup) return null;

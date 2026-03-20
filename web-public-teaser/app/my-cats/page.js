@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import QRCode from "qrcode";
 
 import MyCatsBrowser from "../../components/my-cats-browser.jsx";
 import { getCollection } from "../../../shared/public-site/lib/viewer-data.js";
@@ -6,6 +7,17 @@ import { PUBLIC_TEASER_CONTRACT_SURFACE } from "../../lib/public-teaser-contract
 import { getPublicRuntimeConfig } from "../../lib/public-runtime-config.js";
 
 export const dynamic = "force-static";
+
+async function buildCorePassContractQr(address) {
+  const normalized = String(address || "").trim();
+  if (!normalized) return "";
+  return QRCode.toDataURL(normalized, {
+    errorCorrectionLevel: "M",
+    margin: 1,
+    scale: 8,
+    color: { dark: "#111111", light: "#ffffff" },
+  });
+}
 
 export default async function MyCatsPage() {
   const { launchState, statusSnapshotUrl, coreCatsAddress } = {
@@ -38,11 +50,15 @@ export default async function MyCatsPage() {
   }
 
   const collection = await getCollection(launchState !== "public");
+  const initialCoreCatsAddress = String(coreCatsAddress || "").trim();
+  const initialCoreCatsContractQr = await buildCorePassContractQr(initialCoreCatsAddress);
   return (
     <Suspense fallback={null}>
       <MyCatsBrowser
         collection={collection}
-        coreCatsAddress={statusSnapshotUrl ? "" : coreCatsAddress}
+        coreCatsAddress={coreCatsAddress}
+        initialCoreCatsAddress={initialCoreCatsAddress}
+        initialCoreCatsContractQr={initialCoreCatsContractQr}
         launchState={launchState}
         statusSnapshotUrl={statusSnapshotUrl}
       />

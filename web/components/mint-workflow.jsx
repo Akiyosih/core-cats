@@ -43,6 +43,11 @@ function scrollToSection(ref) {
   ref.current.scrollIntoView({ behavior: preferredScrollBehavior(), block: "start" });
 }
 
+function isDocumentHidden() {
+  if (typeof document === "undefined") return false;
+  return document.visibilityState === "hidden";
+}
+
 function explorerTxUrl(explorerBaseUrl, txHash) {
   if (!explorerBaseUrl || !txHash) return null;
   return `${explorerBaseUrl.replace(/\/$/, "")}/tx/${txHash}`;
@@ -218,9 +223,10 @@ function MintApprovalAction({
   );
 }
 
-function VerificationDetails({ children, summary = "How to verify this yourself" }) {
+function VerificationDetails({ children, summary = "How to verify this yourself", className = "" }) {
+  const detailsClassName = ["mint-verify-details", className].filter(Boolean).join(" ");
   return (
-    <details className="mint-verify-details">
+    <details className={detailsClassName}>
       <summary>{summary}</summary>
       <div className="mint-verify-body">{children}</div>
     </details>
@@ -604,6 +610,7 @@ export default function MintWorkflow({ config }) {
   useEffect(() => {
     if (!shouldAutoRefresh) return;
     const timer = setInterval(() => {
+      if (isDocumentHidden()) return;
       refreshSession(sessionId);
     }, autoRefreshMs);
     return () => clearInterval(timer);
@@ -612,16 +619,17 @@ export default function MintWorkflow({ config }) {
   useEffect(() => {
     if (!shouldAutoRefreshBridge) return;
     const timer = setInterval(() => {
+      if (isDocumentHidden()) return;
       refreshSession(sessionId, { force: true });
     }, bridgeAutoRefreshMs);
     return () => clearInterval(timer);
   }, [bridgeAutoRefreshMs, sessionId, shouldAutoRefreshBridge]);
 
   useEffect(() => {
-    if (!sessionId || !sameDeviceMode || terminalSession) return;
+    if (!sessionId || terminalSession) return;
 
     function refreshOnReturn() {
-      if (document.visibilityState === "hidden") return;
+      if (isDocumentHidden()) return;
       const now = Date.now();
       if (now - lastReturnRefreshAtRef.current < 3_000) return;
       lastReturnRefreshAtRef.current = now;
@@ -636,7 +644,7 @@ export default function MintWorkflow({ config }) {
       window.removeEventListener("pageshow", refreshOnReturn);
       document.removeEventListener("visibilitychange", refreshOnReturn);
     };
-  }, [sameDeviceMode, sessionId, terminalSession]);
+  }, [sessionId, terminalSession]);
 
   useEffect(() => {
     if (!displayedError) return;
@@ -737,7 +745,7 @@ export default function MintWorkflow({ config }) {
             <p>QR 2 of 2 sends the mint transaction.</p>
             <p>Each wallet can mint up to 3 cats.</p>
           </div>
-        <VerificationDetails summary="If you use multiple CorePass accounts">
+        <VerificationDetails summary="If you use multiple CorePass accounts" className="mint-verify-details--notice">
           <p>
               If you created multiple CorePass accounts from the same seed phrase and want to mint with an account
               other than the default one, use the QR 1 scanner inside the CorePass app.
