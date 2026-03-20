@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   DEFAULT_DEVIN_CORECATS_ADDRESS,
   getCorePublicConfig,
   looksLikePlaceholder,
 } from "../../lib/server/core-env";
+import { buildBrowseHref, hasBrowseOrigin } from "../../lib/site-surface-links.js";
 
 function normalize(value) {
   return String(value || "").trim().toLowerCase();
@@ -70,6 +72,9 @@ function SectionHeading({ eyebrow, title, children }) {
 
 export default function TransparencyPage() {
   const config = getCorePublicConfig();
+  if (hasBrowseOrigin(config)) {
+    redirect(buildBrowseHref(config, "/transparency"));
+  }
   const networkName = normalize(config.networkName);
   const contractAddress = String(config.coreCatsAddress || "").trim();
   const rendererAddress = String(config.coreCatsRendererAddress || "").trim();
