@@ -61,7 +61,7 @@ test("tx URI keeps the provided coreId path", () => {
   assert.match(uri, /type=app-link/);
 });
 
-test("mint session uses callback for both desktop QR and same-device identify", async () => {
+test("desktop mint sessions keep callback handoff for QR identify", async () => {
   const request = new Request("https://core-cats.vercel.app/api/mint/corepass/session", {
     headers: {
       host: "core-cats.vercel.app",
@@ -96,7 +96,8 @@ test("mint session stores same-device handoff mode when requested", async () => 
     const session = await createMintSession(request, { quantity: 1, handoffMode: "same-device" });
 
     assert.equal(session.handoffMode, "same-device");
-    assert.match(session.identify.mobileUri, /type=callback/);
+    assert.match(session.identify.desktopUri, /type=callback/);
+    assert.match(session.identify.mobileUri, /type=app-link/);
   });
 });
 

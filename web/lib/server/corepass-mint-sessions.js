@@ -232,12 +232,12 @@ function buildCallbackUrl(request, sessionId, step) {
   return buildAbsoluteUrl(request, pathname);
 }
 
-function corePassReturnType() {
-  // Keep approvals on the native CorePass confirmation surface instead of
-  // reopening `/mint` inside a CorePass webview. Same-device users can return
-  // to the browser tab manually after approval, which matches the established
-  // Ping same-device login pattern more closely than an in-wallet browser hop.
-  return "callback";
+function corePassReturnType(handoffMode) {
+  // CorePass behaves better when desktop QR scans stay callback-based, while
+  // same-device launches return through the calling browser/app. This keeps
+  // the QR scanner path stable without forcing the mobile handoff back into an
+  // in-wallet browser hop.
+  return normalizeHandoffMode(handoffMode) === "same-device" ? "app-link" : "callback";
 }
 
 function normalizeHandoffMode(value) {
@@ -306,13 +306,13 @@ async function buildSignRequest(request, session) {
     data: session.identify.challengeHex,
     conn: callbackConn,
     dl: deadline,
-    type: corePassReturnType(),
+    type: corePassReturnType("desktop"),
   });
   const mobileUri = buildCorePassUri("sign", requestedCoreId, {
     data: session.identify.challengeHex,
     conn: callbackConn,
     dl: deadline,
-    type: corePassReturnType(),
+    type: corePassReturnType(session.handoffMode),
   });
 
   session.identify.desktopUri = desktopUri;
@@ -327,12 +327,12 @@ async function buildLoginRequest(request, session) {
   const desktopUri = buildCorePassLoginUri(requestedCoreId, {
     sess: loginSession,
     conn: callbackConn,
-    type: corePassReturnType(),
+    type: corePassReturnType("desktop"),
   });
   const mobileUri = buildCorePassLoginUri(requestedCoreId, {
     sess: loginSession,
     conn: callbackConn,
-    type: corePassReturnType(),
+    type: corePassReturnType(session.handoffMode),
   });
 
   session.identify.desktopUri = desktopUri;
@@ -362,14 +362,14 @@ async function buildCommitRequest(request, session) {
     to: meta.coreCatsAddress,
     data,
     conn: callbackConn,
-    type: corePassReturnType(),
+    type: corePassReturnType("desktop"),
   });
   const mobileUri = buildCorePassUri("tx", session.minter, {
     val: 0,
     to: meta.coreCatsAddress,
     data,
     conn: callbackConn,
-    type: corePassReturnType(),
+    type: corePassReturnType(session.handoffMode),
   });
 
   session.commit = {
@@ -464,7 +464,7 @@ async function buildFinalizeRequest(request, session) {
     data,
     conn: callbackConn,
     dl: deadline,
-    type: corePassReturnType(),
+    type: corePassReturnType("desktop"),
   });
   const mobileUri = buildCorePassUri("tx", session.minter, {
     val: 0,
@@ -472,7 +472,7 @@ async function buildFinalizeRequest(request, session) {
     data,
     conn: callbackConn,
     dl: deadline,
-    type: corePassReturnType(),
+    type: corePassReturnType(session.handoffMode),
   });
 
   session.finalize = {
