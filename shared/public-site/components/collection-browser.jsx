@@ -290,7 +290,7 @@ function Pagination({ page, totalPages, searchParams, teaserEnabled }) {
   );
 }
 
-function MintStateBlock({ searchParams, activeValue, counts, teaserEnabled }) {
+function MintStateBlock({ searchParams, activeValue, counts, teaserEnabled, snapshotReady }) {
   return (
     <section className="filter-block">
       <h2>Mint Status</h2>
@@ -300,14 +300,14 @@ function MintStateBlock({ searchParams, activeValue, counts, teaserEnabled }) {
             mint_state: activeValue === option.id ? null : option.id,
             page: null,
           }, teaserEnabled);
-          const count = counts[option.id] || 0;
+          const count = snapshotReady ? (counts[option.id] || 0) : "…";
 
           return (
             <FilterChip
               key={`mint-${option.id}`}
               href={href}
               active={activeValue === option.id}
-              empty={count === 0}
+              empty={snapshotReady ? count === 0 : false}
               label={option.label}
               count={count}
             />
@@ -426,8 +426,14 @@ export default function CollectionBrowser({ collection, filtersDoc, teaserEnable
             contextualValues={contextualFilters.collar.values}
             teaserEnabled={teaserEnabled}
           />
-          {statusSnapshot ? (
-            <MintStateBlock searchParams={params} activeValue={mintState || null} counts={mintStateCounts} teaserEnabled={teaserEnabled} />
+          {statusSnapshotUrl ? (
+            <MintStateBlock
+              searchParams={params}
+              activeValue={mintState || null}
+              counts={mintStateCounts}
+              teaserEnabled={teaserEnabled}
+              snapshotReady={Boolean(statusSnapshot)}
+            />
           ) : null}
           <FilterBlock title="Tier" filterKey="rarity_tier" values={contextualFilters.rarity_tier.values} searchParams={params} activeValue={activeFilters.rarity_tier} teaserEnabled={teaserEnabled} />
           <FilterBlock title="Special Trait" filterKey="rarity_type" values={contextualFilters.rarity_type.values} searchParams={params} activeValue={activeFilters.rarity_type} teaserEnabled={teaserEnabled} />
@@ -448,7 +454,7 @@ export default function CollectionBrowser({ collection, filtersDoc, teaserEnable
         {waitingForMintStatus ? (
           <article className="copy-card my-cats-card">
             <h2>Loading live mint status...</h2>
-            <p>Minted and unminted filters appear after the latest public snapshot loads.</p>
+            <p>Minted and unminted results will update as soon as the latest public snapshot loads.</p>
           </article>
         ) : (
           <>

@@ -8,6 +8,10 @@ const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";
 const HANDOFF_DESKTOP = "desktop";
 const HANDOFF_SAME_DEVICE = "same-device";
 const HANDOFF_MODE_STORAGE_KEY = "corecats.mint.handoffMode";
+const SESSION_BROADCAST_CHANNEL = "corecats.mint.session.v1";
+const POLLING_LEADER_STORAGE_PREFIX = "corecats.mint.pollLeader.";
+const POLLING_LEADER_TTL_MS = 20_000;
+const POLLING_LEADER_HEARTBEAT_MS = 8_000;
 
 function normalizeHandoffMode(value) {
   return String(value || "").trim().toLowerCase() === HANDOFF_SAME_DEVICE ? HANDOFF_SAME_DEVICE : HANDOFF_DESKTOP;
@@ -30,6 +34,39 @@ function writeStoredHandoffMode(value) {
   if (typeof window === "undefined") return;
   try {
     window.sessionStorage.setItem(HANDOFF_MODE_STORAGE_KEY, normalizeHandoffMode(value));
+  } catch {}
+}
+
+function createClientTabId() {
+  if (typeof globalThis.crypto?.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
+  }
+  return `tab-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function pollLeaderStorageKey(sessionId) {
+  return `${POLLING_LEADER_STORAGE_PREFIX}${sessionId}`;
+}
+
+function readPollingLeader(key) {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed.owner !== "string" || typeof parsed.expiresAt !== "number") {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writePollingLeader(key, payload) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(payload));
   } catch {}
 }
 
@@ -330,6 +367,7 @@ export default function MintWorkflow({ config }) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isPollingLeader, setIsPollingLeader] = useState(true);
   const [error, setError] = useState("");
   const issueRef = useRef(null);
   const step1Ref = useRef(null);
@@ -338,6 +376,8 @@ export default function MintWorkflow({ config }) {
   const successRef = useRef(null);
   const lastErrorScrollKeyRef = useRef("");
   const lastReturnRefreshAtRef = useRef(0);
+  const tabIdRef = useRef(createClientTabId());
+  const sessionBroadcastRef = useRef(null);
   const scrollMarksRef = useRef({
     sessionId: "",
     step1: false,
@@ -391,6 +431,24 @@ export default function MintWorkflow({ config }) {
   }, [handoffMode]);
 
   useEffect(() => {
+    if (typeof window === "undefined" || typeof window.BroadcastChannel !== "function") return undefined;
+
+    const channel = new window.BroadcastChannel(SESSION_BROADCAST_CHANNEL);
+    sessionBroadcastRef.current = channel;
+    channel.onmessage = (event) => {
+      const payload = event.data;
+      if (!payload || payload.type !== "session:update" || payload.tabId === tabIdRef.current) return;
+      if (!sessionId || payload.sessionId !== sessionId || !payload.session) return;
+      setSession(payload.session);
+      setError(payload.session.error?.message || "");
+    };
+    return () => {
+      channel.close();
+      sessionBroadcastRef.current = null;
+    };
+  }, [sessionId]);
+
+  useEffect(() => {
     scrollMarksRef.current = {
       sessionId,
       step1: false,
@@ -414,6 +472,12 @@ export default function MintWorkflow({ config }) {
       const payload = await getJson(sessionUrl.toString());
       setSession(payload);
       setError(payload.error?.message || "");
+      sessionBroadcastRef.current?.postMessage({
+        type: "session:update",
+        sessionId: payload.sessionId || nextSessionId,
+        session: payload,
+        tabId: tabIdRef.current,
+      });
     } catch (refreshError) {
       if (refreshError.code === "session_not_found") {
         if (session?.finalize?.confirmedAt) {
@@ -517,7 +581,15 @@ export default function MintWorkflow({ config }) {
       : "";
   const shouldAutoRefreshBridge = Boolean(bridgePhase);
   const bridgeAutoRefreshMs =
-    bridgePhase === "identity_fast" ? 5_000 : bridgePhase === "identity_slow" || bridgePhase === "commit" ? 15_000 : 0;
+    bridgePhase === "identity_fast"
+      ? sameDeviceMode
+        ? 10_000
+        : 5_000
+      : bridgePhase === "identity_slow" || bridgePhase === "commit"
+        ? sameDeviceMode
+          ? 20_000
+          : 15_000
+        : 0;
   const shouldAutoRefresh = Boolean(sessionId && !terminalSession && commitSubmitted);
   const autoRefreshMs = session?.finalize?.stuck ? 120_000 : 60_000;
   let phaseCopy = "Session not started.";
@@ -608,22 +680,91 @@ export default function MintWorkflow({ config }) {
   const publishedContractAddress = session?.coreCatsAddress || config.coreCatsAddress;
 
   useEffect(() => {
-    if (!shouldAutoRefresh) return;
+    if (typeof window === "undefined" || !sessionId || terminalSession) {
+      setIsPollingLeader(true);
+      return undefined;
+    }
+
+    const storageKey = pollLeaderStorageKey(sessionId);
+
+    function releaseLeadership() {
+      const current = readPollingLeader(storageKey);
+      if (current?.owner === tabIdRef.current) {
+        try {
+          window.localStorage.removeItem(storageKey);
+        } catch {}
+      }
+      setIsPollingLeader(false);
+    }
+
+    function claimLeadership(force = false) {
+      if (isDocumentHidden()) {
+        releaseLeadership();
+        return;
+      }
+
+      const now = Date.now();
+      const current = readPollingLeader(storageKey);
+      if (force || !current || current.expiresAt <= now || current.owner === tabIdRef.current) {
+        writePollingLeader(storageKey, {
+          owner: tabIdRef.current,
+          expiresAt: now + POLLING_LEADER_TTL_MS,
+        });
+        setIsPollingLeader(true);
+        return;
+      }
+      setIsPollingLeader(false);
+    }
+
+    function handleStorage(event) {
+      if (event.key !== storageKey) return;
+      claimLeadership(false);
+    }
+
+    function handleVisibilityChange() {
+      claimLeadership(true);
+    }
+
+    function handleBeforeUnload() {
+      releaseLeadership();
+    }
+
+    claimLeadership(true);
+    const heartbeat = window.setInterval(() => claimLeadership(false), POLLING_LEADER_HEARTBEAT_MS);
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("focus", handleVisibilityChange);
+    window.addEventListener("pageshow", handleVisibilityChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(heartbeat);
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("focus", handleVisibilityChange);
+      window.removeEventListener("pageshow", handleVisibilityChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      releaseLeadership();
+    };
+  }, [sessionId, terminalSession]);
+
+  useEffect(() => {
+    if (!shouldAutoRefresh || !isPollingLeader) return;
     const timer = setInterval(() => {
       if (isDocumentHidden()) return;
       refreshSession(sessionId);
     }, autoRefreshMs);
     return () => clearInterval(timer);
-  }, [autoRefreshMs, sessionId, shouldAutoRefresh]);
+  }, [autoRefreshMs, isPollingLeader, sessionId, shouldAutoRefresh]);
 
   useEffect(() => {
-    if (!shouldAutoRefreshBridge) return;
+    if (!shouldAutoRefreshBridge || !isPollingLeader) return;
     const timer = setInterval(() => {
       if (isDocumentHidden()) return;
       refreshSession(sessionId, { force: true });
     }, bridgeAutoRefreshMs);
     return () => clearInterval(timer);
-  }, [bridgeAutoRefreshMs, sessionId, shouldAutoRefreshBridge]);
+  }, [bridgeAutoRefreshMs, isPollingLeader, sessionId, shouldAutoRefreshBridge]);
 
   useEffect(() => {
     if (!sessionId || terminalSession) return;
@@ -745,7 +886,7 @@ export default function MintWorkflow({ config }) {
             <p>QR 2 of 2 sends the mint transaction.</p>
             <p>Each wallet can mint up to 3 cats.</p>
           </div>
-        <VerificationDetails summary="If you use multiple CorePass accounts" className="mint-verify-details--notice">
+        <VerificationDetails summary="If you use multiple CorePass accounts">
           <p>
               If you created multiple CorePass accounts from the same seed phrase and want to mint with an account
               other than the default one, use the QR 1 scanner inside the CorePass app.
