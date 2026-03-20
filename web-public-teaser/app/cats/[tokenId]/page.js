@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 
 import CatDetailPageContent, {
   generateCatDetailStaticParams,
-} from "../../../../web/components/public-pages/cat-detail-page-content.jsx";
+} from "../../../../shared/public-site/components/public-pages/cat-detail-page-content.jsx";
 import { PUBLIC_TEASER_CONTRACT_SURFACE } from "../../../lib/public-teaser-contract-surface.js";
+import { getPublicRuntimeConfig } from "../../../lib/public-runtime-config.js";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -20,8 +21,13 @@ export default async function CatDetailPage({ params }) {
     notFound();
   }
 
+  const config = {
+    ...getPublicRuntimeConfig(),
+    ...PUBLIC_TEASER_CONTRACT_SURFACE,
+  };
+
   return CatDetailPageContent({
     tokenId,
-    configOverride: PUBLIC_TEASER_CONTRACT_SURFACE,
+    config,
   });
 }

@@ -1,10 +1,17 @@
+import path from "node:path";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
     // Source: https://nextjs.org/docs/app/api-reference/config/next-config-js
     cpus: 1,
+    externalDir: true,
     staticGenerationMinPagesPerWorker: 2000,
+  },
+  turbopack: {
+    // Source: https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory
+    root: path.resolve(process.cwd(), ".."),
   },
   async headers() {
     return [

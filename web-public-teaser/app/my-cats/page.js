@@ -1,15 +1,15 @@
 import { Suspense } from "react";
 
 import MyCatsBrowser from "../../components/my-cats-browser.jsx";
-import { getCollection } from "../../../web/lib/viewer-data.js";
-import { getCorePublicConfig } from "../../../web/lib/server/core-env.js";
+import { getCollection } from "../../../shared/public-site/lib/viewer-data.js";
 import { PUBLIC_TEASER_CONTRACT_SURFACE } from "../../lib/public-teaser-contract-surface.js";
+import { getPublicRuntimeConfig } from "../../lib/public-runtime-config.js";
 
 export const dynamic = "force-static";
 
 export default async function MyCatsPage() {
   const { launchState, statusSnapshotUrl, coreCatsAddress } = {
-    ...getCorePublicConfig(),
+    ...getPublicRuntimeConfig(),
     ...PUBLIC_TEASER_CONTRACT_SURFACE,
   };
 
@@ -37,7 +37,7 @@ export default async function MyCatsPage() {
     );
   }
 
-  const collection = await getCollection();
+  const collection = await getCollection(launchState !== "public");
   return (
     <Suspense fallback={null}>
       <MyCatsBrowser

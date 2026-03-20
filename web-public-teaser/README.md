@@ -23,8 +23,8 @@ npm install
 npm run build
 ```
 
-The build script syncs shared viewer assets from `../web/public` and writes a static export to `./out`.
-It also ships Cloudflare `_headers` rules so the teaser images and shared viewer assets are cached aggressively.
+The build writes a static export to `./out`.
+It also ships Cloudflare `_headers` rules so teaser images and shared viewer assets are cached aggressively.
 
 ## Environment
 
@@ -52,8 +52,5 @@ Current preferred host:
 ## Cloudflare Deploy Note
 
 Cloudflare Pages is configured with `web-public-teaser` as the root directory.
-If a public teaser change only touches shared files under `../web`, Cloudflare can show
-`No deployment available` for that commit because nothing changed inside the configured root.
-
-When a shared browse/UI change needs to reach Cloudflare production, make sure the commit also
-contains a change under `web-public-teaser/` so Pages creates a new deployment.
+Shared browse code now lives under `shared/public-site`, so Cloudflare no longer depends on
+route files inside `web/` to build the teaser surface.

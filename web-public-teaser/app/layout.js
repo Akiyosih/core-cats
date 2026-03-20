@@ -1,7 +1,7 @@
-import "../../web/app/globals.css";
-import SiteHeader from "../../web/components/site-header";
-import SiteFooter from "../../web/components/site-footer";
-import { getCorePublicConfig } from "../../web/lib/server/core-env";
+import "../../shared/public-site/globals.css";
+import SiteHeader from "../../shared/public-site/components/site-header.jsx";
+import SiteFooter from "../../shared/public-site/components/site-footer.jsx";
+import { getPublicRuntimeConfig } from "../lib/public-runtime-config.js";
 
 export const metadata = {
   title: "Core Cats",
@@ -10,7 +10,8 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const { launchState, publicTeaserSite, privateCanarySite } = getCorePublicConfig();
+  const config = getPublicRuntimeConfig();
+  const { launchState, publicTeaserSite, privateCanarySite } = config;
   const siteNotice =
     launchState === "closed"
       ? "Pre-mainnet teaser. Core Cats is still in final preparation. Mainnet deployment and public mint are not live yet."
@@ -26,7 +27,7 @@ export default function RootLayout({ children }) {
         <div className="page-shell">
           <div className="ambient ambient--left" />
           <div className="ambient ambient--right" />
-          <SiteHeader />
+          <SiteHeader config={config} />
           {siteNotice ? (
             <div
               className={`site-notice ${launchState === "canary" ? "site-notice--canary" : "site-notice--closed"}`}

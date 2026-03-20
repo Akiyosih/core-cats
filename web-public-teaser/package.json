@@ -3,8 +3,8 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "build": "node ./scripts/sync-public-assets.mjs && next build --webpack",
-    "dev": "node ./scripts/sync-public-assets.mjs && next dev",
+    "build": "next build",
+    "dev": "next dev",
     "start": "next start"
   },
   "dependencies": {

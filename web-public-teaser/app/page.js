@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-import { getCollection, getSummary } from "../../web/lib/viewer-data";
-import { getCorePublicConfig } from "../../web/lib/server/core-env";
-import { isTeaserDisplayEnabled } from "../../web/lib/server/teaser-display.js";
+import { getCollection, getSummary } from "../../shared/public-site/lib/viewer-data.js";
+import { isTeaserDisplayEnabled } from "../../shared/public-site/lib/server/teaser-display.js";
+import { getPublicRuntimeConfig } from "../lib/public-runtime-config.js";
 
 const HOME_NATURAL_IDS = [1, 102, 241, 272, 322, 415, 515, 647, 690, 802, 818, 922];
 const HOME_SPECIAL_IDS = [25, 48, 194, 305, 479, 489, 714, 866, 903, 939, 1000, 999];
@@ -34,8 +34,9 @@ function PreviewImage({ item }) {
 }
 
 export default async function HomePage() {
-  const [collection, summary, config] = await Promise.all([getCollection(), getSummary(), getCorePublicConfig()]);
-  const teaserMode = isTeaserDisplayEnabled();
+  const config = getPublicRuntimeConfig();
+  const teaserMode = isTeaserDisplayEnabled(config);
+  const [collection, summary] = await Promise.all([getCollection(teaserMode), getSummary()]);
   const mintStatusHref = config.mintSurfaceEnabled ? "/mint" : "/transparency";
   const mintStatusLabel = config.mintSurfaceEnabled ? "Mint Status" : "Launch Status";
   const itemById = new Map(collection.items.map((item) => [item.token_id, item]));

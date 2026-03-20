@@ -1,0 +1,54 @@
+import { PUBLIC_TEASER_CONTRACT_SURFACE } from "./public-teaser-contract-surface.js";
+
+function normalizeLaunchState(value) {
+  return value === "canary" || value === "public" || value === "closed" ? value : "closed";
+}
+
+function normalizeSiteSurface(value, launchState) {
+  if (value === "public-teaser" || value === "private-canary" || value === "public-mint") {
+    return value;
+  }
+  if (launchState === "public") {
+    return "public-mint";
+  }
+  if (launchState === "canary") {
+    return "private-canary";
+  }
+  return "public-teaser";
+}
+
+function normalizeUrl(value) {
+  return String(value || "").trim().replace(/\/$/, "");
+}
+
+export function getPublicRuntimeConfig() {
+  const launchState = normalizeLaunchState(process.env.NEXT_PUBLIC_LAUNCH_STATE || process.env.CORECATS_LAUNCH_STATE || "closed");
+  const siteSurface = normalizeSiteSurface(
+    process.env.NEXT_PUBLIC_SITE_SURFACE || process.env.CORECATS_SITE_SURFACE || "public-teaser",
+    launchState,
+  );
+
+  return {
+    chainId: Number(process.env.NEXT_PUBLIC_CORE_CHAIN_ID || 3),
+    networkName: process.env.CORE_NETWORK_NAME || "devin",
+    launchState,
+    siteSurface,
+    publicTeaserSite: siteSurface === "public-teaser",
+    privateCanarySite: siteSurface === "private-canary",
+    publicMintSite: siteSurface === "public-mint",
+    mintSurfaceEnabled: launchState !== "closed" && (siteSurface === "private-canary" || siteSurface === "public-mint"),
+    siteBaseUrl: normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || ""),
+    browseBaseUrl: normalizeUrl(process.env.NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL || process.env.CORECATS_BROWSE_BASE_URL || ""),
+    mintOnlyHost: false,
+    statusSnapshotUrl: String(process.env.NEXT_PUBLIC_CORECATS_STATUS_URL || "").trim(),
+    explorerBaseUrl: process.env.NEXT_PUBLIC_CORE_EXPLORER_BASE_URL || PUBLIC_TEASER_CONTRACT_SURFACE.explorerBaseUrl || "",
+    coreCatsAddress: process.env.NEXT_PUBLIC_CORECATS_ADDRESS || PUBLIC_TEASER_CONTRACT_SURFACE.coreCatsAddress || "",
+    coreCatsRendererAddress:
+      process.env.NEXT_PUBLIC_CORECATS_RENDERER_ADDRESS || PUBLIC_TEASER_CONTRACT_SURFACE.coreCatsRendererAddress || "",
+    coreCatsDataAddress:
+      process.env.NEXT_PUBLIC_CORECATS_DATA_ADDRESS || PUBLIC_TEASER_CONTRACT_SURFACE.coreCatsDataAddress || "",
+    privateCanaryBadgeText: (process.env.NEXT_PUBLIC_PRIVATE_CANARY_BADGE_TEXT || "PRIVATE CANARY").trim(),
+    privateCanaryTitleText: (process.env.NEXT_PUBLIC_PRIVATE_CANARY_TITLE_TEXT || "Private rehearsal canary").trim(),
+    privateCanaryWarningText: (process.env.NEXT_PUBLIC_PRIVATE_CANARY_WARNING_TEXT || "NOT PUBLIC MINT").trim(),
+  };
+}
