@@ -1149,7 +1149,7 @@ export default function MintWorkflow({ config }) {
               </VerificationDetails>
             </>
           }
-          highlightedNotice="QR 2 of 2: real mint transaction, small XCB gas required."
+          highlightedNotice="QR 2 of 2: real mint transaction, small XCB gas required, often well under $0.01."
           request={session.commit}
           completedLabel={commitCompletedLabel}
           completedNote={commitCompletedNote}
