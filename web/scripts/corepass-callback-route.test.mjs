@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { Wallet, getBytes } from "ethers";
 
+import { GET as callbackRootGet } from "../app/api/mint/corepass/callback/route.js";
 import {
   applyCorePassCallback,
   createMintSession,
@@ -76,6 +77,69 @@ test("same-device sessions expose handoff mode for callback error redirects", as
 
     assert.equal(handoffMode, "same-device");
   });
+});
+
+test("GET callback acknowledges precheck rejections without redirecting into a browser page", async () => {
+  const sessionRequest = buildRequest("https://core-cats.vercel.app/api/mint/corepass/session");
+
+  await withEnv(
+    {
+      NEXT_PUBLIC_SITE_BASE_URL: "http://127.0.0.1:8787",
+      NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_SITE_SURFACE: "private-canary",
+      CORE_RPC_URL: "https://rpc.example.com",
+      CORECATS_BACKEND_MODE: "local",
+      CORECATS_BACKEND_BASE_URL: undefined,
+      CORECATS_INTERNAL_BACKEND_BASE_URL: undefined,
+      CORECATS_BACKEND_SHARED_SECRET: undefined,
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+    },
+    async () => {
+      await withFetchMock(async (_url, init) => {
+        const payload = JSON.parse(init?.body || "{}");
+        switch (payload.method) {
+          case "xcb_blockNumber":
+            return jsonRpcResponse("0x64");
+          case "xcb_call": {
+            const data = payload?.params?.[0]?.data || "";
+            if (data === "0x1c34eb83") {
+              return jsonRpcResponse(`0x${"0".repeat(62)}64`);
+            }
+            if (data.startsWith("0x5539b96a")) {
+              return jsonRpcResponse(`0x${"0".repeat(63)}3`);
+            }
+            if (data.startsWith("0xe64f7f28")) {
+              return jsonRpcResponse(`0x${"0".repeat(64)}`);
+            }
+            if (data.startsWith("0xf622d4c8")) {
+              return jsonRpcResponse(`0x${"0".repeat(64 * 4)}`);
+            }
+            throw new Error(`unexpected xcb_call selector: ${data}`);
+          }
+          default:
+            throw new Error(`unexpected RPC method: ${payload.method}`);
+        }
+      }, async () => {
+        const session = await createMintSession(sessionRequest, { quantity: 1, handoffMode: "desktop" });
+        const response = await callbackRootGet(
+          buildRequest(
+            `https://core-cats.vercel.app/api/mint/corepass/callback?sessionId=${session.sessionId}&step=identify&coreID=cb36cc64595127da8b1f7d4a03f7e0e1f4562409b416`,
+          ),
+        );
+
+        assert.equal(response.status, 204);
+        assert.equal(response.headers.get("location"), null);
+        assert.equal(response.headers.get("cache-control"), "no-store");
+        assert.equal(response.headers.get("x-corecats-session-id"), session.sessionId);
+        assert.equal(response.headers.get("x-corecats-callback-error"), "wallet_limit_reached");
+
+        const persisted = await readMintSession(sessionRequest, session.sessionId, { force: true });
+        assert.equal(persisted.status, "precheck_rejected");
+        assert.equal(persisted.commit, null);
+      });
+    },
+  );
 });
 
 test("login identify mode keeps the two-step mint flow while changing only QR1", async () => {

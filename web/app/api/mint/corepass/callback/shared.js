@@ -33,40 +33,22 @@ export async function readCallbackBody(request) {
   return { raw };
 }
 
-export function redirectToMint(request, sessionId, errorCode = "", handoffMode = "") {
-  const config = getCorePublicConfig();
-  const target = new URL("/mint", config.siteBaseUrl || request.url);
+export function completeCorePassCallback(sessionId = "", errorCode = "", handoffMode = "") {
+  const headers = new Headers({
+    "cache-control": "no-store",
+  });
   if (sessionId) {
-    target.searchParams.set("sessionId", sessionId);
-  }
-  if (String(handoffMode || "").trim().toLowerCase() === "same-device") {
-    target.searchParams.set("mode", "same-device");
+    headers.set("x-corecats-session-id", sessionId);
   }
   if (errorCode) {
-    target.searchParams.set("callbackError", errorCode);
+    headers.set("x-corecats-callback-error", errorCode);
   }
-  const targetHref = target.toString();
-  const escapedHref = targetHref.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
-  const html = `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content="0; url=${escapedHref}" />
-    <title>Returning to Core Cats Mint</title>
-  </head>
-  <body>
-    <p>Returning to Core Cats Mint...</p>
-    <p><a href="${escapedHref}">Continue</a></p>
-    <script>window.location.replace(${JSON.stringify(targetHref)});</script>
-  </body>
-</html>`;
-  return new Response(html, {
-    status: 200,
-    headers: {
-      "content-type": "text/html; charset=utf-8",
-      "cache-control": "no-store",
-    },
+  if (String(handoffMode || "").trim().toLowerCase() === "same-device") {
+    headers.set("x-corecats-handoff-mode", "same-device");
+  }
+  return new Response(null, {
+    status: 204,
+    headers,
   });
 }
 

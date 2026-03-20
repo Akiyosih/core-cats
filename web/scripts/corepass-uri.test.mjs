@@ -97,7 +97,7 @@ test("mint session stores same-device handoff mode when requested", async () => 
 
     assert.equal(session.handoffMode, "same-device");
     assert.match(session.identify.desktopUri, /type=callback/);
-    assert.match(session.identify.mobileUri, /type=app-link/);
+    assert.match(session.identify.mobileUri, /type=callback/);
   });
 });
 

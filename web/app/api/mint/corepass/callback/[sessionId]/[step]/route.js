@@ -1,20 +1,25 @@
 import { getCorePublicConfig } from "../../../../../../../lib/server/core-env.js";
 import { applyCorePassCallback } from "../../../../../../../lib/server/corepass-mint-sessions.js";
 import { mintRuntimeMisconfiguredResponse } from "../../../../../../../lib/server/mint-surface.js";
-import { readCallbackBody, redirectToMint, resolveCallbackPathParams, resolveRedirectHandoffMode } from "../../shared.js";
+import {
+  completeCorePassCallback,
+  readCallbackBody,
+  resolveCallbackPathParams,
+  resolveRedirectHandoffMode,
+} from "../../shared.js";
 
 export const runtime = "nodejs";
 
 export async function GET(request, context) {
   const config = getCorePublicConfig();
+  const { sessionId, step } = await resolveCallbackPathParams(context);
   if (!config.mintSurfaceEnabled) {
-    return redirectToMint(request, "", "mint_surface_closed");
+    return completeCorePassCallback(sessionId, "mint_surface_closed");
   }
   if (!config.mintRuntimeReady) {
-    return mintRuntimeMisconfiguredResponse(config);
+    return completeCorePassCallback(sessionId, "mint_runtime_misconfigured");
   }
   const { searchParams } = new URL(request.url);
-  const { sessionId, step } = await resolveCallbackPathParams(context);
   const payload = {
     ...Object.fromEntries(searchParams.entries()),
     sessionId,
@@ -23,10 +28,10 @@ export async function GET(request, context) {
 
   try {
     const session = await applyCorePassCallback(request, payload);
-    return redirectToMint(request, sessionId, "", session?.handoffMode || "");
+    return completeCorePassCallback(sessionId, "", session?.handoffMode || "");
   } catch (error) {
     const handoffMode = await resolveRedirectHandoffMode(request, sessionId);
-    return redirectToMint(request, sessionId, error.code || "callback_failed", handoffMode);
+    return completeCorePassCallback(sessionId, error.code || "callback_failed", handoffMode);
   }
 }
 
