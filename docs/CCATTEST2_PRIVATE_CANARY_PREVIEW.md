@@ -130,6 +130,13 @@ Before sharing the canary URL:
 5. confirm finalize completes against the `CCATTEST2` contract
 6. confirm `/transparency` and explorer links point at `CCATTEST2`, not the official production contract
 
+## Known CorePass Constraints
+
+1. if the tester has multiple CorePass accounts derived from the same seed phrase and wants to mint with a wallet other than the default / active one, `QR 1 of 2` should be scanned with the CorePass in-app QR scanner
+2. device standard camera entry and same-device mobile entry should not be treated as reliable evidence for selecting a non-default same-seed wallet
+3. when the browser rejects an over-cap request before `QR 2 of 2`, CorePass may still show a generic `Connection unsuccessful` message even though the browser displays the correct refusal reason
+4. treat the browser-side mint state as the authoritative error surface for those pre-commit rejections
+
 ## Retirement
 
 After the private canary is no longer needed:
