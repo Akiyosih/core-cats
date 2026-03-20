@@ -883,7 +883,7 @@ export default function MintWorkflow({ config }) {
               session.
             </p>
             <p>QR 1 of 2 confirms and binds your wallet to this mint session.</p>
-            <p>QR 2 of 2 sends the mint transaction.</p>
+            <p>QR 2 of 2: real mint transaction, small XCB gas required, often well under $0.01.</p>
             <p>Each wallet can mint up to 3 cats.</p>
           </div>
         <VerificationDetails summary="If you use multiple CorePass accounts">
