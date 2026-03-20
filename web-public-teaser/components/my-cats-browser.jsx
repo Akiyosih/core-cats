@@ -46,7 +46,8 @@ export default function MyCatsBrowser({
     () => normalizeOwnerInput(publicStatus?.coreCatsAddress),
     [publicStatus?.coreCatsAddress],
   );
-  const displayCoreCatsAddress = statusSnapshotUrl ? liveCoreCatsAddress : normalizeOwnerInput(coreCatsAddress);
+  const fallbackCoreCatsAddress = normalizeOwnerInput(coreCatsAddress);
+  const displayCoreCatsAddress = liveCoreCatsAddress || fallbackCoreCatsAddress;
 
   useEffect(() => {
     setOwnerQuery(initialOwner);

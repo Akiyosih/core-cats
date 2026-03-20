@@ -3,11 +3,15 @@ import { Suspense } from "react";
 import MyCatsBrowser from "../../components/my-cats-browser.jsx";
 import { getCollection } from "../../../web/lib/viewer-data.js";
 import { getCorePublicConfig } from "../../../web/lib/server/core-env.js";
+import { PUBLIC_TEASER_CONTRACT_SURFACE } from "../../lib/public-teaser-contract-surface.js";
 
 export const dynamic = "force-static";
 
 export default async function MyCatsPage() {
-  const { launchState, statusSnapshotUrl, coreCatsAddress } = getCorePublicConfig();
+  const { launchState, statusSnapshotUrl, coreCatsAddress } = {
+    ...getCorePublicConfig(),
+    ...PUBLIC_TEASER_CONTRACT_SURFACE,
+  };
 
   if (launchState === "closed") {
     return (
