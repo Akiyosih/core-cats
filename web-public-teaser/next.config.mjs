@@ -1,4 +1,23 @@
 import path from "node:path";
+import fs from "node:fs";
+
+const repoRoot = path.resolve(process.cwd(), "..");
+const sourcePublicDir = path.join(repoRoot, "web", "public");
+const targetPublicDir = path.join(process.cwd(), "public");
+
+function copyDir(source, target) {
+  fs.rmSync(target, { recursive: true, force: true });
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.cpSync(source, target, { recursive: true });
+}
+
+function syncSharedPublicAssets() {
+  copyDir(path.join(sourcePublicDir, "viewer_v1"), path.join(targetPublicDir, "viewer_v1"));
+  copyDir(path.join(sourcePublicDir, "teaser"), path.join(targetPublicDir, "teaser"));
+  console.log("[public-teaser] synced shared public assets from web/public");
+}
+
+syncSharedPublicAssets();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -10,7 +29,7 @@ const nextConfig = {
     // Cloudflare Pages builds this app from the web-public-teaser root, but the teaser
     // still intentionally imports shared code from sibling directories in the repo.
     // Point Turbopack at the repository root so npx next build can resolve ../web imports.
-    root: path.resolve(process.cwd(), ".."),
+    root: repoRoot,
   },
   experimental: {
     // Source: https://nextjs.org/docs/app/api-reference/config/next-config-js
