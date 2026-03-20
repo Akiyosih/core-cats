@@ -737,12 +737,12 @@ export default function MintWorkflow({ config }) {
             <p>QR 2 of 2 sends the mint transaction.</p>
             <p>Each wallet can mint up to 3 cats.</p>
           </div>
-          <VerificationDetails summary="If you use multiple CorePass accounts">
-            <p>
-              If you created multiple CorePass accounts from the same seed phrase, use the QR 1 scanner inside the
-              CorePass app.
-            </p>
-            <p>
+        <VerificationDetails summary="If you use multiple CorePass accounts">
+          <p>
+              If you created multiple CorePass accounts from the same seed phrase and want to mint with an account
+              other than the default one, use the QR 1 scanner inside the CorePass app.
+          </p>
+          <p>
               Do not open QR 1 with your phone&apos;s standard camera, and do not rely on direct app-link opening on
               mobile. In those cases, CorePass may switch back to a different default account.
             </p>

@@ -21,6 +21,8 @@ const DEFAULTS = {
   browseBaseUrl: "",
   mintOnlyHost: false,
   coreCatsAddress: DEFAULT_DEVIN_CORECATS_ADDRESS,
+  coreCatsRendererAddress: "",
+  coreCatsDataAddress: "",
   explorerBaseUrl: DEFAULT_DEVIN_EXPLORER_BASE_URL,
   backendMode: "local",
   backendBaseUrl: "",
@@ -238,6 +240,16 @@ export function getCoreServerEnv() {
       process.env.CORECATS_ADDRESS ||
       fileEnv.CORECATS_ADDRESS ||
       DEFAULTS.coreCatsAddress,
+    coreCatsRendererAddress:
+      process.env.NEXT_PUBLIC_CORECATS_RENDERER_ADDRESS ||
+      process.env.CORECATS_RENDERER_ADDRESS ||
+      fileEnv.CORECATS_RENDERER_ADDRESS ||
+      DEFAULTS.coreCatsRendererAddress,
+    coreCatsDataAddress:
+      process.env.NEXT_PUBLIC_CORECATS_DATA_ADDRESS ||
+      process.env.CORECATS_DATA_ADDRESS ||
+      fileEnv.CORECATS_DATA_ADDRESS ||
+      DEFAULTS.coreCatsDataAddress,
     deployerPrivateKey,
     signerPrivateKey,
     finalizerPrivateKey,
@@ -359,6 +371,8 @@ export function getCorePublicConfig() {
     browseBaseUrl: env.browseBaseUrl,
     mintOnlyHost: env.mintOnlyHost,
     coreCatsAddress: env.coreCatsAddress,
+    coreCatsRendererAddress: env.coreCatsRendererAddress,
+    coreCatsDataAddress: env.coreCatsDataAddress,
     explorerBaseUrl: env.explorerBaseUrl,
     relayerEnabled,
     statusSnapshotUrl: env.statusSnapshotUrl,

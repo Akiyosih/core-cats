@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import {
   DEFAULT_DEVIN_CORECATS_ADDRESS,
   getCorePublicConfig,
   looksLikePlaceholder,
 } from "../../lib/server/core-env";
-import { buildBrowseHref, hasBrowseOrigin } from "../../lib/site-surface-links.js";
 
 function normalize(value) {
   return String(value || "").trim().toLowerCase();
@@ -72,16 +70,19 @@ function SectionHeading({ eyebrow, title, children }) {
 
 export default function TransparencyPage() {
   const config = getCorePublicConfig();
-  if (hasBrowseOrigin(config)) {
-    redirect(buildBrowseHref(config, "/transparency"));
-  }
   const networkName = normalize(config.networkName);
   const contractAddress = String(config.coreCatsAddress || "").trim();
+  const rendererAddress = String(config.coreCatsRendererAddress || "").trim();
+  const dataAddress = String(config.coreCatsDataAddress || "").trim();
   const explorerBaseUrl = String(config.explorerBaseUrl || "").trim();
   const usesDevinDefault = normalize(contractAddress) === DEFAULT_DEVIN_CORECATS_ADDRESS;
   const contractPending =
     networkName === "mainnet" && (!isCoreAddress(contractAddress) || usesDevinDefault || looksLikePlaceholder(contractAddress));
+  const rendererPending = !isCoreAddress(rendererAddress) || looksLikePlaceholder(rendererAddress);
+  const dataPending = !isCoreAddress(dataAddress) || looksLikePlaceholder(dataAddress);
   const contractHref = contractPending ? "" : buildExplorerAddressUrl(explorerBaseUrl, contractAddress);
+  const rendererHref = rendererPending ? "" : buildExplorerAddressUrl(explorerBaseUrl, rendererAddress);
+  const dataHref = dataPending ? "" : buildExplorerAddressUrl(explorerBaseUrl, dataAddress);
   const contractStatus = contractPending
     ? "Mainnet deployment pending"
     : networkName === "mainnet" && config.launchState === "canary"
@@ -142,10 +143,32 @@ export default function TransparencyPage() {
                 )}
               </li>
               <li>
+                <strong>Metadata renderer:</strong>{" "}
+                {rendererPending ? (
+                  "This surface has not published the renderer address yet."
+                ) : (
+                  <Link href={rendererHref} target="_blank" rel="noreferrer" className="resource-link">
+                    {rendererAddress}
+                  </Link>
+                )}
+              </li>
+              <li>
+                <strong>On-chain data:</strong>{" "}
+                {dataPending ? (
+                  "This surface has not published the on-chain data address yet."
+                ) : (
+                  <Link href={dataHref} target="_blank" rel="noreferrer" className="resource-link">
+                    {dataAddress}
+                  </Link>
+                )}
+              </li>
+              <li>
                 <strong>Contract verification status:</strong>{" "}
                 {contractPending
                   ? "Verification depends on the final published contract address."
-                  : "Check the explorer contract page and the published repository artifacts together."}
+                  : rendererPending || dataPending
+                    ? "CoreCats is published here, but the renderer/data surface is still incomplete on this host."
+                    : "Check the explorer contract pages and the published repository artifacts together."}
               </li>
             </ul>
           </article>
