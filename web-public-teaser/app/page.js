@@ -4,8 +4,8 @@ import { getCollection, getSummary } from "../../shared/public-site/lib/viewer-d
 import { isTeaserDisplayEnabled } from "../../shared/public-site/lib/server/teaser-display.js";
 import { getPublicRuntimeConfig } from "../lib/public-runtime-config.js";
 
-const HOME_NATURAL_IDS = [1, 102, 241, 272, 322, 415, 515, 647, 690, 802, 818, 922];
-const HOME_SPECIAL_IDS = [25, 48, 194, 305, 479, 489, 714, 866, 903, 939, 166, 838];
+const HOME_NATURAL_IDS = [1, 102, 242, 273, 323, 416, 516, 648, 691, 803, 819, 924];
+const HOME_SPECIAL_IDS = [25, 48, 195, 306, 480, 490, 715, 868, 905, 941, 166, 838];
 
 function Metric({ value, label }) {
   return (
