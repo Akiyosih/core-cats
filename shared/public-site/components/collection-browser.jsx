@@ -109,12 +109,6 @@ function FilterBlock({ title, filterKey, values, searchParams, activeValue, teas
 function GroupedColorwayBlock({ paletteValues, categoryValues, searchParams, activeCategory, activePalette, teaserEnabled }) {
   const paletteMap = new Map(paletteValues.map((value) => [value.id, value]));
   const categoryMap = new Map(categoryValues.map((value) => [value.id, value]));
-  const superrareValue = paletteMap.get("superrare") || { id: "superrare", label: "Super Rare", count: 0 };
-  const superrareHref = buildSearchHref(searchParams, {
-    category: null,
-    palette_id: activePalette === "superrare" ? null : "superrare",
-    page: null,
-  }, teaserEnabled);
 
   return (
     <section className="filter-block">
@@ -166,16 +160,6 @@ function GroupedColorwayBlock({ paletteValues, categoryValues, searchParams, act
             </div>
           );
         })}
-        <div className="filter-subgroup filter-subgroup--standalone">
-          <p className="filter-subgroup__label">Standalone palette</p>
-          <FilterChip
-            href={superrareHref}
-            active={activePalette === "superrare"}
-            empty={(superrareValue.count ?? 0) === 0}
-            label="Super Rare"
-            count={superrareValue.count ?? 0}
-          />
-        </div>
       </div>
     </section>
   );
