@@ -11,11 +11,11 @@ Core deployment/compiler source of truth remains:
 - https://github.com/core-coin/ylem
 
 ## Inputs
-1. `manifests/final_1000_manifest_v1.json`
-2. `manifests/superrare_beam_selection_v1.json`
-3. `manifests/beam_token_reorder_v1.json`
+1. historical pre-beam base manifest: `manifests/final_1000_manifest_v1.json`
+2. active beam selection: `manifests/superrare_beam_selection_v2.json`
+3. active beam reorder: `manifests/beam_token_reorder_v2.json`
 4. `manifests/trait_display_labels_v1.json`
-5. `manifests/final_1000_trait_summary_v1.json`
+5. active summary: `manifests/final_1000_trait_summary_v2.json`
 6. `foxar/src/CoreCatsOnchainData.sol`
 7. `foxar/src/CoreCatsMetadataRenderer.sol`
 
@@ -48,17 +48,17 @@ node scripts/ui/generate_viewer_data.mjs --emit-svg-files
 ## Outputs
 Default output directory:
 
-`manifests/viewer_v1/`
+`manifests/viewer_v2/`
 
 Default public preview directory:
 
-`web/public/viewer_v1/svg/`
+`web/public/viewer_v2/svg/`
 
 Generated files:
 1. `collection.json`
    - UI-ready 1000 item dataset
-   - includes `image_svg_src` pointing at static preview SVG files under `web/public/viewer_v1/svg/`
-   - includes `image_preview_src` pointing at static preview PNG files under `web/public/viewer_v1/png/`
+   - includes `image_svg_src` pointing at static preview SVG files under `web/public/viewer_v2/svg/`
+   - includes `image_preview_src` pointing at static preview PNG files under `web/public/viewer_v2/png/`
    - includes exact on-chain attributes and UI display labels
    - does not embed large `data:` URIs by default
 2. `filters.json`
@@ -67,9 +67,9 @@ Generated files:
    - viewer-facing summary derived from the trait summary manifest
 
 Default preview output:
-1. `web/public/viewer_v1/svg/*.svg`
+1. `web/public/viewer_v2/svg/*.svg`
    - one renderer-derived SVG preview per token
-2. `web/public/viewer_v1/png/*.png`
+2. `web/public/viewer_v2/png/*.png`
    - one rasterized preview per token for the homepage and collection grid
 
 Optional:
@@ -79,7 +79,7 @@ Optional:
 ## Notes
 1. The script does not use Core testnet/mainnet RPC.
 2. It reads the packed on-chain data constants from `foxar/src/CoreCatsOnchainData.sol` directly.
-3. It ports the current renderer logic into JS and verifies decoded traits against `final_1000_manifest_v1.json` before writing outputs.
+3. It ports the current renderer logic into JS and verifies decoded traits against `final_1000_manifest_v2.json` before writing outputs.
 4. The current web UI uses static PNG previews for browsing performance while preserving the same renderer-derived SVG for detail views and verification.
 5. This is the current source for `/collection`, `/about`, and `/transparency`, and it remains compatible with the live `commit-finalize` mint flow.
 6. For the no-logo launch path, the upstream manifest rebuild also fixes the canonical `beam` superrare selection and the final token reorder map before viewer generation runs.
@@ -131,10 +131,10 @@ npm --prefix web run build:viewer-previews
 ```
 
 Then compare:
-1. `manifests/viewer_v1/collection.json`
-2. `web/public/viewer_v1/svg/<tokenId>.svg`
-3. `web/public/viewer_v1/png/<tokenId>.png`
-4. `web/public/viewer_v1/png-white/<tokenId>.png`
+1. `manifests/viewer_v2/collection.json`
+2. `web/public/viewer_v2/svg/<tokenId>.svg`
+3. `web/public/viewer_v2/png/<tokenId>.png`
+4. `web/public/viewer_v2/png-white/<tokenId>.png`
 
 ### What This Review Path Proves
 This shortcut can help an outside reader confirm:

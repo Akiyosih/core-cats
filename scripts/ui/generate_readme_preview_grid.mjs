@@ -7,8 +7,8 @@ const __dirname = path.dirname(__filename);
 const CORE_CATS_ROOT = path.resolve(__dirname, "../..");
 const PROJECT_ROOT = path.resolve(CORE_CATS_ROOT, "..");
 const RESVG_PATH = path.join(CORE_CATS_ROOT, "web", "node_modules", "@resvg", "resvg-js", "index.js");
-const VIEWER_COLLECTION_PATH = path.join(CORE_CATS_ROOT, "manifests", "viewer_v1", "collection.json");
-const PREVIEW_PNG_DIR = path.join(CORE_CATS_ROOT, "web", "public", "viewer_v1", "png");
+const VIEWER_COLLECTION_PATH = path.join(CORE_CATS_ROOT, "manifests", "viewer_v2", "collection.json");
+const PREVIEW_PNG_DIR = path.join(CORE_CATS_ROOT, "web", "public", "viewer_v2", "png");
 const OUTPUTS = [
   path.join(CORE_CATS_ROOT, "docs", "assets", "core_cats_preview_grid_teaser.png"),
   path.join(PROJECT_ROOT, "core-cats-eth", "docs", "assets", "core_cats_preview_grid_teaser.png"),

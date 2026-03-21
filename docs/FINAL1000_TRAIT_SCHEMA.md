@@ -1,7 +1,7 @@
 # Final 1000 Trait Schema
 
 ## 目的
-`manifests/final_1000_manifest_v1.json` の属性定義を固定し、UI表示・on-chain metadata・検証の解釈を統一する。
+active canonical manifest `manifests/final_1000_manifest_v2.json` の属性定義を固定し、UI表示・on-chain metadata・検証の解釈を統一する。
 
 ## 固定属性（5項目）
 1. `Pattern`
@@ -13,8 +13,8 @@
 ## superrare 固定ルール
 - `Rarity Tier = superrare` の10体が対象。
 - canonical selection の正本:
-  - `manifests/superrare_beam_selection_v1.json`
-  - `manifests/beam_token_reorder_v1.json`
+  - `manifests/superrare_beam_selection_v2.json`
+  - `manifests/beam_token_reorder_v2.json`
 - beam superrare は通常個体の見た目の構造を維持する:
   - `Pattern` は各 superrare の coat pattern をそのまま保持する
   - `Color Variation` は各 superrare の colorway をそのまま保持する
@@ -24,6 +24,7 @@
 - common 由来の2体は source common を残したまま beam superrare を別 token として新設する。
 - 旧 `999 / 1000` 固定 superrare 予約は廃止する。
 - 旧 logo-based superrare (`corelogo` / `pinglogo`) は廃止する。
+- beam 導入前の historical canon は `manifests/final_1000_manifest_v1.json` として残す。
 
 ## 内部データとの切り分け
 - canonical manifest item には内部検証用に `collar` 真偽値と `collar_type` が残る。

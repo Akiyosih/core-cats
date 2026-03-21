@@ -16,7 +16,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/viewer_v1/png/:path*",
+        source: "/viewer_v2/png/:path*",
         headers: [
           {
             key: "Cache-Control",
@@ -25,7 +25,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/viewer_v1/png-white/:path*",
+        source: "/viewer_v2/png-white/:path*",
         headers: [
           {
             key: "Cache-Control",
@@ -34,7 +34,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/viewer_v1/svg/:path*",
+        source: "/viewer_v2/svg/:path*",
         headers: [
           {
             key: "Cache-Control",
@@ -52,7 +52,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/viewer_v1/collection-index.json",
+        source: "/viewer_v2/collection-index.json",
         headers: [
           {
             key: "Cache-Control",

@@ -94,8 +94,8 @@ Run these steps in order.
    - keep `CORECATS_SUPERRARE_PLACEHOLDER=0`
    - keep the official labels as `CoreCats` / `CCAT`
    - keep the current no-logo beam superrare path fixed:
-     - `manifests/superrare_beam_selection_v1.json`
-     - `manifests/beam_token_reorder_v1.json`
+     - `manifests/superrare_beam_selection_v2.json`
+     - `manifests/beam_token_reorder_v2.json`
    - do not silently enable pilot placeholder mode during the official deploy
 3. Dry-run the deploy script without `--broadcast` first:
    - `spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript --fork-url "$CORE_MAINNET_RPC_URL" --network-id 1 --wallet-network mainnet --keystore "$DEPLOYER_KEYSTORE_PATH" --password-file "$DEPLOYER_PASSWORD_FILE"`

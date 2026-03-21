@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Iterable
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MANIFEST = ROOT / "manifests" / "final_1000_manifest_v1.json"
+DEFAULT_MANIFEST = ROOT / "manifests" / "final_1000_manifest_v2.json"
 DEFAULT_OUT = ROOT / "foxar" / "src" / "CoreCatsOnchainData.sol"
 CURRENT_DATA_SOURCE = ROOT / "foxar" / "src" / "CoreCatsOnchainData.sol"
 

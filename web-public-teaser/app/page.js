@@ -5,6 +5,7 @@ import { isTeaserDisplayEnabled } from "../../shared/public-site/lib/server/teas
 import { getPublicRuntimeConfig } from "../lib/public-runtime-config.js";
 
 const HOME_NATURAL_IDS = [1, 102, 241, 272, 322, 415, 515, 647, 690, 802, 818, 922];
+const HOME_SPECIAL_IDS = [25, 48, 194, 305, 479, 489, 714, 866, 903, 939, 166, 838];
 
 function Metric({ value, label }) {
   return (
@@ -39,9 +40,7 @@ export default async function HomePage() {
   const mintStatusLabel = config.mintSurfaceEnabled ? "Mint Status" : "Launch Status";
   const itemById = new Map(collection.items.map((item) => [item.token_id, item]));
   const naturalPreview = HOME_NATURAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
-  const superrarePreview = collection.items.filter((item) => item.trait_values.rarity_tier === "superrare");
-  const rarePreview = collection.items.filter((item) => item.trait_values.rarity_tier === "rare").slice(0, 2);
-  const specialPreview = [...superrarePreview, ...rarePreview].slice(0, 12);
+  const specialPreview = HOME_SPECIAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
 
   return (
     <div className="page-stack">

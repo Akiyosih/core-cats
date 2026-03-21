@@ -10,17 +10,17 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, "../..");
 const RESVG_PATH = path.join(ROOT, "web", "node_modules", "@resvg", "resvg-js", "index.js");
 const CURRENT_MANIFEST_PATH = path.join(ROOT, "manifests", "final_1000_manifest_v1.json");
-const SELECTION_PATH = path.join(ROOT, "manifests", "superrare_beam_selection_v1.json");
+const SELECTION_PATH = path.join(ROOT, "manifests", "superrare_beam_selection_v2.json");
 const LABELS_PATH = path.join(ROOT, "manifests", "trait_display_labels_v1.json");
 const DATA_SOURCE = path.join(ROOT, "foxar", "src", "CoreCatsOnchainData.sol");
 const BEAM_PATH = path.join(ROOT, "assets", "traits", "beam.png");
-const MANIFEST_OUT = path.join(ROOT, "manifests", "final_1000_manifest_v1.json");
-const SUMMARY_OUT = path.join(ROOT, "manifests", "final_1000_trait_summary_v1.json");
-const VALIDATION_OUT = path.join(ROOT, "manifests", "final_1000_validation_v1.json");
-const PREVIEW_CONSISTENCY_OUT = path.join(ROOT, "manifests", "final_1000_preview_consistency_v1.json");
-const TOKEN_REORDER_OUT = path.join(ROOT, "manifests", "beam_token_reorder_v1.json");
-const PNG24_DIR = path.join(ROOT, "art", "final", "final1000_v1", "png24");
-const REVIEW_DIR = path.join(ROOT, "art", "review", "final1000_preview_v1", "png");
+const MANIFEST_OUT = path.join(ROOT, "manifests", "final_1000_manifest_v2.json");
+const SUMMARY_OUT = path.join(ROOT, "manifests", "final_1000_trait_summary_v2.json");
+const VALIDATION_OUT = path.join(ROOT, "manifests", "final_1000_validation_v2.json");
+const PREVIEW_CONSISTENCY_OUT = path.join(ROOT, "manifests", "final_1000_preview_consistency_v2.json");
+const TOKEN_REORDER_OUT = path.join(ROOT, "manifests", "beam_token_reorder_v2.json");
+const PNG24_DIR = path.join(ROOT, "art", "final", "final1000_v2", "png24");
+const REVIEW_DIR = path.join(ROOT, "art", "review", "final1000_preview_v2", "png");
 const OUTPUT_SIZE = 384;
 
 const COLLAR_NONE = 0;
@@ -66,6 +66,11 @@ async function readJson(filePath) {
 
 async function readText(filePath) {
   return fs.readFile(filePath, "utf8");
+}
+
+async function sha256File(filePath) {
+  const bytes = await fs.readFile(filePath);
+  return crypto.createHash("sha256").update(bytes).digest("hex");
 }
 
 function deepClone(value) {
@@ -596,17 +601,17 @@ async function main() {
   delete nextInputs.superrare_palette;
 
   const nextManifest = {
-    version: "final_1000_manifest_v1",
+    version: "final_1000_manifest_v2",
     created_at: createdAt,
     inputs: {
       ...nextInputs,
       rebuild_script: "scripts/ui/rebuild_final1000_beam_outputs.mjs",
       onchain_data_script: "scripts/reference_eth/generate_onchain_data.py",
       beam_asset_24: "assets/traits/beam.png",
-      beam_asset_24_sha256: sha256File(BEAM_PATH),
-      beam_selection: "manifests/superrare_beam_selection_v1.json",
-      beam_selection_sha256: sha256File(SELECTION_PATH),
-      beam_token_reorder: "manifests/beam_token_reorder_v1.json",
+      beam_asset_24_sha256: await sha256File(BEAM_PATH),
+      beam_selection: "manifests/superrare_beam_selection_v2.json",
+      beam_selection_sha256: await sha256File(SELECTION_PATH),
+      beam_token_reorder: "manifests/beam_token_reorder_v2.json",
       notes: [
         "Legacy logo-based superrare placeholders were removed.",
         "Eight selected rare tokens were promoted in place to beam superrares.",
@@ -623,18 +628,18 @@ async function main() {
   };
 
   const summaryDoc = {
-    version: "final_1000_trait_summary_v1",
+    version: "final_1000_trait_summary_v2",
     created_at: createdAt,
-    manifest: "manifests/final_1000_manifest_v1.json",
+    manifest: "manifests/final_1000_manifest_v2.json",
     total: finalItems.length,
     counts: summary.counts,
     cross: summary.cross,
   };
 
   const validationDoc = {
-    version: "final_1000_validation_v1",
+    version: "final_1000_validation_v2",
     validated_at: createdAt,
-    manifest: "manifests/final_1000_manifest_v1.json",
+    manifest: "manifests/final_1000_manifest_v2.json",
     ok: true,
     error_count: 0,
     errors: [],
@@ -642,9 +647,9 @@ async function main() {
   };
 
   const previewConsistencyDoc = {
-    version: "final_1000_preview_consistency_v1",
+    version: "final_1000_preview_consistency_v2",
     audited_at: createdAt,
-    manifest: "manifests/final_1000_manifest_v1.json",
+    manifest: "manifests/final_1000_manifest_v2.json",
     ok: true,
     checked: finalItems.length,
     matched: finalItems.length,
@@ -655,10 +660,10 @@ async function main() {
   };
 
   const reorderDoc = {
-    version: "beam_token_reorder_v1",
+    version: "beam_token_reorder_v2",
     created_at: createdAt,
     source_manifest: "manifests/final_1000_manifest_v1.json (pre-beam)",
-    selection: "manifests/superrare_beam_selection_v1.json",
+    selection: "manifests/superrare_beam_selection_v2.json",
     rows: reorderRows,
   };
 

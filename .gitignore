@@ -33,6 +33,8 @@ ignition/deployments/chain-31337
 /foxar/broadcast/
 /foxar/coverage/
 /art/review/devin_token*/
+/art/review/final1000_preview_v*/
+/art/final/final1000_v*/
 /web/.vercel/
 /web/.next/
 /web/node_modules/

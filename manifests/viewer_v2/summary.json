@@ -1,0 +1,441 @@
+{
+  "version": "viewer_summary_v2",
+  "generated_at": "2026-03-21T08:30:09.230Z",
+  "source_manifest": "manifests/final_1000_manifest_v2.json",
+  "source_trait_summary": "manifests/final_1000_trait_summary_v2.json",
+  "source_collection": "manifests/viewer_v2/collection.json",
+  "total": 1000,
+  "counts": {
+    "by_pattern": {
+      "solid": 44,
+      "socks": 53,
+      "pointed": 119,
+      "patched": 106,
+      "hachiware": 84,
+      "tuxedo": 98,
+      "masked": 123,
+      "classic_tabby": 132,
+      "mackerel_tabby": 111,
+      "tortoiseshell": 130
+    },
+    "by_palette_id": {
+      "black_solid": 2,
+      "black_white": 21,
+      "ivory_brown": 8,
+      "gray_soft": 82,
+      "orange_warm": 87,
+      "earth_tone": 191,
+      "cyberpunk": 86,
+      "psychedelic": 100,
+      "tropical_fever": 103,
+      "zombie": 89,
+      "space_nebula": 82,
+      "orange_white": 52,
+      "tricolor_soft": 97
+    },
+    "by_collar": {
+      "with_collar": 400,
+      "without_collar": 600
+    },
+    "by_collar_type": {
+      "none": 600,
+      "checkered_collar": 200,
+      "classic_red_collar": 200
+    },
+    "by_rarity_tier": {
+      "common": 900,
+      "superrare": 10,
+      "rare": 90
+    },
+    "by_rarity_type": {
+      "none": 900,
+      "beam": 10,
+      "red_nose": 20,
+      "blue_nose": 20,
+      "odd_eyes": 20,
+      "sunglasses": 15,
+      "glasses": 15
+    },
+    "by_category": {
+      "natural": 540,
+      "special": 460
+    }
+  },
+  "cross": {
+    "pattern_by_rarity_tier": {
+      "common": {
+        "solid": 38,
+        "socks": 48,
+        "pointed": 106,
+        "patched": 92,
+        "hachiware": 76,
+        "tuxedo": 86,
+        "masked": 115,
+        "classic_tabby": 127,
+        "mackerel_tabby": 98,
+        "tortoiseshell": 114
+      },
+      "superrare": {
+        "solid": 1,
+        "socks": 1,
+        "pointed": 1,
+        "patched": 1,
+        "hachiware": 1,
+        "tuxedo": 1,
+        "masked": 1,
+        "classic_tabby": 1,
+        "mackerel_tabby": 1,
+        "tortoiseshell": 1
+      },
+      "rare": {
+        "solid": 5,
+        "socks": 4,
+        "pointed": 12,
+        "patched": 13,
+        "hachiware": 7,
+        "tuxedo": 11,
+        "masked": 7,
+        "classic_tabby": 4,
+        "mackerel_tabby": 12,
+        "tortoiseshell": 15
+      }
+    },
+    "palette_by_rarity_tier": {
+      "common": {
+        "black_solid": 2,
+        "black_white": 17,
+        "ivory_brown": 6,
+        "gray_soft": 72,
+        "orange_warm": 78,
+        "earth_tone": 177,
+        "cyberpunk": 77,
+        "psychedelic": 92,
+        "tropical_fever": 95,
+        "zombie": 81,
+        "space_nebula": 71,
+        "orange_white": 46,
+        "tricolor_soft": 86
+      },
+      "superrare": {
+        "ivory_brown": 1,
+        "orange_warm": 2,
+        "cyberpunk": 1,
+        "orange_white": 1,
+        "space_nebula": 1,
+        "earth_tone": 2,
+        "tricolor_soft": 1,
+        "psychedelic": 1
+      },
+      "rare": {
+        "gray_soft": 10,
+        "orange_warm": 7,
+        "earth_tone": 12,
+        "cyberpunk": 8,
+        "space_nebula": 10,
+        "black_white": 4,
+        "orange_white": 5,
+        "psychedelic": 7,
+        "zombie": 8,
+        "tricolor_soft": 10,
+        "tropical_fever": 8,
+        "ivory_brown": 1
+      }
+    },
+    "collar_by_rarity_tier": {
+      "common": {
+        "without_collar": 549,
+        "with_collar": 351
+      },
+      "superrare": {
+        "with_collar": 6,
+        "without_collar": 4
+      },
+      "rare": {
+        "with_collar": 43,
+        "without_collar": 47
+      }
+    },
+    "collar_type_by_rarity_tier": {
+      "common": {
+        "none": 549,
+        "checkered_collar": 180,
+        "classic_red_collar": 171
+      },
+      "superrare": {
+        "classic_red_collar": 4,
+        "checkered_collar": 2,
+        "none": 4
+      },
+      "rare": {
+        "checkered_collar": 18,
+        "none": 47,
+        "classic_red_collar": 25
+      }
+    },
+    "rarity_type_by_rarity_tier": {
+      "common": {
+        "none": 900
+      },
+      "superrare": {
+        "beam": 10
+      },
+      "rare": {
+        "red_nose": 20,
+        "blue_nose": 20,
+        "odd_eyes": 20,
+        "sunglasses": 15,
+        "glasses": 15
+      }
+    },
+    "pattern_by_palette_id": {
+      "black_solid": {
+        "solid": 2
+      },
+      "black_white": {
+        "solid": 2,
+        "socks": 4,
+        "pointed": 4,
+        "patched": 4,
+        "hachiware": 2,
+        "tuxedo": 1,
+        "masked": 1,
+        "mackerel_tabby": 1,
+        "tortoiseshell": 2
+      },
+      "ivory_brown": {
+        "solid": 2,
+        "pointed": 4,
+        "classic_tabby": 1,
+        "mackerel_tabby": 1
+      },
+      "gray_soft": {
+        "solid": 6,
+        "socks": 4,
+        "pointed": 10,
+        "patched": 3,
+        "hachiware": 8,
+        "tuxedo": 12,
+        "masked": 8,
+        "classic_tabby": 9,
+        "mackerel_tabby": 8,
+        "tortoiseshell": 14
+      },
+      "orange_warm": {
+        "solid": 5,
+        "socks": 6,
+        "pointed": 8,
+        "patched": 4,
+        "hachiware": 7,
+        "tuxedo": 9,
+        "masked": 11,
+        "classic_tabby": 9,
+        "mackerel_tabby": 11,
+        "tortoiseshell": 17
+      },
+      "earth_tone": {
+        "solid": 4,
+        "pointed": 20,
+        "patched": 18,
+        "hachiware": 20,
+        "tuxedo": 20,
+        "masked": 43,
+        "classic_tabby": 31,
+        "mackerel_tabby": 27,
+        "tortoiseshell": 8
+      },
+      "cyberpunk": {
+        "solid": 4,
+        "socks": 9,
+        "pointed": 11,
+        "patched": 11,
+        "hachiware": 7,
+        "tuxedo": 9,
+        "masked": 4,
+        "classic_tabby": 8,
+        "mackerel_tabby": 9,
+        "tortoiseshell": 14
+      },
+      "psychedelic": {
+        "solid": 4,
+        "socks": 10,
+        "pointed": 12,
+        "patched": 8,
+        "hachiware": 10,
+        "tuxedo": 8,
+        "masked": 9,
+        "classic_tabby": 7,
+        "mackerel_tabby": 10,
+        "tortoiseshell": 22
+      },
+      "tropical_fever": {
+        "solid": 5,
+        "socks": 8,
+        "pointed": 11,
+        "patched": 8,
+        "hachiware": 9,
+        "tuxedo": 12,
+        "masked": 12,
+        "classic_tabby": 11,
+        "mackerel_tabby": 7,
+        "tortoiseshell": 20
+      },
+      "zombie": {
+        "solid": 4,
+        "socks": 6,
+        "pointed": 11,
+        "patched": 5,
+        "hachiware": 10,
+        "tuxedo": 7,
+        "masked": 8,
+        "classic_tabby": 11,
+        "mackerel_tabby": 10,
+        "tortoiseshell": 17
+      },
+      "space_nebula": {
+        "solid": 6,
+        "pointed": 10,
+        "patched": 16,
+        "hachiware": 6,
+        "tuxedo": 11,
+        "masked": 10,
+        "classic_tabby": 12,
+        "mackerel_tabby": 9,
+        "tortoiseshell": 2
+      },
+      "orange_white": {
+        "socks": 6,
+        "pointed": 8,
+        "patched": 6,
+        "hachiware": 4,
+        "tuxedo": 3,
+        "masked": 4,
+        "classic_tabby": 8,
+        "mackerel_tabby": 4,
+        "tortoiseshell": 9
+      },
+      "tricolor_soft": {
+        "pointed": 10,
+        "patched": 23,
+        "hachiware": 1,
+        "tuxedo": 6,
+        "masked": 13,
+        "classic_tabby": 25,
+        "mackerel_tabby": 14,
+        "tortoiseshell": 5
+      }
+    },
+    "rarity_type_by_collar": {
+      "without_collar": {
+        "none": 549,
+        "odd_eyes": 10,
+        "red_nose": 10,
+        "blue_nose": 8,
+        "sunglasses": 11,
+        "beam": 4,
+        "glasses": 8
+      },
+      "with_collar": {
+        "none": 351,
+        "beam": 6,
+        "red_nose": 10,
+        "blue_nose": 12,
+        "odd_eyes": 10,
+        "glasses": 7,
+        "sunglasses": 4
+      }
+    },
+    "rarity_type_by_collar_type": {
+      "none": {
+        "none": 549,
+        "odd_eyes": 10,
+        "red_nose": 10,
+        "blue_nose": 8,
+        "sunglasses": 11,
+        "beam": 4,
+        "glasses": 8
+      },
+      "checkered_collar": {
+        "none": 180,
+        "red_nose": 3,
+        "blue_nose": 6,
+        "beam": 2,
+        "glasses": 4,
+        "odd_eyes": 2,
+        "sunglasses": 3
+      },
+      "classic_red_collar": {
+        "none": 171,
+        "beam": 4,
+        "odd_eyes": 8,
+        "blue_nose": 6,
+        "red_nose": 7,
+        "glasses": 3,
+        "sunglasses": 1
+      }
+    },
+    "pattern_by_collar": {
+      "without_collar": {
+        "solid": 26,
+        "socks": 32,
+        "pointed": 67,
+        "patched": 63,
+        "hachiware": 52,
+        "tuxedo": 58,
+        "masked": 70,
+        "classic_tabby": 78,
+        "mackerel_tabby": 66,
+        "tortoiseshell": 88
+      },
+      "with_collar": {
+        "solid": 18,
+        "socks": 21,
+        "pointed": 52,
+        "patched": 43,
+        "hachiware": 32,
+        "tuxedo": 40,
+        "masked": 53,
+        "classic_tabby": 54,
+        "mackerel_tabby": 45,
+        "tortoiseshell": 42
+      }
+    },
+    "pattern_by_collar_type": {
+      "none": {
+        "solid": 26,
+        "socks": 32,
+        "pointed": 67,
+        "patched": 63,
+        "hachiware": 52,
+        "tuxedo": 58,
+        "masked": 70,
+        "classic_tabby": 78,
+        "mackerel_tabby": 66,
+        "tortoiseshell": 88
+      },
+      "checkered_collar": {
+        "solid": 11,
+        "socks": 14,
+        "pointed": 28,
+        "patched": 22,
+        "hachiware": 16,
+        "tuxedo": 18,
+        "masked": 25,
+        "classic_tabby": 19,
+        "mackerel_tabby": 24,
+        "tortoiseshell": 23
+      },
+      "classic_red_collar": {
+        "solid": 7,
+        "socks": 7,
+        "pointed": 24,
+        "patched": 21,
+        "hachiware": 16,
+        "tuxedo": 22,
+        "masked": 28,
+        "classic_tabby": 35,
+        "mackerel_tabby": 21,
+        "tortoiseshell": 19
+      }
+    }
+  }
+}
