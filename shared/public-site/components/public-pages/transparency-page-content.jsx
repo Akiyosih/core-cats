@@ -46,7 +46,7 @@ const verificationReferences = [
     label: "Official CCAT launch principles",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/manifests/final_1000_manifest_v3.json",
+    href: "https://github.com/Akiyosih/core-cats/blob/main/manifests/final_1000_manifest.json",
     label: "Final 1000 manifest",
   },
   {

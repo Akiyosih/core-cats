@@ -28,7 +28,7 @@ Implemented routes:
 
 The web app reads repository viewer data generated from:
 
-`../manifests/viewer_v3/`
+`../manifests/viewer/`
 
 If the collection viewer data needs regeneration, run from the repository root:
 
@@ -43,9 +43,9 @@ npm run build:viewer-previews
 ```
 
 This pipeline now writes:
-1. lightweight viewer metadata to `../manifests/viewer_v3/collection.json`
-2. static preview SVGs to `./public/viewer_v3/svg/`
-3. static preview PNGs to `./public/viewer_v3/png/`
+1. lightweight viewer metadata to `../manifests/viewer/collection.json`
+2. static preview SVGs to `./public/viewer/svg/`
+3. static preview PNGs to `./public/viewer/png/`
 
 The collection and homepage use the static PNG previews for browsing speed, while the detail page keeps the renderer-derived SVG.
 

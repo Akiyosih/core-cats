@@ -10,17 +10,17 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, "../..");
 const RESVG_PATH = path.join(ROOT, "web", "node_modules", "@resvg", "resvg-js", "index.js");
 const CURRENT_MANIFEST_PATH = path.join(ROOT, "manifests", "final_1000_manifest_v1.json");
-const SELECTION_PATH = path.join(ROOT, "manifests", "superrare_beam_selection_v3.json");
+const SELECTION_PATH = path.join(ROOT, "manifests", "superrare_beam_selection.json");
 const LABELS_PATH = path.join(ROOT, "manifests", "trait_display_labels_v1.json");
 const DATA_SOURCE = path.join(ROOT, "foxar", "src", "CoreCatsOnchainData.sol");
 const BEAM_PATH = path.join(ROOT, "assets", "traits", "beam.png");
-const MANIFEST_OUT = path.join(ROOT, "manifests", "final_1000_manifest_v3.json");
-const SUMMARY_OUT = path.join(ROOT, "manifests", "final_1000_trait_summary_v3.json");
-const VALIDATION_OUT = path.join(ROOT, "manifests", "final_1000_validation_v3.json");
-const PREVIEW_CONSISTENCY_OUT = path.join(ROOT, "manifests", "final_1000_preview_consistency_v3.json");
-const TOKEN_REORDER_OUT = path.join(ROOT, "manifests", "beam_token_reorder_v3.json");
-const PNG24_DIR = path.join(ROOT, "art", "final", "final1000_v3", "png24");
-const REVIEW_DIR = path.join(ROOT, "art", "review", "final1000_preview_v3", "png");
+const MANIFEST_OUT = path.join(ROOT, "manifests", "final_1000_manifest.json");
+const SUMMARY_OUT = path.join(ROOT, "manifests", "final_1000_trait_summary.json");
+const VALIDATION_OUT = path.join(ROOT, "manifests", "final_1000_validation.json");
+const PREVIEW_CONSISTENCY_OUT = path.join(ROOT, "manifests", "final_1000_preview_consistency.json");
+const TOKEN_REORDER_OUT = path.join(ROOT, "manifests", "beam_token_reorder.json");
+const PNG24_DIR = path.join(ROOT, "art", "final", "final1000", "png24");
+const REVIEW_DIR = path.join(ROOT, "art", "review", "final1000_preview", "png");
 const OUTPUT_SIZE = 384;
 
 const COLLAR_NONE = 0;
@@ -617,7 +617,7 @@ async function main() {
   delete nextInputs.superrare_palette;
 
   const nextManifest = {
-    version: "final_1000_manifest_v3",
+    version: "final_1000_manifest",
     created_at: createdAt,
     inputs: {
       ...nextInputs,
@@ -625,9 +625,9 @@ async function main() {
       onchain_data_script: "scripts/reference_eth/generate_onchain_data.py",
       beam_asset_24: "assets/traits/beam.png",
       beam_asset_24_sha256: await sha256File(BEAM_PATH),
-      beam_selection: "manifests/superrare_beam_selection_v3.json",
+      beam_selection: "manifests/superrare_beam_selection.json",
       beam_selection_sha256: await sha256File(SELECTION_PATH),
-      beam_token_reorder: "manifests/beam_token_reorder_v3.json",
+      beam_token_reorder: "manifests/beam_token_reorder.json",
       notes: [
         "Legacy logo-based superrare placeholders were removed.",
         "Eight selected rare tokens were promoted in place to beam superrares.",
@@ -644,18 +644,18 @@ async function main() {
   };
 
   const summaryDoc = {
-    version: "final_1000_trait_summary_v3",
+    version: "final_1000_trait_summary",
     created_at: createdAt,
-    manifest: "manifests/final_1000_manifest_v3.json",
+    manifest: "manifests/final_1000_manifest.json",
     total: finalItems.length,
     counts: summary.counts,
     cross: summary.cross,
   };
 
   const validationDoc = {
-    version: "final_1000_validation_v3",
+    version: "final_1000_validation",
     validated_at: createdAt,
-    manifest: "manifests/final_1000_manifest_v3.json",
+    manifest: "manifests/final_1000_manifest.json",
     ok: true,
     error_count: 0,
     errors: [],
@@ -663,9 +663,9 @@ async function main() {
   };
 
   const previewConsistencyDoc = {
-    version: "final_1000_preview_consistency_v3",
+    version: "final_1000_preview_consistency",
     audited_at: createdAt,
-    manifest: "manifests/final_1000_manifest_v3.json",
+    manifest: "manifests/final_1000_manifest.json",
     ok: true,
     checked: finalItems.length,
     matched: finalItems.length,
@@ -676,10 +676,10 @@ async function main() {
   };
 
   const reorderDoc = {
-    version: "beam_token_reorder_v3",
+    version: "beam_token_reorder",
     created_at: createdAt,
     source_manifest: "manifests/final_1000_manifest_v1.json (pre-beam)",
-    selection: "manifests/superrare_beam_selection_v3.json",
+    selection: "manifests/superrare_beam_selection.json",
     rows: reorderRows,
   };
 

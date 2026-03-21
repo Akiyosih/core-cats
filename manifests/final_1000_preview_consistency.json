@@ -1,0 +1,12 @@
+{
+  "version": "final_1000_preview_consistency",
+  "audited_at": "2026-03-21T11:12:45.295Z",
+  "manifest": "manifests/final_1000_manifest.json",
+  "ok": true,
+  "checked": 1000,
+  "matched": 1000,
+  "mismatch_count": 0,
+  "error_count": 0,
+  "mismatches": [],
+  "errors": []
+}

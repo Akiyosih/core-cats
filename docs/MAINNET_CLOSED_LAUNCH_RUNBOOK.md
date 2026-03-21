@@ -95,8 +95,8 @@ Run these steps in order.
    - keep the official labels as `CoreCats` / `CCAT`
    - keep `CORECATS_TOKEN_DESCRIPTION="CoreCats is a 1,000-piece fully on-chain 24x24 SVG cat collection on Core Blockchain, built from public code and fixed manifests."`
    - keep the current no-logo beam superrare path fixed:
-     - `manifests/superrare_beam_selection_v3.json`
-     - `manifests/beam_token_reorder_v3.json`
+     - `manifests/superrare_beam_selection.json`
+     - `manifests/beam_token_reorder.json`
    - do not silently enable pilot placeholder mode during the official deploy
 3. Dry-run the deploy script without `--broadcast` first:
    - `spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript --fork-url "$CORE_MAINNET_RPC_URL" --network-id 1 --wallet-network mainnet --keystore "$DEPLOYER_KEYSTORE_PATH" --password-file "$DEPLOYER_PASSWORD_FILE"`

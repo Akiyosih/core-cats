@@ -6,9 +6,9 @@ import { Resvg } from "@resvg/resvg-js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const WEB_ROOT = path.resolve(__dirname, "..");
-const SVG_DIR = path.join(WEB_ROOT, "public", "viewer_v3", "svg");
-const PNG_DIR = path.join(WEB_ROOT, "public", "viewer_v3", "png");
-const PNG_WHITE_DIR = path.join(WEB_ROOT, "public", "viewer_v3", "png-white");
+const SVG_DIR = path.join(WEB_ROOT, "public", "viewer", "svg");
+const PNG_DIR = path.join(WEB_ROOT, "public", "viewer", "png");
+const PNG_WHITE_DIR = path.join(WEB_ROOT, "public", "viewer", "png-white");
 const OUTPUT_SIZE = 384;
 
 async function ensureDir(dirPath) {

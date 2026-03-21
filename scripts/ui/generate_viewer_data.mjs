@@ -2,11 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { Buffer } from "node:buffer";
 
-const DEFAULT_OUT_DIR = "manifests/viewer_v3";
-const DEFAULT_PUBLIC_SVG_DIR = "web/public/viewer_v3/svg";
-const DEFAULT_PUBLIC_PNG_DIR = "web/public/viewer_v3/png";
-const DEFAULT_PUBLIC_PNG_WHITE_DIR = "web/public/viewer_v3/png-white";
-const DEFAULT_PUBLIC_COLLECTION_INDEX_PATH = "web/public/viewer_v3/collection-index.json";
+const DEFAULT_OUT_DIR = "manifests/viewer";
+const DEFAULT_PUBLIC_SVG_DIR = "web/public/viewer/svg";
+const DEFAULT_PUBLIC_PNG_DIR = "web/public/viewer/png";
+const DEFAULT_PUBLIC_PNG_WHITE_DIR = "web/public/viewer/png-white";
+const DEFAULT_PUBLIC_COLLECTION_INDEX_PATH = "web/public/viewer/collection-index.json";
 const TRAIT_FILTER_ORDER = [
   ["pattern", "Pattern"],
   ["palette_id", "Color Variation"],
@@ -185,11 +185,11 @@ function buildFilterDoc(collectionItems, labelsDoc, summaryDoc, root, outDir) {
   }
 
   return {
-    version: "viewer_filters_v3",
+    version: "viewer_filters",
     generated_at: new Date().toISOString(),
-    source_manifest: "manifests/final_1000_manifest_v3.json",
+    source_manifest: "manifests/final_1000_manifest.json",
     source_trait_labels: "manifests/trait_display_labels_v1.json",
-    source_trait_summary: "manifests/final_1000_trait_summary_v3.json",
+    source_trait_summary: "manifests/final_1000_trait_summary.json",
     source_collection: normalizeRel(root, path.join(outDir, "collection.json")),
     total: collectionItems.length,
     filters,
@@ -198,10 +198,10 @@ function buildFilterDoc(collectionItems, labelsDoc, summaryDoc, root, outDir) {
 
 function buildSummaryDoc(summaryDoc, root, outDir) {
   return {
-    version: "viewer_summary_v3",
+    version: "viewer_summary",
     generated_at: new Date().toISOString(),
-    source_manifest: "manifests/final_1000_manifest_v3.json",
-    source_trait_summary: "manifests/final_1000_trait_summary_v3.json",
+    source_manifest: "manifests/final_1000_manifest.json",
+    source_trait_summary: "manifests/final_1000_trait_summary.json",
     source_collection: normalizeRel(root, path.join(outDir, "collection.json")),
     total: summaryDoc.total,
     counts: summaryDoc.counts,
@@ -211,7 +211,7 @@ function buildSummaryDoc(summaryDoc, root, outDir) {
 
 function buildCollectionIndexDoc(collectionItems, root, outDir) {
   return {
-    version: "viewer_collection_index_v3",
+    version: "viewer_collection_index",
     generated_at: new Date().toISOString(),
     source_collection: normalizeRel(root, path.join(outDir, "collection.json")),
     total: collectionItems.length,
@@ -224,7 +224,7 @@ function buildCollectionIndexDoc(collectionItems, root, outDir) {
 
 function buildDetailIndexDoc(collectionItems, root, outDir) {
   return {
-    version: "viewer_detail_index_v3",
+    version: "viewer_detail_index",
     generated_at: new Date().toISOString(),
     source_collection: normalizeRel(root, path.join(outDir, "collection.json")),
     total: collectionItems.length,
@@ -447,9 +447,9 @@ function main() {
   }
   ensureDir(path.dirname(publicCollectionIndexPath));
 
-  const manifest = readJson(path.join(root, "manifests", "final_1000_manifest_v3.json"));
+  const manifest = readJson(path.join(root, "manifests", "final_1000_manifest.json"));
   const labelsDoc = readJson(path.join(root, "manifests", "trait_display_labels_v1.json"));
-  const summaryDoc = readJson(path.join(root, "manifests", "final_1000_trait_summary_v3.json"));
+  const summaryDoc = readJson(path.join(root, "manifests", "final_1000_trait_summary.json"));
   const items = [...manifest.items].sort((a, b) => a.token_id - b.token_id);
   const data = loadDataBundle(root);
 
@@ -486,10 +486,10 @@ function main() {
 
     const svg = buildSvg(data, rec);
     const imageSvgFile = opts.emitSvgFiles ? `${String(tokenId).padStart(4, "0")}.svg` : null;
-    const imageSvgPublicPath = imageSvgFile ? `/viewer_v3/svg/${imageSvgFile}` : null;
+    const imageSvgPublicPath = imageSvgFile ? `/viewer/svg/${imageSvgFile}` : null;
     const imagePngFile = `${String(tokenId).padStart(4, "0")}.png`;
-    const imagePngPublicPath = `/viewer_v3/png/${imagePngFile}`;
-    const imagePngWhitePublicPath = `/viewer_v3/png-white/${imagePngFile}`;
+    const imagePngPublicPath = `/viewer/png/${imagePngFile}`;
+    const imagePngWhitePublicPath = `/viewer/png-white/${imagePngFile}`;
     if (imageSvgFile) {
       fs.writeFileSync(path.join(publicSvgDir, imageSvgFile), svg);
     }
@@ -529,9 +529,9 @@ function main() {
   }
 
   const collectionDoc = {
-    version: "viewer_collection_v3",
+    version: "viewer_collection",
     generated_at: new Date().toISOString(),
-    source_manifest: "manifests/final_1000_manifest_v3.json",
+    source_manifest: "manifests/final_1000_manifest.json",
     source_trait_labels: "manifests/trait_display_labels_v1.json",
     source_onchain_data: data.source_path,
     renderer_mode: "pure-js-port-of-foxar-renderer",

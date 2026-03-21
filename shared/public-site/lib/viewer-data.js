@@ -26,7 +26,7 @@ export {
 } from "./collection-utils";
 
 const ROOT_DIR = path.resolve(process.cwd(), "..");
-const VIEWER_DIR = path.join(ROOT_DIR, "manifests", "viewer_v3");
+const VIEWER_DIR = path.join(ROOT_DIR, "manifests", "viewer");
 const jsonPromiseCache = new Map();
 
 async function readJson(fileName) {

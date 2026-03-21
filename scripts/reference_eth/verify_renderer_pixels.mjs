@@ -134,7 +134,7 @@ function loadArtifact(root, rel) {
 
 async function main() {
   const root = process.cwd();
-  const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifests", "final_1000_manifest_v3.json"), "utf8"));
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifests", "final_1000_manifest.json"), "utf8"));
   const items = [...manifest.items].sort((a, b) => a.token_id - b.token_id);
 
   const expectedPng = new Map();

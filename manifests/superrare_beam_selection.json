@@ -1,0 +1,81 @@
+{
+  "version": "superrare_beam_selection",
+  "created_at": "2026-03-21T00:00:00Z",
+  "description": "Canonical beam-based superrare selection for the no-logo Core Cats launch path.",
+  "source_manifest": "manifests/final_1000_manifest_v1.json",
+  "notes": [
+    "Eight beam superrares replace selected rare tokens in place.",
+    "Two beam superrares duplicate selected common tokens and are inserted after the last token in their original pattern/palette/variant block so superrare ordering matches the same block rule used by other rare-part variants.",
+    "Current token ids 999 and 1000 are removed as legacy logo-superrare placeholders.",
+    "All ten coat patterns should end with exactly one beam superrare."
+  ],
+  "drop_current_superrare_token_ids": [
+    999,
+    1000
+  ],
+  "duplicate_insertion_rule": "insert_duplicate_after_variant_block",
+  "selected": [
+    {
+      "source_token_id": 6,
+      "source_group": "rare",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam"
+    },
+    {
+      "source_token_id": 62,
+      "source_group": "rare",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam"
+    },
+    {
+      "source_token_id": 232,
+      "source_group": "rare",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam"
+    },
+    {
+      "source_token_id": 333,
+      "source_group": "rare",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam"
+    },
+    {
+      "source_token_id": 498,
+      "source_group": "rare",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam"
+    },
+    {
+      "source_token_id": 581,
+      "source_group": "rare",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam"
+    },
+    {
+      "source_token_id": 676,
+      "source_group": "rare",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam"
+    },
+    {
+      "source_token_id": 923,
+      "source_group": "rare",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam"
+    },
+    {
+      "source_token_id": 165,
+      "source_group": "common",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam",
+      "duplicate": true
+    },
+    {
+      "source_token_id": 836,
+      "source_group": "common",
+      "target_rarity_tier": "superrare",
+      "target_rarity_type": "beam",
+      "duplicate": true
+    }
+  ]
+}

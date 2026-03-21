@@ -13,7 +13,7 @@ This document corrects the external Web UI / Mint DApp draft against the current
    - `foxar/src/CoreCatsMetadataRenderer.sol`
    - `foxar/src/CoreCatsOnchainData.sol`
 4. Final art/trait source of truth:
-   - `manifests/final_1000_manifest_v3.json`
+   - `manifests/final_1000_manifest.json`
    - `manifests/trait_display_labels_v1.json`
    - `docs/FINAL1000_TRAIT_SCHEMA.md`
 
@@ -23,7 +23,7 @@ This document corrects the external Web UI / Mint DApp draft against the current
    - `core-cats-eth` remains a reference archive, not the active delivery path.
 2. UI planning must follow current Core contract reality, not the historical ETH reference contracts.
 3. `selected.json` is not the current source of truth.
-   - Use `manifests/final_1000_manifest_v3.json` instead.
+   - Use `manifests/final_1000_manifest.json` instead.
 4. Explorer/verification wording must be Core explorer / Blockindex centric, not Etherscan centric.
 5. Current contract branch introduces quantity mint and transparent randomness via a two-step flow:
    - `commitMint(uint8 quantity, bytes32 commitHash)`
@@ -150,7 +150,7 @@ Implications:
 ### `/collection`
 This is a good early UI target because the static collection data already exists.
 
-Use `manifests/final_1000_manifest_v3.json` as the base dataset.
+Use `manifests/final_1000_manifest.json` as the base dataset.
 
 Recommended filter source of truth:
 1. `Pattern`
@@ -186,7 +186,7 @@ It should link to:
 ## Data Model Guidance
 ### Static build-time source
 Use:
-1. `manifests/final_1000_manifest_v3.json`
+1. `manifests/final_1000_manifest.json`
 2. `manifests/trait_display_labels_v1.json`
 3. `manifests/final_1000_trait_summary_v1.json`
 
@@ -249,7 +249,7 @@ Current policy:
 
 ## Recommended UI Implementation Order
 1. Extend the existing `web/` Next.js foundation
-2. Keep static collection viewer data generation from `final_1000_manifest_v3.json`
+2. Keep static collection viewer data generation from `final_1000_manifest.json`
 3. Refine `/collection`
 4. Refine `/about`
 5. Refine `/transparency`

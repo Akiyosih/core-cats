@@ -1,0 +1,243 @@
+{
+  "version": "viewer_filters",
+  "generated_at": "2026-03-21T11:13:17.689Z",
+  "source_manifest": "manifests/final_1000_manifest.json",
+  "source_trait_labels": "manifests/trait_display_labels_v1.json",
+  "source_trait_summary": "manifests/final_1000_trait_summary.json",
+  "source_collection": "manifests/viewer/collection.json",
+  "total": 1000,
+  "filters": {
+    "pattern": {
+      "trait_type_id": "Pattern",
+      "trait_type_label": "Coat Pattern",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "classic_tabby",
+          "label": "classic_tabby",
+          "count": 132
+        },
+        {
+          "id": "hachiware",
+          "label": "hachiware",
+          "count": 84
+        },
+        {
+          "id": "mackerel_tabby",
+          "label": "mackerel_tabby",
+          "count": 111
+        },
+        {
+          "id": "masked",
+          "label": "masked",
+          "count": 123
+        },
+        {
+          "id": "patched",
+          "label": "patched",
+          "count": 106
+        },
+        {
+          "id": "pointed",
+          "label": "pointed",
+          "count": 119
+        },
+        {
+          "id": "socks",
+          "label": "socks",
+          "count": 53
+        },
+        {
+          "id": "solid",
+          "label": "solid",
+          "count": 44
+        },
+        {
+          "id": "tortoiseshell",
+          "label": "tortoiseshell",
+          "count": 130
+        },
+        {
+          "id": "tuxedo",
+          "label": "tuxedo",
+          "count": 98
+        }
+      ]
+    },
+    "palette_id": {
+      "trait_type_id": "Color Variation",
+      "trait_type_label": "Colorway",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "black_solid",
+          "label": "black_solid",
+          "count": 2
+        },
+        {
+          "id": "black_white",
+          "label": "black_white",
+          "count": 21
+        },
+        {
+          "id": "cyberpunk",
+          "label": "cyberpunk",
+          "count": 86
+        },
+        {
+          "id": "earth_tone",
+          "label": "earth_tone",
+          "count": 191
+        },
+        {
+          "id": "gray_soft",
+          "label": "gray_soft",
+          "count": 82
+        },
+        {
+          "id": "ivory_brown",
+          "label": "ivory_brown",
+          "count": 8
+        },
+        {
+          "id": "orange_warm",
+          "label": "orange_warm",
+          "count": 87
+        },
+        {
+          "id": "orange_white",
+          "label": "orange_white",
+          "count": 52
+        },
+        {
+          "id": "psychedelic",
+          "label": "psychedelic",
+          "count": 100
+        },
+        {
+          "id": "space_nebula",
+          "label": "space_nebula",
+          "count": 82
+        },
+        {
+          "id": "tricolor_soft",
+          "label": "tricolor_soft",
+          "count": 97
+        },
+        {
+          "id": "tropical_fever",
+          "label": "tropical_fever",
+          "count": 103
+        },
+        {
+          "id": "zombie",
+          "label": "zombie",
+          "count": 89
+        }
+      ]
+    },
+    "category": {
+      "trait_type_id": "Category",
+      "trait_type_label": "Category",
+      "source": "manifest-only",
+      "values": [
+        {
+          "id": "natural",
+          "label": "natural",
+          "count": 540
+        },
+        {
+          "id": "special",
+          "label": "special",
+          "count": 460
+        }
+      ]
+    },
+    "collar": {
+      "trait_type_id": "Collar",
+      "trait_type_label": "Collar",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "checkered_collar",
+          "label": "Checkered Collar",
+          "count": 200
+        },
+        {
+          "id": "classic_red_collar",
+          "label": "Classic Red Collar",
+          "count": 200
+        },
+        {
+          "id": "none",
+          "label": "No Collar",
+          "count": 600
+        }
+      ]
+    },
+    "rarity_tier": {
+      "trait_type_id": "Rarity Tier",
+      "trait_type_label": "Tier",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "common",
+          "label": "Common",
+          "count": 900
+        },
+        {
+          "id": "rare",
+          "label": "Rare",
+          "count": 90
+        },
+        {
+          "id": "superrare",
+          "label": "Super Rare",
+          "count": 10
+        }
+      ]
+    },
+    "rarity_type": {
+      "trait_type_id": "Rarity Type",
+      "trait_type_label": "Special Trait",
+      "source": "onchain-attributes",
+      "values": [
+        {
+          "id": "beam",
+          "label": "Beam",
+          "count": 10
+        },
+        {
+          "id": "blue_nose",
+          "label": "Blue Nose",
+          "count": 20
+        },
+        {
+          "id": "glasses",
+          "label": "Glasses",
+          "count": 15
+        },
+        {
+          "id": "none",
+          "label": "None",
+          "count": 900
+        },
+        {
+          "id": "odd_eyes",
+          "label": "Odd Eyes",
+          "count": 20
+        },
+        {
+          "id": "red_nose",
+          "label": "Red Nose",
+          "count": 20
+        },
+        {
+          "id": "sunglasses",
+          "label": "Sunglasses",
+          "count": 15
+        }
+      ]
+    }
+  }
+}
