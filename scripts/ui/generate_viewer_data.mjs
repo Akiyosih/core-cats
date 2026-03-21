@@ -16,18 +16,17 @@ const TRAIT_FILTER_ORDER = [
   ["rarity_type", "Rarity Type"],
 ];
 
-const PATTERN_SUPERRARE = 10;
 const COLLAR_NONE = 0;
 const COLLAR_CHECKERED = 1;
 const COLLAR_CLASSIC_RED = 2;
 const RARITY_RARE = 1;
 const RARITY_SUPERRARE = 2;
-const RARITY_TYPE_CORELOGO = 6;
 const RARITY_TYPE_ODD_EYES = 1;
 const RARITY_TYPE_RED_NOSE = 2;
 const RARITY_TYPE_BLUE_NOSE = 3;
 const RARITY_TYPE_GLASSES = 4;
 const RARITY_TYPE_SUNGLASSES = 5;
+const RARITY_TYPE_BEAM = 6;
 const LAYER_BASE = 0;
 const LAYER_COLLAR_CHECKERED = 1;
 const LAYER_COLLAR_CLASSIC_RED = 2;
@@ -36,8 +35,7 @@ const LAYER_RARE_RED_NOSE = 4;
 const LAYER_RARE_BLUE_NOSE = 5;
 const LAYER_RARE_GLASSES = 6;
 const LAYER_RARE_SUNGLASSES = 7;
-const LAYER_SUPERRARE_CORE = 8;
-const LAYER_SUPERRARE_PING = 9;
+const LAYER_SUPERRARE_BEAM = 8;
 
 function parseArgs(argv) {
   const opts = {
@@ -321,10 +319,6 @@ function appendRect(parts, x, y, w, color) {
 }
 
 function renderPatternLayer(data, rec, parts) {
-  if (rec.patternId === PATTERN_SUPERRARE) {
-    return;
-  }
-
   const { offset: tupleOffset, len: tupleLen } = tupleMeta(data.colorTupleMeta, rec.colorTupleIndex);
   const slotCount = data.patternSlotCounts[rec.patternId];
   if (tupleLen < slotCount) {
@@ -397,35 +391,33 @@ function rareLayerId(rarityTypeId) {
 function buildSvg(data, rec) {
   const parts = [];
 
-  if (rec.rarityTierId === RARITY_SUPERRARE) {
-    renderFixedLayer(data, rec.rarityTypeId === RARITY_TYPE_CORELOGO ? LAYER_SUPERRARE_CORE : LAYER_SUPERRARE_PING, parts);
-  } else {
-    renderPatternLayer(data, rec, parts);
-    renderFixedLayer(data, LAYER_BASE, parts);
+  renderPatternLayer(data, rec, parts);
+  renderFixedLayer(data, LAYER_BASE, parts);
 
-    if (rec.collarTypeId === COLLAR_CHECKERED) {
-      renderFixedLayer(data, LAYER_COLLAR_CHECKERED, parts);
-    } else if (rec.collarTypeId === COLLAR_CLASSIC_RED) {
-      renderFixedLayer(data, LAYER_COLLAR_CLASSIC_RED, parts);
-    }
+  if (rec.collarTypeId === COLLAR_CHECKERED) {
+    renderFixedLayer(data, LAYER_COLLAR_CHECKERED, parts);
+  } else if (rec.collarTypeId === COLLAR_CLASSIC_RED) {
+    renderFixedLayer(data, LAYER_COLLAR_CLASSIC_RED, parts);
+  }
 
-    if (rec.rarityTierId === RARITY_RARE) {
-      const rareLayer = rareLayerId(rec.rarityTypeId);
-      if (rareLayer !== 255) {
-        renderFixedLayer(data, rareLayer, parts);
-      }
+  if (rec.rarityTierId === RARITY_RARE) {
+    const rareLayer = rareLayerId(rec.rarityTypeId);
+    if (rareLayer !== 255) {
+      renderFixedLayer(data, rareLayer, parts);
     }
+  } else if (rec.rarityTierId === RARITY_SUPERRARE && rec.rarityTypeId === RARITY_TYPE_BEAM) {
+    renderFixedLayer(data, LAYER_SUPERRARE_BEAM, parts);
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges">${parts.join("")}</svg>`;
 }
 
 function traitNamesFromRecord(rec) {
-  const patternNames = ["solid", "socks", "pointed", "patched", "hachiware", "tuxedo", "masked", "classic_tabby", "mackerel_tabby", "tortoiseshell", "superrare"];
-  const paletteNames = ["black_white", "cyberpunk", "earth_tone", "gray_soft", "orange_warm", "orange_white", "psychedelic", "space_nebula", "tricolor_soft", "tropical_fever", "zombie", "ivory_brown", "black_solid", "superrare"];
+  const patternNames = ["solid", "socks", "pointed", "patched", "hachiware", "tuxedo", "masked", "classic_tabby", "mackerel_tabby", "tortoiseshell"];
+  const paletteNames = ["black_white", "cyberpunk", "earth_tone", "gray_soft", "orange_warm", "orange_white", "psychedelic", "space_nebula", "tricolor_soft", "tropical_fever", "zombie", "ivory_brown", "black_solid"];
   const collarTypeNames = ["none", "checkered_collar", "classic_red_collar"];
   const rarityTierNames = ["common", "rare", "superrare"];
-  const rarityTypeNames = ["none", "odd_eyes", "red_nose", "blue_nose", "glasses", "sunglasses", "corelogo", "pinglogo"];
+  const rarityTypeNames = ["none", "odd_eyes", "red_nose", "blue_nose", "glasses", "sunglasses", "beam"];
 
   return {
     Pattern: patternNames[rec.patternId] || "unknown",

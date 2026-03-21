@@ -3,13 +3,11 @@ import { redirect } from "next/navigation";
 import { MintPageContent } from "./mint/page.js";
 import { getCollection, getSummary } from "../lib/viewer-data";
 import { getCorePublicConfig } from "../lib/server/core-env";
-import { isTeaserDisplayEnabled } from "../lib/server/teaser-display.js";
 import { buildBrowseHref, hasBrowseOrigin } from "../lib/site-surface-links.js";
 
 export const dynamic = "force-dynamic";
 
 const HOME_NATURAL_IDS = [272, 241, 690, 647, 322, 818, 515, 102, 922, 415];
-const HOME_SPECIAL_IDS = [48, 305, 714, 25, 903, 939, 479, 489, 1000, 999];
 
 function Metric({ value, label }) {
   return (
@@ -29,12 +27,13 @@ export default async function HomePage() {
     redirect(buildBrowseHref(config, "/"));
   }
   const [collection, summary] = await Promise.all([getCollection(), getSummary()]);
-  const teaserMode = isTeaserDisplayEnabled();
   const mintStatusHref = config.mintSurfaceEnabled ? "/mint" : "/transparency";
   const mintStatusLabel = config.mintSurfaceEnabled ? "Mint Status" : "Launch Status";
   const itemById = new Map(collection.items.map((item) => [item.token_id, item]));
   const naturalPreview = HOME_NATURAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
-  const specialPreview = HOME_SPECIAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
+  const superrarePreview = collection.items.filter((item) => item.trait_values.rarity_tier === "superrare");
+  const rarePreview = collection.items.filter((item) => item.trait_values.rarity_tier === "rare").slice(0, 2);
+  const specialPreview = [...superrarePreview, ...rarePreview].slice(0, 12);
 
   function previewSrc(item) {
     return item.image_preview_src || item.image_src || item.image_data_uri;
@@ -96,9 +95,7 @@ export default async function HomePage() {
             <header className="curated-gallery__header">
               <p className="eyebrow">Rare traits and vivid palettes</p>
               <h2>
-                {teaserMode
-                  ? "Odd eyes, colored noses, eyewear, and two reserved super rares sit on the sharper side of Core Cats."
-                  : "Odd eyes, colored noses, eyewear, and the two logo cats sit on the sharper side of Core Cats."}
+                Odd eyes, colored noses, eyewear, and beam-bearing super rares sit on the sharper side of Core Cats.
               </h2>
             </header>
             <div className="curated-gallery__grid">

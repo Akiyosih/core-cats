@@ -1,6 +1,6 @@
 {
   "version": "viewer_filters_v1",
-  "generated_at": "2026-03-12T23:54:00.573Z",
+  "generated_at": "2026-03-21T06:21:04.908Z",
   "source_manifest": "manifests/final_1000_manifest_v1.json",
   "source_trait_labels": "manifests/trait_display_labels_v1.json",
   "source_trait_summary": "manifests/final_1000_trait_summary_v1.json",
@@ -25,7 +25,7 @@
         {
           "id": "mackerel_tabby",
           "label": "mackerel_tabby",
-          "count": 110
+          "count": 111
         },
         {
           "id": "masked",
@@ -40,7 +40,7 @@
         {
           "id": "pointed",
           "label": "pointed",
-          "count": 118
+          "count": 119
         },
         {
           "id": "socks",
@@ -61,11 +61,6 @@
           "id": "tuxedo",
           "label": "tuxedo",
           "count": 98
-        },
-        {
-          "id": "superrare",
-          "label": "superrare",
-          "count": 2
         }
       ]
     },
@@ -87,7 +82,7 @@
         {
           "id": "cyberpunk",
           "label": "cyberpunk",
-          "count": 85
+          "count": 86
         },
         {
           "id": "earth_tone",
@@ -117,7 +112,7 @@
         {
           "id": "psychedelic",
           "label": "psychedelic",
-          "count": 99
+          "count": 100
         },
         {
           "id": "space_nebula",
@@ -138,11 +133,6 @@
           "id": "zombie",
           "label": "zombie",
           "count": 89
-        },
-        {
-          "id": "superrare",
-          "label": "superrare",
-          "count": 2
         }
       ]
     },
@@ -159,12 +149,7 @@
         {
           "id": "special",
           "label": "special",
-          "count": 458
-        },
-        {
-          "id": "superrare",
-          "label": "superrare",
-          "count": 2
+          "count": 460
         }
       ]
     },
@@ -176,7 +161,7 @@
         {
           "id": "checkered_collar",
           "label": "Checkered Collar",
-          "count": 200
+          "count": 201
         },
         {
           "id": "classic_red_collar",
@@ -186,7 +171,7 @@
         {
           "id": "none",
           "label": "No Collar",
-          "count": 600
+          "count": 599
         }
       ]
     },
@@ -203,12 +188,12 @@
         {
           "id": "rare",
           "label": "Rare",
-          "count": 98
+          "count": 90
         },
         {
           "id": "superrare",
           "label": "Super Rare",
-          "count": 2
+          "count": 10
         }
       ]
     },
@@ -218,19 +203,19 @@
       "source": "onchain-attributes",
       "values": [
         {
-          "id": "blue_nose",
-          "label": "Blue Nose",
-          "count": 22
+          "id": "beam",
+          "label": "Beam",
+          "count": 10
         },
         {
-          "id": "corelogo",
-          "label": "Core Logo",
-          "count": 1
+          "id": "blue_nose",
+          "label": "Blue Nose",
+          "count": 20
         },
         {
           "id": "glasses",
           "label": "Glasses",
-          "count": 16
+          "count": 15
         },
         {
           "id": "none",
@@ -240,22 +225,17 @@
         {
           "id": "odd_eyes",
           "label": "Odd Eyes",
-          "count": 22
-        },
-        {
-          "id": "pinglogo",
-          "label": "Ping Logo",
-          "count": 1
+          "count": 20
         },
         {
           "id": "red_nose",
           "label": "Red Nose",
-          "count": 22
+          "count": 20
         },
         {
           "id": "sunglasses",
           "label": "Sunglasses",
-          "count": 16
+          "count": 15
         }
       ]
     }

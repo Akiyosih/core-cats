@@ -25,7 +25,7 @@ export CORECATS_SYMBOL=CCATTEST
 export CORECATS_ALLOW_NONSTANDARD_LABELS=1
 export CORECATS_TOKEN_NAME_PREFIX=CCATTEST
 export CORECATS_TOKEN_DESCRIPTION="CCATTEST pilot for self-only CorePass mainnet validation. Non-official release."
-export CORECATS_SUPERRARE_PLACEHOLDER=1
+export CORECATS_SUPERRARE_PLACEHOLDER=0
 ```
 
 These preserve mint/security/randomness/supply while making the pilot visibly non-official.

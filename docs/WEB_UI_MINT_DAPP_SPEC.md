@@ -257,7 +257,7 @@ Current policy:
 7. Decide owner-indexing approach for `/my-cats`
 8. Replace the temporary in-memory CorePass mint session store with a durable production store
 9. Harden the CorePass callback/finalize routes for production operation
-10. Refine `/mint` around `sign -> commitMint -> auto-finalize`, while keeping any manual/operator finalize recovery internal-only
+10. Refine `/mint` around `login/wallet-bind -> commitMint -> auto-finalize`, while keeping any manual/operator finalize recovery internal-only
 11. Add any final landing page visual refinements
 
 ## Publication / Hosting Constraint
@@ -267,7 +267,7 @@ Implications:
 1. teaser publication should generally use the same app/origin that later serves public mint
 2. the default deployment target should support the current Next.js server-side routes
 3. `github.io`-style static-only publication is not the default for the current app shape
-4. teaser-facing visual curation may exclude the logo-bearing superrare cats until branding permission is settled
+4. teaser-facing visual curation does not need a separate logo-hide policy on the current no-logo beam-superrare path
 
 ## Non-Goals for the First Public UI
 1. mandatory CorePass / KYC gating

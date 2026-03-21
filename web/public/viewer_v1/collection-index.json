@@ -1,6 +1,6 @@
 {
   "version": "viewer_collection_index_v1",
-  "generated_at": "2026-03-12T23:54:00.573Z",
+  "generated_at": "2026-03-21T06:21:04.909Z",
   "source_collection": "manifests/viewer_v1/collection.json",
   "total": 1000,
   "items": [
@@ -66,8 +66,8 @@
         "palette_id": "ivory_brown",
         "category": "natural",
         "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
       }
     },
     {
@@ -682,8 +682,8 @@
         "palette_id": "orange_warm",
         "category": "natural",
         "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
       }
     },
     {
@@ -1825,9 +1825,9 @@
         "pattern": "pointed",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "classic_red_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "none",
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
       }
     },
     {
@@ -1836,7 +1836,7 @@
         "pattern": "pointed",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1858,7 +1858,7 @@
         "pattern": "pointed",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1869,7 +1869,7 @@
         "pattern": "pointed",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1880,7 +1880,7 @@
         "pattern": "pointed",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1889,9 +1889,9 @@
       "token_id": 172,
       "trait_values": {
         "pattern": "pointed",
-        "palette_id": "psychedelic",
+        "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1902,7 +1902,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1913,7 +1913,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1924,7 +1924,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1935,7 +1935,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1946,7 +1946,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1957,7 +1957,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1968,7 +1968,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1979,7 +1979,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -1990,7 +1990,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2001,7 +2001,7 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2012,20 +2012,20 @@
         "pattern": "pointed",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
       "token_id": 184,
       "trait_values": {
         "pattern": "pointed",
-        "palette_id": "tropical_fever",
+        "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "blue_nose"
       }
     },
     {
@@ -2034,7 +2034,7 @@
         "pattern": "pointed",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2045,7 +2045,7 @@
         "pattern": "pointed",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2067,7 +2067,7 @@
         "pattern": "pointed",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2078,7 +2078,7 @@
         "pattern": "pointed",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2089,7 +2089,7 @@
         "pattern": "pointed",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2100,7 +2100,7 @@
         "pattern": "pointed",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2111,9 +2111,9 @@
         "pattern": "pointed",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -2122,9 +2122,9 @@
         "pattern": "pointed",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "blue_nose"
       }
     },
     {
@@ -2133,7 +2133,7 @@
         "pattern": "pointed",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2142,9 +2142,9 @@
       "token_id": 195,
       "trait_values": {
         "pattern": "pointed",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2155,7 +2155,7 @@
         "pattern": "pointed",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2166,7 +2166,7 @@
         "pattern": "pointed",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2177,7 +2177,7 @@
         "pattern": "pointed",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2188,7 +2188,7 @@
         "pattern": "pointed",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2210,7 +2210,7 @@
         "pattern": "pointed",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2221,7 +2221,7 @@
         "pattern": "pointed",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2232,7 +2232,7 @@
         "pattern": "pointed",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2243,7 +2243,7 @@
         "pattern": "pointed",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2254,7 +2254,7 @@
         "pattern": "pointed",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2263,9 +2263,9 @@
       "token_id": 206,
       "trait_values": {
         "pattern": "pointed",
-        "palette_id": "space_nebula",
+        "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2276,13 +2276,24 @@
         "pattern": "pointed",
         "palette_id": "space_nebula",
         "category": "special",
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 208,
+      "trait_values": {
+        "pattern": "pointed",
+        "palette_id": "space_nebula",
+        "category": "special",
         "collar": "none",
         "rarity_tier": "rare",
         "rarity_type": "sunglasses"
       }
     },
     {
-      "token_id": 208,
+      "token_id": 209,
       "trait_values": {
         "pattern": "pointed",
         "palette_id": "space_nebula",
@@ -2293,7 +2304,7 @@
       }
     },
     {
-      "token_id": 209,
+      "token_id": 210,
       "trait_values": {
         "pattern": "pointed",
         "palette_id": "space_nebula",
@@ -2304,7 +2315,7 @@
       }
     },
     {
-      "token_id": 210,
+      "token_id": 211,
       "trait_values": {
         "pattern": "pointed",
         "palette_id": "space_nebula",
@@ -2315,7 +2326,7 @@
       }
     },
     {
-      "token_id": 211,
+      "token_id": 212,
       "trait_values": {
         "pattern": "pointed",
         "palette_id": "space_nebula",
@@ -2323,17 +2334,6 @@
         "collar": "none",
         "rarity_tier": "rare",
         "rarity_type": "red_nose"
-      }
-    },
-    {
-      "token_id": 212,
-      "trait_values": {
-        "pattern": "pointed",
-        "palette_id": "space_nebula",
-        "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
       }
     },
     {
@@ -2364,7 +2364,7 @@
         "pattern": "pointed",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2372,10 +2372,10 @@
     {
       "token_id": 216,
       "trait_values": {
-        "pattern": "patched",
-        "palette_id": "black_white",
-        "category": "natural",
-        "collar": "none",
+        "pattern": "pointed",
+        "palette_id": "space_nebula",
+        "category": "special",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2386,7 +2386,7 @@
         "pattern": "patched",
         "palette_id": "black_white",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2397,9 +2397,9 @@
         "pattern": "patched",
         "palette_id": "black_white",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -2409,15 +2409,15 @@
         "palette_id": "black_white",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
       "token_id": 220,
       "trait_values": {
         "pattern": "patched",
-        "palette_id": "gray_soft",
+        "palette_id": "black_white",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -2441,7 +2441,7 @@
         "pattern": "patched",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2450,9 +2450,9 @@
       "token_id": 223,
       "trait_values": {
         "pattern": "patched",
-        "palette_id": "orange_white",
+        "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2463,7 +2463,7 @@
         "pattern": "patched",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2474,7 +2474,7 @@
         "pattern": "patched",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2496,7 +2496,7 @@
         "pattern": "patched",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2507,7 +2507,7 @@
         "pattern": "patched",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2516,7 +2516,7 @@
       "token_id": 229,
       "trait_values": {
         "pattern": "patched",
-        "palette_id": "orange_warm",
+        "palette_id": "orange_white",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -2529,7 +2529,7 @@
         "pattern": "patched",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2540,7 +2540,7 @@
         "pattern": "patched",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2551,20 +2551,20 @@
         "pattern": "patched",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
       "token_id": 233,
       "trait_values": {
         "pattern": "patched",
-        "palette_id": "tricolor_soft",
+        "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
       }
     },
     {
@@ -2573,7 +2573,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2584,7 +2584,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2595,7 +2595,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2606,7 +2606,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2617,7 +2617,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2628,7 +2628,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2639,7 +2639,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2650,7 +2650,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2661,7 +2661,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2683,9 +2683,9 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -2695,8 +2695,8 @@
         "palette_id": "tricolor_soft",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
       }
     },
     {
@@ -2716,7 +2716,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2727,7 +2727,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2738,7 +2738,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2749,7 +2749,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2760,7 +2760,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2771,7 +2771,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2782,7 +2782,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2793,7 +2793,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2804,7 +2804,7 @@
         "pattern": "patched",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2813,9 +2813,9 @@
       "token_id": 256,
       "trait_values": {
         "pattern": "patched",
-        "palette_id": "earth_tone",
+        "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2859,7 +2859,7 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2870,7 +2870,7 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2892,7 +2892,7 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2903,7 +2903,7 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2914,9 +2914,9 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -2925,9 +2925,9 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -2936,7 +2936,7 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2947,7 +2947,7 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -2958,9 +2958,9 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -2970,8 +2970,8 @@
         "palette_id": "earth_tone",
         "category": "natural",
         "collar": "classic_red_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
       }
     },
     {
@@ -2980,9 +2980,9 @@
         "pattern": "patched",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -2992,12 +2992,23 @@
         "palette_id": "earth_tone",
         "category": "natural",
         "collar": "none",
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
+      }
+    },
+    {
+      "token_id": 273,
+      "trait_values": {
+        "pattern": "patched",
+        "palette_id": "earth_tone",
+        "category": "natural",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
     },
     {
-      "token_id": 273,
+      "token_id": 274,
       "trait_values": {
         "pattern": "patched",
         "palette_id": "earth_tone",
@@ -3008,7 +3019,7 @@
       }
     },
     {
-      "token_id": 274,
+      "token_id": 275,
       "trait_values": {
         "pattern": "patched",
         "palette_id": "cyberpunk",
@@ -3019,23 +3030,12 @@
       }
     },
     {
-      "token_id": 275,
-      "trait_values": {
-        "pattern": "patched",
-        "palette_id": "cyberpunk",
-        "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 276,
       "trait_values": {
         "pattern": "patched",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3046,7 +3046,7 @@
         "pattern": "patched",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3057,7 +3057,7 @@
         "pattern": "patched",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3068,7 +3068,7 @@
         "pattern": "patched",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3079,7 +3079,7 @@
         "pattern": "patched",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3090,7 +3090,7 @@
         "pattern": "patched",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3101,7 +3101,7 @@
         "pattern": "patched",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3112,7 +3112,7 @@
         "pattern": "patched",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3123,7 +3123,7 @@
         "pattern": "patched",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3132,11 +3132,11 @@
       "token_id": 285,
       "trait_values": {
         "pattern": "patched",
-        "palette_id": "psychedelic",
+        "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -3146,8 +3146,8 @@
         "palette_id": "psychedelic",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -3167,7 +3167,7 @@
         "pattern": "patched",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3178,7 +3178,7 @@
         "pattern": "patched",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3200,7 +3200,7 @@
         "pattern": "patched",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3211,7 +3211,7 @@
         "pattern": "patched",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3220,11 +3220,11 @@
       "token_id": 293,
       "trait_values": {
         "pattern": "patched",
-        "palette_id": "tropical_fever",
+        "palette_id": "psychedelic",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -3234,8 +3234,8 @@
         "palette_id": "tropical_fever",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -3256,8 +3256,8 @@
         "palette_id": "tropical_fever",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -3266,9 +3266,9 @@
         "pattern": "patched",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "rarity_type": "blue_nose"
       }
     },
     {
@@ -3277,9 +3277,9 @@
         "pattern": "patched",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "red_nose"
       }
     },
     {
@@ -3299,7 +3299,7 @@
         "pattern": "patched",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3308,9 +3308,9 @@
       "token_id": 301,
       "trait_values": {
         "pattern": "patched",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3332,7 +3332,7 @@
         "pattern": "patched",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3343,7 +3343,7 @@
         "pattern": "patched",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3354,7 +3354,7 @@
         "pattern": "patched",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3363,9 +3363,9 @@
       "token_id": 306,
       "trait_values": {
         "pattern": "patched",
-        "palette_id": "space_nebula",
+        "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3376,9 +3376,9 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -3387,9 +3387,9 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "blue_nose"
       }
     },
     {
@@ -3398,7 +3398,7 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3409,7 +3409,7 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3420,7 +3420,7 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3431,7 +3431,7 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3442,9 +3442,9 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -3453,9 +3453,9 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -3464,7 +3464,7 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3475,7 +3475,7 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3486,7 +3486,7 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3497,7 +3497,7 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3508,9 +3508,9 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -3519,9 +3519,9 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -3530,7 +3530,7 @@
         "pattern": "patched",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3538,10 +3538,10 @@
     {
       "token_id": 322,
       "trait_values": {
-        "pattern": "hachiware",
-        "palette_id": "black_white",
-        "category": "natural",
-        "collar": "none",
+        "pattern": "patched",
+        "palette_id": "space_nebula",
+        "category": "special",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3561,7 +3561,7 @@
       "token_id": 324,
       "trait_values": {
         "pattern": "hachiware",
-        "palette_id": "gray_soft",
+        "palette_id": "black_white",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -3574,7 +3574,7 @@
         "pattern": "hachiware",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3585,7 +3585,7 @@
         "pattern": "hachiware",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3607,7 +3607,7 @@
         "pattern": "hachiware",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3618,9 +3618,9 @@
         "pattern": "hachiware",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -3630,8 +3630,8 @@
         "palette_id": "gray_soft",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "red_nose"
       }
     },
     {
@@ -3640,7 +3640,7 @@
         "pattern": "hachiware",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3649,9 +3649,9 @@
       "token_id": 332,
       "trait_values": {
         "pattern": "hachiware",
-        "palette_id": "orange_white",
+        "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3662,13 +3662,24 @@
         "pattern": "hachiware",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
       "token_id": 334,
+      "trait_values": {
+        "pattern": "hachiware",
+        "palette_id": "orange_white",
+        "category": "natural",
+        "collar": "none",
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
+      }
+    },
+    {
+      "token_id": 335,
       "trait_values": {
         "pattern": "hachiware",
         "palette_id": "orange_white",
@@ -3679,7 +3690,7 @@
       }
     },
     {
-      "token_id": 335,
+      "token_id": 336,
       "trait_values": {
         "pattern": "hachiware",
         "palette_id": "orange_white",
@@ -3690,23 +3701,12 @@
       }
     },
     {
-      "token_id": 336,
-      "trait_values": {
-        "pattern": "hachiware",
-        "palette_id": "orange_warm",
-        "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 337,
       "trait_values": {
         "pattern": "hachiware",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3717,7 +3717,7 @@
         "pattern": "hachiware",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3739,7 +3739,7 @@
         "pattern": "hachiware",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3750,7 +3750,7 @@
         "pattern": "hachiware",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3761,13 +3761,24 @@
         "pattern": "hachiware",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
     },
     {
       "token_id": 343,
+      "trait_values": {
+        "pattern": "hachiware",
+        "palette_id": "orange_warm",
+        "category": "natural",
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 344,
       "trait_values": {
         "pattern": "hachiware",
         "palette_id": "tricolor_soft",
@@ -3778,7 +3789,7 @@
       }
     },
     {
-      "token_id": 344,
+      "token_id": 345,
       "trait_values": {
         "pattern": "hachiware",
         "palette_id": "earth_tone",
@@ -3789,7 +3800,7 @@
       }
     },
     {
-      "token_id": 345,
+      "token_id": 346,
       "trait_values": {
         "pattern": "hachiware",
         "palette_id": "earth_tone",
@@ -3800,23 +3811,12 @@
       }
     },
     {
-      "token_id": 346,
-      "trait_values": {
-        "pattern": "hachiware",
-        "palette_id": "earth_tone",
-        "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 347,
       "trait_values": {
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3827,7 +3827,7 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3871,7 +3871,7 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3882,7 +3882,7 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3893,9 +3893,9 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -3905,8 +3905,8 @@
         "palette_id": "earth_tone",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
       }
     },
     {
@@ -3915,7 +3915,7 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3926,7 +3926,7 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3937,7 +3937,7 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3948,7 +3948,7 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3959,7 +3959,7 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3970,7 +3970,7 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -3992,13 +3992,24 @@
         "pattern": "hachiware",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
     },
     {
       "token_id": 364,
+      "trait_values": {
+        "pattern": "hachiware",
+        "palette_id": "earth_tone",
+        "category": "natural",
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 365,
       "trait_values": {
         "pattern": "hachiware",
         "palette_id": "cyberpunk",
@@ -4009,23 +4020,12 @@
       }
     },
     {
-      "token_id": 365,
-      "trait_values": {
-        "pattern": "hachiware",
-        "palette_id": "cyberpunk",
-        "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 366,
       "trait_values": {
         "pattern": "hachiware",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4036,7 +4036,7 @@
         "pattern": "hachiware",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4047,7 +4047,7 @@
         "pattern": "hachiware",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4058,7 +4058,7 @@
         "pattern": "hachiware",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4069,7 +4069,7 @@
         "pattern": "hachiware",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4078,9 +4078,9 @@
       "token_id": 371,
       "trait_values": {
         "pattern": "hachiware",
-        "palette_id": "psychedelic",
+        "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4091,9 +4091,9 @@
         "pattern": "hachiware",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -4102,9 +4102,9 @@
         "pattern": "hachiware",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "red_nose"
       }
     },
     {
@@ -4135,7 +4135,7 @@
         "pattern": "hachiware",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4146,7 +4146,7 @@
         "pattern": "hachiware",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4157,7 +4157,7 @@
         "pattern": "hachiware",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4168,7 +4168,7 @@
         "pattern": "hachiware",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4179,20 +4179,20 @@
         "pattern": "hachiware",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
       "token_id": 381,
       "trait_values": {
         "pattern": "hachiware",
-        "palette_id": "tropical_fever",
+        "palette_id": "psychedelic",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
       }
     },
     {
@@ -4201,7 +4201,7 @@
         "pattern": "hachiware",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4212,7 +4212,7 @@
         "pattern": "hachiware",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4223,7 +4223,7 @@
         "pattern": "hachiware",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4234,7 +4234,7 @@
         "pattern": "hachiware",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4256,7 +4256,7 @@
         "pattern": "hachiware",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4267,7 +4267,7 @@
         "pattern": "hachiware",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4278,7 +4278,7 @@
         "pattern": "hachiware",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4287,7 +4287,7 @@
       "token_id": 390,
       "trait_values": {
         "pattern": "hachiware",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -4300,7 +4300,7 @@
         "pattern": "hachiware",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4311,7 +4311,7 @@
         "pattern": "hachiware",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4322,7 +4322,7 @@
         "pattern": "hachiware",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4333,7 +4333,7 @@
         "pattern": "hachiware",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4344,7 +4344,7 @@
         "pattern": "hachiware",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4355,7 +4355,7 @@
         "pattern": "hachiware",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4366,7 +4366,7 @@
         "pattern": "hachiware",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4377,7 +4377,7 @@
         "pattern": "hachiware",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4388,7 +4388,7 @@
         "pattern": "hachiware",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4397,9 +4397,9 @@
       "token_id": 400,
       "trait_values": {
         "pattern": "hachiware",
-        "palette_id": "space_nebula",
+        "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4462,9 +4462,9 @@
     {
       "token_id": 406,
       "trait_values": {
-        "pattern": "tuxedo",
-        "palette_id": "black_white",
-        "category": "natural",
+        "pattern": "hachiware",
+        "palette_id": "space_nebula",
+        "category": "special",
         "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
@@ -4474,7 +4474,7 @@
       "token_id": 407,
       "trait_values": {
         "pattern": "tuxedo",
-        "palette_id": "gray_soft",
+        "palette_id": "black_white",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -4487,9 +4487,9 @@
         "pattern": "tuxedo",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -4498,9 +4498,9 @@
         "pattern": "tuxedo",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "red_nose"
       }
     },
     {
@@ -4509,7 +4509,7 @@
         "pattern": "tuxedo",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4520,7 +4520,7 @@
         "pattern": "tuxedo",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4531,7 +4531,7 @@
         "pattern": "tuxedo",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4553,9 +4553,9 @@
         "pattern": "tuxedo",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -4565,8 +4565,8 @@
         "palette_id": "gray_soft",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -4575,7 +4575,7 @@
         "pattern": "tuxedo",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4586,7 +4586,7 @@
         "pattern": "tuxedo",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4597,20 +4597,20 @@
         "pattern": "tuxedo",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
       "token_id": 419,
       "trait_values": {
         "pattern": "tuxedo",
-        "palette_id": "orange_white",
+        "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
       }
     },
     {
@@ -4619,7 +4619,7 @@
         "pattern": "tuxedo",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4630,7 +4630,7 @@
         "pattern": "tuxedo",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4639,7 +4639,7 @@
       "token_id": 422,
       "trait_values": {
         "pattern": "tuxedo",
-        "palette_id": "orange_warm",
+        "palette_id": "orange_white",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -4652,7 +4652,7 @@
         "pattern": "tuxedo",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4663,7 +4663,7 @@
         "pattern": "tuxedo",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4674,7 +4674,7 @@
         "pattern": "tuxedo",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4685,7 +4685,7 @@
         "pattern": "tuxedo",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4696,7 +4696,7 @@
         "pattern": "tuxedo",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4707,7 +4707,7 @@
         "pattern": "tuxedo",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4729,7 +4729,7 @@
         "pattern": "tuxedo",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4738,9 +4738,9 @@
       "token_id": 431,
       "trait_values": {
         "pattern": "tuxedo",
-        "palette_id": "tricolor_soft",
+        "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4751,7 +4751,7 @@
         "pattern": "tuxedo",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4762,9 +4762,9 @@
         "pattern": "tuxedo",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -4774,8 +4774,8 @@
         "palette_id": "tricolor_soft",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -4795,7 +4795,7 @@
         "pattern": "tuxedo",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4804,9 +4804,9 @@
       "token_id": 437,
       "trait_values": {
         "pattern": "tuxedo",
-        "palette_id": "earth_tone",
+        "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4817,7 +4817,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4828,7 +4828,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4839,7 +4839,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4850,7 +4850,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4861,7 +4861,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4872,7 +4872,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4883,7 +4883,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4894,7 +4894,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4905,7 +4905,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4916,7 +4916,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4927,7 +4927,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4938,7 +4938,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4971,7 +4971,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4982,7 +4982,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -4993,7 +4993,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5004,7 +5004,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5015,7 +5015,7 @@
         "pattern": "tuxedo",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5024,9 +5024,9 @@
       "token_id": 457,
       "trait_values": {
         "pattern": "tuxedo",
-        "palette_id": "cyberpunk",
-        "category": "special",
-        "collar": "none",
+        "palette_id": "earth_tone",
+        "category": "natural",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5059,7 +5059,7 @@
         "pattern": "tuxedo",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5070,7 +5070,7 @@
         "pattern": "tuxedo",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5081,7 +5081,7 @@
         "pattern": "tuxedo",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5103,9 +5103,9 @@
         "pattern": "tuxedo",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -5115,15 +5115,15 @@
         "palette_id": "cyberpunk",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
       "token_id": 466,
       "trait_values": {
         "pattern": "tuxedo",
-        "palette_id": "psychedelic",
+        "palette_id": "cyberpunk",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -5136,7 +5136,7 @@
         "pattern": "tuxedo",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5147,7 +5147,7 @@
         "pattern": "tuxedo",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5202,13 +5202,24 @@
         "pattern": "tuxedo",
         "palette_id": "psychedelic",
         "category": "special",
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 474,
+      "trait_values": {
+        "pattern": "tuxedo",
+        "palette_id": "psychedelic",
+        "category": "special",
         "collar": "classic_red_collar",
         "rarity_tier": "rare",
         "rarity_type": "red_nose"
       }
     },
     {
-      "token_id": 474,
+      "token_id": 475,
       "trait_values": {
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
@@ -5219,7 +5230,7 @@
       }
     },
     {
-      "token_id": 475,
+      "token_id": 476,
       "trait_values": {
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
@@ -5230,23 +5241,12 @@
       }
     },
     {
-      "token_id": 476,
-      "trait_values": {
-        "pattern": "tuxedo",
-        "palette_id": "tropical_fever",
-        "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 477,
       "trait_values": {
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5257,7 +5257,7 @@
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5268,13 +5268,24 @@
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
         "category": "special",
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 480,
+      "trait_values": {
+        "pattern": "tuxedo",
+        "palette_id": "tropical_fever",
+        "category": "special",
         "collar": "classic_red_collar",
         "rarity_tier": "rare",
         "rarity_type": "red_nose"
       }
     },
     {
-      "token_id": 480,
+      "token_id": 481,
       "trait_values": {
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
@@ -5285,7 +5296,7 @@
       }
     },
     {
-      "token_id": 481,
+      "token_id": 482,
       "trait_values": {
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
@@ -5296,23 +5307,12 @@
       }
     },
     {
-      "token_id": 482,
-      "trait_values": {
-        "pattern": "tuxedo",
-        "palette_id": "tropical_fever",
-        "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 483,
       "trait_values": {
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5323,7 +5323,7 @@
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5334,7 +5334,7 @@
         "pattern": "tuxedo",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5343,9 +5343,9 @@
       "token_id": 486,
       "trait_values": {
         "pattern": "tuxedo",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5356,7 +5356,7 @@
         "pattern": "tuxedo",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5367,7 +5367,7 @@
         "pattern": "tuxedo",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5378,9 +5378,9 @@
         "pattern": "tuxedo",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -5389,9 +5389,9 @@
         "pattern": "tuxedo",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
       }
     },
     {
@@ -5420,7 +5420,7 @@
       "token_id": 493,
       "trait_values": {
         "pattern": "tuxedo",
-        "palette_id": "space_nebula",
+        "palette_id": "zombie",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -5433,7 +5433,7 @@
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5444,7 +5444,7 @@
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5455,7 +5455,7 @@
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5466,7 +5466,7 @@
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5477,9 +5477,9 @@
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -5488,9 +5488,9 @@
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
       }
     },
     {
@@ -5499,7 +5499,7 @@
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5510,13 +5510,24 @@
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
         "category": "special",
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 502,
+      "trait_values": {
+        "pattern": "tuxedo",
+        "palette_id": "space_nebula",
+        "category": "special",
         "collar": "none",
         "rarity_tier": "rare",
         "rarity_type": "glasses"
       }
     },
     {
-      "token_id": 502,
+      "token_id": 503,
       "trait_values": {
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
@@ -5527,7 +5538,7 @@
       }
     },
     {
-      "token_id": 503,
+      "token_id": 504,
       "trait_values": {
         "pattern": "tuxedo",
         "palette_id": "space_nebula",
@@ -5538,21 +5549,10 @@
       }
     },
     {
-      "token_id": 504,
-      "trait_values": {
-        "pattern": "masked",
-        "palette_id": "black_white",
-        "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 505,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "gray_soft",
+        "palette_id": "black_white",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -5565,9 +5565,9 @@
         "pattern": "masked",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -5576,9 +5576,9 @@
         "pattern": "masked",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -5587,7 +5587,7 @@
         "pattern": "masked",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5598,7 +5598,7 @@
         "pattern": "masked",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5609,7 +5609,7 @@
         "pattern": "masked",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5620,7 +5620,7 @@
         "pattern": "masked",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5631,7 +5631,7 @@
         "pattern": "masked",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5640,9 +5640,9 @@
       "token_id": 513,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "orange_white",
+        "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5653,7 +5653,7 @@
         "pattern": "masked",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5664,7 +5664,7 @@
         "pattern": "masked",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5675,7 +5675,7 @@
         "pattern": "masked",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5684,9 +5684,9 @@
       "token_id": 517,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "orange_warm",
+        "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5697,7 +5697,7 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5708,7 +5708,7 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5719,7 +5719,7 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5730,7 +5730,7 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5741,9 +5741,9 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -5752,9 +5752,9 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "blue_nose"
       }
     },
     {
@@ -5763,7 +5763,7 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5774,7 +5774,7 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5785,7 +5785,7 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5796,7 +5796,7 @@
         "pattern": "masked",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5805,7 +5805,7 @@
       "token_id": 528,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "tricolor_soft",
+        "palette_id": "orange_warm",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -5818,7 +5818,7 @@
         "pattern": "masked",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5840,9 +5840,9 @@
         "pattern": "masked",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -5852,8 +5852,8 @@
         "palette_id": "tricolor_soft",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "blue_nose"
       }
     },
     {
@@ -5863,8 +5863,8 @@
         "palette_id": "tricolor_soft",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -5874,8 +5874,8 @@
         "palette_id": "tricolor_soft",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "blue_nose"
       }
     },
     {
@@ -5895,7 +5895,7 @@
         "pattern": "masked",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5906,7 +5906,7 @@
         "pattern": "masked",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5917,7 +5917,7 @@
         "pattern": "masked",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5928,7 +5928,7 @@
         "pattern": "masked",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5939,7 +5939,7 @@
         "pattern": "masked",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5948,9 +5948,9 @@
       "token_id": 541,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "earth_tone",
+        "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5961,7 +5961,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -5983,13 +5983,24 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 545,
+      "trait_values": {
+        "pattern": "masked",
+        "palette_id": "earth_tone",
+        "category": "natural",
         "collar": "none",
         "rarity_tier": "rare",
         "rarity_type": "blue_nose"
       }
     },
     {
-      "token_id": 545,
+      "token_id": 546,
       "trait_values": {
         "pattern": "masked",
         "palette_id": "earth_tone",
@@ -6000,7 +6011,7 @@
       }
     },
     {
-      "token_id": 546,
+      "token_id": 547,
       "trait_values": {
         "pattern": "masked",
         "palette_id": "earth_tone",
@@ -6011,23 +6022,12 @@
       }
     },
     {
-      "token_id": 547,
-      "trait_values": {
-        "pattern": "masked",
-        "palette_id": "earth_tone",
-        "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 548,
       "trait_values": {
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6038,7 +6038,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6060,7 +6060,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6071,7 +6071,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6093,7 +6093,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6104,7 +6104,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6126,7 +6126,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6137,7 +6137,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6148,7 +6148,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6159,7 +6159,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6170,7 +6170,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6181,7 +6181,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6192,7 +6192,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6203,7 +6203,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6214,7 +6214,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6225,7 +6225,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6236,7 +6236,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6247,7 +6247,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6258,7 +6258,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6269,7 +6269,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6280,7 +6280,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6291,7 +6291,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6302,7 +6302,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6313,7 +6313,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6324,7 +6324,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6335,7 +6335,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6346,7 +6346,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6357,7 +6357,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6368,7 +6368,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6379,7 +6379,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6390,9 +6390,9 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -6402,8 +6402,8 @@
         "palette_id": "earth_tone",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
       }
     },
     {
@@ -6412,7 +6412,7 @@
         "pattern": "masked",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6421,9 +6421,9 @@
       "token_id": 584,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "cyberpunk",
-        "category": "special",
-        "collar": "none",
+        "palette_id": "earth_tone",
+        "category": "natural",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6434,7 +6434,7 @@
         "pattern": "masked",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6445,7 +6445,7 @@
         "pattern": "masked",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6456,7 +6456,7 @@
         "pattern": "masked",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6465,9 +6465,9 @@
       "token_id": 588,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "psychedelic",
+        "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6478,7 +6478,7 @@
         "pattern": "masked",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6489,7 +6489,7 @@
         "pattern": "masked",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6533,9 +6533,9 @@
         "pattern": "masked",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -6544,9 +6544,9 @@
         "pattern": "masked",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "red_nose"
       }
     },
     {
@@ -6555,7 +6555,7 @@
         "pattern": "masked",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6564,9 +6564,9 @@
       "token_id": 597,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "tropical_fever",
+        "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6577,7 +6577,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6588,7 +6588,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6599,7 +6599,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6610,7 +6610,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6621,7 +6621,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6632,7 +6632,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6643,7 +6643,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6654,7 +6654,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6665,7 +6665,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6676,7 +6676,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6687,7 +6687,7 @@
         "pattern": "masked",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6696,9 +6696,9 @@
       "token_id": 609,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6709,7 +6709,7 @@
         "pattern": "masked",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6720,7 +6720,7 @@
         "pattern": "masked",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6731,7 +6731,7 @@
         "pattern": "masked",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6742,7 +6742,7 @@
         "pattern": "masked",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6775,7 +6775,7 @@
         "pattern": "masked",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6784,9 +6784,9 @@
       "token_id": 617,
       "trait_values": {
         "pattern": "masked",
-        "palette_id": "space_nebula",
+        "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6819,7 +6819,7 @@
         "pattern": "masked",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6830,7 +6830,7 @@
         "pattern": "masked",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6841,7 +6841,7 @@
         "pattern": "masked",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6852,7 +6852,7 @@
         "pattern": "masked",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6885,7 +6885,7 @@
         "pattern": "masked",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6893,10 +6893,10 @@
     {
       "token_id": 627,
       "trait_values": {
-        "pattern": "classic_tabby",
-        "palette_id": "ivory_brown",
-        "category": "natural",
-        "collar": "none",
+        "pattern": "masked",
+        "palette_id": "space_nebula",
+        "category": "special",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6905,7 +6905,7 @@
       "token_id": 628,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "gray_soft",
+        "palette_id": "ivory_brown",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -6918,7 +6918,7 @@
         "pattern": "classic_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6929,7 +6929,7 @@
         "pattern": "classic_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6940,7 +6940,7 @@
         "pattern": "classic_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6951,7 +6951,7 @@
         "pattern": "classic_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6973,7 +6973,7 @@
         "pattern": "classic_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6984,7 +6984,7 @@
         "pattern": "classic_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -6995,7 +6995,7 @@
         "pattern": "classic_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7004,9 +7004,9 @@
       "token_id": 637,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "orange_white",
+        "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7017,7 +7017,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7028,7 +7028,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7039,7 +7039,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7050,7 +7050,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7061,7 +7061,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7072,7 +7072,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7083,7 +7083,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7092,9 +7092,9 @@
       "token_id": 645,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "orange_warm",
+        "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7105,7 +7105,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7116,7 +7116,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7127,7 +7127,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7138,7 +7138,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7160,7 +7160,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7171,7 +7171,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7182,7 +7182,7 @@
         "pattern": "classic_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7191,9 +7191,9 @@
       "token_id": 654,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "tricolor_soft",
+        "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7215,7 +7215,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7226,7 +7226,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7237,7 +7237,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7248,7 +7248,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7259,7 +7259,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7281,9 +7281,9 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -7293,8 +7293,8 @@
         "palette_id": "tricolor_soft",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -7303,7 +7303,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7314,7 +7314,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7325,7 +7325,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7336,7 +7336,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7347,7 +7347,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7358,7 +7358,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7369,7 +7369,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7380,7 +7380,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7391,7 +7391,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7402,7 +7402,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7413,7 +7413,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7424,7 +7424,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7435,9 +7435,9 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -7446,9 +7446,9 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
       }
     },
     {
@@ -7457,7 +7457,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7466,9 +7466,9 @@
       "token_id": 679,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "earth_tone",
+        "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7479,7 +7479,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7490,7 +7490,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7501,7 +7501,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7512,7 +7512,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7523,7 +7523,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7534,7 +7534,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7545,7 +7545,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7556,7 +7556,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7567,7 +7567,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7578,7 +7578,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7600,7 +7600,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7611,7 +7611,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7633,7 +7633,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7644,7 +7644,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7655,7 +7655,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7666,7 +7666,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7677,7 +7677,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7688,7 +7688,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7699,7 +7699,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7710,7 +7710,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7732,7 +7732,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7743,7 +7743,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7754,7 +7754,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7765,7 +7765,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7776,7 +7776,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7787,7 +7787,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7798,7 +7798,7 @@
         "pattern": "classic_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7807,9 +7807,9 @@
       "token_id": 710,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "cyberpunk",
-        "category": "special",
-        "collar": "none",
+        "palette_id": "earth_tone",
+        "category": "natural",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7820,7 +7820,7 @@
         "pattern": "classic_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7831,7 +7831,7 @@
         "pattern": "classic_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7853,7 +7853,7 @@
         "pattern": "classic_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7864,7 +7864,7 @@
         "pattern": "classic_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7886,7 +7886,7 @@
         "pattern": "classic_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7895,9 +7895,9 @@
       "token_id": 718,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "psychedelic",
+        "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7930,7 +7930,7 @@
         "pattern": "classic_tabby",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7941,7 +7941,7 @@
         "pattern": "classic_tabby",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7972,7 +7972,7 @@
       "token_id": 725,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "tropical_fever",
+        "palette_id": "psychedelic",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -7985,7 +7985,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -7996,7 +7996,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8007,7 +8007,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8018,7 +8018,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8029,7 +8029,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8040,7 +8040,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8051,7 +8051,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8062,7 +8062,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8073,7 +8073,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8084,7 +8084,7 @@
         "pattern": "classic_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8093,7 +8093,7 @@
       "token_id": 736,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -8106,7 +8106,7 @@
         "pattern": "classic_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8117,7 +8117,7 @@
         "pattern": "classic_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8128,7 +8128,7 @@
         "pattern": "classic_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8139,7 +8139,7 @@
         "pattern": "classic_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8150,7 +8150,7 @@
         "pattern": "classic_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8161,7 +8161,7 @@
         "pattern": "classic_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8172,9 +8172,9 @@
         "pattern": "classic_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -8183,9 +8183,9 @@
         "pattern": "classic_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
       }
     },
     {
@@ -8205,7 +8205,7 @@
         "pattern": "classic_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8214,9 +8214,9 @@
       "token_id": 747,
       "trait_values": {
         "pattern": "classic_tabby",
-        "palette_id": "space_nebula",
+        "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8228,8 +8228,8 @@
         "palette_id": "space_nebula",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -8239,8 +8239,8 @@
         "palette_id": "space_nebula",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
       }
     },
     {
@@ -8282,7 +8282,7 @@
         "pattern": "classic_tabby",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8293,9 +8293,9 @@
         "pattern": "classic_tabby",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -8305,8 +8305,8 @@
         "palette_id": "space_nebula",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -8326,7 +8326,7 @@
         "pattern": "classic_tabby",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8337,13 +8337,24 @@
         "pattern": "classic_tabby",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
     },
     {
       "token_id": 759,
+      "trait_values": {
+        "pattern": "classic_tabby",
+        "palette_id": "space_nebula",
+        "category": "special",
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 760,
       "trait_values": {
         "pattern": "mackerel_tabby",
         "palette_id": "black_white",
@@ -8354,7 +8365,7 @@
       }
     },
     {
-      "token_id": 760,
+      "token_id": 761,
       "trait_values": {
         "pattern": "mackerel_tabby",
         "palette_id": "ivory_brown",
@@ -8365,23 +8376,12 @@
       }
     },
     {
-      "token_id": 761,
-      "trait_values": {
-        "pattern": "mackerel_tabby",
-        "palette_id": "gray_soft",
-        "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 762,
       "trait_values": {
         "pattern": "mackerel_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8392,7 +8392,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8403,9 +8403,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -8414,9 +8414,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "blue_nose"
       }
     },
     {
@@ -8447,7 +8447,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8456,9 +8456,9 @@
       "token_id": 769,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "orange_white",
+        "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8469,9 +8469,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -8480,9 +8480,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -8491,7 +8491,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8500,9 +8500,9 @@
       "token_id": 773,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "orange_warm",
+        "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8513,7 +8513,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8524,7 +8524,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8546,9 +8546,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -8557,9 +8557,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -8568,7 +8568,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8579,7 +8579,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8590,9 +8590,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -8601,9 +8601,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -8612,7 +8612,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8621,9 +8621,9 @@
       "token_id": 784,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "tricolor_soft",
+        "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8634,7 +8634,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8645,7 +8645,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8656,7 +8656,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8667,7 +8667,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8678,7 +8678,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8689,7 +8689,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8700,9 +8700,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -8712,8 +8712,8 @@
         "palette_id": "tricolor_soft",
         "category": "natural",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
       }
     },
     {
@@ -8722,7 +8722,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8733,7 +8733,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8744,7 +8744,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8755,7 +8755,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8766,7 +8766,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8775,9 +8775,9 @@
       "token_id": 798,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "earth_tone",
+        "palette_id": "tricolor_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8788,7 +8788,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8799,7 +8799,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8810,7 +8810,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8821,7 +8821,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8832,7 +8832,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8843,7 +8843,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8854,7 +8854,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8865,7 +8865,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8876,7 +8876,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8887,7 +8887,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8909,7 +8909,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8920,7 +8920,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8931,7 +8931,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8942,7 +8942,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8953,7 +8953,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8964,7 +8964,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -8975,9 +8975,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -8986,9 +8986,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -9008,7 +9008,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9019,7 +9019,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9030,7 +9030,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9041,7 +9041,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9052,13 +9052,24 @@
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
         "category": "natural",
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 824,
+      "trait_values": {
+        "pattern": "mackerel_tabby",
+        "palette_id": "earth_tone",
+        "category": "natural",
         "collar": "checkered_collar",
         "rarity_tier": "rare",
         "rarity_type": "glasses"
       }
     },
     {
-      "token_id": 824,
+      "token_id": 825,
       "trait_values": {
         "pattern": "mackerel_tabby",
         "palette_id": "earth_tone",
@@ -9069,7 +9080,7 @@
       }
     },
     {
-      "token_id": 825,
+      "token_id": 826,
       "trait_values": {
         "pattern": "mackerel_tabby",
         "palette_id": "cyberpunk",
@@ -9080,23 +9091,12 @@
       }
     },
     {
-      "token_id": 826,
-      "trait_values": {
-        "pattern": "mackerel_tabby",
-        "palette_id": "cyberpunk",
-        "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
       "token_id": 827,
       "trait_values": {
         "pattern": "mackerel_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9107,7 +9107,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9129,7 +9129,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9140,9 +9140,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -9152,8 +9152,8 @@
         "palette_id": "cyberpunk",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -9162,7 +9162,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9171,9 +9171,9 @@
       "token_id": 834,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "psychedelic",
+        "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9206,7 +9206,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9217,7 +9217,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9228,9 +9228,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "checkered_collar",
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
       }
     },
     {
@@ -9270,9 +9270,9 @@
       "token_id": 843,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "tropical_fever",
+        "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9281,7 +9281,7 @@
       "token_id": 844,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "tropical_fever",
+        "palette_id": "psychedelic",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -9295,8 +9295,8 @@
         "palette_id": "tropical_fever",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -9317,8 +9317,8 @@
         "palette_id": "tropical_fever",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -9338,7 +9338,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9347,7 +9347,7 @@
       "token_id": 850,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -9358,11 +9358,11 @@
       "token_id": 851,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
         "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -9382,9 +9382,9 @@
         "pattern": "mackerel_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -9404,7 +9404,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9448,7 +9448,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9457,7 +9457,7 @@
       "token_id": 860,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "space_nebula",
+        "palette_id": "zombie",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -9468,9 +9468,9 @@
       "token_id": 861,
       "trait_values": {
         "pattern": "mackerel_tabby",
-        "palette_id": "space_nebula",
+        "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9525,7 +9525,7 @@
         "pattern": "mackerel_tabby",
         "palette_id": "space_nebula",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9555,6 +9555,28 @@
     {
       "token_id": 869,
       "trait_values": {
+        "pattern": "mackerel_tabby",
+        "palette_id": "space_nebula",
+        "category": "special",
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 870,
+      "trait_values": {
+        "pattern": "mackerel_tabby",
+        "palette_id": "space_nebula",
+        "category": "special",
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 871,
+      "trait_values": {
         "pattern": "tortoiseshell",
         "palette_id": "black_white",
         "category": "natural",
@@ -9564,7 +9586,7 @@
       }
     },
     {
-      "token_id": 870,
+      "token_id": 872,
       "trait_values": {
         "pattern": "tortoiseshell",
         "palette_id": "black_white",
@@ -9572,28 +9594,6 @@
         "collar": "none",
         "rarity_tier": "rare",
         "rarity_type": "red_nose"
-      }
-    },
-    {
-      "token_id": 871,
-      "trait_values": {
-        "pattern": "tortoiseshell",
-        "palette_id": "gray_soft",
-        "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
-      "token_id": 872,
-      "trait_values": {
-        "pattern": "tortoiseshell",
-        "palette_id": "gray_soft",
-        "category": "natural",
-        "collar": "checkered_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
       }
     },
     {
@@ -9613,7 +9613,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9624,7 +9624,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9646,7 +9646,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9657,7 +9657,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9679,9 +9679,9 @@
         "pattern": "tortoiseshell",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -9701,9 +9701,9 @@
         "pattern": "tortoiseshell",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -9723,16 +9723,16 @@
         "pattern": "tortoiseshell",
         "palette_id": "gray_soft",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "none",
+        "rarity_tier": "superrare",
+        "rarity_type": "beam"
       }
     },
     {
       "token_id": 885,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "orange_white",
+        "palette_id": "gray_soft",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -9743,11 +9743,11 @@
       "token_id": 886,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "orange_white",
+        "palette_id": "gray_soft",
         "category": "natural",
         "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -9768,8 +9768,8 @@
         "palette_id": "orange_white",
         "category": "natural",
         "collar": "classic_red_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "red_nose"
       }
     },
     {
@@ -9789,7 +9789,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9800,7 +9800,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9822,16 +9822,16 @@
         "pattern": "tortoiseshell",
         "palette_id": "orange_white",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
       "token_id": 894,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "orange_warm",
+        "palette_id": "orange_white",
         "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
@@ -9842,11 +9842,11 @@
       "token_id": 895,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "orange_warm",
+        "palette_id": "orange_white",
         "category": "natural",
         "collar": "classic_red_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -9888,7 +9888,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9910,7 +9910,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -9932,9 +9932,9 @@
         "pattern": "tortoiseshell",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "classic_red_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -9954,9 +9954,9 @@
         "pattern": "tortoiseshell",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
+        "collar": "checkered_collar",
         "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -9976,9 +9976,9 @@
         "pattern": "tortoiseshell",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "red_nose"
       }
     },
     {
@@ -9998,7 +9998,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10018,9 +10018,9 @@
       "token_id": 911,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "tricolor_soft",
+        "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10029,11 +10029,11 @@
       "token_id": 912,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "tricolor_soft",
+        "palette_id": "orange_warm",
         "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "glasses"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -10053,13 +10053,35 @@
         "pattern": "tortoiseshell",
         "palette_id": "tricolor_soft",
         "category": "natural",
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "glasses"
+      }
+    },
+    {
+      "token_id": 915,
+      "trait_values": {
+        "pattern": "tortoiseshell",
+        "palette_id": "tricolor_soft",
+        "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
     },
     {
-      "token_id": 915,
+      "token_id": 916,
+      "trait_values": {
+        "pattern": "tortoiseshell",
+        "palette_id": "tricolor_soft",
+        "category": "natural",
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 917,
       "trait_values": {
         "pattern": "tortoiseshell",
         "palette_id": "tricolor_soft",
@@ -10070,7 +10092,7 @@
       }
     },
     {
-      "token_id": 916,
+      "token_id": 918,
       "trait_values": {
         "pattern": "tortoiseshell",
         "palette_id": "earth_tone",
@@ -10081,7 +10103,7 @@
       }
     },
     {
-      "token_id": 917,
+      "token_id": 919,
       "trait_values": {
         "pattern": "tortoiseshell",
         "palette_id": "earth_tone",
@@ -10089,28 +10111,6 @@
         "collar": "none",
         "rarity_tier": "rare",
         "rarity_type": "glasses"
-      }
-    },
-    {
-      "token_id": 918,
-      "trait_values": {
-        "pattern": "tortoiseshell",
-        "palette_id": "earth_tone",
-        "category": "natural",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
-      }
-    },
-    {
-      "token_id": 919,
-      "trait_values": {
-        "pattern": "tortoiseshell",
-        "palette_id": "earth_tone",
-        "category": "natural",
-        "collar": "classic_red_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
       }
     },
     {
@@ -10130,7 +10130,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "earth_tone",
         "category": "natural",
-        "collar": "checkered_collar",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10153,16 +10153,16 @@
         "palette_id": "earth_tone",
         "category": "natural",
         "collar": "checkered_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
       "token_id": 924,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "cyberpunk",
-        "category": "special",
+        "palette_id": "earth_tone",
+        "category": "natural",
         "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
@@ -10172,11 +10172,11 @@
       "token_id": 925,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "cyberpunk",
-        "category": "special",
-        "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "palette_id": "earth_tone",
+        "category": "natural",
+        "collar": "checkered_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "red_nose"
       }
     },
     {
@@ -10284,7 +10284,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10296,8 +10296,8 @@
         "palette_id": "cyberpunk",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -10307,30 +10307,30 @@
         "palette_id": "cyberpunk",
         "category": "special",
         "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
       "token_id": 938,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "psychedelic",
+        "palette_id": "cyberpunk",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "red_nose"
       }
     },
     {
       "token_id": 939,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "psychedelic",
+        "palette_id": "cyberpunk",
         "category": "special",
-        "collar": "checkered_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "classic_red_collar",
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -10350,7 +10350,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10405,7 +10405,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10449,7 +10449,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10493,7 +10493,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10515,7 +10515,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10537,7 +10537,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10548,7 +10548,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "psychedelic",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10557,7 +10557,7 @@
       "token_id": 960,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "tropical_fever",
+        "palette_id": "psychedelic",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -10568,9 +10568,9 @@
       "token_id": 961,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "tropical_fever",
+        "palette_id": "psychedelic",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10592,7 +10592,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10603,7 +10603,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10614,7 +10614,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "classic_red_collar",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10625,7 +10625,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10636,7 +10636,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10713,7 +10713,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10735,7 +10735,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
+        "collar": "checkered_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10768,7 +10768,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10777,7 +10777,7 @@
       "token_id": 980,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -10788,11 +10788,11 @@
       "token_id": 981,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "zombie",
+        "palette_id": "tropical_fever",
         "category": "special",
-        "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "sunglasses"
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -10812,9 +10812,9 @@
         "pattern": "tortoiseshell",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "collar": "none",
+        "rarity_tier": "rare",
+        "rarity_type": "sunglasses"
       }
     },
     {
@@ -10834,7 +10834,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10845,9 +10845,9 @@
         "pattern": "tortoiseshell",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "classic_red_collar",
-        "rarity_tier": "rare",
-        "rarity_type": "blue_nose"
+        "collar": "none",
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -10857,8 +10857,8 @@
         "palette_id": "zombie",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "rare",
-        "rarity_type": "red_nose"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     },
     {
@@ -10868,8 +10868,8 @@
         "palette_id": "zombie",
         "category": "special",
         "collar": "classic_red_collar",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "blue_nose"
       }
     },
     {
@@ -10880,7 +10880,7 @@
         "category": "special",
         "collar": "none",
         "rarity_tier": "rare",
-        "rarity_type": "odd_eyes"
+        "rarity_type": "red_nose"
       }
     },
     {
@@ -10889,7 +10889,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "none",
+        "collar": "classic_red_collar",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10901,8 +10901,8 @@
         "palette_id": "zombie",
         "category": "special",
         "collar": "none",
-        "rarity_tier": "common",
-        "rarity_type": "none"
+        "rarity_tier": "rare",
+        "rarity_type": "odd_eyes"
       }
     },
     {
@@ -10911,7 +10911,7 @@
         "pattern": "tortoiseshell",
         "palette_id": "zombie",
         "category": "special",
-        "collar": "checkered_collar",
+        "collar": "none",
         "rarity_tier": "common",
         "rarity_type": "none"
       }
@@ -10964,7 +10964,7 @@
       "token_id": 997,
       "trait_values": {
         "pattern": "tortoiseshell",
-        "palette_id": "space_nebula",
+        "palette_id": "zombie",
         "category": "special",
         "collar": "none",
         "rarity_tier": "common",
@@ -10975,6 +10975,17 @@
       "token_id": 998,
       "trait_values": {
         "pattern": "tortoiseshell",
+        "palette_id": "zombie",
+        "category": "special",
+        "collar": "checkered_collar",
+        "rarity_tier": "common",
+        "rarity_type": "none"
+      }
+    },
+    {
+      "token_id": 999,
+      "trait_values": {
+        "pattern": "tortoiseshell",
         "palette_id": "space_nebula",
         "category": "special",
         "collar": "none",
@@ -10983,25 +10994,14 @@
       }
     },
     {
-      "token_id": 999,
-      "trait_values": {
-        "pattern": "superrare",
-        "palette_id": "superrare",
-        "category": "superrare",
-        "collar": "none",
-        "rarity_tier": "superrare",
-        "rarity_type": "pinglogo"
-      }
-    },
-    {
       "token_id": 1000,
       "trait_values": {
-        "pattern": "superrare",
-        "palette_id": "superrare",
-        "category": "superrare",
+        "pattern": "tortoiseshell",
+        "palette_id": "space_nebula",
+        "category": "special",
         "collar": "none",
-        "rarity_tier": "superrare",
-        "rarity_type": "corelogo"
+        "rarity_tier": "common",
+        "rarity_type": "none"
       }
     }
   ]

@@ -71,14 +71,14 @@ Pilot-specific deploy knobs:
 3. `CORECATS_ALLOW_NONSTANDARD_LABELS=1`
 4. `CORECATS_TOKEN_NAME_PREFIX`
 5. `CORECATS_TOKEN_DESCRIPTION`
-6. `CORECATS_SUPERRARE_PLACEHOLDER=1`
+6. `CORECATS_SUPERRARE_PLACEHOLDER=0`
 
 These values are consumed by `foxar/script/CoreCatsDeploy.s.sol`.
 
 The intended use is:
 1. keep mint/security/randomness/supply logic unchanged
 2. change only pilot-facing labels and description
-3. optionally replace the two logo-bearing superrare visuals with neutral placeholder art during the pilot
+3. keep the same beam-based superrare art that the official no-logo path uses
 
 ## Recommended Sequence If Fallback Is Used
 1. Set pilot-specific deploy env values only where needed.
@@ -88,10 +88,10 @@ The intended use is:
      - `CORECATS_ALLOW_NONSTANDARD_LABELS=1`
      - `CORECATS_TOKEN_NAME_PREFIX=CCATTEST`
      - `CORECATS_TOKEN_DESCRIPTION="CCATTEST pilot for self-only CorePass mainnet validation. Non-official release."`
-     - `CORECATS_SUPERRARE_PLACEHOLDER=1`
+     - `CORECATS_SUPERRARE_PLACEHOLDER=0`
 2. Deploy the self-only pilot contract on mainnet.
 3. Validate:
-   - CorePass sign
+   - CorePass login / wallet bind
    - CorePass commit tx
    - finalize path
    - callback/app-link behavior

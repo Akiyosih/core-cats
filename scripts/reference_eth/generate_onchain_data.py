@@ -3,7 +3,7 @@
 Generate compact Solidity constants from final_1000_manifest and 24x24 PNG assets.
 
 Output:
-- contracts/CoreCatsOnchainData.sol
+- foxar/src/CoreCatsOnchainData.sol
 """
 
 from __future__ import annotations
@@ -12,14 +12,13 @@ import argparse
 import json
 import struct
 import zlib
-from collections import Counter
 from pathlib import Path
 from typing import Iterable
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = ROOT / "manifests" / "final_1000_manifest_v1.json"
-DEFAULT_OUT = ROOT / "contracts" / "CoreCatsOnchainData.sol"
-ART_ROOT = ROOT / "art"
+DEFAULT_OUT = ROOT / "foxar" / "src" / "CoreCatsOnchainData.sol"
+CURRENT_DATA_SOURCE = ROOT / "foxar" / "src" / "CoreCatsOnchainData.sol"
 
 PATTERN_NAMES = [
     "solid",
@@ -32,21 +31,7 @@ PATTERN_NAMES = [
     "classic_tabby",
     "mackerel_tabby",
     "tortoiseshell",
-    "superrare",
 ]
-
-PATTERN_SOURCE_FILES = {
-    "solid": "solid.png",
-    "socks": "calico.png",
-    "pointed": "pointed.png",
-    "patched": "calico.png",
-    "hachiware": "hachiware.png",
-    "tuxedo": "tuxedo.png",
-    "masked": "masked.png",
-    "classic_tabby": "classic_tabby.png",
-    "mackerel_tabby": "mackerel_tabby.png",
-    "tortoiseshell": "tortoiseshell.png",
-}
 
 PALETTE_NAMES = [
     "black_white",
@@ -62,7 +47,6 @@ PALETTE_NAMES = [
     "zombie",
     "ivory_brown",
     "black_solid",
-    "superrare",
 ]
 
 COLLAR_TYPE_NAMES = ["none", "checkered_collar", "classic_red_collar"]
@@ -74,8 +58,7 @@ RARITY_TYPE_NAMES = [
     "blue_nose",
     "glasses",
     "sunglasses",
-    "corelogo",
-    "pinglogo",
+    "beam",
 ]
 
 # Order used by renderer.
@@ -88,8 +71,7 @@ FIXED_LAYER_FILES = [
     "art/parts/rare/blue_nose.png",  # 5
     "art/parts/rare/glasses.png",  # 6
     "art/parts/rare/sunglasses.png",  # 7
-    "art/tmp/Core1.png",  # 8
-    "art/tmp/Ping1.png",  # 9
+    "assets/traits/beam.png",  # 8
 ]
 
 
@@ -207,90 +189,96 @@ def to_hex(data: bytes) -> str:
     return data.hex()
 
 
+def parse_hex_constant(source_text: str, constant_name: str) -> bytes:
+    marker = f'bytes internal constant {constant_name} = hex"'
+    start = source_text.find(marker)
+    if start == -1:
+        raise RuntimeError(f"hex constant not found: {constant_name}")
+    start += len(marker)
+    end = source_text.find('";', start)
+    if end == -1:
+        raise RuntimeError(f"hex constant terminator not found: {constant_name}")
+    return bytes.fromhex(source_text[start:end])
+
+
+def current_layer_meta(meta: bytes, layer_id: int) -> tuple[int, int]:
+    pos = layer_id * 3
+    return ((meta[pos] << 8) | meta[pos + 1], meta[pos + 2])
+
+
+def load_current_data_bundle() -> dict[str, bytes]:
+    source_text = CURRENT_DATA_SOURCE.read_text(encoding="utf-8")
+    return {
+        "pattern_slot_counts": parse_hex_constant(source_text, "PATTERN_SLOT_COUNTS"),
+        "pattern_masks": parse_hex_constant(source_text, "PATTERN_MASKS"),
+        "fixed_layer_pixels": parse_hex_constant(source_text, "FIXED_LAYER_PIXELS"),
+        "fixed_layer_palette_meta": parse_hex_constant(source_text, "FIXED_LAYER_PALETTE_META"),
+        "fixed_layer_palettes": parse_hex_constant(source_text, "FIXED_LAYER_PALETTES"),
+    }
+
+
 def build_pattern_data() -> tuple[bytes, bytes]:
-    slot_counts: list[int] = []
-    packed_all = bytearray()
-
-    for name in PATTERN_NAMES[:-1]:  # exclude synthetic "superrare"
-        source_name = PATTERN_SOURCE_FILES[name]
-        path = ART_ROOT / "parts" / "patterns" / source_name
-        px = parse_png_rgba(path)
-        counts: Counter[tuple[int, int, int]] = Counter()
-        for row in px:
-            for r, g, b, a in row:
-                if a > 0:
-                    counts[(r, g, b)] += 1
-
-        # Must match generation logic in scripts/generate_variants.py (area-desc order)
-        slot_colors = [rgb for rgb, _ in counts.most_common()]
-        slot_count = len(slot_colors)
-        if not (1 <= slot_count <= 4):
-            raise RuntimeError(f"Unexpected slot count={slot_count} in {path}")
-
-        color_to_idx = {rgb: i + 1 for i, rgb in enumerate(slot_colors)}
-        nibs: list[int] = []
-        for row in px:
-            for r, g, b, a in row:
-                if a == 0:
-                    nibs.append(0)
-                else:
-                    nibs.append(color_to_idx[(r, g, b)])
-
-        packed = pack_nibbles(nibs)
-        if len(packed) != 288:
-            raise RuntimeError(f"Pattern packed size must be 288 bytes, got {len(packed)} in {path}")
-
-        slot_counts.append(slot_count)
-        packed_all.extend(packed)
-
-    # append synthetic superrare entry (no slots, no mask)
-    slot_counts.append(0)
-
+    current = load_current_data_bundle()
+    slot_counts = current["pattern_slot_counts"][: len(PATTERN_NAMES)]
+    pattern_masks = current["pattern_masks"][: len(PATTERN_NAMES) * 288]
     if len(slot_counts) != len(PATTERN_NAMES):
-        raise RuntimeError("pattern slot count table size mismatch")
-
-    return bytes(slot_counts), bytes(packed_all)
+        raise RuntimeError(f"Unexpected pattern slot count length: {len(slot_counts)}")
+    if len(pattern_masks) != len(PATTERN_NAMES) * 288:
+        raise RuntimeError(f"Unexpected pattern masks length: {len(pattern_masks)}")
+    return slot_counts, pattern_masks
 
 
 def build_fixed_layer_data() -> tuple[bytes, bytes, bytes]:
-    packed_pixels = bytearray()
-    palette_meta = bytearray()  # 3 bytes per layer: offset_hi, offset_lo, count
-    palette_bytes = bytearray()
+    current = load_current_data_bundle()
+    current_pixels = current["fixed_layer_pixels"]
+    current_meta = current["fixed_layer_palette_meta"]
+    current_palettes = current["fixed_layer_palettes"]
 
-    for rel in FIXED_LAYER_FILES:
-        path = ROOT / rel
-        px = parse_png_rgba(path)
+    preserved_layers = 8
+    packed_pixels = bytearray(current_pixels[: preserved_layers * 288])
+    palette_meta = bytearray()
 
-        color_to_idx: dict[tuple[int, int, int], int] = {}
-        palette_list: list[tuple[int, int, int]] = []
-        nibs: list[int] = []
+    max_palette_end = 0
+    for layer_id in range(preserved_layers):
+        offset, count = current_layer_meta(current_meta, layer_id)
+        palette_meta.extend(current_meta[layer_id * 3 : layer_id * 3 + 3])
+        max_palette_end = max(max_palette_end, offset + count)
 
-        for row in px:
-            for r, g, b, a in row:
-                if a == 0:
-                    nibs.append(0)
-                    continue
-                key = (r, g, b)
-                if key not in color_to_idx:
-                    if len(palette_list) >= 15:
-                        raise RuntimeError(f"Too many colors in {path}")
-                    palette_list.append(key)
-                    color_to_idx[key] = len(palette_list)  # 1..15
-                nibs.append(color_to_idx[key])
+    palette_bytes = bytearray(current_palettes[: max_palette_end * 3])
 
-        packed = pack_nibbles(nibs)
-        if len(packed) != 288:
-            raise RuntimeError(f"Fixed layer packed size must be 288 bytes, got {len(packed)} in {path}")
+    beam_path = ROOT / "assets" / "traits" / "beam.png"
+    px = parse_png_rgba(beam_path)
 
-        offset = len(palette_bytes) // 3
-        count = len(palette_list)
-        if offset > 65535:
-            raise RuntimeError("Palette offset overflow")
-        palette_meta.extend(bytes([(offset >> 8) & 0xFF, offset & 0xFF, count]))
-        for r, g, b in palette_list:
-            palette_bytes.extend(bytes([r, g, b]))
+    color_to_idx: dict[tuple[int, int, int], int] = {}
+    palette_list: list[tuple[int, int, int]] = []
+    nibs: list[int] = []
 
-        packed_pixels.extend(packed)
+    for row in px:
+        for r, g, b, a in row:
+            if a == 0:
+                nibs.append(0)
+                continue
+            key = (r, g, b)
+            if key not in color_to_idx:
+                if len(palette_list) >= 15:
+                    raise RuntimeError(f"Too many colors in {beam_path}")
+                palette_list.append(key)
+                color_to_idx[key] = len(palette_list)
+            nibs.append(color_to_idx[key])
+
+    packed = pack_nibbles(nibs)
+    if len(packed) != 288:
+        raise RuntimeError(f"Fixed layer packed size must be 288 bytes, got {len(packed)} in {beam_path}")
+
+    offset = len(palette_bytes) // 3
+    count = len(palette_list)
+    if offset > 65535:
+        raise RuntimeError("Palette offset overflow")
+    palette_meta.extend(bytes([(offset >> 8) & 0xFF, offset & 0xFF, count]))
+    for r, g, b in palette_list:
+        palette_bytes.extend(bytes([r, g, b]))
+
+    packed_pixels.extend(packed)
 
     return bytes(packed_pixels), bytes(palette_meta), bytes(palette_bytes)
 
@@ -402,9 +390,9 @@ contract CoreCatsOnchainData {{
     // RGB triples, indexed by COLOR_TUPLE_META offset
     bytes internal constant COLOR_TUPLE_COLORS = hex"{to_hex(tuple_colors)}";
 
-    // 1 byte per pattern id (including synthetic superrare=0 slots)
+    // 1 byte per pattern id
     bytes internal constant PATTERN_SLOT_COUNTS = hex"{to_hex(pattern_slot_counts)}";
-    // Nibble-packed 24x24 maps for all non-superrare patterns, 288 bytes each.
+    // Nibble-packed 24x24 maps for all patterns, 288 bytes each.
     // Value: 0=transparent, 1..4=slot index
     bytes internal constant PATTERN_MASKS = hex"{to_hex(pattern_masks)}";
 

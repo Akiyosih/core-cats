@@ -12,10 +12,19 @@ Core deployment/compiler source of truth remains:
 
 ## Inputs
 1. `manifests/final_1000_manifest_v1.json`
-2. `manifests/trait_display_labels_v1.json`
-3. `manifests/final_1000_trait_summary_v1.json`
-4. `foxar/src/CoreCatsOnchainData.sol`
-5. `foxar/src/CoreCatsMetadataRenderer.sol`
+2. `manifests/superrare_beam_selection_v1.json`
+3. `manifests/beam_token_reorder_v1.json`
+4. `manifests/trait_display_labels_v1.json`
+5. `manifests/final_1000_trait_summary_v1.json`
+6. `foxar/src/CoreCatsOnchainData.sol`
+7. `foxar/src/CoreCatsMetadataRenderer.sol`
+
+Upstream rebuild step when the canonical art/ordering changes:
+
+```bash
+node scripts/ui/rebuild_final1000_beam_outputs.mjs
+python3 scripts/reference_eth/generate_onchain_data.py
+```
 
 ## Command
 Run from the `core-cats` repository root:
@@ -73,6 +82,7 @@ Optional:
 3. It ports the current renderer logic into JS and verifies decoded traits against `final_1000_manifest_v1.json` before writing outputs.
 4. The current web UI uses static PNG previews for browsing performance while preserving the same renderer-derived SVG for detail views and verification.
 5. This is the current source for `/collection`, `/about`, and `/transparency`, and it remains compatible with the live `commit-finalize` mint flow.
+6. For the no-logo launch path, the upstream manifest rebuild also fixes the canonical `beam` superrare selection and the final token reorder map before viewer generation runs.
 
 ## External Review Shortcut
 If an outside reader wants a practical renderer / metadata check without rebuilding the whole site, the shortest path is:

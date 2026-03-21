@@ -74,7 +74,7 @@ Use this section only if the project explicitly chooses the pilot fallback.
 1. Deploy a separate pilot contract with logic as close as possible to the official CoreCats contract.
 2. Keep the pilot self-only and clearly labeled as non-official.
 3. Validate the real mainnet wallet flow there first:
-   - CorePass sign
+   - CorePass login / wallet bind
    - CorePass commit tx
    - relayer finalize, with any manual/operator recovery kept internal-only
    - callback/app-link return behavior
@@ -93,7 +93,10 @@ Run these steps in order.
    - keep `CORECATS_ALLOW_NONSTANDARD_LABELS=0`
    - keep `CORECATS_SUPERRARE_PLACEHOLDER=0`
    - keep the official labels as `CoreCats` / `CCAT`
-   - if the two logo-bearing superrares are still unresolved, finalize that art decision before broadcast rather than silently carrying pilot placeholder mode into the official deploy
+   - keep the current no-logo beam superrare path fixed:
+     - `manifests/superrare_beam_selection_v1.json`
+     - `manifests/beam_token_reorder_v1.json`
+   - do not silently enable pilot placeholder mode during the official deploy
 3. Dry-run the deploy script without `--broadcast` first:
    - `spark script script/CoreCatsDeploy.s.sol:CoreCatsDeployScript --fork-url "$CORE_MAINNET_RPC_URL" --network-id 1 --wallet-network mainnet --keystore "$DEPLOYER_KEYSTORE_PATH" --password-file "$DEPLOYER_PASSWORD_FILE"`
    - use this to confirm the constructor inputs and mainnet label guard before the real deploy window
@@ -128,7 +131,7 @@ This is the first real production-path mint.
 1. Use one dedicated canary wallet operationally, even though the contract itself remains permissionless.
 2. Start from the public production web app.
 3. Run the intended wallet flow:
-   - CorePass sign
+   - CorePass login / wallet bind
    - CorePass commit tx
    - relayer finalize, with any manual/operator recovery kept internal-only
 4. Confirm:

@@ -146,7 +146,7 @@ Tasks:
    - `public`: mint is open
 4. Ensure the site can be updated with mainnet contract addresses without changing the mint flow structure.
 5. Keep GitHub, manifest, and transparency links live before mint opens.
-6. Follow `docs/WEB_PUBLICATION_POLICY.md` for teaser/publication constraints, including stable origin and teaser-facing logo-art handling.
+6. Follow `docs/WEB_PUBLICATION_POLICY.md` for teaser/publication constraints, including stable origin and the current no-logo beam-superrare publication path.
 
 Exit criteria:
 1. Website is publicly reachable.
@@ -179,7 +179,7 @@ Run a controlled live mint on mainnet before public opening.
 Tasks:
 1. Use one intended operator wallet operationally for the smoke, even though the contract itself is permissionless.
 2. Perform the first live canary mint through the intended production flow.
-   - preferred path: CorePass sign -> CorePass commit tx -> relayer finalize, with any manual/operator recovery kept internal-only
+   - preferred path: CorePass login/wallet bind -> CorePass commit tx -> relayer finalize, with any manual/operator recovery kept internal-only
 3. Confirm end-to-end behavior:
    - CorePass callback/app-link behavior
    - commit tx visibility

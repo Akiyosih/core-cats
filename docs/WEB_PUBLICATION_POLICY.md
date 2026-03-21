@@ -169,29 +169,20 @@ Because a public deployment may need resource-hardening before it can be left on
 2. keep mint/canary validation on a private operator-controlled surface until the public browse surface is hardened
 3. resume public mint later on the community-facing public site after canary and publication readiness both recover
 
-## Logo-Bearing Superrare Policy
-Until branding permission is clearly settled, the two logo-bearing cats should not be used in public teaser-facing materials.
+## Superrare Publication Policy
+The current official path uses beam-based no-logo superrares.
 
-This applies to:
-1. homepage hero or curated preview
-2. README preview image if it visibly includes them
-3. teaser-facing collection showcases or promotional assets
-
-Allowed alternatives:
-1. substitute other cats in teaser-facing curation
-2. use placeholder treatment if needed
-3. keep the real token data in canonical manifests while excluding the visuals from teaser-facing publication
-
-Important distinction:
-1. this is a teaser/public-facing display policy
-2. it does not automatically require canonical token metadata to change
+Implication:
+1. no separate teaser-facing hide policy is required for superrare art
+2. public teaser, collection, and transparency surfaces may show the canonical beam superrare tokens directly
+3. if a degraded pilot display is ever needed, treat it as an explicit temporary presentation choice rather than as the default canonical/public state
 
 ## Practical Guidance
 When implementing or updating the site:
 1. treat teaser publication as the `closed` state of the current app
 2. do not fork the main launch logic unless there is a concrete operational reason
 3. keep the same site structure from teaser through mint where possible
-4. if logo-bearing superrares are temporarily hidden, do so as a presentation-layer policy
+4. publish the canonical beam superrare set directly unless a temporary pilot-only downgrade is explicitly chosen
 5. keep transparency and GitHub links available before mint opens
 6. prefer host/origin continuity for the eventual public mint
 7. during recovery, it is acceptable to separate public teaser publication from private canary validation if that materially improves cost control or stability
@@ -202,4 +193,4 @@ When implementing or updating the site:
 3. Until publication hardening is complete, the public teaser surface and private canary mint surface may be separate.
 4. Public mint should be enabled later through launch-state changes and the live CorePass backend.
 5. After mint closes, the browsing/transparency surface should remain online in the cheapest maintainable form.
-6. Logo-bearing superrares should stay out of teaser-facing visuals until branding permission is clear.
+6. The no-logo beam superrares can be shown on teaser-facing visuals without a separate branding gate.

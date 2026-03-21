@@ -1,7 +1,5 @@
 export const FILTER_KEYS = ["pattern", "category", "palette_id", "collar", "rarity_tier", "rarity_type"];
 
-const HIDDEN_SUPERRARE_TYPES = new Set(["corelogo", "pinglogo"]);
-
 function normalizeSingleValue(value) {
   if (!value) return null;
   const raw = Array.isArray(value) ? String(value[0] || "") : String(value);
@@ -10,20 +8,7 @@ function normalizeSingleValue(value) {
 }
 
 export function sanitizeTeaserSearchParams(searchParams = {}, teaserEnabled = false) {
-  if (!teaserEnabled) {
-    return searchParams;
-  }
-
-  const sanitized = { ...searchParams };
-  const rawRarityType = Array.isArray(sanitized.rarity_type)
-    ? String(sanitized.rarity_type[0] || "")
-    : String(sanitized.rarity_type || "");
-
-  if (HIDDEN_SUPERRARE_TYPES.has(rawRarityType)) {
-    delete sanitized.rarity_type;
-  }
-
-  return sanitized;
+  return searchParams;
 }
 
 export function normalizeFilterState(searchParams = {}, teaserEnabled = false) {

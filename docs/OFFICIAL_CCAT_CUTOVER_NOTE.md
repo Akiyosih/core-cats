@@ -17,9 +17,9 @@ Use this together with:
 ## Current Operator Order
 As of `2026-03-14`, the intended next sequence is:
 
-1. finalize the official super-rare decision:
-   - keep the approved logo-bearing super-rares only if branding permission arrives in time, or
-   - replace those two official super-rares before the official deploy inputs are finalized
+1. keep the finalized no-logo superrare inputs fixed:
+   - `manifests/superrare_beam_selection_v1.json`
+   - `manifests/beam_token_reorder_v1.json`
 2. run the official `CCAT` deploy dry-run:
    - source `foxar/.env.mainnet-official.example`
    - add the live RPC / keystore / password inputs in the local shell
@@ -89,13 +89,12 @@ Keep these secrets or live values outside the repository:
 4. final deployer address
 
 ## Super-Rare Decision Gate
-Do not treat pilot placeholder mode as the default official path.
+The current official path is already fixed to the no-logo beam superrare set.
 
-Before the official deploy, make one explicit decision:
-1. branding permission arrives in time, so the approved logo-bearing super-rares remain in the official renderer
-2. branding permission does not arrive, so those two official super-rares are replaced before the official renderer/deploy inputs are finalized
-
-Do not silently carry `CORECATS_SUPERRARE_PLACEHOLDER=1` into the official deploy.
+Before the official deploy, confirm only this:
+1. `manifests/superrare_beam_selection_v1.json` is the intended canonical 10-token source list
+2. `manifests/beam_token_reorder_v1.json` is the intended final token reorder map
+3. `CORECATS_SUPERRARE_PLACEHOLDER=0` remains unchanged for the official deploy
 
 ## Official Deploy Dry-Run Commands
 Stage the official env locally:

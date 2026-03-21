@@ -1,47 +1,22 @@
 {
   "version": "final_1000_validation_v1",
-  "validated_at": "2026-03-07T03:45:01Z",
+  "validated_at": "2026-03-21T06:16:20.354Z",
   "manifest": "manifests/final_1000_manifest_v1.json",
   "ok": true,
   "error_count": 0,
   "errors": [],
   "counts": {
-    "by_rarity_tier": {
-      "common": 900,
-      "rare": 98,
-      "superrare": 2
-    },
-    "by_rarity_type": {
-      "none": 900,
-      "red_nose": 22,
-      "blue_nose": 22,
-      "odd_eyes": 22,
-      "sunglasses": 16,
-      "glasses": 16,
-      "pinglogo": 1,
-      "corelogo": 1
-    },
-    "by_collar": {
-      "without_collar": 600,
-      "with_collar": 400
-    },
-    "by_collar_type": {
-      "none": 600,
-      "checkered_collar": 200,
-      "classic_red_collar": 200
-    },
     "by_pattern": {
       "solid": 44,
       "socks": 53,
-      "pointed": 118,
+      "pointed": 119,
       "patched": 106,
       "hachiware": 84,
       "tuxedo": 98,
       "masked": 123,
       "classic_tabby": 132,
-      "mackerel_tabby": 110,
-      "tortoiseshell": 130,
-      "superrare": 2
+      "mackerel_tabby": 111,
+      "tortoiseshell": 130
     },
     "by_palette_id": {
       "black_solid": 2,
@@ -50,14 +25,40 @@
       "gray_soft": 82,
       "orange_warm": 87,
       "earth_tone": 191,
-      "cyberpunk": 85,
-      "psychedelic": 99,
+      "cyberpunk": 86,
+      "psychedelic": 100,
       "tropical_fever": 103,
       "zombie": 89,
       "space_nebula": 82,
       "orange_white": 52,
-      "tricolor_soft": 97,
-      "superrare": 2
+      "tricolor_soft": 97
+    },
+    "by_collar": {
+      "with_collar": 401,
+      "without_collar": 599
+    },
+    "by_collar_type": {
+      "none": 599,
+      "checkered_collar": 201,
+      "classic_red_collar": 200
+    },
+    "by_rarity_tier": {
+      "common": 900,
+      "superrare": 10,
+      "rare": 90
+    },
+    "by_rarity_type": {
+      "none": 900,
+      "beam": 10,
+      "red_nose": 20,
+      "blue_nose": 20,
+      "odd_eyes": 20,
+      "sunglasses": 15,
+      "glasses": 15
+    },
+    "by_category": {
+      "natural": 540,
+      "special": 460
     }
   }
 }

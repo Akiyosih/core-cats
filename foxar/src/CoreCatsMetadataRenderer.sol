@@ -20,9 +20,6 @@ contract CoreCatsMetadataRenderer {
 
     uint256 public constant MAX_SUPPLY = 1000;
 
-    // pattern ids
-    uint8 private constant PATTERN_SUPERRARE = 10;
-
     // collar type ids
     uint8 private constant COLLAR_NONE = 0;
     uint8 private constant COLLAR_CHECKERED = 1;
@@ -40,8 +37,7 @@ contract CoreCatsMetadataRenderer {
     uint8 private constant RARITY_TYPE_BLUE_NOSE = 3;
     uint8 private constant RARITY_TYPE_GLASSES = 4;
     uint8 private constant RARITY_TYPE_SUNGLASSES = 5;
-    uint8 private constant RARITY_TYPE_CORELOGO = 6;
-    uint8 private constant RARITY_TYPE_PINGLOGO = 7;
+    uint8 private constant RARITY_TYPE_BEAM = 6;
 
     // fixed layer ids in CoreCatsOnchainData
     uint8 private constant LAYER_BASE = 0;
@@ -52,8 +48,7 @@ contract CoreCatsMetadataRenderer {
     uint8 private constant LAYER_RARE_BLUE_NOSE = 5;
     uint8 private constant LAYER_RARE_GLASSES = 6;
     uint8 private constant LAYER_RARE_SUNGLASSES = 7;
-    uint8 private constant LAYER_SUPERRARE_CORE = 8;
-    uint8 private constant LAYER_SUPERRARE_PING = 9;
+    uint8 private constant LAYER_SUPERRARE_BEAM = 8;
 
     ICoreCatsOnchainData public immutable data;
     string public tokenNamePrefix;
@@ -184,28 +179,25 @@ contract CoreCatsMetadataRenderer {
     function _buildImageData(DataBundle memory d, TokenRecord memory rec) internal view returns (string memory) {
         string memory body = "";
 
-        if (rec.rarityTierId == RARITY_SUPERRARE) {
+        body = _renderPatternLayer(d, rec, body);
+        body = _renderFixedLayer(d, LAYER_BASE, body);
+
+        if (rec.collarTypeId == COLLAR_CHECKERED) {
+            body = _renderFixedLayer(d, LAYER_COLLAR_CHECKERED, body);
+        } else if (rec.collarTypeId == COLLAR_CLASSIC_RED) {
+            body = _renderFixedLayer(d, LAYER_COLLAR_CLASSIC_RED, body);
+        }
+
+        if (rec.rarityTierId == RARITY_RARE) {
+            uint8 rareLayer = _rareLayerId(rec.rarityTypeId);
+            if (rareLayer != 255) {
+                body = _renderFixedLayer(d, rareLayer, body);
+            }
+        } else if (rec.rarityTierId == RARITY_SUPERRARE) {
             if (superrarePlaceholderEnabled) {
-                body = _renderSuperrarePlaceholder(rec.rarityTypeId, body);
+                body = _renderBeamPlaceholder(body);
             } else {
-                uint8 layerId = rec.rarityTypeId == RARITY_TYPE_CORELOGO ? LAYER_SUPERRARE_CORE : LAYER_SUPERRARE_PING;
-                body = _renderFixedLayer(d, layerId, body);
-            }
-        } else {
-            body = _renderPatternLayer(d, rec, body);
-            body = _renderFixedLayer(d, LAYER_BASE, body);
-
-            if (rec.collarTypeId == COLLAR_CHECKERED) {
-                body = _renderFixedLayer(d, LAYER_COLLAR_CHECKERED, body);
-            } else if (rec.collarTypeId == COLLAR_CLASSIC_RED) {
-                body = _renderFixedLayer(d, LAYER_COLLAR_CLASSIC_RED, body);
-            }
-
-            if (rec.rarityTierId == RARITY_RARE) {
-                uint8 rareLayer = _rareLayerId(rec.rarityTypeId);
-                if (rareLayer != 255) {
-                    body = _renderFixedLayer(d, rareLayer, body);
-                }
+                body = _renderFixedLayer(d, LAYER_SUPERRARE_BEAM, body);
             }
         }
 
@@ -225,10 +217,6 @@ contract CoreCatsMetadataRenderer {
         pure
         returns (string memory)
     {
-        if (rec.patternId == PATTERN_SUPERRARE) {
-            return svg;
-        }
-
         (uint16 tupleOffset, uint8 tupleLen) = _tupleMeta(d.colorTupleMeta, rec.colorTupleIndex);
         uint8 slotCount = uint8(d.patternSlotCounts[rec.patternId]);
         require(tupleLen >= slotCount, "tuple/slot mismatch");
@@ -400,25 +388,20 @@ contract CoreCatsMetadataRenderer {
         );
     }
 
-    // Neutral placeholder art for pilot/test deployments that should avoid showing the logo-bearing superrare visuals.
-    function _renderSuperrarePlaceholder(uint8 rarityTypeId, string memory svg)
+    // Neutral placeholder overlay for pilot/test deployments that should avoid showing finalized beam visuals.
+    function _renderBeamPlaceholder(string memory svg)
         internal
         pure
         returns (string memory)
     {
-        bytes3 background = bytes3(uint24(0x181820));
-        bytes3 shell = bytes3(uint24(0xEBEBEB));
-        bytes3 accent = rarityTypeId == RARITY_TYPE_PINGLOGO ? bytes3(uint24(0x44AD4D)) : bytes3(uint24(0x3B49DE));
-
-        svg = _appendBlock(svg, 0, 0, 24, 24, background);
-        svg = _appendBlock(svg, 6, 3, 4, 4, shell);
-        svg = _appendBlock(svg, 14, 3, 4, 4, shell);
-        svg = _appendBlock(svg, 4, 6, 16, 13, shell);
-        svg = _appendBlock(svg, 6, 11, 12, 5, accent);
-        svg = _appendBlock(svg, 8, 9, 2, 2, background);
-        svg = _appendBlock(svg, 14, 9, 2, 2, background);
-        svg = _appendBlock(svg, 11, 12, 2, 1, background);
-        svg = _appendBlock(svg, 10, 15, 4, 1, background);
+        bytes3 accentA = bytes3(uint24(0x35FF6B));
+        bytes3 accentB = bytes3(uint24(0x00D94F));
+        svg = _appendBlock(svg, 1, 1, 5, 1, accentA);
+        svg = _appendBlock(svg, 18, 1, 5, 1, accentA);
+        svg = _appendBlock(svg, 5, 2, 4, 1, accentB);
+        svg = _appendBlock(svg, 15, 2, 4, 1, accentB);
+        svg = _appendBlock(svg, 9, 3, 6, 1, accentA);
+        svg = _appendBlock(svg, 7, 4, 10, 1, accentB);
 
         return svg;
     }
@@ -460,7 +443,6 @@ contract CoreCatsMetadataRenderer {
         if (id == 7) return "classic_tabby";
         if (id == 8) return "mackerel_tabby";
         if (id == 9) return "tortoiseshell";
-        if (id == 10) return "superrare";
         return "unknown";
     }
 
@@ -478,7 +460,6 @@ contract CoreCatsMetadataRenderer {
         if (id == 10) return "zombie";
         if (id == 11) return "ivory_brown";
         if (id == 12) return "black_solid";
-        if (id == 13) return "superrare";
         return "unknown";
     }
 
@@ -503,8 +484,7 @@ contract CoreCatsMetadataRenderer {
         if (id == RARITY_TYPE_BLUE_NOSE) return "blue_nose";
         if (id == RARITY_TYPE_GLASSES) return "glasses";
         if (id == RARITY_TYPE_SUNGLASSES) return "sunglasses";
-        if (id == RARITY_TYPE_CORELOGO) return "corelogo";
-        if (id == RARITY_TYPE_PINGLOGO) return "pinglogo";
+        if (id == RARITY_TYPE_BEAM) return "beam";
         return "none";
     }
 }

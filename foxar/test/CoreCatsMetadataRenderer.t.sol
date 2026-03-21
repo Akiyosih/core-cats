@@ -19,8 +19,7 @@ contract TestableCoreCatsMetadataRenderer is CoreCatsMetadataRenderer {
 }
 
 contract CoreCatsMetadataRendererTest is Test {
-    uint256 private constant PING_SUPERRARE_TOKEN_ID = 999;
-    uint256 private constant CORE_SUPERRARE_TOKEN_ID = 1000;
+    uint256 private constant BEAM_SUPERRARE_TOKEN_ID = 6;
 
     function testRendererStoresConfigurableLabels() public {
         CoreCatsOnchainData data = new CoreCatsOnchainData();
@@ -32,23 +31,18 @@ contract CoreCatsMetadataRendererTest is Test {
         assertTrue(renderer.superrarePlaceholderEnabled());
     }
 
-    function testSuperrarePlaceholderChangesSuperrareTokenUris() public {
+    function testSuperrarePlaceholderChangesBeamSuperrareTokenUri() public {
         CoreCatsOnchainData data = new CoreCatsOnchainData();
         CoreCatsMetadataRenderer baseline =
             new CoreCatsMetadataRenderer(address(data), "CoreCats", "CoreCats fully on-chain 24x24 SVG.", false);
         CoreCatsMetadataRenderer placeholder =
-            new CoreCatsMetadataRenderer(address(data), "CCATTEST", "CCATTEST pilot metadata.", true);
+            new CoreCatsMetadataRenderer(address(data), "CoreCats", "CoreCats fully on-chain 24x24 SVG.", true);
 
-        string memory baselinePing = baseline.tokenURI(PING_SUPERRARE_TOKEN_ID);
-        string memory baselineCore = baseline.tokenURI(CORE_SUPERRARE_TOKEN_ID);
-        string memory placeholderPing = placeholder.tokenURI(PING_SUPERRARE_TOKEN_ID);
-        string memory placeholderCore = placeholder.tokenURI(CORE_SUPERRARE_TOKEN_ID);
+        string memory baselineBeam = baseline.tokenURI(BEAM_SUPERRARE_TOKEN_ID);
+        string memory placeholderBeam = placeholder.tokenURI(BEAM_SUPERRARE_TOKEN_ID);
 
-        assertTrue(_startsWith(placeholderPing, "data:application/json;base64,"));
-        assertTrue(_startsWith(placeholderCore, "data:application/json;base64,"));
-        assertFalse(_sameString(baselinePing, placeholderPing));
-        assertFalse(_sameString(baselineCore, placeholderCore));
-        assertFalse(_sameString(placeholderPing, placeholderCore));
+        assertTrue(_startsWith(placeholderBeam, "data:application/json;base64,"));
+        assertFalse(_sameString(baselineBeam, placeholderBeam));
     }
 
     function testJsonEscapeHandlesQuotesBackslashesAndNewlines() public {
