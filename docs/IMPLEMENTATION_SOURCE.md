@@ -6,14 +6,12 @@ Clarify where active implementation and migration planning are maintained.
 ## Source of Truth
 - Active implementation repository: `core-cats`
 - GitHub: https://github.com/Akiyosih/core-cats
-- Local path: `C:\Users\b8_q6\myproject\core-cats`
 - Historical contract path ADR: `docs/DECISIONS/ADR-0001-core-toolchain-priority.md`
 - Current execution procedure: `docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md`
 
 ## Reference Archive (`core-cats-eth`)
 - Role: frozen reference track and historical implementation log
 - GitHub: https://github.com/Akiyosih/core-cats-eth
-- Local path: `C:\Users\b8_q6\myproject\core-cats-eth`
 - Latest reference commit: `cae76d3`
 
 ## Mainnet Release Clarity Policy
@@ -53,7 +51,9 @@ Default recommendation:
 - Core testnet and mainnet deployment work is executed here.
 - Active contract source/build/deploy workspace: `foxar/`
 - Active mint backend workspace: `mint-backend/`
-- Active web/publication workspace: `web/`
+- Active mint application workspace: `web/`
+- Active browse-only public-site workspace: `web-public-teaser/`
+- Shared browse layer: `shared/public-site/`
 - Contract CI should execute from `foxar/`, not from the repository root.
 - Direct Core implementation has already succeeded on the active path.
 - Current remaining work is:
@@ -77,6 +77,6 @@ Therefore:
 4. duplicate root-level toolchain configs should also be removed once the active workspace is explicit
 
 ## Mirrored Artifact Snapshot (from `core-cats-eth`)
-- Local path: `manifests/`
+- Repository path: `manifests/`
 - Includes final 1000 manifests, validation/summary/audit outputs, and display-label mapping.
 - Sync source commit (core-cats-eth): `f264140` (implementation payload baseline)

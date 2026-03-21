@@ -49,6 +49,11 @@ Current preferred host:
 1. Cloudflare Pages for the public teaser surface
 2. separate private canary host for mint rehearsal
 
+Related repository docs:
+1. `../README.md` for the overall repository role
+2. `../docs/README.md` for the public docs index
+3. `../shared/public-site/README.md` for the shared browse-layer boundary
+
 ## Cloudflare Deploy Note
 
 Cloudflare Pages is configured with `web-public-teaser` as the root directory.

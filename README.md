@@ -1,119 +1,75 @@
-# CoreCats 🐱
-A fully on-chain NFT project on Core Blockchain.
+# CoreCats
 
-## Repository Role
-- Active implementation source of truth: this repository (`core-cats`)
-- Reference archive repository: `core-cats-eth` (frozen reference track)
-- Active contract workspace: `foxar/`
-- Active backend workspace: `mint-backend/`
-- Active web workspace: `web/`
-- Contract build/test CI runs from `foxar/`
+Fully on-chain SVG pixel cats on Core Blockchain.
+
+Official `CCAT` target:
+1. `1000 total`
+2. `3 per wallet`
+3. free mint
+4. no retained owner/admin mint authority
+5. public promises limited to on-chain-verifiable guarantees and published evidence
+
+Current public state:
+1. the official `CCAT` release is not open yet
+2. the repository already contains completed mainnet rehearsal evidence for the `CCATTEST` / `CCATTEST2` path
+3. the remaining release work is the official `CCAT` deploy, exact-host smoke, and later public opening
+
+## Start Here
+- [Official CCAT Launch Principles](docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md)
+- [Docs Index](docs/README.md)
+- [Public Trust + Privacy Notes](docs/TRUST_AND_PRIVACY_SURFACE.md)
+- [Mainnet Public Evidence Checklist](docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
+
+Important distinction:
+1. [Official CCAT Launch Principles](docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md) describes the intended final `CCAT` standard
+2. rehearsal and current-state notes document evidence from the already-run canary path and should not be mistaken for the final official philosophy
 
 ## Preview
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid_teaser.png)
+
 Representative random sample grid from the current 1,000-cat artwork review set.
 
-## Project Docs
-- [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
+## Active Workspaces
+
+| Workspace | Role |
+| --- | --- |
+| `foxar/` | active contract source, tests, deploy scripts |
+| `web/` | mint application and Vercel-hosted mint surface |
+| `web-public-teaser/` | Cloudflare-hosted browse-only public surface |
+| `shared/public-site/` | browse UI shared by `web/` and `web-public-teaser/` |
+| `mint-backend/` | Contabo-backed session, precheck, and finalize path |
+
+Contract build and test work should be treated as `foxar/`-first, not repository-root-first.
+
+## Review Paths
+
+### External Review
 - [Official CCAT Launch Principles](docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md)
-- [Final 1000 Trait Schema](docs/FINAL1000_TRAIT_SCHEMA.md)
-- [Web UI / Mint DApp Spec](docs/WEB_UI_MINT_DAPP_SPEC.md)
+- [Public Trust + Privacy Notes](docs/TRUST_AND_PRIVACY_SURFACE.md)
+- [Mainnet Public Evidence Checklist](docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
+- [Viewer Data Pipeline](docs/VIEWER_DATA_PIPELINE.md)
+
+### Launch / Cutover
 - [Core Blockchain Work Procedure / Launch Path](docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
 - [Mainnet Closed Launch Runbook](docs/MAINNET_CLOSED_LAUNCH_RUNBOOK.md)
-- [Mainnet Pilot Deploy Runbook](docs/MAINNET_PILOT_DEPLOY_RUNBOOK.md)
-- [Core Testnet Deploy Runbook](docs/CORE_TESTNET_DEPLOY_RUNBOOK.md)
-- [Public Trust + Privacy Notes](docs/TRUST_AND_PRIVACY_SURFACE.md)
-- [Minter Self-Review Checklist](docs/MINTER_SELF_REVIEW_CHECKLIST.md)
-- [Mainnet Public Evidence Checklist](docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
-- [Freeze / Renounce Policy](docs/FREEZE_AND_RENOUNCE_POLICY.md)
-- [Minter Privacy Note](docs/MINTER_PRIVACY_NOTE.md)
-- [Public Document Language Policy](docs/PUBLIC_DOCUMENT_LANGUAGE_POLICY.md)
-- [ADR-0001: Core Toolchain Priority](docs/DECISIONS/ADR-0001-core-toolchain-priority.md)
-- [ADR-0002: Randomness Strategy](docs/DECISIONS/ADR-0002-randomness-strategy.md)
-- [Core Cats ETH: Project Status (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/PROJECT_STATUS.md)
-- [Core Cats ETH: Roadmap (reference archive)](https://github.com/Akiyosih/core-cats-eth/blob/main/docs/ROADMAP_CORE_MIGRATION.md)
+- [Vercel Mainnet Cutover Checklist](docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md)
+- [Official CCAT Cutover Note](docs/OFFICIAL_CCAT_CUTOVER_NOTE.md)
 
-Important distinction:
-1. `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md` states the intended final official `CCAT` standard
-2. some rehearsal/current-state notes still document the already-proven signer-gated `CCATTEST` path and should not be mistaken for the final official philosophy
+### Rehearsal Evidence
+- [CCATTEST Rehearsal Canary Plan](docs/CCATTEST_REHEARSAL_CANARY_PLAN.md)
+- [CCATTEST2 Private Canary Preview](docs/CCATTEST2_PRIVATE_CANARY_PREVIEW.md)
+- [Recent Worklogs](docs/worklogs/)
 
-## Mirrored Final Artifacts
-- `manifests/base1000_no_rare_latest.json`
-- `manifests/final1000_review_manifest_v1.json`
-- `manifests/final_1000_manifest_v1.json`
-- `manifests/final_1000_validation_v1.json`
-- `manifests/final_1000_trait_summary_v1.json`
-- `manifests/final_1000_preview_consistency_v1.json`
-- `manifests/trait_display_labels_v1.json`
+## Repository Boundaries
+1. this repository is the active Core production path
+2. `core-cats-eth` is a historical reference archive, not a parallel active implementation
+3. `contracts/reference_eth/` and `scripts/reference_eth/` remain as clearly labeled imported reference material
+4. final manifest and viewer artifacts live under `manifests/`
 
-## Imported Reference Implementation (archive-only, from `core-cats-eth`)
-- `contracts/reference_eth/CoreCats.sol`
-- `contracts/reference_eth/CoreCatsMetadataRenderer.sol`
-- `contracts/reference_eth/CoreCatsOnchainData.sol`
-- `scripts/reference_eth/generate_onchain_data.py`
-- `scripts/reference_eth/verify_renderer_manifest_match.mjs`
-- `scripts/reference_eth/verify_renderer_pixels.mjs`
-
-Root-level legacy scaffolding that could be mistaken for the active Core launch path has been removed.
-Public readers should treat `foxar/` as the contract source/build/deploy workspace.
-
-- 🧱 Built with Solidity for the Core ecosystem
-- 🎨 Features 100% on-chain SVG artwork
-- 🔐 Official `CCAT` target: permissionless free mint with on-chain `1000 total / 3 per wallet`
-- 🧭 Public promises are limited to what outside readers can verify on-chain or from published evidence
-- 📦 Open-source, transparent, and designed for public review
-
+See:
+- [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
+- [Final 1000 Trait Schema](docs/FINAL1000_TRAIT_SCHEMA.md)
+- [Manifest Notes](manifests/README.md)
 
 ## License
 This project is licensed under the MIT License.
-
-
-## Project Specification
----
-
-Public documentation in this repository uses English as the authoritative source.
-See [Public Document Language Policy](docs/PUBLIC_DOCUMENT_LANGUAGE_POLICY.md).
-
-**Project Name**: CoreCats  
-**Blockchain**: Core Blockchain  
-**Token Standard**: CRC721 / ERC721-compatible  
-**Total Supply**: **1,000 (immutable)**  
-**Mint Limit per User**: **3 per wallet address (official rule, immutable)**  
-**Artwork Specs**: **24×24 SVG pixel art** / Fully on-chain storage / Unique generation via part combination  
-**Mint Condition**: **Official `CCAT` target is permissionless free mint with no allowlist and no signer gate**  
-**Mint Price**: **Free (no primary sale fee)**  
-**Secondary Sale Fee**: **None**  
-**Transparency Policy**: All contract code, generation logic, and deployment history will be publicly available on GitHub  
-
-**Technical Policy**:
-1. **Randomness Method**: `commit-finalize + future blockhash + lazy Fisher-Yates`  
-   - Same algorithm on Core Devin rehearsal and Core production path  
-   - Assignment process is designed to be replay-verifiable from on-chain data  
-   - `RandomSource` abstraction keeps future VRF migration possible without NFT semantic changes  
-2. **Immutability**:
-   - Total supply and per-wallet limit fixed at the contract level
-   - Official `CCAT` target is deploy-time immutability for the NFT object, not a later admin lock
-3. **Trust & Openness**:  
-   - Full source code and art parts published on GitHub  
-   - Open review process instead of formal audit (cost-saving)  
-   - Public promises are limited to on-chain-verifiable guarantees and published evidence
-   - Any current live/rehearsal trust surface must be disclosed separately from the official `CCAT` target philosophy
-
-**Development Steps**:
-1. **MVP Smart Contract**:  
-   - Implement `commitMint()`, `finalizeMint()`, and `tokenURI()` around a transparent random assignment flow  
-   - Use `commit-finalize + future blockhash + lazy Fisher-Yates` randomness  
-2. **Testnet Verification**:  
-   - Deploy, commit, finalize, and inspect tokenURI on Core testnet  
-3. **Mainnet Closed Launch**:
-   - Deploy on Core mainnet while keeping public mint closed
-   - Publish the website, transparency links, and contract addresses
-   - Run a controlled canary mint through the real production wallet flow
-4. **Public Launch**:
-   - Open general mint only after canary success
-   - Publish code, parts, hashes, and launch evidence on GitHub
-
-**Operation Policy**:
-- Fully free project, no secondary sale royalties  
-- No operational control to change total supply or per-wallet mint limit after deployment
-- Official `CCAT` target leaves no retained owner/admin path and no signer-gated mint authority after deploy
