@@ -15,7 +15,11 @@ export default function RootLayout({ children }) {
   const siteNotice =
     launchState === "closed"
       ? "Public mint is not open yet. Browse the collection here, check transparency, and return to the official mint host when launch opens."
-      : publicTeaserSite
+      : launchState === "public"
+        ? publicTeaserSite
+          ? "Public mint is now live on the official mint host. This site remains the browse-first home for the collection and transparency surface."
+          : ""
+        : publicTeaserSite
         ? "Final prelaunch checks are underway. This public site stays browse-first while the official mint host remains closed to the public."
         : privateCanarySite
           ? "Private rehearsal host. Public mint remains closed until the official mint host opens."

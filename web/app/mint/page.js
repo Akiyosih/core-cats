@@ -103,6 +103,15 @@ export async function MintPageContent({ config }) {
 
   return (
     <div className="page-stack narrow-stack">
+      {launchState === "canary" && !config.privateCanarySite && (
+        <div className="launch-banner launch-banner--canary">
+          <span className="launch-badge">Canary</span>
+          <p>
+            This is the official Core Cats mint host under final prelaunch checks. Mint remains limited while the last
+            host-specific rehearsal is completed.
+          </p>
+        </div>
+      )}
       {config.privateCanarySite && (
         <div className="launch-banner launch-banner--canary">
           <span className="launch-badge">{config.privateCanaryBadgeText}</span>

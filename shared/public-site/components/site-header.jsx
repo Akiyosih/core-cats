@@ -23,7 +23,9 @@ export default function SiteHeader({ config }) {
 
       <nav className="main-nav" aria-label="Primary">
         {links.map((link) => {
-          const mintDisabled = link.soonBeforePublic && !config.mintSurfaceEnabled && !config.mintBaseUrl;
+          const mintDisabled =
+            link.soonBeforePublic &&
+            (config.publicTeaserSite ? config.launchState !== "public" : !config.mintSurfaceEnabled && !config.mintBaseUrl);
           const badge = link.soonBeforePublic && showSoonBadge ? <span className="main-nav__badge">Soon</span> : null;
           const href = link.href === "/mint" ? buildMintHref(config, link.href) : buildBrowseHref(config, link.href);
 

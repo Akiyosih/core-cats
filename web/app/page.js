@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { MintPageContent } from "./mint/page.js";
 import { getCollection, getSummary } from "../lib/viewer-data";
 import { getCorePublicConfig } from "../lib/server/core-env";
-import { buildBrowseHref, hasBrowseOrigin } from "../lib/site-surface-links.js";
+import { buildBrowseHref, buildMintHref, hasBrowseOrigin } from "../lib/site-surface-links.js";
 
 export const dynamic = "force-dynamic";
 
@@ -28,8 +28,9 @@ export default async function HomePage() {
     redirect(buildBrowseHref(config, "/"));
   }
   const [collection, summary] = await Promise.all([getCollection(), getSummary()]);
-  const mintStatusHref = config.mintSurfaceEnabled ? "/mint" : "/transparency";
-  const mintStatusLabel = config.mintSurfaceEnabled ? "Mint Status" : "Launch Status";
+  const mintPubliclyOpen = config.launchState === "public" && Boolean(config.mintBaseUrl);
+  const mintStatusHref = mintPubliclyOpen ? buildMintHref(config, "/mint") : "/transparency";
+  const mintStatusLabel = mintPubliclyOpen ? "Mint" : "Launch Status";
   const itemById = new Map(collection.items.map((item) => [item.token_id, item]));
   const naturalPreview = HOME_NATURAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
   const specialPreview = HOME_SPECIAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
@@ -69,9 +70,15 @@ export default async function HomePage() {
             <Link href="/transparency" className="button button--ghost">
               Transparency
             </Link>
-            <Link href={mintStatusHref} className="button button--ghost">
-              {mintStatusLabel}
-            </Link>
+            {mintStatusHref.startsWith("http") ? (
+              <a href={mintStatusHref} className="button button--ghost">
+                {mintStatusLabel}
+              </a>
+            ) : (
+              <Link href={mintStatusHref} className="button button--ghost">
+                {mintStatusLabel}
+              </Link>
+            )}
           </div>
         </div>
 
