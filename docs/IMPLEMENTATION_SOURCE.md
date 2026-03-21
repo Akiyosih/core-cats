@@ -31,7 +31,7 @@ Before or at the first real public mainnet release:
    - historical ETH rehearsal archive
    - not the active implementation
    - current production path is `core-cats`
-4. if no further updates are expected, consider GitHub archive mode for `core-cats-eth` after the above messaging is in place
+4. if no further updates are expected, GitHub archive mode is the recommended end-state for `core-cats-eth` after the above messaging is in place
 
 Default recommendation:
 1. keep the history
