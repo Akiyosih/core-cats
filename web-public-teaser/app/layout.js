@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
       ? "Public mint is not open yet. Browse the collection here, check transparency, and return to the official mint host when launch opens."
       : launchState === "public"
         ? publicTeaserSite
-          ? "Public mint is now live on the official mint host. This site remains the browse-first home for the collection and transparency surface."
+          ? "Public mint is now live."
           : ""
         : publicTeaserSite
         ? "Final prelaunch checks are underway. This public site stays browse-first while the official mint host remains closed to the public."
