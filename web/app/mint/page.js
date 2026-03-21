@@ -12,11 +12,17 @@ export async function MintPageContent({ config }) {
   const launchState = config.launchState;
   const collectionHref = buildBrowseHref(config, "/collection");
   const transparencyHref = buildBrowseHref(config, "/transparency");
+  const summary = await getSummary();
+
+  const mintCounterBanner = (
+    <MintCounterBanner statusSnapshotUrl={config.statusSnapshotUrl} total={summary.total} launchState={launchState} />
+  );
 
   if (launchState === "closed" || !config.mintSurfaceEnabled) {
     const isPublicTeaser = config.publicTeaserSite && launchState !== "closed";
     return (
       <div className="page-stack narrow-stack">
+        {mintCounterBanner}
         <section className="copy-panel">
           <p className="eyebrow">Mint</p>
           <h1>{isPublicTeaser ? "Mint is not available on this public teaser site." : "Mint opens soon."}</h1>
@@ -78,12 +84,10 @@ export async function MintPageContent({ config }) {
     );
   }
 
-  const showMintCounter = launchState === "public";
-  const summary = showMintCounter ? await getSummary() : null;
-
   if (!config.mintRuntimeReady) {
     return (
       <div className="page-stack narrow-stack">
+        {mintCounterBanner}
         <section className="copy-panel">
           <p className="eyebrow">Mint</p>
           <h1>Mint is temporarily unavailable on this deployment.</h1>
@@ -103,6 +107,7 @@ export async function MintPageContent({ config }) {
 
   return (
     <div className="page-stack narrow-stack">
+      {mintCounterBanner}
       {launchState === "canary" && !config.privateCanarySite && (
         <div className="launch-banner launch-banner--canary">
           <span className="launch-badge">Canary</span>
@@ -126,9 +131,6 @@ export async function MintPageContent({ config }) {
           <span className="launch-badge">Closed</span>
           <p>Mint is not open yet. Collection pages are public, but new mints are still paused.</p>
         </div>
-      )}
-      {showMintCounter && (
-        <MintCounterBanner statusSnapshotUrl={config.statusSnapshotUrl} total={summary.total} />
       )}
       <details className="mint-verify-details">
         <summary>New to Core Blockchain?</summary>
