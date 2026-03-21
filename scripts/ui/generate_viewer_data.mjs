@@ -165,6 +165,7 @@ function buildFilterDoc(collectionItems, labelsDoc, summaryDoc, root, outDir) {
 
     const counts = summaryCounts[countKey] || {};
     const values = Object.keys(counts)
+      .filter((valueId) => !(key === "rarity_type" && valueId === "none"))
       .sort((a, b) => {
         if (a === "superrare") return 1;
         if (b === "superrare") return -1;

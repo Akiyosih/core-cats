@@ -1,6 +1,6 @@
 {
   "version": "viewer_collection",
-  "generated_at": "2026-03-21T11:13:17.653Z",
+  "generated_at": "2026-03-21T12:23:16.414Z",
   "source_manifest": "manifests/final_1000_manifest.json",
   "source_trait_labels": "manifests/trait_display_labels_v1.json",
   "source_onchain_data": "foxar/src/CoreCatsOnchainData.sol",

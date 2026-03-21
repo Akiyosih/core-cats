@@ -1,6 +1,6 @@
 export const PUBLIC_TEASER_CONTRACT_SURFACE = {
-  coreCatsAddress: "cb56cf49bc281a2180113df64deed42d29034d4e77dd",
-  coreCatsRendererAddress: "cb58f87513366c8a9b650657494b67e214a1fbfe6977",
-  coreCatsDataAddress: "cb7555379589d0776212a22c95de9426e0dffca97daa",
+  coreCatsAddress: "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3",
+  coreCatsRendererAddress: "cb762d998b8e79a74e1bc667b1ba2fd4154f25a467ac",
+  coreCatsDataAddress: "cb748bebbcac49b28fdeccb8a56f1cf677e9d94ef25c",
   explorerBaseUrl: "https://blockindex.net",
 };
