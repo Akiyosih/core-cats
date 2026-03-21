@@ -93,6 +93,7 @@ Run these steps in order.
    - keep `CORECATS_ALLOW_NONSTANDARD_LABELS=0`
    - keep `CORECATS_SUPERRARE_PLACEHOLDER=0`
    - keep the official labels as `CoreCats` / `CCAT`
+   - keep `CORECATS_TOKEN_DESCRIPTION="CoreCats is a 1,000-piece fully on-chain 24x24 SVG cat collection on Core Blockchain, built from public code and fixed manifests."`
    - keep the current no-logo beam superrare path fixed:
      - `manifests/superrare_beam_selection_v2.json`
      - `manifests/beam_token_reorder_v2.json`

@@ -75,12 +75,11 @@ Expected official values:
 1. `CORECATS_COLLECTION_NAME=CoreCats`
 2. `CORECATS_SYMBOL=CCAT`
 3. `CORECATS_TOKEN_NAME_PREFIX=CoreCats`
-4. `CORECATS_TOKEN_DESCRIPTION="CoreCats fully on-chain 24x24 SVG."`
+4. `CORECATS_TOKEN_DESCRIPTION="CoreCats is a 1,000-piece fully on-chain 24x24 SVG cat collection on Core Blockchain, built from public code and fixed manifests."`
 5. `CORECATS_ALLOW_NONSTANDARD_LABELS=0`
 6. `CORECATS_SUPERRARE_PLACEHOLDER=0`
 
-Before the real official broadcast, re-review the exact permanent `CORECATS_TOKEN_DESCRIPTION` wording.
-The current repo value is only a staging default and should be treated as an explicit pre-deploy decision, not as untouchable final copy.
+The official `CORECATS_TOKEN_DESCRIPTION` wording is now fixed in the repo defaults above and should be used unchanged for the official deploy unless the project intentionally reopens that decision.
 
 Keep these secrets or live values outside the repository:
 1. mainnet RPC URL

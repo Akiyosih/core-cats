@@ -13,7 +13,8 @@ contract CoreCatsDeployScript is Script {
         string memory collectionName = vm.envOr("CORECATS_COLLECTION_NAME", string("CoreCats"));
         string memory collectionSymbol = vm.envOr("CORECATS_SYMBOL", string("CCAT"));
         string memory tokenNamePrefix = vm.envOr("CORECATS_TOKEN_NAME_PREFIX", collectionName);
-        string memory defaultDescription = string(abi.encodePacked(collectionName, " fully on-chain 24x24 SVG."));
+        string memory defaultDescription =
+            "CoreCats is a 1,000-piece fully on-chain 24x24 SVG cat collection on Core Blockchain, built from public code and fixed manifests.";
         string memory tokenDescription = vm.envOr("CORECATS_TOKEN_DESCRIPTION", defaultDescription);
         bool allowNonstandardLabels = vm.envOr("CORECATS_ALLOW_NONSTANDARD_LABELS", uint256(0)) != 0;
         bool superrarePlaceholderEnabled = vm.envOr("CORECATS_SUPERRARE_PLACEHOLDER", uint256(0)) != 0;
