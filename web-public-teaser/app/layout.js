@@ -14,11 +14,11 @@ export default function RootLayout({ children }) {
   const { launchState, publicTeaserSite, privateCanarySite } = config;
   const siteNotice =
     launchState === "closed"
-      ? "Pre-mainnet teaser. Core Cats is still in final preparation. Mainnet deployment and public mint are not live yet."
+      ? "Public mint is not open yet. Browse the collection here, check transparency, and return to the official mint host when launch opens."
       : publicTeaserSite
-        ? "Public mint is not open yet. This public site is browse-only while the private mainnet rehearsal canary continues separately."
+        ? "Final prelaunch checks are underway. This public site stays browse-first while the official mint host remains closed to the public."
         : privateCanarySite
-          ? "Private rehearsal canary. Public mint is not open yet."
+          ? "Private rehearsal host. Public mint remains closed until the official mint host opens."
           : "";
 
   return (

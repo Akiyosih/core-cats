@@ -86,10 +86,12 @@ export default function TransparencyPageContent({ config }) {
   const dataHref = dataPending ? "" : buildExplorerAddressUrl(explorerBaseUrl, dataAddress);
   const contractStatus = contractPending
     ? "Mainnet deployment pending"
-    : networkName === "mainnet" && config.launchState === "canary"
-      ? "Mainnet canary contract configured"
-      : networkName === "mainnet"
-        ? "Mainnet contract configured"
+    : networkName === "mainnet" && config.launchState === "public"
+      ? "Official mainnet contract live"
+      : networkName === "mainnet" && config.launchState === "canary"
+        ? "Official mainnet contract under final prelaunch checks"
+        : networkName === "mainnet"
+          ? "Official mainnet contract configured"
         : "Devin rehearsal contract configured";
   const verificationLinks = [
     { href: "https://github.com/Akiyosih/core-cats", label: "GitHub repository" },
@@ -128,7 +130,7 @@ export default function TransparencyPageContent({ config }) {
               </li>
               <li>
                 <strong>Site surface:</strong>{" "}
-                {config.publicTeaserSite ? "Public teaser" : config.privateCanarySite ? "Private canary" : "Public mint"}
+                {config.publicTeaserSite ? "Public browse" : config.privateCanarySite ? "Private canary" : "Official mint"}
               </li>
               <li>
                 <strong>Contract status:</strong> {contractStatus}
@@ -177,9 +179,9 @@ export default function TransparencyPageContent({ config }) {
       </section>
 
       <section className="page-stack transparency-section">
-        <SectionHeading eyebrow="Official CCAT Target" title="What the final release is meant to guarantee">
+        <SectionHeading eyebrow="Official CCAT Posture" title="What the released contract is meant to guarantee">
           These are the intended principles for the official `CCAT` contract. Compare them with the current live
-          surface above rather than assuming the currently published rehearsal contract already matches them.
+          surface above and the linked public artifacts rather than trusting the website alone.
         </SectionHeading>
         <div className="copy-grid copy-grid--two">
           <article className="copy-card">

@@ -33,6 +33,7 @@ const DEFAULTS = {
   privateCanaryTitleText: "Private rehearsal canary",
   privateCanaryWarningText: "NOT PUBLIC MINT",
 };
+const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
 
 function normalizeLaunchState(value) {
   if (value === "canary" || value === "public" || value === "closed") {
@@ -356,6 +357,9 @@ export function getCorePublicConfig() {
   const siteSurface = env.siteSurface;
   const mintSurfaceEnabled = isMintSurfaceEnabled({ launchState: env.launchState, siteSurface });
   const mintRuntimeErrors = getMintRuntimeConfigErrors(env);
+  const explicitMintBaseUrl = normalizeUrl(
+    process.env.NEXT_PUBLIC_CORECATS_MINT_BASE_URL || process.env.CORECATS_MINT_BASE_URL || "",
+  );
   return {
     chainId: env.chainId,
     networkName: env.networkName,
@@ -368,6 +372,9 @@ export function getCorePublicConfig() {
     mintRuntimeReady: mintRuntimeErrors.length === 0,
     mintRuntimeErrors,
     siteBaseUrl: env.siteBaseUrl,
+    mintBaseUrl:
+      explicitMintBaseUrl ||
+      (siteSurface === "public-mint" ? env.siteBaseUrl : env.networkName === "mainnet" ? DEFAULT_MAINNET_MINT_BASE_URL : ""),
     browseBaseUrl: env.browseBaseUrl,
     mintOnlyHost: env.mintOnlyHost,
     coreCatsAddress: env.coreCatsAddress,

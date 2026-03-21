@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buildBrowseHref, isAbsoluteHref } from "../lib/site-surface-links.js";
+import { buildBrowseHref, buildMintHref, isAbsoluteHref } from "../lib/site-surface-links.js";
 
 const links = [
   { href: "/", label: "Home" },
@@ -11,7 +11,7 @@ const links = [
 ];
 
 export default function SiteHeader({ config }) {
-  const showSoonBadge = !config.mintSurfaceEnabled;
+  const showSoonBadge = config.launchState !== "public";
   const brandHref = buildBrowseHref(config, "/");
 
   return (
@@ -23,9 +23,9 @@ export default function SiteHeader({ config }) {
 
       <nav className="main-nav" aria-label="Primary">
         {links.map((link) => {
-          const mintDisabled = link.soonBeforePublic && !config.mintSurfaceEnabled;
+          const mintDisabled = link.soonBeforePublic && !config.mintSurfaceEnabled && !config.mintBaseUrl;
           const badge = link.soonBeforePublic && showSoonBadge ? <span className="main-nav__badge">Soon</span> : null;
-          const href = link.href === "/mint" ? link.href : buildBrowseHref(config, link.href);
+          const href = link.href === "/mint" ? buildMintHref(config, link.href) : buildBrowseHref(config, link.href);
 
           if (mintDisabled) {
             return (

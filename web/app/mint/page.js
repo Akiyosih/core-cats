@@ -22,14 +22,14 @@ export async function MintPageContent({ config }) {
           <h1>{isPublicTeaser ? "Mint is not available on this public teaser site." : "Mint opens soon."}</h1>
           {isPublicTeaser ? (
             <p>
-              This deployment is for public browsing only. The rehearsal canary mint flow runs on a separate private
-              surface until the official public release is ready to open on the community-facing site.
+              This deployment is for public browsing only. The official Core Cats mint will open on the dedicated mint
+              host after final prelaunch checks are complete.
             </p>
           ) : (
             <p>
-              The collection can already be explored, but CorePass minting stays closed until the launch path is ready
-              for the next canary or public stage. When mint goes live, this page becomes the real entry for the same
-              CorePass session flow that is being prepared here.
+              This is the official Core Cats mint host. The collection can already be explored, but CorePass minting
+              stays closed until the final launch checks are complete. When mint goes live, this page becomes the real
+              public entry for the live CorePass session flow.
             </p>
           )}
           <div className="copy-panel__actions">
@@ -47,8 +47,8 @@ export async function MintPageContent({ config }) {
             <h2>{isPublicTeaser ? "What is live on this site" : "What will happen here"}</h2>
             {isPublicTeaser ? (
               <p>
-                The public teaser stays open for browsing, transparency, and collection lookup while the mint canary
-                continues separately.
+                The public site stays open for browsing, transparency, and collection lookup while the official mint
+                host remains closed to the public.
               </p>
             ) : (
               <p>
@@ -62,14 +62,14 @@ export async function MintPageContent({ config }) {
             <h2>{isPublicTeaser ? "Why mint is separate right now" : "Why it is still closed"}</h2>
             {isPublicTeaser ? (
               <p>
-                Public browsing and private mint rehearsal are intentionally split so the teaser can stay lightweight
-                while the CorePass canary continues without exposing live session creation to every visitor.
+                Browsing and minting are intentionally split between hosts so the public collection surface can stay
+                lightweight while the official mint host handles session creation and callback flow.
               </p>
             ) : (
               <p>
-                The public site is already live for browsing and transparency, while the actual mint flow stays shut
-                until the launch state advances from closed to canary and then public. The closed state should not hide
-                a private mint UI path.
+                The public browse site is already live for transparency and collection viewing, while this official
+                mint host stays shut until the launch state advances from closed to public. The closed state should not
+                hide any alternate public mint UI path.
               </p>
             )}
           </article>

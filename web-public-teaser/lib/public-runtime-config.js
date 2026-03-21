@@ -1,5 +1,7 @@
 import { PUBLIC_TEASER_CONTRACT_SURFACE } from "./public-teaser-contract-surface.js";
 
+const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
+
 function normalizeLaunchState(value) {
   return value === "canary" || value === "public" || value === "closed" ? value : "closed";
 }
@@ -27,17 +29,25 @@ export function getPublicRuntimeConfig() {
     process.env.NEXT_PUBLIC_SITE_SURFACE || process.env.CORECATS_SITE_SURFACE || "public-teaser",
     launchState,
   );
+  const siteBaseUrl = normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || "");
+  const networkName = process.env.CORE_NETWORK_NAME || "devin";
+  const explicitMintBaseUrl = normalizeUrl(
+    process.env.NEXT_PUBLIC_CORECATS_MINT_BASE_URL || process.env.CORECATS_MINT_BASE_URL || "",
+  );
 
   return {
     chainId: Number(process.env.NEXT_PUBLIC_CORE_CHAIN_ID || 3),
-    networkName: process.env.CORE_NETWORK_NAME || "devin",
+    networkName,
     launchState,
     siteSurface,
     publicTeaserSite: siteSurface === "public-teaser",
     privateCanarySite: siteSurface === "private-canary",
     publicMintSite: siteSurface === "public-mint",
     mintSurfaceEnabled: launchState !== "closed" && (siteSurface === "private-canary" || siteSurface === "public-mint"),
-    siteBaseUrl: normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || ""),
+    siteBaseUrl,
+    mintBaseUrl:
+      explicitMintBaseUrl ||
+      (siteSurface === "public-mint" ? siteBaseUrl : networkName === "mainnet" ? DEFAULT_MAINNET_MINT_BASE_URL : ""),
     browseBaseUrl: normalizeUrl(process.env.NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL || process.env.CORECATS_BROWSE_BASE_URL || ""),
     mintOnlyHost: false,
     statusSnapshotUrl: String(process.env.NEXT_PUBLIC_CORECATS_STATUS_URL || "").trim(),

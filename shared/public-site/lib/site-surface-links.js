@@ -23,6 +23,15 @@ export function buildBrowseHref(config, pathname = "/") {
   return buildSiteHref(config.browseBaseUrl, normalizedPathname);
 }
 
+export function buildMintHref(config, pathname = "/mint") {
+  const normalizedPathname = String(pathname || "").startsWith("/") ? String(pathname || "") : `/${String(pathname || "")}`;
+  const mintBaseUrl = normalizeBaseUrl(config?.mintBaseUrl);
+  if (!mintBaseUrl) {
+    return normalizedPathname;
+  }
+  return buildSiteHref(mintBaseUrl, normalizedPathname);
+}
+
 export function isAbsoluteHref(value) {
   return /^https?:\/\//i.test(String(value || "").trim());
 }
