@@ -8,7 +8,7 @@ import { buildBrowseHref, hasBrowseOrigin } from "../lib/site-surface-links.js";
 export const dynamic = "force-dynamic";
 
 const HOME_NATURAL_IDS = [1, 102, 242, 273, 323, 416, 516, 648, 691, 803, 819, 924];
-const HOME_SPECIAL_IDS = [25, 48, 195, 306, 480, 490, 715, 868, 905, 941, 166, 838];
+const HOME_SPECIAL_IDS = [25, 48, 195, 306, 480, 490, 715, 868, 905, 941, 167, 839];
 
 function Metric({ value, label }) {
   return (

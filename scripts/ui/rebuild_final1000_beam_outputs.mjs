@@ -10,17 +10,17 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, "../..");
 const RESVG_PATH = path.join(ROOT, "web", "node_modules", "@resvg", "resvg-js", "index.js");
 const CURRENT_MANIFEST_PATH = path.join(ROOT, "manifests", "final_1000_manifest_v1.json");
-const SELECTION_PATH = path.join(ROOT, "manifests", "superrare_beam_selection_v2.json");
+const SELECTION_PATH = path.join(ROOT, "manifests", "superrare_beam_selection_v3.json");
 const LABELS_PATH = path.join(ROOT, "manifests", "trait_display_labels_v1.json");
 const DATA_SOURCE = path.join(ROOT, "foxar", "src", "CoreCatsOnchainData.sol");
 const BEAM_PATH = path.join(ROOT, "assets", "traits", "beam.png");
-const MANIFEST_OUT = path.join(ROOT, "manifests", "final_1000_manifest_v2.json");
-const SUMMARY_OUT = path.join(ROOT, "manifests", "final_1000_trait_summary_v2.json");
-const VALIDATION_OUT = path.join(ROOT, "manifests", "final_1000_validation_v2.json");
-const PREVIEW_CONSISTENCY_OUT = path.join(ROOT, "manifests", "final_1000_preview_consistency_v2.json");
-const TOKEN_REORDER_OUT = path.join(ROOT, "manifests", "beam_token_reorder_v2.json");
-const PNG24_DIR = path.join(ROOT, "art", "final", "final1000_v2", "png24");
-const REVIEW_DIR = path.join(ROOT, "art", "review", "final1000_preview_v2", "png");
+const MANIFEST_OUT = path.join(ROOT, "manifests", "final_1000_manifest_v3.json");
+const SUMMARY_OUT = path.join(ROOT, "manifests", "final_1000_trait_summary_v3.json");
+const VALIDATION_OUT = path.join(ROOT, "manifests", "final_1000_validation_v3.json");
+const PREVIEW_CONSISTENCY_OUT = path.join(ROOT, "manifests", "final_1000_preview_consistency_v3.json");
+const TOKEN_REORDER_OUT = path.join(ROOT, "manifests", "beam_token_reorder_v3.json");
+const PNG24_DIR = path.join(ROOT, "art", "final", "final1000_v3", "png24");
+const REVIEW_DIR = path.join(ROOT, "art", "review", "final1000_preview_v3", "png");
 const OUTPUT_SIZE = 384;
 
 const COLLAR_NONE = 0;
@@ -490,6 +490,10 @@ function makeBeamItem(sourceItem) {
   return item;
 }
 
+function buildGroupKey(item) {
+  return `${item.pattern}::${item.palette_id}::${item.variant_key || "none"}`;
+}
+
 async function main() {
   const { Resvg } = await import(pathToFileURL(RESVG_PATH).href);
   const currentManifest = await readJson(CURRENT_MANIFEST_PATH);
@@ -506,16 +510,22 @@ async function main() {
 
   const currentItems = [...currentManifest.items].sort((a, b) => a.token_id - b.token_id);
   const selectedRareIds = new Set(selection.selected.filter((entry) => entry.source_group === "rare").map((entry) => entry.source_token_id));
-  const duplicateSourceIds = new Set(
-    selection.selected.filter((entry) => entry.source_group === "common" && entry.duplicate).map((entry) => entry.source_token_id),
+  const duplicateEntriesBySourceId = new Map(
+    selection.selected
+      .filter((entry) => entry.source_group === "common" && entry.duplicate)
+      .map((entry) => [entry.source_token_id, entry]),
   );
   const droppedIds = new Set(selection.drop_current_superrare_token_ids || []);
   const sourceItemById = new Map(currentItems.map((item) => [item.token_id, item]));
+  const duplicateSourceIdByGroupKey = new Map(
+    [...duplicateEntriesBySourceId.keys()].map((tokenId) => [buildGroupKey(sourceItemById.get(tokenId)), tokenId]),
+  );
 
   const rebuilt = [];
   const reorderRows = [];
 
-  for (const sourceItem of currentItems) {
+  for (let i = 0; i < currentItems.length; i += 1) {
+    const sourceItem = currentItems[i];
     if (droppedIds.has(sourceItem.token_id)) {
       continue;
     }
@@ -533,13 +543,19 @@ async function main() {
       rarity_type: primary.rarity_type,
     });
 
-    if (duplicateSourceIds.has(sourceItem.token_id)) {
-      const duplicate = makeBeamItem(sourceItem);
+    const groupKey = buildGroupKey(sourceItem);
+    const nextSourceItem = currentItems[i + 1] || null;
+    const nextGroupKey = nextSourceItem ? buildGroupKey(nextSourceItem) : null;
+    const groupEndsHere = groupKey !== nextGroupKey;
+
+    if (groupEndsHere && duplicateSourceIdByGroupKey.has(groupKey)) {
+      const sourceForDuplicate = sourceItemById.get(duplicateSourceIdByGroupKey.get(groupKey));
+      const duplicate = makeBeamItem(sourceForDuplicate);
       rebuilt.push(duplicate);
       reorderRows.push({
         new_token_id: rebuilt.length,
         old_token_id: null,
-        duplicate_of_token_id: sourceItem.token_id,
+        duplicate_of_token_id: sourceForDuplicate.token_id,
         pattern: duplicate.pattern,
         category: duplicate.category,
         palette_id: duplicate.palette_id,
@@ -601,7 +617,7 @@ async function main() {
   delete nextInputs.superrare_palette;
 
   const nextManifest = {
-    version: "final_1000_manifest_v2",
+    version: "final_1000_manifest_v3",
     created_at: createdAt,
     inputs: {
       ...nextInputs,
@@ -609,13 +625,13 @@ async function main() {
       onchain_data_script: "scripts/reference_eth/generate_onchain_data.py",
       beam_asset_24: "assets/traits/beam.png",
       beam_asset_24_sha256: await sha256File(BEAM_PATH),
-      beam_selection: "manifests/superrare_beam_selection_v2.json",
+      beam_selection: "manifests/superrare_beam_selection_v3.json",
       beam_selection_sha256: await sha256File(SELECTION_PATH),
-      beam_token_reorder: "manifests/beam_token_reorder_v2.json",
+      beam_token_reorder: "manifests/beam_token_reorder_v3.json",
       notes: [
         "Legacy logo-based superrare placeholders were removed.",
         "Eight selected rare tokens were promoted in place to beam superrares.",
-        "Two common tokens were duplicated as beam superrares and inserted immediately after their source token."
+        "Two common tokens were duplicated as beam superrares and inserted after the last token in their original pattern/palette/variant block so superrare ordering follows the same block rule as other rare traits."
       ]
     },
     counts: {
@@ -628,18 +644,18 @@ async function main() {
   };
 
   const summaryDoc = {
-    version: "final_1000_trait_summary_v2",
+    version: "final_1000_trait_summary_v3",
     created_at: createdAt,
-    manifest: "manifests/final_1000_manifest_v2.json",
+    manifest: "manifests/final_1000_manifest_v3.json",
     total: finalItems.length,
     counts: summary.counts,
     cross: summary.cross,
   };
 
   const validationDoc = {
-    version: "final_1000_validation_v2",
+    version: "final_1000_validation_v3",
     validated_at: createdAt,
-    manifest: "manifests/final_1000_manifest_v2.json",
+    manifest: "manifests/final_1000_manifest_v3.json",
     ok: true,
     error_count: 0,
     errors: [],
@@ -647,9 +663,9 @@ async function main() {
   };
 
   const previewConsistencyDoc = {
-    version: "final_1000_preview_consistency_v2",
+    version: "final_1000_preview_consistency_v3",
     audited_at: createdAt,
-    manifest: "manifests/final_1000_manifest_v2.json",
+    manifest: "manifests/final_1000_manifest_v3.json",
     ok: true,
     checked: finalItems.length,
     matched: finalItems.length,
@@ -660,10 +676,10 @@ async function main() {
   };
 
   const reorderDoc = {
-    version: "beam_token_reorder_v2",
+    version: "beam_token_reorder_v3",
     created_at: createdAt,
     source_manifest: "manifests/final_1000_manifest_v1.json (pre-beam)",
-    selection: "manifests/superrare_beam_selection_v2.json",
+    selection: "manifests/superrare_beam_selection_v3.json",
     rows: reorderRows,
   };
 

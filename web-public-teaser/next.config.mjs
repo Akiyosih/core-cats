@@ -12,7 +12,7 @@ function copyDir(source, target) {
 }
 
 function syncSharedPublicAssets() {
-  copyDir(path.join(sourcePublicDir, "viewer_v2"), path.join(targetPublicDir, "viewer_v2"));
+  copyDir(path.join(sourcePublicDir, "viewer_v3"), path.join(targetPublicDir, "viewer_v3"));
   copyDir(path.join(sourcePublicDir, "teaser"), path.join(targetPublicDir, "teaser"));
   console.log("[public-teaser] synced shared public assets from web/public");
 }

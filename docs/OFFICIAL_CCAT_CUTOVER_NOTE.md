@@ -18,8 +18,8 @@ Use this together with:
 As of `2026-03-14`, the intended next sequence is:
 
 1. keep the finalized no-logo superrare inputs fixed:
-   - `manifests/superrare_beam_selection_v2.json`
-   - `manifests/beam_token_reorder_v2.json`
+   - `manifests/superrare_beam_selection_v3.json`
+   - `manifests/beam_token_reorder_v3.json`
 2. run the official `CCAT` deploy dry-run:
    - source `foxar/.env.mainnet-official.example`
    - add the live RPC / keystore / password inputs in the local shell
@@ -91,8 +91,8 @@ Keep these secrets or live values outside the repository:
 The current official path is already fixed to the no-logo beam superrare set.
 
 Before the official deploy, confirm only this:
-1. `manifests/superrare_beam_selection_v2.json` is the intended canonical 10-token source list
-2. `manifests/beam_token_reorder_v2.json` is the intended final token reorder map
+1. `manifests/superrare_beam_selection_v3.json` is the intended canonical 10-token source list
+2. `manifests/beam_token_reorder_v3.json` is the intended final token reorder map
 3. `CORECATS_SUPERRARE_PLACEHOLDER=0` remains unchanged for the official deploy
 
 ## Official Deploy Dry-Run Commands

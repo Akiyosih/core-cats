@@ -4,19 +4,19 @@
 /_next/static/*
   Cache-Control: public, max-age=31536000, immutable
 
-/viewer_v2/png/*
+/viewer_v3/png/*
   Cache-Control: public, max-age=31536000, immutable
 
-/viewer_v2/png-white/*
+/viewer_v3/png-white/*
   Cache-Control: public, max-age=31536000, immutable
 
-/viewer_v2/svg/*
+/viewer_v3/svg/*
   Cache-Control: public, max-age=31536000, immutable
 
 /teaser/*
   Cache-Control: public, max-age=31536000, immutable
 
-/viewer_v2/collection-index.json
+/viewer_v3/collection-index.json
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
 /robots.txt

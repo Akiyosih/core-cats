@@ -6,7 +6,7 @@ Repository-tracked collection artifacts used for public review and reproducibili
 1. final 1000 manifest snapshots
 2. validation and summary outputs
 3. trait display label mappings
-4. active viewer data artifacts under `viewer_v2/`
+4. active viewer data artifacts under `viewer_v3/`
 
 ## Role
 These files are published so outside readers can inspect:

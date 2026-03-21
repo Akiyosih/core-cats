@@ -31,7 +31,7 @@ function loadArtifact(root, rel) {
 
 async function main() {
   const root = process.cwd();
-  const manifestPath = path.join(root, "manifests", "final_1000_manifest_v2.json");
+  const manifestPath = path.join(root, "manifests", "final_1000_manifest_v3.json");
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   const items = [...manifest.items].sort((a, b) => a.token_id - b.token_id);
 
@@ -83,7 +83,7 @@ async function main() {
     }
   }
 
-  console.log("[verify-renderer] PASS: all 1000 token metadata attributes match final_1000_manifest_v2.json");
+  console.log("[verify-renderer] PASS: all 1000 token metadata attributes match final_1000_manifest_v3.json");
   console.log(`[verify-renderer] data=${await data.getAddress()}`);
   console.log(`[verify-renderer] renderer=${await renderer.getAddress()}`);
 
