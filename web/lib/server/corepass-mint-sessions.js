@@ -15,6 +15,7 @@ import {
 } from "./mint-backend-proxy.js";
 import { runMintPrecheck } from "./mint-precheck.js";
 
+const OFFICIAL_MAINNET_CORECATS_ADDRESS = "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3";
 const OFFICIAL_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
 const OFFICIAL_MAINNET_MINT_HOST = "core-cats-mint.vercel.app";
 const SESSION_TTL_MS = Number(process.env.COREPASS_SESSION_TTL_SECONDS || 20 * 60) * 1000;
@@ -207,6 +208,9 @@ function resolveRequestOrigin(request) {
 }
 
 function resolveIdentifyMethod(request, env) {
+  if (String(env?.coreCatsAddress || "").trim().toLowerCase() === OFFICIAL_MAINNET_CORECATS_ADDRESS) {
+    return "login";
+  }
   if (resolveRequestOrigin(request) === OFFICIAL_MAINNET_MINT_BASE_URL) {
     return "login";
   }
