@@ -1,6 +1,7 @@
 import { PUBLIC_TEASER_CONTRACT_SURFACE } from "./public-teaser-contract-surface.js";
 
 const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
+const OFFICIAL_MAINNET_CORECATS_ADDRESS = "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3";
 
 function normalizeLaunchState(value) {
   return value === "canary" || value === "public" || value === "closed" ? value : "closed";
@@ -24,13 +25,22 @@ function normalizeUrl(value) {
 }
 
 export function getPublicRuntimeConfig() {
-  const launchState = normalizeLaunchState(process.env.NEXT_PUBLIC_LAUNCH_STATE || process.env.CORECATS_LAUNCH_STATE || "closed");
+  const configuredLaunchState = normalizeLaunchState(
+    process.env.NEXT_PUBLIC_LAUNCH_STATE || process.env.CORECATS_LAUNCH_STATE || "closed",
+  );
   const siteSurface = normalizeSiteSurface(
     process.env.NEXT_PUBLIC_SITE_SURFACE || process.env.CORECATS_SITE_SURFACE || "public-teaser",
-    launchState,
+    configuredLaunchState,
   );
   const siteBaseUrl = normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || "");
   const networkName = process.env.CORE_NETWORK_NAME || "devin";
+  const coreCatsAddress = process.env.NEXT_PUBLIC_CORECATS_ADDRESS || PUBLIC_TEASER_CONTRACT_SURFACE.coreCatsAddress || "";
+  const launchState =
+    siteSurface === "public-teaser" &&
+    networkName === "mainnet" &&
+    String(coreCatsAddress || "").trim().toLowerCase() === OFFICIAL_MAINNET_CORECATS_ADDRESS
+      ? "public"
+      : configuredLaunchState;
   const explicitMintBaseUrl = normalizeUrl(
     process.env.NEXT_PUBLIC_CORECATS_MINT_BASE_URL || process.env.CORECATS_MINT_BASE_URL || "",
   );
@@ -52,7 +62,7 @@ export function getPublicRuntimeConfig() {
     mintOnlyHost: false,
     statusSnapshotUrl: String(process.env.NEXT_PUBLIC_CORECATS_STATUS_URL || "").trim(),
     explorerBaseUrl: process.env.NEXT_PUBLIC_CORE_EXPLORER_BASE_URL || PUBLIC_TEASER_CONTRACT_SURFACE.explorerBaseUrl || "",
-    coreCatsAddress: process.env.NEXT_PUBLIC_CORECATS_ADDRESS || PUBLIC_TEASER_CONTRACT_SURFACE.coreCatsAddress || "",
+    coreCatsAddress,
     coreCatsRendererAddress:
       process.env.NEXT_PUBLIC_CORECATS_RENDERER_ADDRESS || PUBLIC_TEASER_CONTRACT_SURFACE.coreCatsRendererAddress || "",
     coreCatsDataAddress:
