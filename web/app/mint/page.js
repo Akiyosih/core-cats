@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import MintWorkflow from "../../components/mint-workflow";
 import MintCounterBanner from "../../components/mint-counter-banner";
 import { getCorePublicConfig } from "../../lib/server/core-env";
+import { getLiveMintCount } from "../../lib/server/mint-count";
 import { getSummary } from "../../lib/viewer-data";
 import { buildBrowseHref } from "../../lib/site-surface-links.js";
 
@@ -13,10 +14,9 @@ export async function MintPageContent({ config }) {
   const collectionHref = buildBrowseHref(config, "/collection");
   const transparencyHref = buildBrowseHref(config, "/transparency");
   const summary = await getSummary();
+  const mintedCount = await getLiveMintCount();
 
-  const mintCounterBanner = (
-    <MintCounterBanner statusSnapshotUrl={config.statusSnapshotUrl} total={summary.total} launchState={launchState} />
-  );
+  const mintCounterBanner = <MintCounterBanner mintedCount={mintedCount} total={summary.total} launchState={launchState} />;
 
   if (launchState === "closed" || !config.mintSurfaceEnabled) {
     const isPublicTeaser = config.publicTeaserSite && launchState !== "closed";

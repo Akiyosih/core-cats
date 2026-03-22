@@ -1,7 +1,3 @@
-"use client";
-
-import { usePublicStatusSnapshot } from "../lib/public-status-client";
-
 function normalizeLaunchState(value) {
   return value === "public" || value === "canary" ? value : "closed";
 }
@@ -17,18 +13,11 @@ function bannerNote(launchState) {
   return "Current on-chain supply before full public launch. Refresh or reopen this page to fetch the latest snapshot.";
 }
 
-export default function MintCounterBanner({ statusSnapshotUrl, total, launchState = "closed" }) {
-  const { snapshot, loading } = usePublicStatusSnapshot(statusSnapshotUrl);
+export default function MintCounterBanner({ mintedCount, total, launchState = "closed" }) {
   const theme = normalizeLaunchState(launchState);
-
-  if (!statusSnapshotUrl) return null;
-
-  const mintedCount = Number(snapshot?.mintedCount);
   const countText = Number.isFinite(mintedCount)
     ? `${mintedCount.toLocaleString()} / ${Number(total || 0).toLocaleString()} minted`
-    : loading
-      ? "Loading latest mint count..."
-      : `— / ${Number(total || 0).toLocaleString()} minted`;
+    : `— / ${Number(total || 0).toLocaleString()} minted`;
 
   return (
     <div className={`launch-banner launch-banner--${theme} mint-counter-banner`}>
