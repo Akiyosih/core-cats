@@ -268,6 +268,66 @@ test("official mint host forces login identify mode even if stale env says sign"
   );
 });
 
+test("official mint request host overrides stale site base env for QR1 login and callback origin", async () => {
+  const sessionRequest = new Request("https://core-cats-mint.vercel.app/api/mint/corepass/session", {
+    headers: {
+      host: "core-cats-mint.vercel.app",
+      "x-forwarded-proto": "https",
+    },
+  });
+
+  await withEnv(
+    {
+      NEXT_PUBLIC_SITE_BASE_URL: "https://quiet-canary-b8q6ja3s-projects.vercel.app",
+      COREPASS_IDENTIFY_METHOD: "sign",
+      NEXT_PUBLIC_LAUNCH_STATE: "canary",
+      NEXT_PUBLIC_SITE_SURFACE: "private-canary",
+      CORE_RPC_URL: "https://rpc.example.com",
+      CORECATS_BACKEND_MODE: "local",
+      CORECATS_BACKEND_BASE_URL: undefined,
+      CORECATS_INTERNAL_BACKEND_BASE_URL: undefined,
+      CORECATS_BACKEND_SHARED_SECRET: undefined,
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+    },
+    async () => {
+      await withFetchMock(async (_url, init) => {
+        const payload = JSON.parse(init?.body || "{}");
+        switch (payload.method) {
+          case "xcb_blockNumber":
+            return jsonRpcResponse("0x64");
+          case "xcb_call": {
+            const data = payload?.params?.[0]?.data || "";
+            if (data === "0x1c34eb83") {
+              return jsonRpcResponse(`0x${"0".repeat(62)}64`);
+            }
+            if (data.startsWith("0x5539b96a")) {
+              return jsonRpcResponse(`0x${"0".repeat(64)}`);
+            }
+            if (data.startsWith("0xe64f7f28")) {
+              return jsonRpcResponse(`0x${"0".repeat(64)}`);
+            }
+            if (data.startsWith("0xf622d4c8")) {
+              return jsonRpcResponse(`0x${"0".repeat(64 * 4)}`);
+            }
+            throw new Error(`unexpected xcb_call selector: ${data}`);
+          }
+          default:
+            throw new Error(`unexpected RPC method: ${payload.method}`);
+        }
+      }, async () => {
+        const session = await createMintSession(sessionRequest, { quantity: 1, handoffMode: "desktop" });
+        assert.equal(session.identify.method, "login");
+        assert.match(session.identify.desktopUri, /^corepass:login\/\?/);
+        assert.match(
+          session.identify.desktopUri,
+          /conn=https%3A%2F%2Fcore-cats-mint\.vercel\.app%2Fapi%2Fmint%2Fcorepass%2Fcallback/,
+        );
+      });
+    },
+  );
+});
+
 test("login identify mode records protocol-session mismatches but still binds the route-addressed mint session", async () => {
   const sessionRequest = buildRequest("https://core-cats.vercel.app/api/mint/corepass/session");
 

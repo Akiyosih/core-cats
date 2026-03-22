@@ -15,6 +15,8 @@ import {
 } from "./mint-backend-proxy.js";
 import { runMintPrecheck } from "./mint-precheck.js";
 
+const OFFICIAL_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
+const OFFICIAL_MAINNET_MINT_HOST = "core-cats-mint.vercel.app";
 const SESSION_TTL_MS = Number(process.env.COREPASS_SESSION_TTL_SECONDS || 20 * 60) * 1000;
 const ACTIVE_MINT_SESSION_TTL_MS = Number(process.env.COREPASS_ACTIVE_MINT_SESSION_TTL_SECONDS || 35 * 60) * 1000;
 const SESSION_READ_CACHE_TTL_MS = Number(process.env.COREPASS_SESSION_READ_CACHE_SECONDS || 15) * 1000;
@@ -159,6 +161,10 @@ async function getRequiredSession(request, sessionId) {
 }
 
 function buildAbsoluteUrl(request, pathname, search = "") {
+  const requestOrigin = resolveRequestOrigin(request);
+  if (requestOrigin === OFFICIAL_MAINNET_MINT_BASE_URL) {
+    return `${requestOrigin}${pathname}${search}`;
+  }
   const config = getCorePublicConfig();
   if (config.siteBaseUrl) {
     const siteBaseUrlError = getSiteBaseUrlConfigError(config.siteBaseUrl);
@@ -181,6 +187,30 @@ function buildAbsoluteUrl(request, pathname, search = "") {
   }
   const protocol = forwardedProto || "http";
   return `${protocol}://${host}${pathname}${search}`;
+}
+
+function resolveRequestOrigin(request) {
+  const forwardedProto = String(request?.headers?.get("x-forwarded-proto") || "").trim().toLowerCase();
+  const host = String(request?.headers?.get("x-forwarded-host") || request?.headers?.get("host") || "")
+    .trim()
+    .toLowerCase();
+  if (host === OFFICIAL_MAINNET_MINT_HOST) {
+    return `${forwardedProto || "https"}://${host}`;
+  }
+  try {
+    const parsed = new URL(request?.url || "");
+    if (parsed.host.toLowerCase() === OFFICIAL_MAINNET_MINT_HOST) {
+      return OFFICIAL_MAINNET_MINT_BASE_URL;
+    }
+  } catch {}
+  return "";
+}
+
+function resolveIdentifyMethod(request, env) {
+  if (resolveRequestOrigin(request) === OFFICIAL_MAINNET_MINT_BASE_URL) {
+    return "login";
+  }
+  return normalizeIdentifyMethod(env.corePassIdentifyMethod);
 }
 
 export function buildCorePassUri(action, pathValue, params) {
@@ -777,7 +807,7 @@ export async function createMintSession(request, { quantity, handoffMode }) {
     updatedAt: nowIso(),
     expiresAtMs: Date.now() + SESSION_TTL_MS,
     identify: {
-      method: normalizeIdentifyMethod(env.corePassIdentifyMethod),
+      method: resolveIdentifyMethod(request, env),
       challengeHex: `0x${crypto.randomBytes(32).toString("hex")}`,
       loginSession: "",
       desktopUri: "",
