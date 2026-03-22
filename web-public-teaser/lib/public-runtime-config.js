@@ -28,10 +28,9 @@ export function getPublicRuntimeConfig() {
   const configuredLaunchState = normalizeLaunchState(
     process.env.NEXT_PUBLIC_LAUNCH_STATE || process.env.CORECATS_LAUNCH_STATE || "closed",
   );
-  const siteSurface = normalizeSiteSurface(
-    process.env.NEXT_PUBLIC_SITE_SURFACE || process.env.CORECATS_SITE_SURFACE || "public-teaser",
-    configuredLaunchState,
-  );
+  // This app is the public browse surface only. Do not let unrelated deploy env
+  // values flip it into canary/private-mint modes during static export.
+  const siteSurface = "public-teaser";
   const siteBaseUrl = normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || "");
   const coreCatsAddress = process.env.NEXT_PUBLIC_CORECATS_ADDRESS || PUBLIC_TEASER_CONTRACT_SURFACE.coreCatsAddress || "";
   const normalizedCoreCatsAddress = String(coreCatsAddress || "").trim().toLowerCase();
