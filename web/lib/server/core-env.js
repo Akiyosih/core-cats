@@ -227,6 +227,7 @@ export function getCoreServerEnv() {
     process.env.CORECATS_DATA_ADDRESS ||
     fileEnv.CORECATS_DATA_ADDRESS ||
     DEFAULTS.coreCatsDataAddress;
+  let corePassIdentifyMethod = normalizeIdentifyMethod(process.env.COREPASS_IDENTIFY_METHOD || "");
 
   if (isOfficialMintHost(siteBaseUrl)) {
     if (launchState === "canary") {
@@ -238,6 +239,7 @@ export function getCoreServerEnv() {
     networkName = "mainnet";
     browseBaseUrl = "https://core-cats.pages.dev";
     mintOnlyHost = true;
+    corePassIdentifyMethod = "login";
     coreCatsAddress = OFFICIAL_MAINNET_CORECATS_ADDRESS;
     coreCatsRendererAddress = OFFICIAL_MAINNET_RENDERER_ADDRESS;
     coreCatsDataAddress = OFFICIAL_MAINNET_DATA_ADDRESS;
@@ -282,7 +284,7 @@ export function getCoreServerEnv() {
     ).trim(),
     canaryAllowedCoreIds: parseCanaryAllowedCoreIds(process.env.CORECATS_CANARY_ALLOWED_CORE_IDS || ""),
     corePassExpectedCoreId: (process.env.COREPASS_EXPECTED_CORE_ID || "").trim(),
-    corePassIdentifyMethod: normalizeIdentifyMethod(process.env.COREPASS_IDENTIFY_METHOD || ""),
+    corePassIdentifyMethod,
     coreCatsAddress,
     coreCatsRendererAddress,
     coreCatsDataAddress,
