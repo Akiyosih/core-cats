@@ -35,10 +35,12 @@ export function getPublicRuntimeConfig() {
   const siteBaseUrl = normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || "");
   const networkName = process.env.CORE_NETWORK_NAME || "devin";
   const coreCatsAddress = process.env.NEXT_PUBLIC_CORECATS_ADDRESS || PUBLIC_TEASER_CONTRACT_SURFACE.coreCatsAddress || "";
+  const normalizedNetworkName = String(networkName || "").trim().toLowerCase();
+  const normalizedCoreCatsAddress = String(coreCatsAddress || "").trim().toLowerCase();
   const launchState =
     siteSurface === "public-teaser" &&
-    networkName === "mainnet" &&
-    String(coreCatsAddress || "").trim().toLowerCase() === OFFICIAL_MAINNET_CORECATS_ADDRESS
+    normalizedNetworkName === "mainnet" &&
+    normalizedCoreCatsAddress === OFFICIAL_MAINNET_CORECATS_ADDRESS
       ? "public"
       : configuredLaunchState;
   const explicitMintBaseUrl = normalizeUrl(
