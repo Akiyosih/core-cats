@@ -14,6 +14,8 @@ from .rpc import CoreRpcClient, RpcError
 from .spark import classify_finalize_error_detail, issue_mint_authorization, relay_finalize_mint
 from .storage import SessionStore
 
+MAX_SUPPLY = 1000
+
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -134,13 +136,15 @@ class MintBackendHandler(BaseHTTPRequestHandler):
 
     def _handle_public_mint_count(self) -> None:
         try:
-            minted_count = self.rpc.get_total_supply(self.config.corecats_address)
+            available_supply = self.rpc.get_available_supply(self.config.corecats_address)
+            minted_count = max(0, MAX_SUPPLY - available_supply)
             payload = {
                 "fetchedAt": now_iso(),
                 "errorMessage": "",
                 "cacheTtlSeconds": 60,
                 "coreCatsAddress": self.config.corecats_address,
                 "mintedCount": minted_count,
+                "availableSupply": available_supply,
             }
             json_response(
                 self,

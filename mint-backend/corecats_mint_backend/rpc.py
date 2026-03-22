@@ -13,7 +13,6 @@ BLOCK_NUMBER_METHODS = ("xcb_blockNumber", "eth_blockNumber")
 RECEIPT_METHODS = ("xcb_getTransactionReceipt", "eth_getTransactionReceipt")
 
 AVAILABLE_SUPPLY_SELECTOR = "0x1c34eb83"
-TOTAL_SUPPLY_SELECTOR = "0x18160ddd"
 MINTED_PER_ADDRESS_SELECTOR = "0x5539b96a"
 RESERVED_PER_ADDRESS_SELECTOR = "0xe64f7f28"
 PENDING_COMMIT_SELECTOR = "0xf622d4c8"
@@ -246,8 +245,8 @@ class CoreRpcClient:
             available_supply=available_supply,
         )
 
-    def get_total_supply(self, contract_address: str) -> int:
-        return _decode_uint_word(self.eth_call(contract_address, TOTAL_SUPPLY_SELECTOR), 0)
+    def get_available_supply(self, contract_address: str) -> int:
+        return _decode_uint_word(self.eth_call(contract_address, AVAILABLE_SUPPLY_SELECTOR), 0)
 
     def get_transaction_receipt(self, tx_hash: str) -> TransactionReceipt | None:
         result = self._request(RECEIPT_METHODS, [tx_hash])
