@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS mint_authorizations (
 CREATE TABLE IF NOT EXISTS finalize_attempts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TEXT NOT NULL,
+    session_id TEXT NOT NULL DEFAULT '',
     minter TEXT NOT NULL,
     status TEXT NOT NULL,
     tx_hash TEXT NOT NULL DEFAULT '',
@@ -58,6 +59,14 @@ class SessionStore:
     def _init_db(self) -> None:
         with self._connect() as conn:
             conn.executescript(SCHEMA)
+            columns = {
+                row["name"]
+                for row in conn.execute("PRAGMA table_info(finalize_attempts)").fetchall()
+            }
+            if "session_id" not in columns:
+                conn.execute(
+                    "ALTER TABLE finalize_attempts ADD COLUMN session_id TEXT NOT NULL DEFAULT ''"
+                )
 
     def cleanup_expired(self, now_ms: int | None = None) -> None:
         cutoff = int(now_ms or time.time() * 1000)
@@ -136,12 +145,21 @@ class SessionStore:
                 (created_at, minter, quantity, nonce, expiry, message_hash, signature),
             )
 
-    def record_finalize_attempt(self, *, created_at: str, minter: str, status: str, tx_hash: str = "", detail: str = "") -> None:
+    def record_finalize_attempt(
+        self,
+        *,
+        created_at: str,
+        session_id: str = "",
+        minter: str,
+        status: str,
+        tx_hash: str = "",
+        detail: str = "",
+    ) -> None:
         with self._connect() as conn:
             conn.execute(
                 """
-                INSERT INTO finalize_attempts (created_at, minter, status, tx_hash, detail)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO finalize_attempts (created_at, session_id, minter, status, tx_hash, detail)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """,
-                (created_at, minter, status, tx_hash, detail),
+                (created_at, session_id, minter, status, tx_hash, detail),
             )

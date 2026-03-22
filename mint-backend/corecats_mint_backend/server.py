@@ -356,6 +356,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
     def _handle_finalize(self) -> None:
         body = self._read_json()
         minter = str(body.get("minter") or "").strip()
+        session_id = str(body.get("sessionId") or "").strip()
         if not minter:
             json_response(self, 400, {"error": "minter is required"})
             return
@@ -364,6 +365,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             payload = relay_finalize_mint(self.config, minter=minter)
             self.store.record_finalize_attempt(
                 created_at=now_iso(),
+                session_id=session_id,
                 minter=minter,
                 status="submitted",
                 tx_hash=str(payload["txHash"]),
@@ -380,6 +382,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
 
             self.store.record_finalize_attempt(
                 created_at=now_iso(),
+                session_id=session_id,
                 minter=minter,
                 status=code,
                 detail=detail,

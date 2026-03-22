@@ -300,6 +300,7 @@ class FinalizeManager:
         append_history(session, {"step": "finalize", "event": "submitted_by_relayer", "txHash": tx_hash})
         self._store.record_finalize_attempt(
             created_at=finalize["submittedAt"],
+            session_id=str(session.get("id") or ""),
             minter=str(session["minter"]),
             status="submitted",
             tx_hash=tx_hash,
@@ -324,6 +325,7 @@ class FinalizeManager:
             append_history(session, {"step": "finalize", "event": "relayer_tx_reverted", "txHash": tx_hash})
             self._store.record_finalize_attempt(
                 created_at=now_iso(),
+                session_id=str(session.get("id") or ""),
                 minter=str(session["minter"]),
                 status="tx_reverted",
                 tx_hash=tx_hash,
@@ -351,6 +353,7 @@ class FinalizeManager:
         append_history(session, {"step": "finalize", "event": "confirmed_by_relayer", "txHash": finalize["txHash"]})
         self._store.record_finalize_attempt(
             created_at=finalize["confirmedAt"],
+            session_id=str(session.get("id") or ""),
             minter=str(session["minter"]),
             status="confirmed",
             tx_hash=str(finalize["txHash"]),
@@ -393,6 +396,7 @@ class FinalizeManager:
                 append_history(session, {"step": "finalize", "event": "relayer_retry", "code": code or None})
                 self._store.record_finalize_attempt(
                     created_at=session["updatedAt"],
+                    session_id=str(session.get("id") or ""),
                     minter=str(session["minter"]),
                     status=code or "retrying",
                     detail=detail,
@@ -420,6 +424,7 @@ class FinalizeManager:
             append_history(session, {"step": "finalize", "event": "expired"})
             self._store.record_finalize_attempt(
                 created_at=session["updatedAt"],
+                session_id=str(session.get("id") or ""),
                 minter=str(session["minter"]),
                 status="finalize_expired",
                 detail="Finalize window expired before completion.",
@@ -470,6 +475,7 @@ class FinalizeManager:
             append_history(session, {"step": "finalize", "event": "stuck_detected", "txHash": finalize["txHash"] or None})
             self._store.record_finalize_attempt(
                 created_at=session["updatedAt"],
+                session_id=str(session.get("id") or ""),
                 minter=str(session["minter"]),
                 status="stuck",
                 tx_hash=str(finalize["txHash"]),
