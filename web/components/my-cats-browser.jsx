@@ -7,6 +7,7 @@ import QRCode from "qrcode";
 import CollectionCard from "./collection-card";
 import { isCoreAddress } from "../lib/collection-utils";
 import { usePublicOwnerLookup, usePublicStatusSnapshot } from "../lib/public-status-client";
+import { CONTRACT_QR_OPTIONS, CONTRACT_QR_SIZE } from "../../shared/public-site/lib/contract-qr.js";
 
 function normalizeOwnerInput(value) {
   return String(value || "").trim();
@@ -73,15 +74,7 @@ export default function MyCatsBrowser({
       }
 
       try {
-        const nextQr = await QRCode.toDataURL(displayCoreCatsAddress, {
-          errorCorrectionLevel: "M",
-          margin: 1,
-          scale: 8,
-          color: {
-            dark: "#111111",
-            light: "#ffffff",
-          },
-        });
+        const nextQr = await QRCode.toDataURL(displayCoreCatsAddress, CONTRACT_QR_OPTIONS);
         if (!cancelled) {
           setCoreCatsContractQr(nextQr);
           setQrAddress(displayCoreCatsAddress);
@@ -176,7 +169,12 @@ export default function MyCatsBrowser({
             <p>Then tap Import NFT Collection and confirm in CorePass.</p>
             <div className="owner-help-qr">
               {coreCatsContractQr ? (
-                <img src={coreCatsContractQr} alt="CoreCats contract address QR" width="176" height="176" />
+                <img
+                  src={coreCatsContractQr}
+                  alt="CoreCats contract address QR"
+                  width={CONTRACT_QR_SIZE}
+                  height={CONTRACT_QR_SIZE}
+                />
               ) : null}
               {displayCoreCatsAddress ? <p className="owner-help-address">{displayCoreCatsAddress}</p> : null}
             </div>

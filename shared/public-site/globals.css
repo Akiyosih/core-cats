@@ -1047,11 +1047,14 @@ main {
 }
 
 .owner-help-qr img {
-  width: 176px;
-  height: 176px;
+  width: 224px;
+  height: 224px;
   border-radius: 16px;
   border: 1px solid rgba(41, 36, 31, 0.08);
   background: #ffffff;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  object-fit: contain;
 }
 
 .owner-help-address {
@@ -1939,6 +1942,11 @@ main {
 
   .owner-help-qr {
     justify-items: center;
+  }
+
+  .owner-help-qr img {
+    width: min(224px, 78vw);
+    height: min(224px, 78vw);
   }
 }
 

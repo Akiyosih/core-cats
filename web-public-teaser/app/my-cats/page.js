@@ -5,18 +5,14 @@ import MyCatsBrowser from "../../components/my-cats-browser.jsx";
 import { getCollection } from "../../../shared/public-site/lib/viewer-data.js";
 import { PUBLIC_TEASER_CONTRACT_SURFACE } from "../../lib/public-teaser-contract-surface.js";
 import { getPublicRuntimeConfig } from "../../lib/public-runtime-config.js";
+import { CONTRACT_QR_OPTIONS } from "../../../shared/public-site/lib/contract-qr.js";
 
 export const dynamic = "force-static";
 
 async function buildCorePassContractQr(address) {
   const normalized = String(address || "").trim();
   if (!normalized) return "";
-  return QRCode.toDataURL(normalized, {
-    errorCorrectionLevel: "M",
-    margin: 1,
-    scale: 8,
-    color: { dark: "#111111", light: "#ffffff" },
-  });
+  return QRCode.toDataURL(normalized, CONTRACT_QR_OPTIONS);
 }
 
 export default async function MyCatsPage() {

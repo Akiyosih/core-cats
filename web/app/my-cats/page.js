@@ -6,17 +6,13 @@ import MyCatsBrowser from "../../components/my-cats-browser";
 import { getCollection } from "../../lib/viewer-data";
 import { getCorePublicConfig } from "../../lib/server/core-env";
 import { buildBrowseHref, hasBrowseOrigin } from "../../lib/site-surface-links.js";
+import { CONTRACT_QR_OPTIONS } from "../../../shared/public-site/lib/contract-qr.js";
 export const dynamic = "force-static";
 
 async function buildCorePassContractQr(address) {
   const normalized = String(address || "").trim();
   if (!normalized) return "";
-  return QRCode.toDataURL(normalized, {
-    errorCorrectionLevel: "M",
-    margin: 1,
-    scale: 8,
-    color: { dark: "#111111", light: "#ffffff" },
-  });
+  return QRCode.toDataURL(normalized, CONTRACT_QR_OPTIONS);
 }
 
 export default async function MyCatsPage({ searchParams }) {
