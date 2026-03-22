@@ -7,6 +7,9 @@ const FOXAR_ENV_PATH = path.join(ROOT_DIR, "foxar", ".env");
 export const DEFAULT_DEVIN_RPC_URL = "https://xcbapi-arch-devin.coreblockchain.net/";
 export const DEFAULT_DEVIN_CORECATS_ADDRESS = "ab597892bace5d97cf2fffa9a6eb0d5664b54a4b39ba";
 export const DEFAULT_DEVIN_EXPLORER_BASE_URL = "https://xab.blockindex.net";
+const OFFICIAL_MAINNET_CORECATS_ADDRESS = "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3";
+const OFFICIAL_MAINNET_RENDERER_ADDRESS = "cb762d998b8e79a74e1bc667b1ba2fd4154f25a467ac";
+const OFFICIAL_MAINNET_DATA_ADDRESS = "cb748bebbcac49b28fdeccb8a56f1cf677e9d94ef25c";
 const HEX_40_RE = /^[0-9a-f]{40}$/;
 const ICAN_RE = /^[a-z]{2}[0-9a-f]{42}$/;
 
@@ -73,6 +76,10 @@ function normalizeBoolean(value) {
 
 function normalizeUrl(value) {
   return String(value || "").trim().replace(/\/$/, "");
+}
+
+function isOfficialMintHost(siteBaseUrl) {
+  return normalizeUrl(siteBaseUrl) === DEFAULT_MAINNET_MINT_BASE_URL;
 }
 
 function isLoopbackHttpUrl(value) {
@@ -180,13 +187,64 @@ export function getCoreServerEnv() {
   const finalizerPrivateKey =
     process.env.FINALIZER_PRIVATE_KEY || fileEnv.FINALIZER_PRIVATE_KEY || deployerPrivateKey;
 
-  const launchState = normalizeLaunchState(
+  let launchState = normalizeLaunchState(
     process.env.NEXT_PUBLIC_LAUNCH_STATE || process.env.CORECATS_LAUNCH_STATE || DEFAULTS.launchState,
   );
-  const siteSurface = normalizeSiteSurface(
+  let siteSurface = normalizeSiteSurface(
     process.env.NEXT_PUBLIC_SITE_SURFACE || process.env.CORECATS_SITE_SURFACE || DEFAULTS.siteSurface,
     launchState,
   );
+  let siteBaseUrl = normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || process.env.CORECATS_SITE_BASE_URL || "");
+  let browseBaseUrl = normalizeUrl(
+    process.env.NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL || process.env.CORECATS_BROWSE_BASE_URL || DEFAULTS.browseBaseUrl,
+  );
+  let mintOnlyHost = normalizeBoolean(
+    process.env.NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST || process.env.CORECATS_MINT_ONLY_HOST || DEFAULTS.mintOnlyHost,
+  );
+  let networkId = Number(process.env.CORE_NETWORK_ID || DEFAULTS.networkId);
+  let networkName = process.env.CORE_NETWORK_NAME || DEFAULTS.networkName;
+  let chainId = Number(process.env.NEXT_PUBLIC_CORE_CHAIN_ID || process.env.CORE_CHAIN_ID || DEFAULTS.chainId);
+  let statusSnapshotUrl = (
+    process.env.NEXT_PUBLIC_CORECATS_STATUS_URL ||
+    (
+      (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, "")
+        ? `${(process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, "")}/api/public/status`
+        : ""
+    )
+  ).trim();
+  let coreCatsAddress =
+    process.env.NEXT_PUBLIC_CORECATS_ADDRESS ||
+    process.env.CORECATS_ADDRESS ||
+    fileEnv.CORECATS_ADDRESS ||
+    DEFAULTS.coreCatsAddress;
+  let coreCatsRendererAddress =
+    process.env.NEXT_PUBLIC_CORECATS_RENDERER_ADDRESS ||
+    process.env.CORECATS_RENDERER_ADDRESS ||
+    fileEnv.CORECATS_RENDERER_ADDRESS ||
+    DEFAULTS.coreCatsRendererAddress;
+  let coreCatsDataAddress =
+    process.env.NEXT_PUBLIC_CORECATS_DATA_ADDRESS ||
+    process.env.CORECATS_DATA_ADDRESS ||
+    fileEnv.CORECATS_DATA_ADDRESS ||
+    DEFAULTS.coreCatsDataAddress;
+
+  if (isOfficialMintHost(siteBaseUrl)) {
+    if (launchState === "canary") {
+      launchState = "public";
+    }
+    siteSurface = "public-mint";
+    chainId = 1;
+    networkId = 1;
+    networkName = "mainnet";
+    browseBaseUrl = "https://core-cats.pages.dev";
+    mintOnlyHost = true;
+    coreCatsAddress = OFFICIAL_MAINNET_CORECATS_ADDRESS;
+    coreCatsRendererAddress = OFFICIAL_MAINNET_RENDERER_ADDRESS;
+    coreCatsDataAddress = OFFICIAL_MAINNET_DATA_ADDRESS;
+    if (!statusSnapshotUrl || /sslip\.io\/api\/public\/status$/i.test(statusSnapshotUrl)) {
+      statusSnapshotUrl = "https://core-cats.pages.dev/api/public/status";
+    }
+  }
 
   return {
     rootDir: ROOT_DIR,
@@ -198,32 +256,21 @@ export function getCoreServerEnv() {
       fileEnv.CORE_RPC_URL ||
       fileEnv.CORE_TESTNET_RPC_URL ||
       DEFAULTS.rpcUrl,
-    chainId: Number(process.env.NEXT_PUBLIC_CORE_CHAIN_ID || process.env.CORE_CHAIN_ID || DEFAULTS.chainId),
-    networkId: Number(process.env.CORE_NETWORK_ID || DEFAULTS.networkId),
-    networkName: process.env.CORE_NETWORK_NAME || DEFAULTS.networkName,
+    chainId,
+    networkId,
+    networkName,
     launchState,
     siteSurface,
-    siteBaseUrl: normalizeUrl(process.env.NEXT_PUBLIC_SITE_BASE_URL || process.env.CORECATS_SITE_BASE_URL || ""),
-    browseBaseUrl: normalizeUrl(
-      process.env.NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL || process.env.CORECATS_BROWSE_BASE_URL || DEFAULTS.browseBaseUrl,
-    ),
-    mintOnlyHost: normalizeBoolean(
-      process.env.NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST || process.env.CORECATS_MINT_ONLY_HOST || DEFAULTS.mintOnlyHost,
-    ),
+    siteBaseUrl,
+    browseBaseUrl,
+    mintOnlyHost,
     backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
     backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
     internalBackendBaseUrl: (
       process.env.CORECATS_INTERNAL_BACKEND_BASE_URL || DEFAULTS.internalBackendBaseUrl
     ).trim().replace(/\/$/, ""),
     backendSharedSecret: (process.env.CORECATS_BACKEND_SHARED_SECRET || DEFAULTS.backendSharedSecret).trim(),
-    statusSnapshotUrl: (
-      process.env.NEXT_PUBLIC_CORECATS_STATUS_URL ||
-      (
-        (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, "")
-          ? `${(process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, "")}/api/public/status`
-          : ""
-      )
-    ).trim(),
+    statusSnapshotUrl,
     privateCanaryBadgeText: (
       process.env.NEXT_PUBLIC_PRIVATE_CANARY_BADGE_TEXT || DEFAULTS.privateCanaryBadgeText
     ).trim(),
@@ -236,21 +283,9 @@ export function getCoreServerEnv() {
     canaryAllowedCoreIds: parseCanaryAllowedCoreIds(process.env.CORECATS_CANARY_ALLOWED_CORE_IDS || ""),
     corePassExpectedCoreId: (process.env.COREPASS_EXPECTED_CORE_ID || "").trim(),
     corePassIdentifyMethod: normalizeIdentifyMethod(process.env.COREPASS_IDENTIFY_METHOD || ""),
-    coreCatsAddress:
-      process.env.NEXT_PUBLIC_CORECATS_ADDRESS ||
-      process.env.CORECATS_ADDRESS ||
-      fileEnv.CORECATS_ADDRESS ||
-      DEFAULTS.coreCatsAddress,
-    coreCatsRendererAddress:
-      process.env.NEXT_PUBLIC_CORECATS_RENDERER_ADDRESS ||
-      process.env.CORECATS_RENDERER_ADDRESS ||
-      fileEnv.CORECATS_RENDERER_ADDRESS ||
-      DEFAULTS.coreCatsRendererAddress,
-    coreCatsDataAddress:
-      process.env.NEXT_PUBLIC_CORECATS_DATA_ADDRESS ||
-      process.env.CORECATS_DATA_ADDRESS ||
-      fileEnv.CORECATS_DATA_ADDRESS ||
-      DEFAULTS.coreCatsDataAddress,
+    coreCatsAddress,
+    coreCatsRendererAddress,
+    coreCatsDataAddress,
     deployerPrivateKey,
     signerPrivateKey,
     finalizerPrivateKey,
