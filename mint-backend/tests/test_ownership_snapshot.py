@@ -5,7 +5,15 @@ import unittest
 from pathlib import Path
 
 from corecats_mint_backend.config import Config
-from corecats_mint_backend.ownership_snapshot import build_public_status_snapshot
+from corecats_mint_backend.ownership_snapshot import build_public_owner_snapshot, build_public_status_snapshot
+
+
+class _FakeRpcClient:
+    def __init__(self, available_supply: int):
+        self._available_supply = available_supply
+
+    def get_available_supply(self, contract_address: str) -> int:  # noqa: ARG002
+        return self._available_supply
 
 
 class _FakeResponse:
@@ -53,54 +61,45 @@ class OwnershipSnapshotTests(unittest.TestCase):
             public_status_cache_seconds=120,
         )
 
-    def test_builds_token_and_owner_indexes(self) -> None:
+    def test_builds_minted_status_from_available_supply(self) -> None:
         config = self.make_config()
+        snapshot = build_public_status_snapshot(config, rpc_client=_FakeRpcClient(999))
+        self.assertEqual(snapshot["mintedCount"], 1)
+        self.assertTrue(snapshot["byToken"]["1"]["minted"])
+        self.assertNotIn("2", snapshot["byToken"])
 
+    def test_builds_owner_lookup_from_address_tokens(self) -> None:
+        config = self.make_config()
         def fake_urlopen(request, timeout=15):  # noqa: ARG001
             url = request.full_url
-            if url == "https://blockindex.net/api/v2/address/cb3022bb9ee4752d778f4c63b47559e77b4ca06a122a?page=1":
-                return _FakeResponse({"totalPages": 1, "txids": ["0xaaa", "0xbbb"]})
-            if url == "https://blockindex.net/api/v2/tx/0xaaa":
+            if url == "https://blockindex.net/api/v2/address/cb222222222222222222222222222222222222222222":
                 return _FakeResponse(
                     {
-                        "txid": "0xaaa",
-                        "blockHeight": 100,
-                        "blockTime": 1000,
-                        "tokenTransfers": [
+                        "tokens": [
                             {
                                 "type": "CBC721",
                                 "contract": "cb3022bb9ee4752d778f4c63b47559e77b4ca06a122a",
-                                "from": "00000000000000000000000000000000000000000000",
-                                "to": "cb111111111111111111111111111111111111111111",
-                                "value": "7",
-                            }
-                        ],
-                    }
-                )
-            if url == "https://blockindex.net/api/v2/tx/0xbbb":
-                return _FakeResponse(
-                    {
-                        "txid": "0xbbb",
-                        "blockHeight": 101,
-                        "blockTime": 1010,
-                        "tokenTransfers": [
+                                "ids": ["7", "9"],
+                            },
                             {
                                 "type": "CBC721",
-                                "contract": "cb3022bb9ee4752d778f4c63b47559e77b4ca06a122a",
-                                "from": "cb111111111111111111111111111111111111111111",
-                                "to": "cb222222222222222222222222222222222222222222",
-                                "value": "7",
-                            }
+                                "contract": "cb999999999999999999999999999999999999999999",
+                                "ids": ["100"],
+                            },
                         ],
                     }
                 )
             raise AssertionError(f"Unexpected URL: {url}")
 
-        snapshot = build_public_status_snapshot(config, opener=fake_urlopen)
-        self.assertEqual(snapshot["mintedCount"], 1)
+        snapshot = build_public_owner_snapshot(
+            config,
+            "cb222222222222222222222222222222222222222222",
+            opener=fake_urlopen,
+        )
+        self.assertEqual(snapshot["owner"]["tokenIds"], [7, 9])
         self.assertEqual(snapshot["byToken"]["7"]["owner"], "cb222222222222222222222222222222222222222222")
-        self.assertEqual(snapshot["byToken"]["7"]["mintTxHash"], "0xaaa")
-        self.assertEqual(snapshot["byOwner"]["cb222222222222222222222222222222222222222222"]["tokenIds"], [7])
+        self.assertEqual(snapshot["byToken"]["9"]["owner"], "cb222222222222222222222222222222222222222222")
+        self.assertNotIn("100", snapshot["byToken"])
 
 
 if __name__ == "__main__":

@@ -9,11 +9,13 @@ import re
 from typing import Any, Callable
 
 from .config import Config
+from .rpc import CoreRpcClient
 
 ZERO_ADDRESS = "00000000000000000000000000000000000000000000"
 BLOCKINDEX_USER_AGENT = "Mozilla/5.0 CoreCats/1.0"
 CORE_ADDRESS_RE = re.compile(r"^(?:ab|cb)[0-9a-f]{42}$", re.IGNORECASE)
 Urlopen = Callable[..., Any]
+MAX_SUPPLY = 1000
 
 
 def now_iso() -> str:
@@ -66,107 +68,88 @@ def _fetch_json(url: str, *, opener: Urlopen) -> dict[str, Any]:
     return payload
 
 
-def _fetch_contract_tx_ids(config: Config, *, opener: Urlopen) -> list[str]:
-    txids: list[str] = []
-    page = 1
-    total_pages = 1
-    api_base_url = f"{config.explorer_base_url.rstrip('/')}/api/v2"
+def _empty_token_status(owner: str | None = None) -> dict[str, Any]:
+    return {
+        "minted": True,
+        "owner": owner,
+        "mintTxHash": None,
+        "latestTxHash": None,
+        "mintedAt": None,
+        "updatedAt": None,
+        "explorer": {
+            "mintTx": None,
+            "latestTx": None,
+            "owner": None,
+        },
+    }
 
-    while page <= total_pages:
-        payload = _fetch_json(f"{api_base_url}/address/{config.corecats_address}?page={page}", opener=opener)
-        total_pages = max(1, _to_int(payload.get("totalPages")))
-        txids.extend(str(txid) for txid in payload.get("txids", []) if txid)
-        page += 1
 
-    return list(dict.fromkeys(txids))
+def _extract_owner_token_ids(payload: dict[str, Any], normalized_contract: str) -> list[int]:
+    token_ids: set[int] = set()
+    for token in payload.get("tokens", []):
+        if token.get("type") != "CBC721":
+            continue
+        if _normalize_address(token.get("contract", "")) != normalized_contract:
+            continue
+        for token_id in token.get("ids", []):
+            parsed = _to_int(token_id)
+            if parsed > 0:
+                token_ids.add(parsed)
+    return sorted(token_ids)
 
 
-def build_public_status_snapshot(config: Config, *, opener: Urlopen = urllib.request.urlopen) -> dict[str, Any]:
-    txids = _fetch_contract_tx_ids(config, opener=opener)
-    api_base_url = f"{config.explorer_base_url.rstrip('/')}/api/v2"
-    transactions = [_fetch_json(f"{api_base_url}/tx/{txid}", opener=opener) for txid in txids]
-
-    transactions.sort(key=lambda tx: (_to_int(tx.get("blockHeight")), _to_int(tx.get("blockTime"))))
-    normalized_contract = _normalize_address(config.corecats_address)
-    token_states: dict[int, dict[str, Any]] = {}
-
-    for tx in transactions:
-        for transfer in tx.get("tokenTransfers", []):
-            if transfer.get("type") != "CBC721":
-                continue
-            if _normalize_address(transfer.get("contract", "")) != normalized_contract:
-                continue
-
-            token_id = _to_int(transfer.get("value"))
-            if token_id <= 0:
-                continue
-
-            current = token_states.get(token_id) or {
-                "tokenId": token_id,
-                "minted": False,
-                "owner": None,
-                "mintTxHash": None,
-                "latestTxHash": None,
-                "mintedAt": None,
-                "updatedAt": None,
-            }
-
-            from_address = _normalize_address(transfer.get("from", ""))
-            to_address = _normalize_address(transfer.get("to", ""))
-
-            if from_address == ZERO_ADDRESS and not current["mintTxHash"]:
-                current["minted"] = True
-                current["mintTxHash"] = tx.get("txid")
-                current["mintedAt"] = tx.get("blockTime")
-
-            current["minted"] = True
-            current["owner"] = to_address or None
-            current["latestTxHash"] = tx.get("txid")
-            current["updatedAt"] = tx.get("blockTime")
-            token_states[token_id] = current
-
-    by_token: dict[str, Any] = {}
-    by_owner_buckets: dict[str, dict[str, Any]] = {}
-
-    for token_id, state in token_states.items():
-        owner = state["owner"]
-        by_token[str(token_id)] = {
-            "minted": True,
-            "owner": owner,
-            "mintTxHash": state["mintTxHash"],
-            "latestTxHash": state["latestTxHash"],
-            "mintedAt": state["mintedAt"],
-            "updatedAt": state["updatedAt"],
-            "explorer": {
-                "mintTx": _explorer_tx_url(config.explorer_base_url, state["mintTxHash"]),
-                "latestTx": _explorer_tx_url(config.explorer_base_url, state["latestTxHash"]),
-                "owner": _explorer_address_url(config.explorer_base_url, owner),
-            },
-        }
-
-        if owner and owner != ZERO_ADDRESS:
-            bucket = by_owner_buckets.get(owner) or {
-                "owner": owner,
-                "explorer": _explorer_address_url(config.explorer_base_url, owner),
-                "tokenIds": [],
-            }
-            bucket["tokenIds"].append(token_id)
-            by_owner_buckets[owner] = bucket
-
-    by_owner = {}
-    for owner, bucket in by_owner_buckets.items():
-        bucket["tokenIds"].sort()
-        by_owner[owner] = bucket
-
+def build_public_status_snapshot(
+    config: Config,
+    *,
+    opener: Urlopen = urllib.request.urlopen,
+    rpc_client: CoreRpcClient | None = None,
+) -> dict[str, Any]:
+    rpc = rpc_client or CoreRpcClient(config.rpc_url)
+    available_supply = rpc.get_available_supply(config.corecats_address)
+    minted_count = max(0, MAX_SUPPLY - available_supply)
+    by_token = {str(token_id): _empty_token_status() for token_id in range(1, minted_count + 1)}
     return {
         "fetchedAt": now_iso(),
         "errorMessage": "",
         "cacheTtlSeconds": config.public_status_cache_seconds,
         "explorerBaseUrl": config.explorer_base_url,
         "coreCatsAddress": config.corecats_address,
-        "mintedCount": len(token_states),
+        "mintedCount": minted_count,
         "byToken": by_token,
-        "byOwner": by_owner,
+        "byOwner": {},
+    }
+
+
+def build_public_owner_snapshot(config: Config, owner: str, *, opener: Urlopen = urllib.request.urlopen) -> dict[str, Any]:
+    normalized_owner = _normalize_owner_lookup(owner)
+    normalized_contract = _normalize_address(config.corecats_address)
+    api_base_url = f"{config.explorer_base_url.rstrip('/')}/api/v2"
+    payload = _fetch_json(f"{api_base_url}/address/{normalized_owner}", opener=opener)
+    token_ids = _extract_owner_token_ids(payload, normalized_contract)
+    owner_url = _explorer_address_url(config.explorer_base_url, normalized_owner)
+    by_token = {
+        str(token_id): {
+            **_empty_token_status(normalized_owner),
+            "explorer": {
+                "mintTx": None,
+                "latestTx": None,
+                "owner": owner_url,
+            },
+        }
+        for token_id in token_ids
+    }
+    return {
+        "fetchedAt": now_iso(),
+        "errorMessage": "",
+        "cacheTtlSeconds": config.public_status_cache_seconds,
+        "explorerBaseUrl": config.explorer_base_url,
+        "coreCatsAddress": config.corecats_address,
+        "owner": {
+            "owner": normalized_owner,
+            "explorer": owner_url,
+            "tokenIds": token_ids,
+        },
+        "byToken": by_token,
     }
 
 
@@ -177,6 +160,7 @@ class OwnershipSnapshotCache:
         self._lock = threading.Lock()
         self._snapshot: dict[str, Any] | None = None
         self._expires_at = 0.0
+        self._owner_cache: dict[str, tuple[float, dict[str, Any]]] = {}
 
     def snapshot(self) -> dict[str, Any]:
         now = time.time()
@@ -212,24 +196,13 @@ class OwnershipSnapshotCache:
 
     def owner_lookup(self, owner: str) -> dict[str, Any]:
         normalized_owner = _normalize_owner_lookup(owner)
-        snapshot = self.snapshot()
-        owner_bucket = snapshot.get("byOwner", {}).get(normalized_owner) or {
-            "owner": normalized_owner,
-            "explorer": _explorer_address_url(self._config.explorer_base_url, normalized_owner),
-            "tokenIds": [],
-        }
-        token_ids = [int(token_id) for token_id in owner_bucket.get("tokenIds", [])]
-        by_token = {
-            str(token_id): snapshot.get("byToken", {}).get(str(token_id))
-            for token_id in token_ids
-            if snapshot.get("byToken", {}).get(str(token_id))
-        }
-        return {
-            "fetchedAt": snapshot.get("fetchedAt", now_iso()),
-            "errorMessage": snapshot.get("errorMessage", ""),
-            "cacheTtlSeconds": snapshot.get("cacheTtlSeconds", self._config.public_status_cache_seconds),
-            "explorerBaseUrl": snapshot.get("explorerBaseUrl", self._config.explorer_base_url),
-            "coreCatsAddress": snapshot.get("coreCatsAddress", self._config.corecats_address),
-            "owner": owner_bucket,
-            "byToken": by_token,
-        }
+        now = time.time()
+        with self._lock:
+            cached = self._owner_cache.get(normalized_owner)
+            if cached and cached[0] > now:
+                return cached[1]
+
+        payload = build_public_owner_snapshot(self._config, normalized_owner, opener=self._opener)
+        with self._lock:
+            self._owner_cache[normalized_owner] = (now + self._config.public_status_cache_seconds, payload)
+        return payload

@@ -191,6 +191,15 @@ class MintBackendHandler(BaseHTTPRequestHandler):
                 extra_headers=self._public_status_headers(),
             )
             return
+        except Exception as error:  # noqa: BLE001
+            json_response(
+                self,
+                502,
+                {"error": "public_owner_lookup_unavailable", "detail": str(error)},
+                cache_control="public, max-age=30, stale-while-revalidate=30",
+                extra_headers=self._public_status_headers(),
+            )
+            return
 
         json_response(
             self,
