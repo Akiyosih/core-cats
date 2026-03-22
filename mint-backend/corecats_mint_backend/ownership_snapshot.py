@@ -4,18 +4,17 @@ import json
 import threading
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 import re
 from typing import Any, Callable
 
 from .config import Config
-from .rpc import CoreRpcClient
 
 ZERO_ADDRESS = "00000000000000000000000000000000000000000000"
 BLOCKINDEX_USER_AGENT = "Mozilla/5.0 CoreCats/1.0"
 CORE_ADDRESS_RE = re.compile(r"^(?:ab|cb)[0-9a-f]{42}$", re.IGNORECASE)
 Urlopen = Callable[..., Any]
-MAX_SUPPLY = 1000
 
 
 def now_iso() -> str:
@@ -98,23 +97,61 @@ def _extract_owner_token_ids(payload: dict[str, Any], normalized_contract: str) 
     return sorted(token_ids)
 
 
-def build_public_status_snapshot(
-    config: Config,
-    *,
-    opener: Urlopen = urllib.request.urlopen,
-    rpc_client: CoreRpcClient | None = None,
-) -> dict[str, Any]:
-    rpc = rpc_client or CoreRpcClient(config.rpc_url)
-    available_supply = rpc.get_available_supply(config.corecats_address)
-    minted_count = max(0, MAX_SUPPLY - available_supply)
-    by_token = {str(token_id): _empty_token_status() for token_id in range(1, minted_count + 1)}
+def _fetch_contract_tx_ids(config: Config, *, opener: Urlopen) -> list[str]:
+    txids: list[str] = []
+    page = 1
+    total_pages = 1
+    api_base_url = f"{config.explorer_base_url.rstrip('/')}/api/v2"
+
+    while page <= total_pages:
+        payload = _fetch_json(f"{api_base_url}/address/{config.corecats_address}?page={page}", opener=opener)
+        total_pages = max(1, _to_int(payload.get("totalPages")))
+        txids.extend(str(txid) for txid in payload.get("txids", []) if txid)
+        page += 1
+
+    return list(dict.fromkeys(txids))
+
+
+def _extract_minted_token_ids(payload: dict[str, Any], normalized_contract: str) -> list[int]:
+    token_ids: set[int] = set()
+    for transfer in payload.get("tokenTransfers", []):
+        if transfer.get("type") != "CBC721":
+            continue
+        if _normalize_address(transfer.get("contract", "")) != normalized_contract:
+            continue
+        if _normalize_address(transfer.get("from", "")) != ZERO_ADDRESS:
+            continue
+        parsed = _to_int(transfer.get("value"))
+        if parsed > 0:
+            token_ids.add(parsed)
+    return sorted(token_ids)
+
+
+def build_public_status_snapshot(config: Config, *, opener: Urlopen = urllib.request.urlopen) -> dict[str, Any]:
+    txids = _fetch_contract_tx_ids(config, opener=opener)
+    normalized_contract = _normalize_address(config.corecats_address)
+    api_base_url = f"{config.explorer_base_url.rstrip('/')}/api/v2"
+    minted_token_ids: set[int] = set()
+
+    if txids:
+        max_workers = min(32, max(4, len(txids)))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_fetch_json, f"{api_base_url}/tx/{txid}", opener=opener): txid
+                for txid in txids
+            }
+            for future in as_completed(futures):
+                payload = future.result()
+                minted_token_ids.update(_extract_minted_token_ids(payload, normalized_contract))
+
+    by_token = {str(token_id): _empty_token_status() for token_id in sorted(minted_token_ids)}
     return {
         "fetchedAt": now_iso(),
         "errorMessage": "",
         "cacheTtlSeconds": config.public_status_cache_seconds,
         "explorerBaseUrl": config.explorer_base_url,
         "coreCatsAddress": config.corecats_address,
-        "mintedCount": minted_count,
+        "mintedCount": len(minted_token_ids),
         "byToken": by_token,
         "byOwner": {},
     }
