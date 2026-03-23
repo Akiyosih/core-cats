@@ -160,9 +160,6 @@ def build_public_status_snapshot(
     except Exception:  # noqa: BLE001
         rpc_minted_count = None
 
-    if rpc_minted_count == MAX_SUPPLY:
-        minted_token_ids = set(range(1, MAX_SUPPLY + 1))
-
     by_token = {str(token_id): _empty_token_status() for token_id in sorted(minted_token_ids)}
     return {
         "fetchedAt": now_iso(),

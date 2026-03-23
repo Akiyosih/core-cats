@@ -163,9 +163,8 @@ class OwnershipSnapshotTests(unittest.TestCase):
             rpc_client=_FakeSupplyRpc(0),
         )
         self.assertEqual(snapshot["mintedCount"], 1000)
-        self.assertEqual(len(snapshot["byToken"]), 1000)
-        self.assertIn("255", snapshot["byToken"])
-        self.assertIn("1000", snapshot["byToken"])
+        self.assertEqual(len(snapshot["byToken"]), 1)
+        self.assertIn("7", snapshot["byToken"])
 
     def test_builds_owner_lookup_from_address_tokens(self) -> None:
         config = self.make_config()
