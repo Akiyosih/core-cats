@@ -16,6 +16,7 @@ from .token_evidence import fetch_owner_of
 ZERO_ADDRESS = "00000000000000000000000000000000000000000000"
 BLOCKINDEX_USER_AGENT = "Mozilla/5.0 CoreCats/1.0"
 CORE_ADDRESS_RE = re.compile(r"^(?:ab|cb)[0-9a-f]{42}$", re.IGNORECASE)
+MAX_SUPPLY = 1000
 Urlopen = Callable[..., Any]
 
 
@@ -129,7 +130,12 @@ def _extract_minted_token_ids(payload: dict[str, Any], normalized_contract: str)
     return sorted(token_ids)
 
 
-def build_public_status_snapshot(config: Config, *, opener: Urlopen = urllib.request.urlopen) -> dict[str, Any]:
+def build_public_status_snapshot(
+    config: Config,
+    *,
+    opener: Urlopen = urllib.request.urlopen,
+    rpc_client: CoreRpcClient | None = None,
+) -> dict[str, Any]:
     txids = _fetch_contract_tx_ids(config, opener=opener)
     normalized_contract = _normalize_address(config.corecats_address)
     api_base_url = f"{config.explorer_base_url.rstrip('/')}/api/v2"
@@ -146,6 +152,17 @@ def build_public_status_snapshot(config: Config, *, opener: Urlopen = urllib.req
                 payload = future.result()
                 minted_token_ids.update(_extract_minted_token_ids(payload, normalized_contract))
 
+    rpc_minted_count: int | None = None
+    try:
+        client = rpc_client or CoreRpcClient(config.rpc_url)
+        available_supply = client.get_available_supply(config.corecats_address)
+        rpc_minted_count = max(0, MAX_SUPPLY - available_supply)
+    except Exception:  # noqa: BLE001
+        rpc_minted_count = None
+
+    if rpc_minted_count == MAX_SUPPLY:
+        minted_token_ids = set(range(1, MAX_SUPPLY + 1))
+
     by_token = {str(token_id): _empty_token_status() for token_id in sorted(minted_token_ids)}
     return {
         "fetchedAt": now_iso(),
@@ -153,7 +170,7 @@ def build_public_status_snapshot(config: Config, *, opener: Urlopen = urllib.req
         "cacheTtlSeconds": config.public_status_cache_seconds,
         "explorerBaseUrl": config.explorer_base_url,
         "coreCatsAddress": config.corecats_address,
-        "mintedCount": len(minted_token_ids),
+        "mintedCount": max(len(minted_token_ids), rpc_minted_count or 0),
         "byToken": by_token,
         "byOwner": {},
     }

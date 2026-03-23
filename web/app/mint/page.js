@@ -12,11 +12,58 @@ export const dynamic = "force-dynamic";
 export async function MintPageContent({ config }) {
   const launchState = config.launchState;
   const collectionHref = buildBrowseHref(config, "/collection");
+  const myCatsHref = buildBrowseHref(config, "/my-cats");
   const transparencyHref = buildBrowseHref(config, "/transparency");
   const summary = await getSummary();
   const mintedCount = await getLiveMintCount();
+  const isSoldOut = Number.isFinite(mintedCount) && mintedCount >= summary.total;
 
   const mintCounterBanner = <MintCounterBanner mintedCount={mintedCount} total={summary.total} launchState={launchState} />;
+
+  if (launchState === "public" && isSoldOut) {
+    return (
+      <div className="page-stack narrow-stack">
+        {mintCounterBanner}
+        <section className="copy-panel">
+          <p className="eyebrow">Mint</p>
+          <h1>Public mint is complete.</h1>
+          <p>
+            All 1,000 Core Cats are now minted. This host remains available for collection lookup, ownership checks,
+            and verification links.
+          </p>
+          <div className="copy-panel__actions">
+            <a href={collectionHref} className="button button--ghost">
+              Browse collection
+            </a>
+            <a href={myCatsHref} className="button button--ghost">
+              Check My Cats
+            </a>
+            <a href={transparencyHref} className="button button--ghost">
+              Check transparency
+            </a>
+          </div>
+        </section>
+
+        <section className="copy-grid copy-grid--two">
+          <article className="copy-card">
+            <h2>Collection browsing stays live</h2>
+            <p>
+              The finalized 1,000 cats, trait filters, direct image links, and token detail pages remain available
+              here and on the public browse site.
+            </p>
+          </article>
+
+          <article className="copy-card">
+            <h2>Owner lookup stays live</h2>
+            <p>
+              Use My Cats or any token detail page to check current ownership, open explorer links, and review the
+              on-chain artwork.
+            </p>
+          </article>
+        </section>
+      </div>
+    );
+  }
 
   if (launchState === "closed" || !config.mintSurfaceEnabled) {
     const isPublicTeaser = config.publicTeaserSite && launchState !== "closed";

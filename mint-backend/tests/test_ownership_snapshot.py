@@ -38,6 +38,14 @@ class _FakeRpc:
         return f"0x{self._owner}"
 
 
+class _FakeSupplyRpc:
+    def __init__(self, available_supply: int):
+        self._available_supply = available_supply
+
+    def get_available_supply(self, contract_address):  # noqa: ARG002
+        return self._available_supply
+
+
 class OwnershipSnapshotTests(unittest.TestCase):
     def make_config(self) -> Config:
         return Config(
@@ -116,11 +124,48 @@ class OwnershipSnapshotTests(unittest.TestCase):
                 )
             raise AssertionError(f"Unexpected URL: {url}")
 
-        snapshot = build_public_status_snapshot(config, opener=fake_urlopen)
+        snapshot = build_public_status_snapshot(
+            config,
+            opener=fake_urlopen,
+            rpc_client=_FakeSupplyRpc(998),
+        )
         self.assertEqual(snapshot["mintedCount"], 2)
         self.assertTrue(snapshot["byToken"]["7"]["minted"])
         self.assertTrue(snapshot["byToken"]["9"]["minted"])
         self.assertNotIn("8", snapshot["byToken"])
+
+    def test_prefers_onchain_supply_when_collection_is_sold_out(self) -> None:
+        config = self.make_config()
+
+        def fake_urlopen(request, timeout=15):  # noqa: ARG001
+            url = request.full_url
+            if url == "https://blockindex.net/api/v2/address/cb3022bb9ee4752d778f4c63b47559e77b4ca06a122a?page=1":
+                return _FakeResponse({"totalPages": 1, "txids": ["0xaaa"]})
+            if url == "https://blockindex.net/api/v2/tx/0xaaa":
+                return _FakeResponse(
+                    {
+                        "tokenTransfers": [
+                            {
+                                "type": "CBC721",
+                                "contract": "cb3022bb9ee4752d778f4c63b47559e77b4ca06a122a",
+                                "from": "00000000000000000000000000000000000000000000",
+                                "to": "cb111111111111111111111111111111111111111111",
+                                "value": "7",
+                            }
+                        ]
+                    }
+                )
+            raise AssertionError(f"Unexpected URL: {url}")
+
+        snapshot = build_public_status_snapshot(
+            config,
+            opener=fake_urlopen,
+            rpc_client=_FakeSupplyRpc(0),
+        )
+        self.assertEqual(snapshot["mintedCount"], 1000)
+        self.assertEqual(len(snapshot["byToken"]), 1000)
+        self.assertIn("255", snapshot["byToken"])
+        self.assertIn("1000", snapshot["byToken"])
 
     def test_builds_owner_lookup_from_address_tokens(self) -> None:
         config = self.make_config()
