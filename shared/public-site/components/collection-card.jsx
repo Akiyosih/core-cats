@@ -34,12 +34,6 @@ export default function CollectionCard({ item, detailHref }) {
       onKeyDown={handleCardKeyDown}
     >
       <div className="cat-card__image-frame">
-        {mintStatus?.minted ? (
-          <span className="mint-badge" aria-label="Minted">
-            <span className="mint-badge__check">✓</span>
-            Minted
-          </span>
-        ) : null}
         <img
           src={previewSrc}
           alt={item.name}

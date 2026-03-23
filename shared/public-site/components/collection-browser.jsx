@@ -14,7 +14,6 @@ import {
   sanitizeTeaserSearchParams,
   sortCollection,
 } from "../lib/collection-utils";
-import { usePublicStatusSnapshot } from "../lib/public-status-client";
 
 const PAGE_SIZE = 30;
 const NATURAL_COLORWAYS = [
@@ -44,11 +43,6 @@ const DERIVED_COLLAR_OPTIONS = [
   { id: "checkered_collar", label: "Checkered Collar" },
   { id: "classic_red_collar", label: "Classic Red Collar" },
 ];
-const MINT_STATE_OPTIONS = [
-  { id: "minted", label: "Minted" },
-  { id: "unminted", label: "Unminted" },
-];
-
 function buildFacetCounts(items, filterKey) {
   const counts = new Map();
   for (const item of items) {
@@ -274,67 +268,22 @@ function Pagination({ page, totalPages, searchParams, teaserEnabled }) {
   );
 }
 
-function MintStateBlock({ searchParams, activeValue, counts, teaserEnabled, snapshotReady }) {
-  return (
-    <section className="filter-block">
-      <h2>Mint Status</h2>
-      <div className="chip-wrap">
-        {MINT_STATE_OPTIONS.map((option) => {
-          const href = buildSearchHref(searchParams, {
-            mint_state: activeValue === option.id ? null : option.id,
-            page: null,
-          }, teaserEnabled);
-          const count = snapshotReady ? (counts[option.id] || 0) : "…";
-
-          return (
-            <FilterChip
-              key={`mint-${option.id}`}
-              href={href}
-              active={activeValue === option.id}
-              empty={snapshotReady ? count === 0 : false}
-              label={option.label}
-              count={count}
-            />
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function applyMintStateFilter(items, statusSnapshot, mintState) {
-  if (!statusSnapshot || !mintState) return items;
-  return items.filter((item) => {
-    if (mintState === "minted") return Boolean(statusSnapshot.byToken?.[String(item.token_id)]?.minted);
-    if (mintState === "unminted") return !statusSnapshot.byToken?.[String(item.token_id)]?.minted;
-    return true;
-  });
-}
-
-export default function CollectionBrowser({ collection, filtersDoc, teaserEnabled, statusSnapshotUrl }) {
+export default function CollectionBrowser({ collection, filtersDoc, teaserEnabled }) {
   const searchParams = useSearchParams();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const params = sanitizeTeaserSearchParams(searchParamsToObject(searchParams), teaserEnabled);
-  const { snapshot: statusSnapshot, error: snapshotError } = usePublicStatusSnapshot(statusSnapshotUrl);
   const activeFilters = normalizeFilterState(params, teaserEnabled);
-  const mintState = Array.isArray(params.mint_state) ? String(params.mint_state[0] || "") : String(params.mint_state || "");
   const baseFiltered = applyCollectionFilters(collection.items, params, { teaserEnabled });
-  const mintStateCounts = statusSnapshot ? {
-    minted: baseFiltered.filter((item) => Boolean(statusSnapshot.byToken?.[String(item.token_id)]?.minted)).length,
-    unminted: baseFiltered.filter((item) => !statusSnapshot.byToken?.[String(item.token_id)]?.minted).length,
-  } : { minted: 0, unminted: 0 };
-  const filtered = applyMintStateFilter(baseFiltered, statusSnapshot, mintState);
+  const filtered = baseFiltered;
   const sorted = sortCollection(filtered, params.sort);
   const resultsCount = filtered.length;
   const pagination = paginateItems(sorted, Number(params.page || 1), PAGE_SIZE);
-  const waitingForMintStatus = Boolean(mintState && statusSnapshotUrl && !statusSnapshot && !snapshotError);
   const contextualFilters = {};
   const returnTo = buildSearchHref(params, {}, teaserEnabled);
 
   for (const filterKey of FILTER_KEYS) {
     const baseItems = applyCollectionFilters(collection.items, activeFilters, { excludeKeys: [filterKey], teaserEnabled });
-    const contextualBaseItems = applyMintStateFilter(baseItems, statusSnapshot, mintState);
-    const counts = buildFacetCounts(contextualBaseItems, filterKey);
+    const counts = buildFacetCounts(baseItems, filterKey);
     contextualFilters[filterKey] = {
       ...filtersDoc.filters[filterKey],
       values: filtersDoc.filters[filterKey].values.map((value) => ({
@@ -380,16 +329,6 @@ export default function CollectionBrowser({ collection, filtersDoc, teaserEnable
           >
             {mobileFiltersOpen ? "Hide filters" : "Show filters"}
           </button>
-          {statusSnapshotUrl ? (
-            <p className="mint-meta">
-              Live ownership badges and Mint Status filters follow a short public snapshot interval.
-            </p>
-          ) : null}
-          {snapshotError ? (
-            <p className="mint-warning mint-warning--soft">
-              Live minted status is temporarily unavailable. Trait browsing still works.
-            </p>
-          ) : null}
         </div>
         <div
           id="collection-filter-stack"
@@ -410,15 +349,6 @@ export default function CollectionBrowser({ collection, filtersDoc, teaserEnable
             contextualValues={contextualFilters.collar.values}
             teaserEnabled={teaserEnabled}
           />
-          {statusSnapshotUrl ? (
-            <MintStateBlock
-              searchParams={params}
-              activeValue={mintState || null}
-              counts={mintStateCounts}
-              teaserEnabled={teaserEnabled}
-              snapshotReady={Boolean(statusSnapshot)}
-            />
-          ) : null}
           <FilterBlock title="Tier" filterKey="rarity_tier" values={contextualFilters.rarity_tier.values} searchParams={params} activeValue={activeFilters.rarity_tier} teaserEnabled={teaserEnabled} />
           <FilterBlock title="Special Trait" filterKey="rarity_type" values={contextualFilters.rarity_type.values} searchParams={params} activeValue={activeFilters.rarity_type} teaserEnabled={teaserEnabled} />
         </div>
@@ -428,36 +358,23 @@ export default function CollectionBrowser({ collection, filtersDoc, teaserEnable
         <div className="results-header">
           <div>
             <p className="eyebrow">Results</p>
-            <h2>
-              {waitingForMintStatus ? "Loading mint status..." : `${resultsCount} cats match this view.`}
-            </h2>
+            <h2>{`${resultsCount} cats match this view.`}</h2>
           </div>
           <Pagination page={pagination.page} totalPages={pagination.totalPages} searchParams={params} teaserEnabled={teaserEnabled} />
         </div>
+        <>
+          <div className="card-grid">
+            {pagination.items.map((item) => (
+              <CollectionCard
+                key={item.token_id}
+                item={item}
+                detailHref={`/cats/${item.token_id}?from=${encodeURIComponent(returnTo)}`}
+              />
+            ))}
+          </div>
 
-        {waitingForMintStatus ? (
-          <article className="copy-card my-cats-card">
-            <h2>Loading live mint status...</h2>
-            <p>Minted and unminted results will update as soon as the latest public snapshot loads.</p>
-          </article>
-        ) : (
-          <>
-            <div className="card-grid">
-              {pagination.items.map((item) => (
-                <CollectionCard
-                  key={item.token_id}
-                  item={{
-                    ...item,
-                    mint_status: statusSnapshot?.byToken?.[String(item.token_id)] || null,
-                  }}
-                  detailHref={`/cats/${item.token_id}?from=${encodeURIComponent(returnTo)}`}
-                />
-              ))}
-            </div>
-
-            <Pagination page={pagination.page} totalPages={pagination.totalPages} searchParams={params} teaserEnabled={teaserEnabled} />
-          </>
-        )}
+          <Pagination page={pagination.page} totalPages={pagination.totalPages} searchParams={params} teaserEnabled={teaserEnabled} />
+        </>
       </section>
     </div>
   );
