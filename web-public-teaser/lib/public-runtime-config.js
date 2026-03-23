@@ -1,6 +1,6 @@
 import { PUBLIC_TEASER_CONTRACT_SURFACE } from "./public-teaser-contract-surface.js";
 
-const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
+const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-zeta.vercel.app";
 const OFFICIAL_MAINNET_CORECATS_ADDRESS = "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3";
 
 function normalizeLaunchState(value) {
@@ -53,8 +53,10 @@ export function getPublicRuntimeConfig() {
     mintSurfaceEnabled: launchState !== "closed" && (siteSurface === "private-canary" || siteSurface === "public-mint"),
     siteBaseUrl,
     mintBaseUrl:
-      explicitMintBaseUrl ||
-      (siteSurface === "public-mint" ? siteBaseUrl : networkName === "mainnet" ? DEFAULT_MAINNET_MINT_BASE_URL : ""),
+      officialMainnetBrowse
+        ? DEFAULT_MAINNET_MINT_BASE_URL
+        : explicitMintBaseUrl ||
+          (siteSurface === "public-mint" ? siteBaseUrl : networkName === "mainnet" ? DEFAULT_MAINNET_MINT_BASE_URL : ""),
     browseBaseUrl: normalizeUrl(process.env.NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL || process.env.CORECATS_BROWSE_BASE_URL || ""),
     mintOnlyHost: false,
     statusSnapshotUrl: String(process.env.NEXT_PUBLIC_CORECATS_STATUS_URL || "").trim(),
