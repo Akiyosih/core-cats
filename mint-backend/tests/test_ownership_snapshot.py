@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import json
+import tempfile
 import unittest
 from pathlib import Path
 
 from corecats_mint_backend.config import Config
-from corecats_mint_backend.ownership_snapshot import build_public_owner_snapshot, build_public_status_snapshot
+from corecats_mint_backend.ownership_snapshot import (
+    OwnershipSnapshotCache,
+    build_public_owner_snapshot,
+    build_public_status_snapshot,
+)
 
 
 class _FakeResponse:
@@ -23,6 +28,14 @@ class _FakeResponse:
 
     def __exit__(self, exc_type, exc, tb) -> bool:
         return False
+
+
+class _FakeRpc:
+    def __init__(self, owner: str):
+        self._owner = owner
+
+    def eth_call(self, contract_address, data, block_tag="latest"):  # noqa: ARG002
+        return f"0x{self._owner}"
 
 
 class OwnershipSnapshotTests(unittest.TestCase):
@@ -141,6 +154,42 @@ class OwnershipSnapshotTests(unittest.TestCase):
         self.assertEqual(snapshot["byToken"]["7"]["owner"], "cb222222222222222222222222222222222222222222")
         self.assertEqual(snapshot["byToken"]["9"]["owner"], "cb222222222222222222222222222222222222222222")
         self.assertNotIn("100", snapshot["byToken"])
+
+    def test_token_owner_lookup_uses_rpc(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            config = Config(
+                profile="production",
+                bind="127.0.0.1",
+                port=8787,
+                db_path=Path(tmp_dir) / "corecats-test.db",
+                shared_secret="test-secret",
+                rpc_url="https://xcbapi-arch-mainnet.coreblockchain.net/",
+                chain_id=1,
+                network_id=1,
+                network_name="mainnet",
+                explorer_base_url="https://blockindex.net",
+                corecats_address="cb3022bb9ee4752d778f4c63b47559e77b4ca06a122a",
+                foxar_dir=Path("/tmp"),
+                spark_path=Path("/tmp/spark"),
+                deployer_private_key="",
+                mint_signer_private_key="",
+                finalizer_private_key="",
+                finalizer_address="",
+                finalizer_keystore_path=None,
+                finalizer_password_file=None,
+                finalize_worker_interval_seconds=5,
+                finalize_stuck_timeout_seconds=180,
+                canary_allowed_core_id_keys=frozenset(),
+                public_status_cache_seconds=120,
+            )
+            cache = OwnershipSnapshotCache(config)
+            payload = cache.token_owner_lookup(7, _FakeRpc("cb222222222222222222222222222222222222222222"))
+            self.assertEqual(payload["token"]["tokenId"], 7)
+            self.assertEqual(payload["token"]["owner"], "cb222222222222222222222222222222222222222222")
+            self.assertEqual(
+                payload["token"]["explorer"],
+                "https://blockindex.net/address/cb222222222222222222222222222222222222222222",
+            )
 
 
 if __name__ == "__main__":

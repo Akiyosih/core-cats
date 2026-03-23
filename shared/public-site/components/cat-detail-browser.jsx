@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { applyCollectionFilters, sortCollection } from "../lib/collection-utils";
-import { usePublicStatusSnapshot } from "../lib/public-status-client";
+import { usePublicOwnerLookup, usePublicStatusSnapshot } from "../lib/public-status-client";
 
 function buildExplorerAddressUrl(explorerBaseUrl, address) {
   if (!explorerBaseUrl || !address) return null;
@@ -50,6 +50,23 @@ function buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress) {
       contract: buildExplorerContractUrl(explorerBaseUrl, coreCatsAddress),
     },
   };
+}
+
+function buildTokenOwnerLookupUrl(statusSnapshotUrl, tokenId) {
+  if (!statusSnapshotUrl || !tokenId) return null;
+
+  try {
+    const url = new URL(statusSnapshotUrl, "https://corecats.local");
+    url.pathname = url.pathname.replace(/\/status$/, "/token-owner");
+    url.search = "";
+    url.searchParams.set("tokenId", String(tokenId));
+    if (url.origin === "https://corecats.local") {
+      return `${url.pathname}${url.search}`;
+    }
+    return url.toString();
+  } catch {
+    return null;
+  }
 }
 
 export default function CatDetailBrowser({
@@ -112,6 +129,13 @@ export default function CatDetailBrowser({
     }
     return buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress);
   }, [coreCatsAddress, explorerBaseUrl, snapshot, tokenId]);
+  const tokenOwnerLookupUrl = useMemo(
+    () => (mintStatus.minted ? buildTokenOwnerLookupUrl(statusSnapshotUrl, tokenId) : null),
+    [mintStatus.minted, statusSnapshotUrl, tokenId],
+  );
+  const { ownerLookup, loading: ownerLookupLoading } = usePublicOwnerLookup(tokenOwnerLookupUrl);
+  const resolvedOwner = ownerLookup?.token?.owner || mintStatus.owner || null;
+  const resolvedOwnerExplorer = ownerLookup?.token?.explorer || mintStatus.explorer?.owner || null;
 
   const navigation = useMemo(() => {
     if (!returnPath || !collectionIndex?.items) {
@@ -154,8 +178,8 @@ export default function CatDetailBrowser({
             View mint tx
           </a>
         ) : null}
-        {mintStatus.minted && mintStatus.explorer?.owner ? (
-          <a href={mintStatus.explorer.owner} target="_blank" rel="noreferrer" className="detail-external-link">
+        {mintStatus.minted && resolvedOwnerExplorer ? (
+          <a href={resolvedOwnerExplorer} target="_blank" rel="noreferrer" className="detail-external-link">
             View owner
           </a>
         ) : null}
@@ -170,7 +194,8 @@ export default function CatDetailBrowser({
         <p><strong>Mint status:</strong> {mintStatus.minted ? "minted" : "unminted"}</p>
         {mintStatus.minted ? (
           <p>
-            <strong>Current owner:</strong> {mintStatus.owner || "not available"}
+            <strong>Current owner:</strong>{" "}
+            {resolvedOwner || (tokenOwnerLookupUrl && ownerLookupLoading ? "loading..." : "not available")}
           </p>
         ) : null}
         {statusUnavailable ? (

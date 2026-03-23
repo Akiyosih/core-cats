@@ -10,6 +10,8 @@ import re
 from typing import Any, Callable
 
 from .config import Config
+from .rpc import CoreRpcClient
+from .token_evidence import fetch_owner_of
 
 ZERO_ADDRESS = "00000000000000000000000000000000000000000000"
 BLOCKINDEX_USER_AGENT = "Mozilla/5.0 CoreCats/1.0"
@@ -198,6 +200,7 @@ class OwnershipSnapshotCache:
         self._snapshot: dict[str, Any] | None = None
         self._expires_at = 0.0
         self._owner_cache: dict[str, tuple[float, dict[str, Any]]] = {}
+        self._token_owner_cache: dict[int, tuple[float, dict[str, Any]]] = {}
 
     def snapshot(self) -> dict[str, Any]:
         now = time.time()
@@ -242,4 +245,34 @@ class OwnershipSnapshotCache:
         payload = build_public_owner_snapshot(self._config, normalized_owner, opener=self._opener)
         with self._lock:
             self._owner_cache[normalized_owner] = (now + self._config.public_status_cache_seconds, payload)
+        return payload
+
+    def token_owner_lookup(self, token_id: int, rpc: CoreRpcClient) -> dict[str, Any]:
+        parsed_token_id = _to_int(token_id)
+        if parsed_token_id <= 0:
+            raise ValueError("token id must be a positive integer")
+
+        now = time.time()
+        with self._lock:
+            cached = self._token_owner_cache.get(parsed_token_id)
+            if cached and cached[0] > now:
+                return cached[1]
+
+        owner = _normalize_owner_lookup(fetch_owner_of(rpc, self._config.corecats_address, parsed_token_id))
+        owner_url = _explorer_address_url(self._config.explorer_base_url, owner)
+        payload = {
+            "fetchedAt": now_iso(),
+            "errorMessage": "",
+            "cacheTtlSeconds": self._config.public_status_cache_seconds,
+            "explorerBaseUrl": self._config.explorer_base_url,
+            "coreCatsAddress": self._config.corecats_address,
+            "token": {
+                "tokenId": parsed_token_id,
+                "owner": owner,
+                "explorer": owner_url,
+            },
+        }
+
+        with self._lock:
+            self._token_owner_cache[parsed_token_id] = (now + self._config.public_status_cache_seconds, payload)
         return payload

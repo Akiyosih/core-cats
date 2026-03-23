@@ -75,7 +75,13 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         return self.server.ownership_snapshot_cache  # type: ignore[attr-defined]
 
     def _require_auth(self) -> bool:
-        if normalized_path(self.path) in {"/healthz", "/api/public/status", "/api/public/owner", "/api/public/mint-count"}:
+        if normalized_path(self.path) in {
+            "/healthz",
+            "/api/public/status",
+            "/api/public/owner",
+            "/api/public/token-owner",
+            "/api/public/mint-count",
+        }:
             return True
 
         expected = self.config.shared_secret
@@ -206,6 +212,65 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             200,
             payload,
             cache_control="public, max-age=60, stale-while-revalidate=60",
+            extra_headers=self._public_status_headers(),
+        )
+
+    def _handle_public_token_owner(self) -> None:
+        raw_token_id = str(parse_qs(urlparse(self.path).query).get("tokenId", [""])[0] or "").strip()
+        try:
+            token_id = int(raw_token_id)
+        except ValueError:
+            token_id = 0
+
+        if token_id <= 0 or token_id > MAX_SUPPLY:
+            json_response(
+                self,
+                400,
+                {"error": "token_id_required", "detail": "token id must be between 1 and 1000"},
+                cache_control="public, max-age=30, stale-while-revalidate=30",
+                extra_headers=self._public_status_headers(),
+            )
+            return
+
+        snapshot = self.ownership_snapshot_cache.snapshot()
+        token_status = snapshot.get("byToken", {}).get(str(token_id))
+        if not isinstance(token_status, dict) or not token_status.get("minted"):
+            json_response(
+                self,
+                404,
+                {"error": "token_not_minted", "detail": "This token is not minted yet."},
+                cache_control="public, max-age=30, stale-while-revalidate=30",
+                extra_headers=self._public_status_headers(),
+            )
+            return
+
+        try:
+            payload = self.ownership_snapshot_cache.token_owner_lookup(token_id, self.rpc)
+        except ValueError as error:
+            json_response(
+                self,
+                400,
+                {"error": "invalid_token_id", "detail": str(error)},
+                cache_control="public, max-age=30, stale-while-revalidate=30",
+                extra_headers=self._public_status_headers(),
+            )
+            return
+        except RpcError as error:
+            json_response(
+                self,
+                502,
+                {"error": "public_token_owner_unavailable", "detail": str(error)},
+                cache_control="public, max-age=30, stale-while-revalidate=30",
+                extra_headers=self._public_status_headers(),
+            )
+            return
+
+        ttl = max(30, int(self.config.public_status_cache_seconds or 120))
+        json_response(
+            self,
+            200,
+            payload,
+            cache_control=f"public, max-age={ttl}, stale-while-revalidate={ttl}",
             extra_headers=self._public_status_headers(),
         )
 
@@ -421,6 +486,8 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             return self._handle_public_status()
         if normalized_path(self.path) == "/api/public/owner":
             return self._handle_public_owner()
+        if normalized_path(self.path) == "/api/public/token-owner":
+            return self._handle_public_token_owner()
         if not self._require_auth():
             return
 
@@ -431,7 +498,12 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         json_response(self, 404, {"error": "not_found"})
 
     def do_OPTIONS(self) -> None:  # noqa: N802
-        if normalized_path(self.path) in {"/api/public/status", "/api/public/owner", "/api/public/mint-count"}:
+        if normalized_path(self.path) in {
+            "/api/public/status",
+            "/api/public/owner",
+            "/api/public/token-owner",
+            "/api/public/mint-count",
+        }:
             self.send_response(204)
             for key, value in self._public_status_headers().items():
                 self.send_header(key, value)
