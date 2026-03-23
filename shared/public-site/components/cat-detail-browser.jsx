@@ -195,7 +195,19 @@ export default function CatDetailBrowser({
         {mintStatus.minted ? (
           <p>
             <strong>Current owner:</strong>{" "}
-            {resolvedOwner || (tokenOwnerLookupUrl && ownerLookupLoading ? "loading..." : "not available")}
+            {resolvedOwner ? (
+              resolvedOwnerExplorer ? (
+                <a href={resolvedOwnerExplorer} target="_blank" rel="noreferrer" className="detail-external-link">
+                  {resolvedOwner}
+                </a>
+              ) : (
+                resolvedOwner
+              )
+            ) : tokenOwnerLookupUrl && ownerLookupLoading ? (
+              "loading..."
+            ) : (
+              "not available"
+            )}
           </p>
         ) : null}
         {statusUnavailable ? (
