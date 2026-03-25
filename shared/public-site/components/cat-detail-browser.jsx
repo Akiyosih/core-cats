@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { applyCollectionFilters, sortCollection } from "../lib/collection-utils";
-import { usePublicOwnerLookup, usePublicStatusSnapshot } from "../lib/public-status-client";
+import { usePublicOwnerLookup } from "../lib/public-status-client";
 
 function buildExplorerAddressUrl(explorerBaseUrl, address) {
   if (!explorerBaseUrl || !address) return null;
@@ -37,21 +37,6 @@ function parseCollectionReturnPath(value) {
   }
 }
 
-function buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress, minted = false) {
-  return {
-    minted,
-    owner: null,
-    mintTxHash: null,
-    latestTxHash: null,
-    explorer: {
-      mintTx: null,
-      latestTx: null,
-      owner: null,
-      contract: buildExplorerContractUrl(explorerBaseUrl, coreCatsAddress),
-    },
-  };
-}
-
 function buildTokenOwnerLookupUrl(statusSnapshotUrl, tokenId) {
   if (!statusSnapshotUrl || !tokenId) return null;
 
@@ -69,6 +54,15 @@ function buildTokenOwnerLookupUrl(statusSnapshotUrl, tokenId) {
   }
 }
 
+function formatSnapshotTimestamp(value) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+  return parsed.toLocaleString();
+}
+
 export default function CatDetailBrowser({
   tokenId,
   teaserEnabled,
@@ -79,7 +73,6 @@ export default function CatDetailBrowser({
 }) {
   const searchParams = useSearchParams();
   const returnPath = useMemo(() => parseCollectionReturnPath(searchParams.get("from")), [searchParams]);
-  const { snapshot, error: snapshotError } = usePublicStatusSnapshot(statusSnapshotUrl);
   const [collectionIndex, setCollectionIndex] = useState(null);
   const [indexError, setIndexError] = useState("");
 
@@ -116,48 +109,26 @@ export default function CatDetailBrowser({
     };
   }, [collectionIndexUrl, returnPath]);
 
-  const mintStatus = useMemo(() => {
-    const liveStatus = snapshot?.byToken?.[String(tokenId)] || snapshot?.byToken?.[tokenId];
-    if (liveStatus) {
-      return {
-        ...liveStatus,
-        explorer: {
-          ...liveStatus.explorer,
-          contract: buildExplorerContractUrl(explorerBaseUrl, coreCatsAddress),
-        },
-      };
-    }
-    if (statusSnapshotUrl && !snapshot) {
-      return buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress, null);
-    }
-    return buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress, false);
-  }, [coreCatsAddress, explorerBaseUrl, snapshot, statusSnapshotUrl, tokenId]);
   const tokenOwnerLookupUrl = useMemo(
-    () => (mintStatus.minted ? buildTokenOwnerLookupUrl(statusSnapshotUrl, tokenId) : null),
-    [mintStatus.minted, statusSnapshotUrl, tokenId],
+    () => buildTokenOwnerLookupUrl(statusSnapshotUrl, tokenId),
+    [statusSnapshotUrl, tokenId],
   );
-  const { ownerLookup, loading: ownerLookupLoading } = usePublicOwnerLookup(tokenOwnerLookupUrl);
-  const resolvedOwner = ownerLookup?.token?.owner || mintStatus.owner || null;
-  const resolvedOwnerExplorer = ownerLookup?.token?.explorer || mintStatus.explorer?.owner || null;
-  const mintStatusPending = mintStatus.minted == null;
+  const {
+    ownerLookup,
+    loading: ownerLookupLoading,
+    error: ownerLookupError,
+    refresh: refreshOwnerLookup,
+  } = usePublicOwnerLookup(tokenOwnerLookupUrl);
+  const resolvedOwner = ownerLookup?.token?.owner || null;
+  const resolvedOwnerExplorer = ownerLookup?.token?.explorer || null;
+  const ownerSnapshotUpdatedAt = formatSnapshotTimestamp(ownerLookup?.fetchedAt);
 
   const navigation = useMemo(() => {
     if (!returnPath || !collectionIndex?.items) {
       return { previousItem: null, nextItem: null };
     }
 
-    const mintState = String(returnPath.params.mint_state || "");
-    if (mintState && statusSnapshotUrl && !snapshot) {
-      return { previousItem: null, nextItem: null };
-    }
-
     let filtered = applyCollectionFilters(collectionIndex.items, returnPath.params, { teaserEnabled });
-
-    if (mintState === "minted") {
-      filtered = filtered.filter((candidate) => Boolean(snapshot?.byToken?.[String(candidate.token_id)]?.minted));
-    } else if (mintState === "unminted") {
-      filtered = filtered.filter((candidate) => !snapshot?.byToken?.[String(candidate.token_id)]?.minted);
-    }
 
     const sorted = sortCollection(filtered, returnPath.params.sort);
     const index = sorted.findIndex((candidate) => candidate.token_id === tokenId);
@@ -166,25 +137,14 @@ export default function CatDetailBrowser({
       previousItem: index > 0 ? sorted[index - 1] : null,
       nextItem: index >= 0 && index < sorted.length - 1 ? sorted[index + 1] : null,
     };
-  }, [collectionIndex?.items, returnPath, snapshot, statusSnapshotUrl, teaserEnabled, tokenId]);
-
-  const statusUnavailable = Boolean(statusSnapshotUrl && snapshotError && !snapshot);
+  }, [collectionIndex?.items, returnPath, teaserEnabled, tokenId]);
   const contractUrl = buildExplorerContractUrl(explorerBaseUrl, coreCatsAddress);
 
   return (
     <>
       <div className="detail-status-row">
-        {mintStatusPending ? null : (
-          <span className={`mint-status-pill ${mintStatus.minted ? "mint-status-pill--minted" : "mint-status-pill--unminted"}`}>
-            {mintStatus.minted ? "Minted" : "Unminted"}
-          </span>
-        )}
-        {mintStatus.minted && mintStatus.explorer?.mintTx ? (
-          <a href={mintStatus.explorer.mintTx} target="_blank" rel="noreferrer" className="detail-external-link">
-            View mint tx
-          </a>
-        ) : null}
-        {mintStatus.minted && resolvedOwnerExplorer ? (
+        <span className="mint-status-pill mint-status-pill--minted">Minted</span>
+        {resolvedOwnerExplorer ? (
           <a href={resolvedOwnerExplorer} target="_blank" rel="noreferrer" className="detail-external-link">
             View owner
           </a>
@@ -194,30 +154,36 @@ export default function CatDetailBrowser({
             Open contract
           </a>
         ) : null}
+        {tokenOwnerLookupUrl ? (
+          <button type="button" className="button button--ghost button--inline" onClick={() => refreshOwnerLookup(true)}>
+            {ownerLookupLoading ? "Refreshing..." : "Refresh owner"}
+          </button>
+        ) : null}
       </div>
 
       <div className="detail-meta">
-        <p><strong>Mint status:</strong> {mintStatusPending ? "checking live status..." : mintStatus.minted ? "minted" : "unminted"}</p>
-        {mintStatus.minted ? (
-          <p>
-            <strong>Current owner:</strong>{" "}
-            {resolvedOwner ? (
-              resolvedOwnerExplorer ? (
-                <a href={resolvedOwnerExplorer} target="_blank" rel="noreferrer" className="detail-external-link">
-                  {resolvedOwner}
-                </a>
-              ) : (
-                resolvedOwner
-              )
-            ) : tokenOwnerLookupUrl && ownerLookupLoading ? (
-              "loading..."
+        <p><strong>Mint status:</strong> minted</p>
+        <p>
+          <strong>Current owner:</strong>{" "}
+          {resolvedOwner ? (
+            resolvedOwnerExplorer ? (
+              <a href={resolvedOwnerExplorer} target="_blank" rel="noreferrer" className="detail-external-link">
+                {resolvedOwner}
+              </a>
             ) : (
-              "not available"
-            )}
-          </p>
+              resolvedOwner
+            )
+          ) : tokenOwnerLookupUrl && ownerLookupLoading ? (
+            "loading..."
+          ) : (
+            "not available"
+          )}
+        </p>
+        {ownerSnapshotUpdatedAt ? (
+          <p><strong>Owner snapshot updated:</strong> {ownerSnapshotUpdatedAt}</p>
         ) : null}
-        {statusUnavailable ? (
-          <p><strong>Live status:</strong> temporarily unavailable</p>
+        {ownerLookupError ? (
+          <p><strong>Live owner lookup:</strong> temporarily unavailable</p>
         ) : null}
       </div>
 

@@ -15,8 +15,8 @@ export async function MintPageContent({ config }) {
   const myCatsHref = buildBrowseHref(config, "/my-cats");
   const transparencyHref = buildBrowseHref(config, "/transparency");
   const summary = await getSummary();
-  const mintedCount = await getLiveMintCount();
-  const isSoldOut = Number.isFinite(mintedCount) && mintedCount >= summary.total;
+  const mintedCount = launchState === "public" ? summary.total : await getLiveMintCount();
+  const isSoldOut = launchState === "public" || (Number.isFinite(mintedCount) && mintedCount >= summary.total);
 
   const mintCounterBanner = <MintCounterBanner mintedCount={mintedCount} total={summary.total} launchState={launchState} />;
 

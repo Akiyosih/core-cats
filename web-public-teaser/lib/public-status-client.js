@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 const snapshotCache = new Map();
 
 async function loadJson(url) {
-  const response = await fetch(url);
+  const response = await fetch(url, { cache: "no-store" });
   const payload = await response.json();
   if (!response.ok) {
     throw new Error(payload.detail || payload.error || "Failed to load live status");
