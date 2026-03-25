@@ -37,9 +37,9 @@ function parseCollectionReturnPath(value) {
   }
 }
 
-function buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress) {
+function buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress, minted = false) {
   return {
-    minted: false,
+    minted,
     owner: null,
     mintTxHash: null,
     latestTxHash: null,
@@ -127,8 +127,11 @@ export default function CatDetailBrowser({
         },
       };
     }
-    return buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress);
-  }, [coreCatsAddress, explorerBaseUrl, snapshot, tokenId]);
+    if (statusSnapshotUrl && !snapshot) {
+      return buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress, null);
+    }
+    return buildFallbackMintStatus(explorerBaseUrl, coreCatsAddress, false);
+  }, [coreCatsAddress, explorerBaseUrl, snapshot, statusSnapshotUrl, tokenId]);
   const tokenOwnerLookupUrl = useMemo(
     () => (mintStatus.minted ? buildTokenOwnerLookupUrl(statusSnapshotUrl, tokenId) : null),
     [mintStatus.minted, statusSnapshotUrl, tokenId],
@@ -136,6 +139,7 @@ export default function CatDetailBrowser({
   const { ownerLookup, loading: ownerLookupLoading } = usePublicOwnerLookup(tokenOwnerLookupUrl);
   const resolvedOwner = ownerLookup?.token?.owner || mintStatus.owner || null;
   const resolvedOwnerExplorer = ownerLookup?.token?.explorer || mintStatus.explorer?.owner || null;
+  const mintStatusPending = mintStatus.minted == null;
 
   const navigation = useMemo(() => {
     if (!returnPath || !collectionIndex?.items) {
@@ -170,9 +174,11 @@ export default function CatDetailBrowser({
   return (
     <>
       <div className="detail-status-row">
-        <span className={`mint-status-pill ${mintStatus.minted ? "mint-status-pill--minted" : "mint-status-pill--unminted"}`}>
-          {mintStatus.minted ? "Minted" : "Unminted"}
-        </span>
+        {mintStatusPending ? null : (
+          <span className={`mint-status-pill ${mintStatus.minted ? "mint-status-pill--minted" : "mint-status-pill--unminted"}`}>
+            {mintStatus.minted ? "Minted" : "Unminted"}
+          </span>
+        )}
         {mintStatus.minted && mintStatus.explorer?.mintTx ? (
           <a href={mintStatus.explorer.mintTx} target="_blank" rel="noreferrer" className="detail-external-link">
             View mint tx
@@ -191,7 +197,7 @@ export default function CatDetailBrowser({
       </div>
 
       <div className="detail-meta">
-        <p><strong>Mint status:</strong> {mintStatus.minted ? "minted" : "unminted"}</p>
+        <p><strong>Mint status:</strong> {mintStatusPending ? "checking live status..." : mintStatus.minted ? "minted" : "unminted"}</p>
         {mintStatus.minted ? (
           <p>
             <strong>Current owner:</strong>{" "}

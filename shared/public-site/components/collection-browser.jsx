@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import CollectionCard from "./collection-card";
 import {
@@ -43,6 +43,18 @@ const DERIVED_COLLAR_OPTIONS = [
   { id: "checkered_collar", label: "Checkered Collar" },
   { id: "classic_red_collar", label: "Classic Red Collar" },
 ];
+
+function parseTokenIdValue(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+  if (!/^\d+$/.test(raw)) return null;
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isSafeInteger(parsed) || parsed < 1) {
+    return null;
+  }
+  return parsed;
+}
+
 function buildFacetCounts(items, filterKey) {
   const counts = new Map();
   for (const item of items) {
@@ -269,17 +281,32 @@ function Pagination({ page, totalPages, searchParams, teaserEnabled }) {
 }
 
 export default function CollectionBrowser({ collection, filtersDoc, teaserEnabled }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const params = sanitizeTeaserSearchParams(searchParamsToObject(searchParams), teaserEnabled);
+  const [tokenSearchValue, setTokenSearchValue] = useState(params.token_id || "");
   const activeFilters = normalizeFilterState(params, teaserEnabled);
   const baseFiltered = applyCollectionFilters(collection.items, params, { teaserEnabled });
-  const filtered = baseFiltered;
+  const exactTokenId = parseTokenIdValue(params.token_id);
+  const filtered = exactTokenId
+    ? baseFiltered.filter((item) => item.token_id === exactTokenId)
+    : baseFiltered;
   const sorted = sortCollection(filtered, params.sort);
   const resultsCount = filtered.length;
   const pagination = paginateItems(sorted, Number(params.page || 1), PAGE_SIZE);
   const contextualFilters = {};
   const returnTo = buildSearchHref(params, {}, teaserEnabled);
+
+  useEffect(() => {
+    setTokenSearchValue(params.token_id || "");
+  }, [params.token_id]);
+
+  function handleTokenSearchSubmit(event) {
+    event.preventDefault();
+    const tokenId = parseTokenIdValue(tokenSearchValue);
+    router.push(buildSearchHref(params, { token_id: tokenId, page: null }, teaserEnabled));
+  }
 
   for (const filterKey of FILTER_KEYS) {
     const baseItems = applyCollectionFilters(collection.items, activeFilters, { excludeKeys: [filterKey], teaserEnabled });
@@ -320,6 +347,34 @@ export default function CollectionBrowser({ collection, filtersDoc, teaserEnable
               Clear all
             </Link>
           </div>
+          <form className="collection-token-search" onSubmit={handleTokenSearchSubmit}>
+            <label className="collection-token-search__label" htmlFor="collection-token-id">
+              Find an exact token ID
+            </label>
+            <div className="collection-token-search__row">
+              <input
+                id="collection-token-id"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="e.g. 267"
+                value={tokenSearchValue}
+                onChange={(event) => setTokenSearchValue(event.target.value)}
+                className="collection-token-search__input"
+              />
+              <button type="submit" className="button button--ghost button--inline">
+                Go
+              </button>
+              {params.token_id ? (
+                <Link
+                  href={buildSearchHref(params, { token_id: null, page: null }, teaserEnabled)}
+                  className="button button--ghost button--inline"
+                >
+                  Clear
+                </Link>
+              ) : null}
+            </div>
+          </form>
           <button
             type="button"
             className="button button--ghost button--inline collection-filter-toggle"
