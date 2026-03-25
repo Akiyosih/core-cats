@@ -134,9 +134,13 @@ class MintBackendHandler(BaseHTTPRequestHandler):
     def _handle_public_status(self) -> None:
         json_response(
             self,
-            200,
-            self.ownership_snapshot_cache.snapshot(),
-            cache_control="public, max-age=60, stale-while-revalidate=60",
+            410,
+            {
+                "error": "public_status_retired",
+                "detail": "The global public status snapshot has been retired after sell-out. Use /api/public/owner or /api/public/token-owner instead.",
+                "cacheTtlSeconds": 300,
+            },
+            cache_control="public, max-age=300, stale-while-revalidate=600",
             extra_headers=self._public_status_headers(),
         )
 

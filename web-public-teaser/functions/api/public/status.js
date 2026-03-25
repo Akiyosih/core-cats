@@ -1,19 +1,4 @@
-const DEFAULT_SUCCESS_TTL_SECONDS = 120;
-const DEFAULT_ERROR_TTL_SECONDS = 30;
-const MAX_TTL_SECONDS = 300;
-const STALE_WHILE_REVALIDATE_SECONDS = 600;
-
-function clampTtl(value, fallbackSeconds) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return fallbackSeconds;
-  }
-  return Math.max(DEFAULT_ERROR_TTL_SECONDS, Math.min(Math.round(numeric), MAX_TTL_SECONDS));
-}
-
-function cacheControlFor(ttlSeconds) {
-  return `public, max-age=${ttlSeconds}, stale-while-revalidate=${STALE_WHILE_REVALIDATE_SECONDS}`;
-}
+const RETIRED_CACHE_CONTROL = "public, max-age=300, stale-while-revalidate=600";
 
 function jsonResponse(payload, status, cacheControl, extraHeaders = {}) {
   return new Response(JSON.stringify(payload), {
@@ -30,72 +15,13 @@ function jsonResponse(payload, status, cacheControl, extraHeaders = {}) {
 }
 
 export async function onRequestGet(context) {
-  const upstream = String(context.env.CORECATS_PUBLIC_STATUS_UPSTREAM || "").trim();
-  if (!upstream) {
-    return jsonResponse(
-      {
-        error: "status_upstream_not_configured",
-        detail: "Public ownership snapshot upstream is not configured for this deployment.",
-      },
-      500,
-      "no-store",
-    );
-  }
-
-  const cache = caches.default;
-  const cacheKey = new Request(new URL(context.request.url).toString(), {
-    method: "GET",
-  });
-  const cached = await cache.match(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
-  try {
-    const upstreamResponse = await fetch(upstream, {
-      headers: {
-        accept: "application/json",
-      },
-    });
-    const rawBody = await upstreamResponse.text();
-
-    let payload = {};
-    try {
-      payload = rawBody ? JSON.parse(rawBody) : {};
-    } catch {
-      payload = {
-        error: "invalid_upstream_payload",
-        detail: "Public ownership snapshot upstream returned invalid JSON.",
-      };
-    }
-
-    const ttlSeconds = clampTtl(
-      payload?.cacheTtlSeconds,
-      upstreamResponse.ok ? DEFAULT_SUCCESS_TTL_SECONDS : DEFAULT_ERROR_TTL_SECONDS,
-    );
-    const cacheControl = cacheControlFor(ttlSeconds);
-
-    const responsePayload = upstreamResponse.ok
-      ? payload
-      : {
-          ...payload,
-          error: payload.error || "public_status_unavailable",
-          detail: payload.detail || "Public ownership snapshot is temporarily unavailable.",
-        };
-
-    const response = jsonResponse(responsePayload, upstreamResponse.status, cacheControl);
-    context.waitUntil(cache.put(cacheKey, response.clone()));
-    return response;
-  } catch {
-    const response = jsonResponse(
-      {
-        error: "public_status_fetch_failed",
-        detail: "Public ownership snapshot is temporarily unavailable.",
-      },
-      502,
-      cacheControlFor(DEFAULT_ERROR_TTL_SECONDS),
-    );
-    context.waitUntil(cache.put(cacheKey, response.clone()));
-    return response;
-  }
+  return jsonResponse(
+    {
+      error: "public_status_retired",
+      detail: "The global public status snapshot has been retired after sell-out. Use /api/public/owner or /api/public/token-owner instead.",
+      cacheTtlSeconds: 300,
+    },
+    410,
+    RETIRED_CACHE_CONTROL,
+  );
 }
