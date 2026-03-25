@@ -10,19 +10,21 @@ Official `CCAT` target:
 5. public promises limited to on-chain-verifiable guarantees and published evidence
 
 Current public state:
-1. the official `CCAT` release is not open yet
-2. the repository already contains completed mainnet rehearsal evidence for the `CCATTEST` / `CCATTEST2` path
-3. the remaining release work is the official `CCAT` deploy, exact-host smoke, and later public opening
+1. the official `CCAT` contract is deployed on mainnet and public mint is complete
+2. the canonical official collection contract is `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3`
+3. `CCATTEST` and `CCATTEST2` remain on mainnet as historical rehearsal contracts and are not the official collection
 
 ## Start Here
 - [Official CCAT Launch Principles](docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md)
 - [Docs Index](docs/README.md)
 - [Public Trust + Privacy Notes](docs/TRUST_AND_PRIVACY_SURFACE.md)
 - [Mainnet Public Evidence Checklist](docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
+- [Historical Mainnet Rehearsal Contracts](docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md)
 
 Important distinction:
 1. [Official CCAT Launch Principles](docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md) describes the intended final `CCAT` standard
-2. rehearsal and current-state notes document evidence from the already-run canary path and should not be mistaken for the final official philosophy
+2. [Historical Mainnet Rehearsal Contracts](docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md) defines how `CCATTEST` and `CCATTEST2` should be interpreted after launch
+3. rehearsal and current-state notes document evidence from the already-run canary path and should not be mistaken for the final official philosophy
 
 ## Preview
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid_teaser.png)
@@ -45,6 +47,7 @@ Contract build and test work should be treated as `foxar/`-first, not repository
 
 ### External Review
 - [Official CCAT Launch Principles](docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md)
+- [Historical Mainnet Rehearsal Contracts](docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md)
 - [Public Trust + Privacy Notes](docs/TRUST_AND_PRIVACY_SURFACE.md)
 - [Mainnet Public Evidence Checklist](docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
 - [Viewer Data Pipeline](docs/VIEWER_DATA_PIPELINE.md)

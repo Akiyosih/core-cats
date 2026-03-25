@@ -38,8 +38,8 @@ const verificationReferences = [
     label: "Randomness strategy ADR",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/CCATTEST_REHEARSAL_CANARY_PLAN.md",
-    label: "CCATTEST rehearsal canary plan",
+    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md",
+    label: "Historical rehearsal contracts",
   },
   {
     href: "https://github.com/Akiyosih/core-cats/blob/main/docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md",

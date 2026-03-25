@@ -6,10 +6,11 @@ This index separates public review material, launch runbooks, rehearsal evidence
 For a first outside review, read these in order:
 
 1. [Official CCAT Launch Principles](OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md)
-2. [Public Trust + Privacy Notes](TRUST_AND_PRIVACY_SURFACE.md)
-3. [Mainnet Public Evidence Checklist](MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
-4. [Freeze / Renounce Policy](FREEZE_AND_RENOUNCE_POLICY.md)
-5. [Minter Privacy Note](MINTER_PRIVACY_NOTE.md)
+2. [Historical Mainnet Rehearsal Contracts](HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md)
+3. [Public Trust + Privacy Notes](TRUST_AND_PRIVACY_SURFACE.md)
+4. [Mainnet Public Evidence Checklist](MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
+5. [Freeze / Renounce Policy](FREEZE_AND_RENOUNCE_POLICY.md)
+6. [Minter Privacy Note](MINTER_PRIVACY_NOTE.md)
 
 ## Current Release Path
 These describe how the project moves from public website publication to official mainnet opening.
@@ -33,6 +34,9 @@ Use these when reviewing the published collection artifacts and live token surfa
 
 ## Rehearsal / Canary Evidence
 These are useful, but they describe rehearsal and canary work rather than the final official `CCAT` promise surface.
+
+Canonical interpretation note:
+1. [Historical Mainnet Rehearsal Contracts](HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md)
 
 1. [CCATTEST Rehearsal Canary Plan](CCATTEST_REHEARSAL_CANARY_PLAN.md)
 2. [CCATTEST2 Private Canary Preview](CCATTEST2_PRIVATE_CANARY_PREVIEW.md)
