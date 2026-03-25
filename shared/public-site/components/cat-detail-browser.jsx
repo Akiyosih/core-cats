@@ -144,11 +144,6 @@ export default function CatDetailBrowser({
     <>
       <div className="detail-status-row">
         <span className="mint-status-pill mint-status-pill--minted">Minted</span>
-        {resolvedOwnerExplorer ? (
-          <a href={resolvedOwnerExplorer} target="_blank" rel="noreferrer" className="detail-external-link">
-            View owner
-          </a>
-        ) : null}
         {contractUrl ? (
           <a href={contractUrl} target="_blank" rel="noreferrer" className="detail-external-link">
             Open contract
