@@ -17,6 +17,8 @@ ZERO_ADDRESS = "00000000000000000000000000000000000000000000"
 BLOCKINDEX_USER_AGENT = "Mozilla/5.0 CoreCats/1.0"
 CORE_ADDRESS_RE = re.compile(r"^(?:ab|cb)[0-9a-f]{42}$", re.IGNORECASE)
 MAX_SUPPLY = 1000
+PUBLIC_OWNER_CACHE_SECONDS = 60
+PUBLIC_TOKEN_OWNER_CACHE_SECONDS = 30
 Urlopen = Callable[..., Any]
 
 
@@ -194,7 +196,7 @@ def build_public_owner_snapshot(config: Config, owner: str, *, opener: Urlopen =
     return {
         "fetchedAt": now_iso(),
         "errorMessage": "",
-        "cacheTtlSeconds": config.public_status_cache_seconds,
+        "cacheTtlSeconds": PUBLIC_OWNER_CACHE_SECONDS,
         "explorerBaseUrl": config.explorer_base_url,
         "coreCatsAddress": config.corecats_address,
         "owner": {
@@ -258,7 +260,7 @@ class OwnershipSnapshotCache:
 
         payload = build_public_owner_snapshot(self._config, normalized_owner, opener=self._opener)
         with self._lock:
-            self._owner_cache[normalized_owner] = (now + self._config.public_status_cache_seconds, payload)
+            self._owner_cache[normalized_owner] = (now + PUBLIC_OWNER_CACHE_SECONDS, payload)
         return payload
 
     def token_owner_lookup(self, token_id: int, rpc: CoreRpcClient) -> dict[str, Any]:
@@ -277,7 +279,7 @@ class OwnershipSnapshotCache:
         payload = {
             "fetchedAt": now_iso(),
             "errorMessage": "",
-            "cacheTtlSeconds": self._config.public_status_cache_seconds,
+            "cacheTtlSeconds": PUBLIC_TOKEN_OWNER_CACHE_SECONDS,
             "explorerBaseUrl": self._config.explorer_base_url,
             "coreCatsAddress": self._config.corecats_address,
             "token": {
@@ -288,5 +290,5 @@ class OwnershipSnapshotCache:
         }
 
         with self._lock:
-            self._token_owner_cache[parsed_token_id] = (now + self._config.public_status_cache_seconds, payload)
+            self._token_owner_cache[parsed_token_id] = (now + PUBLIC_TOKEN_OWNER_CACHE_SECONDS, payload)
         return payload

@@ -8,7 +8,11 @@ from urllib.parse import parse_qs, urlparse
 
 from .config import Config, load_config, normalize_core_address_key
 from .finalize_worker import FinalizeManager, FinalizeWorker
-from .ownership_snapshot import OwnershipSnapshotCache
+from .ownership_snapshot import (
+    OwnershipSnapshotCache,
+    PUBLIC_OWNER_CACHE_SECONDS,
+    PUBLIC_TOKEN_OWNER_CACHE_SECONDS,
+)
 from .policy import AuthorizationRejected, evaluate_authorization_precheck
 from .rpc import CoreRpcClient, RpcError
 from .spark import classify_finalize_error_detail, issue_mint_authorization, relay_finalize_mint
@@ -215,7 +219,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             self,
             200,
             payload,
-            cache_control="public, max-age=60, stale-while-revalidate=60",
+            cache_control=f"public, max-age={PUBLIC_OWNER_CACHE_SECONDS}, stale-while-revalidate={PUBLIC_OWNER_CACHE_SECONDS}",
             extra_headers=self._public_status_headers(),
         )
 
@@ -269,7 +273,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             )
             return
 
-        ttl = max(30, int(self.config.public_status_cache_seconds or 120))
+        ttl = PUBLIC_TOKEN_OWNER_CACHE_SECONDS
         json_response(
             self,
             200,
