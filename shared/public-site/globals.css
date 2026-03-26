@@ -441,6 +441,14 @@ main {
   gap: 10px;
 }
 
+.hero-panel .cta-row {
+  align-items: stretch;
+}
+
+.hero-panel .cta-row .button {
+  min-width: 176px;
+}
+
 .pagination--mobile {
   display: none;
 }
@@ -1817,6 +1825,10 @@ main {
     gap: 14px;
   }
 
+  .hero-panel .cta-row .button {
+    flex: 1 1 176px;
+  }
+
   .copy-grid.copy-grid--two {
     grid-template-columns: 1fr;
   }
@@ -2000,6 +2012,10 @@ main {
   .hero-grid__item,
   .cat-card {
     border-radius: 18px;
+  }
+
+  .hero-panel .cta-row .button {
+    min-width: 0;
   }
 }
 
