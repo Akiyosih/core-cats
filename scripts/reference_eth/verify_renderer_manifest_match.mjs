@@ -4,6 +4,10 @@ import { Buffer } from "node:buffer";
 import { BrowserProvider, ContractFactory } from "ethers";
 import hre from "hardhat";
 
+// Archive-derived helper:
+// - kept for renderer/manifest verification against current Core outputs
+// - not evidence that the active repo mirrors the full historical PNG source-art tree
+
 function decodeDataUriBase64(uri) {
   const idx = uri.indexOf(",");
   if (idx < 0) throw new Error("invalid data uri");

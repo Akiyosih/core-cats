@@ -5,6 +5,13 @@ import { Buffer } from "node:buffer";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import zlib from "node:zlib";
 
+// Boundary note:
+// - this active rebuild script still emits historical layer path labels such as `art/base/...` and `art/parts/...`
+//   because those labels remain useful in the canonical manifest for provenance and review
+// - that should not be read as evidence that the active `core-cats` repo mirrors the full historical raster part library
+// - the current local raster exception that is still directly required here is `assets/traits/beam.png`
+// - the broader historical source-art set remains part of the `core-cats-eth` archive
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, "../..");
