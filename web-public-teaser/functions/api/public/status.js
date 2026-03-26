@@ -8,7 +8,7 @@ function jsonResponse(payload, status, cacheControl, extraHeaders = {}) {
       "cache-control": cacheControl,
       "Cloudflare-CDN-Cache-Control": cacheControl,
       "access-control-allow-origin": "*",
-      "x-corecats-status-source": "cloudflare-public-teaser",
+      "x-corecats-public-api-source": "cloudflare-public-teaser",
       ...extraHeaders,
     },
   });

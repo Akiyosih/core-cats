@@ -37,12 +37,12 @@ function parseCollectionReturnPath(value) {
   }
 }
 
-function buildTokenOwnerLookupUrl(statusSnapshotUrl, tokenId) {
-  if (!statusSnapshotUrl || !tokenId) return null;
+function buildTokenOwnerLookupUrl(publicApiBaseUrl, tokenId) {
+  if (!publicApiBaseUrl || !tokenId) return null;
 
   try {
-    const url = new URL(statusSnapshotUrl, "https://corecats.local");
-    url.pathname = url.pathname.replace(/\/status$/, "/token-owner");
+    const url = new URL(publicApiBaseUrl, "https://corecats.local");
+    url.pathname = `${url.pathname.replace(/\/$/, "").replace(/\/status$/i, "")}/token-owner`;
     url.search = "";
     url.searchParams.set("tokenId", String(tokenId));
     if (url.origin === "https://corecats.local") {
@@ -66,7 +66,7 @@ function formatSnapshotTimestamp(value) {
 export default function CatDetailBrowser({
   tokenId,
   teaserEnabled,
-  statusSnapshotUrl,
+  publicApiBaseUrl,
   collectionIndexUrl,
   explorerBaseUrl,
   coreCatsAddress,
@@ -110,8 +110,8 @@ export default function CatDetailBrowser({
   }, [collectionIndexUrl, returnPath]);
 
   const tokenOwnerLookupUrl = useMemo(
-    () => buildTokenOwnerLookupUrl(statusSnapshotUrl, tokenId),
-    [statusSnapshotUrl, tokenId],
+    () => buildTokenOwnerLookupUrl(publicApiBaseUrl, tokenId),
+    [publicApiBaseUrl, tokenId],
   );
   const {
     ownerLookup,

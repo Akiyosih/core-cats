@@ -36,6 +36,8 @@ const DEFAULTS = {
   privateCanaryTitleText: "Private rehearsal canary",
   privateCanaryWarningText: "NOT PUBLIC MINT",
 };
+// Prefer NEXT_PUBLIC_CORECATS_MINT_BASE_URL / CORECATS_MINT_BASE_URL.
+// This fallback remains for host-detection compatibility with the launch-era official mint URL.
 const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
 
 function normalizeLaunchState(value) {
@@ -76,6 +78,12 @@ function normalizeBoolean(value) {
 
 function normalizeUrl(value) {
   return String(value || "").trim().replace(/\/$/, "");
+}
+
+function normalizePublicApiBaseUrl(value) {
+  const normalized = normalizeUrl(value);
+  if (!normalized) return "";
+  return normalized.replace(/\/status$/i, "");
 }
 
 function isOfficialMintHost(siteBaseUrl) {
@@ -204,14 +212,18 @@ export function getCoreServerEnv() {
   let networkId = Number(process.env.CORE_NETWORK_ID || DEFAULTS.networkId);
   let networkName = process.env.CORE_NETWORK_NAME || DEFAULTS.networkName;
   let chainId = Number(process.env.NEXT_PUBLIC_CORE_CHAIN_ID || process.env.CORE_CHAIN_ID || DEFAULTS.chainId);
-  let statusSnapshotUrl = (
-    process.env.NEXT_PUBLIC_CORECATS_STATUS_URL ||
+  const backendBaseUrl = (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, "");
+  let publicApiBaseUrl = normalizePublicApiBaseUrl(
+    process.env.NEXT_PUBLIC_CORECATS_PUBLIC_API_BASE_URL ||
+      process.env.CORECATS_PUBLIC_API_BASE_URL ||
+      process.env.NEXT_PUBLIC_CORECATS_STATUS_URL ||
     (
-      (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, "")
-        ? `${(process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, "")}/api/public/status`
+      backendBaseUrl
+        ? `${backendBaseUrl}/api/public`
         : ""
     )
-  ).trim();
+  );
+  let statusSnapshotUrl = publicApiBaseUrl ? `${publicApiBaseUrl}/status` : "";
   let coreCatsAddress =
     process.env.NEXT_PUBLIC_CORECATS_ADDRESS ||
     process.env.CORECATS_ADDRESS ||
@@ -243,8 +255,9 @@ export function getCoreServerEnv() {
     coreCatsAddress = OFFICIAL_MAINNET_CORECATS_ADDRESS;
     coreCatsRendererAddress = OFFICIAL_MAINNET_RENDERER_ADDRESS;
     coreCatsDataAddress = OFFICIAL_MAINNET_DATA_ADDRESS;
-    if (!statusSnapshotUrl || /sslip\.io\/api\/public\/status$/i.test(statusSnapshotUrl)) {
-      statusSnapshotUrl = "https://core-cats.pages.dev/api/public/status";
+    if (!publicApiBaseUrl || /sslip\.io\/api\/public(?:\/status)?$/i.test(publicApiBaseUrl)) {
+      publicApiBaseUrl = "https://core-cats.pages.dev/api/public";
+      statusSnapshotUrl = `${publicApiBaseUrl}/status`;
     }
   }
 
@@ -267,11 +280,12 @@ export function getCoreServerEnv() {
     browseBaseUrl,
     mintOnlyHost,
     backendMode: normalizeBackendMode(process.env.CORECATS_BACKEND_MODE || DEFAULTS.backendMode),
-    backendBaseUrl: (process.env.CORECATS_BACKEND_BASE_URL || DEFAULTS.backendBaseUrl).trim().replace(/\/$/, ""),
+    backendBaseUrl,
     internalBackendBaseUrl: (
       process.env.CORECATS_INTERNAL_BACKEND_BASE_URL || DEFAULTS.internalBackendBaseUrl
     ).trim().replace(/\/$/, ""),
     backendSharedSecret: (process.env.CORECATS_BACKEND_SHARED_SECRET || DEFAULTS.backendSharedSecret).trim(),
+    publicApiBaseUrl,
     statusSnapshotUrl,
     privateCanaryBadgeText: (
       process.env.NEXT_PUBLIC_PRIVATE_CANARY_BADGE_TEXT || DEFAULTS.privateCanaryBadgeText
@@ -419,6 +433,7 @@ export function getCorePublicConfig() {
     coreCatsDataAddress: env.coreCatsDataAddress,
     explorerBaseUrl: env.explorerBaseUrl,
     relayerEnabled,
+    publicApiBaseUrl: env.publicApiBaseUrl,
     statusSnapshotUrl: env.statusSnapshotUrl,
     privateCanaryBadgeText: env.privateCanaryBadgeText,
     privateCanaryTitleText: env.privateCanaryTitleText,

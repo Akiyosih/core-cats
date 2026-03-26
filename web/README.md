@@ -1,6 +1,6 @@
 # Core Cats Web
 
-Next.js frontend foundation for the Core Cats public web UI.
+Next.js application for the sold-out mint host, ownership lookup, and historical CorePass mint surface.
 
 ## Commands
 
@@ -21,7 +21,7 @@ Implemented routes:
 3. `/collection`
 4. `/cats/[tokenId]`
 5. `/transparency`
-6. `/mint` (CorePass QR / app-link flow)
+6. `/mint` (sold-out / verification host; historical CorePass flow code remains in this workspace)
 7. `/my-cats` (wallet ownership lookup)
 
 ## Data Source
@@ -48,6 +48,20 @@ This pipeline now writes:
 3. static preview PNGs to `./public/viewer/png/`
 
 The collection and homepage use the static PNG previews for browsing speed, while the detail page keeps the renderer-derived SVG.
+
+## Post-Launch Public API
+
+Current live ownership reads should be based on:
+1. `/api/public/owner?address=...`
+2. `/api/public/token-owner?tokenId=...`
+
+Preferred env:
+1. `NEXT_PUBLIC_CORECATS_PUBLIC_API_BASE_URL`
+2. `CORECATS_PUBLIC_API_BASE_URL`
+
+Legacy compatibility:
+1. `NEXT_PUBLIC_CORECATS_STATUS_URL` is still accepted and normalized to the same `/api/public` base
+2. `GET /api/public/status` itself is retired after sell-out and should not be treated as an active public data source
 
 ## Mint Environment
 
@@ -83,16 +97,13 @@ Important variables:
 18. `COREPASS_IDENTIFY_METHOD` (optional; `sign` by default, `login` for the QR1 comparison experiment while keeping QR2 and finalize unchanged)
 19. `COREPASS_IDENTIFY_USE_SIGNATURE_RECOVERY` (optional private-canary experiment; if `1` and `COREPASS_IDENTIFY_METHOD=sign`, the server prefers the QR1 signature-recovered signer over the callback `coreID` and stores both values for diagnosis)
 
-When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend also derives public ownership routes from:
+When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the frontend derives ownership routes from:
 
-1. `<CORECATS_BACKEND_BASE_URL>/api/public/status`
-2. `<CORECATS_BACKEND_BASE_URL>/api/public/owner?address=...`
+1. `<CORECATS_BACKEND_BASE_URL>/api/public/owner?address=...`
+2. `<CORECATS_BACKEND_BASE_URL>/api/public/token-owner?tokenId=...`
 
-This lets `/collection`, `/cats/[tokenId]`, `/my-cats`, and the public mint counter read live ownership state from the browser without using a Vercel Function on every page view.
-
-For the current Cloudflare Pages teaser path, prefer a same-origin route such as `/api/public/status` and point that route at the upstream public snapshot origin with a host-side binding or equivalent runtime env.
-For `My Cats`, prefer a same-origin owner lookup route such as `/api/public/owner?address=...` so the browser does not fetch the full ownership snapshot just to resolve one wallet.
-Direct browser reads from the upstream public snapshot origin remain acceptable only for simpler browse-only hosts that do not provide a same-origin edge/cache layer.
+For the Cloudflare browse host, prefer same-origin routes under `/api/public/*` and point those routes at the
+upstream public API origin with a host-side binding or equivalent runtime env.
 
 Useful env templates:
 1. `./.env.production.example`
@@ -105,17 +116,17 @@ The same app can be deployed in three public-facing modes:
 1. `public-teaser`
    Browse-only community site. `Mint` stays closed and public visitors cannot create CorePass sessions there.
 2. `private-canary`
-   Separate rehearsal surface for operator-led canary testing. Mint routes stay enabled, but this surface should not
-   be linked from the public teaser site.
+   Historical / recovery rehearsal surface. The code path remains documented, but it is no longer the active public
+   operating mode after sell-out.
 3. `public-mint`
    Final public release mode. This can either be the community-facing site itself or a mint-only host linked from the
    browse site.
 
-For long-lived teaser hosting, the current direction is:
+For long-lived hosting, the current direction is:
 1. use `web-public-teaser/` as the preferred static browse-only app for the community-facing teaser origin
-2. use `web/` for `private-canary` and later `public-mint`
-3. feed live ownership from the public snapshot URL
-4. keep `private-canary` separate from the community-facing teaser origin
+2. use `web/` for the mint/support host
+3. feed live ownership from the public owner/token-owner API
+4. keep any historical canary host separate from the community-facing browse origin
 
 For the current mainnet direction, `public-mint` should be treated as a mint-support surface rather than a full browse host:
 1. keep the full browse site on Cloudflare
@@ -131,7 +142,7 @@ For a private canary with outside testers, prefer the same split:
 4. if the canary host is mint-only, also set `NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST=1`
 5. optionally set `NEXT_PUBLIC_PRIVATE_CANARY_ENFORCE_CANONICAL_HOST=1` so page traffic is pushed onto that stable alias while `/api/mint/corepass/callback/*` stays reachable
 
-## Current Mint Flow
+## Historical Mint Flow
 
 1. Create a CorePass mint session on `/mint`
 2. QR 1 binds a concrete `coreID` using either a CorePass sign request or login request, depending on `COREPASS_IDENTIFY_METHOD`
@@ -142,9 +153,10 @@ For a private canary with outside testers, prefer the same split:
 
 ## Production Note
 
-The current CorePass session store is in-memory. That is acceptable for local development and testnet rehearsal, but it is not the final production storage design.
+The current CorePass session store in `web/` is not the primary production authority. Post-launch, ownership lookup
+and historical mint evidence remain relevant, while durable mint session storage lives on the external backend.
 
-The current production direction is:
+The production shape used for the launch was:
 1. Vercel for the public website
 2. Contabo Linux for the mint backend
 3. SQLite for the first durable session store
@@ -167,9 +179,10 @@ The external mint backend owns:
 5. the public ownership snapshot consumed directly by collection / ownership pages
 
 See `../docs/MINT_BACKEND_ARCHITECTURE.md`.
-Use `./.env.production.example` and `../docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md` for the Vercel-side mainnet switch.
-Use `./.env.private-canary.example` and `../docs/PRIVATE_CANARY_DEPLOY_RUNBOOK.md` for the temporary private canary surface.
-Use `../docs/CCATTEST2_PRIVATE_CANARY_PREVIEW.md` when the private canary should run on a stable Vercel alias without touching the official public mint host.
+Use `./.env.production.example` and `../docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md` as historical/operator reference for the
+mainnet mint host shape.
+Use `./.env.private-canary.example` and `../docs/PRIVATE_CANARY_DEPLOY_RUNBOOK.md` only when reviewing the historical or
+recovery canary path.
 
 Before copying the final values into Vercel, stage them in a local file such as `.env.production.local` and run:
 

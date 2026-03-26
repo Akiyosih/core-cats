@@ -1,6 +1,10 @@
-# Core Cats Work Procedure (Mainnet Closed Launch Path)
+# Core Cats Work Procedure (Historical Mainnet Launch Path)
 
 Version: v3.1
+
+Status note:
+1. official `CCAT` launch is complete and public mint is sold out
+2. this document remains as the historical launch procedure and launch-evidence map
 
 ## 0. Non-negotiable Rules
 1. Final target chain is Core Blockchain mainnet.

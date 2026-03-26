@@ -12,8 +12,9 @@ For a first outside review, read these in order:
 5. [Freeze / Renounce Policy](FREEZE_AND_RENOUNCE_POLICY.md)
 6. [Minter Privacy Note](MINTER_PRIVACY_NOTE.md)
 
-## Current Release Path
-These describe how the project moves from public website publication to official mainnet opening.
+## Historical Launch / Cutover Path
+These describe how the project moved from public website publication to official mainnet opening. They remain public
+as launch history and operator evidence, not as the current live-state summary.
 
 1. [Core Blockchain Work Procedure / Launch Path](WORK_PROCEDURE_CORE_BLOCKCHAIN.md)
 2. [Mainnet Closed Launch Runbook](MAINNET_CLOSED_LAUNCH_RUNBOOK.md)

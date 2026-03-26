@@ -1,16 +1,22 @@
 # Core Cats Mint Backend
 
-This service is the first production mint backend target for Core Cats.
+This service was the production mint backend target for Core Cats and now remains as the live ownership/public API service.
 
 It is designed to run on the Contabo Linux server alongside the existing Core full node.
+
+Post-launch state:
+1. official `CCAT` public mint is complete
+2. the backend's ongoing public role is primarily ownership lookup
+3. historical mint session / finalize code remains in the repository for auditability and possible recovery use, but it is no longer the primary public concern
 
 ## Responsibilities
 
 1. durable CorePass mint session storage
 2. relayer-assisted `finalizeMint(minter)` through `spark`
 3. optional legacy mint-authorization issuance for older rehearsal flows
-4. a small internal HTTP API consumed by the Vercel frontend
-5. backend-side finalize retry / receipt tracking / stuck-session detection
+4. public owner lookup endpoints consumed by the browse and mint hosts
+5. a small internal HTTP API consumed by the Vercel frontend
+6. backend-side finalize retry / receipt tracking / stuck-session detection
 
 The public browser should continue to use the Vercel origin. The Vercel app keeps the UI flow, CorePass callback URL, and QR/app-link generation. This backend only handles durable storage and privileged mint operations.
 
@@ -29,15 +35,19 @@ Implemented endpoints:
 4. `GET /api/internal/sessions/:sessionId`
 5. `PUT /api/internal/sessions/:sessionId`
 6. `DELETE /api/internal/sessions/:sessionId`
-7. `GET /api/public/status`
+7. `GET /api/public/owner`
+8. `GET /api/public/token-owner`
+9. `GET /api/public/status` (retired after sell-out; returns `410`)
 
 All `/api/*` endpoints require:
 
 - `x-corecats-backend-shared-secret: ...`
 
-Exception:
+Public read-only exceptions:
 
-- `GET /api/public/status` is intentionally public and read-only so the browser can fetch ownership/minted snapshot data without a Vercel Function hop.
+1. `GET /api/public/owner`
+2. `GET /api/public/token-owner`
+3. `GET /api/public/status` remains public only as a retired endpoint so clients receive an explicit `410 public_status_retired`
 
 ## Runtime
 
@@ -46,7 +56,7 @@ No framework is required. The service uses:
 1. Python standard library HTTP server
 2. Python built-in `sqlite3`
 3. local `spark` / `foxar`
-4. a cached explorer-derived ownership snapshot for public collection / ownership pages
+4. cached owner/token-owner reads for public collection / ownership pages
 
 ## Start locally
 
@@ -69,7 +79,7 @@ Use the provided examples:
 
 The intended production pattern is:
 
-1. copy the env example to `/etc/corecats-mint-backend.env`
+1. copy the env example to your backend env file, for example `/etc/corecats-mint-backend.env`
 2. fill in the real mainnet values and secrets there
 3. install the systemd unit
 4. keep the unit file itself free of secret values
@@ -115,15 +125,16 @@ python3 -m unittest discover -s tests
 
 This covers the production config guardrails and the Contabo preflight checker with repo-local fixtures.
 
-On the Contabo host after `systemctl enable --now corecats-mint-backend`, run:
+On the backend host after `systemctl enable --now corecats-mint-backend`, run:
 
 ```bash
-bash /root/core-cats/mint-backend/systemd/contabo-mainnet-smoke.sh
+bash <repo-root>/mint-backend/systemd/contabo-mainnet-smoke.sh
 ```
 
 This smoke check verifies `healthz`, shared-secret auth, and SQLite-backed session CRUD without issuing mint signatures or broadcasting finalize transactions.
 
-In production, `/healthz` also exposes finalize-worker summary fields so stuck-session monitoring can alert on:
+Historical mint monitoring note:
+in production, `/healthz` also exposes finalize-worker summary fields so stuck-session monitoring can alert on:
 1. pending finalize backlog
 2. stuck finalize count
 3. oldest pending finalize age in seconds
@@ -133,7 +144,7 @@ For the public HTTPS frontend, the recommended default is Caddy:
 1. reverse-proxy example:
    - `reverse-proxy/Caddyfile.example`
 2. public origin check:
-   - `bash /root/core-cats/mint-backend/systemd/contabo-public-origin-check.sh https://<backend-origin>`
+   - `bash <repo-root>/mint-backend/systemd/contabo-public-origin-check.sh https://<backend-origin>`
 
 ## Expected production placement
 

@@ -9,12 +9,7 @@ export default async function CollectionPageContent({ config }) {
 
   return (
     <Suspense fallback={null}>
-      <CollectionBrowser
-        collection={collection}
-        filtersDoc={filtersDoc}
-        teaserEnabled={teaserEnabled}
-        statusSnapshotUrl={config.statusSnapshotUrl}
-      />
+      <CollectionBrowser collection={collection} filtersDoc={filtersDoc} teaserEnabled={teaserEnabled} />
     </Suspense>
   );
 }

@@ -2,6 +2,11 @@
 
 This runbook covers the first production-style mint backend deployment target for Core Cats.
 
+Status note:
+1. official public mint is complete
+2. this document remains as a public operator runbook and deployment record
+3. machine-local paths below are expressed as placeholders, not as a required literal layout
+
 ## Target shape
 
 1. Core full node stays on Contabo
@@ -69,7 +74,7 @@ Recommended default:
 1. assign a dedicated backend subdomain such as `mint-backend.<your-domain>`
 2. point that DNS record at the Contabo host
 3. front the local backend with Caddy on ports `80/443`
-4. keep the Python backend bound to `127.0.0.1:8787`
+4. keep the Python backend bound to a loopback port such as `127.0.0.1:8787`
 
 Recommended repo-side example:
 
@@ -89,7 +94,7 @@ Source references:
 3. create the required root-owned secret and state directories on the backend host
 4. stage the finalizer keystore/password pair on the backend host if keystore mode will be used
 5. ensure secret file permissions are `600`
-6. copy `mint-backend/systemd/corecats-mint-backend.env.example` to `/etc/corecats-mint-backend.env`
+6. copy `mint-backend/systemd/corecats-mint-backend.env.example` to `<backend-env-file>`
 7. fill the env file with the real mainnet values:
    - `CORECATS_BACKEND_PROFILE=production`
    - `CORE_RPC_URL=https://xcbapi-arch-mainnet.coreblockchain.net/`
@@ -106,25 +111,25 @@ Source references:
    - only if a legacy signer-gated rehearsal flow must still be supported:
      - `MINT_SIGNER_PRIVATE_KEY=<signer-private-key>`
 8. set env-file permission:
-   - `chmod 600 /etc/corecats-mint-backend.env`
+   - `chmod 600 <backend-env-file>`
 9. install the systemd unit:
-   - `cp /root/core-cats/mint-backend/systemd/corecats-mint-backend.service.example /etc/systemd/system/corecats-mint-backend.service`
+   - `cp <repo-root>/mint-backend/systemd/corecats-mint-backend.service.example <systemd-unit-file>`
    - `systemctl daemon-reload`
 10. run preflight before service start:
-   - `bash /root/core-cats/mint-backend/systemd/contabo-mainnet-preflight.sh`
+   - `ENV_FILE=<backend-env-file> bash <repo-root>/mint-backend/systemd/contabo-mainnet-preflight.sh`
 11. start backend and verify health:
    - `systemctl enable --now corecats-mint-backend`
    - `journalctl -u corecats-mint-backend -n 100 --no-pager`
    - `curl -sS http://127.0.0.1:8787/healthz`
-   - `bash /root/core-cats/mint-backend/systemd/contabo-mainnet-smoke.sh`
+   - `ENV_FILE=<backend-env-file> bash <repo-root>/mint-backend/systemd/contabo-mainnet-smoke.sh`
 12. expose the backend through HTTPS:
    - choose a dedicated backend subdomain and point it at Contabo
    - install Caddy on the Contabo host
-   - copy `mint-backend/reverse-proxy/Caddyfile.example` to `/etc/caddy/Caddyfile`
+   - copy `mint-backend/reverse-proxy/Caddyfile.example` to `<caddy-config-file>`
    - replace `mint-backend.example.com` with the real backend subdomain
    - `systemctl reload caddy`
 13. verify the public backend origin:
-   - `bash /root/core-cats/mint-backend/systemd/contabo-public-origin-check.sh https://<backend-origin>`
+   - `bash <repo-root>/mint-backend/systemd/contabo-public-origin-check.sh https://<backend-origin>`
 14. point Vercel server routes to backend proxy mode
 15. test `closed -> canary` before any public mint
 
@@ -132,7 +137,7 @@ Source references:
 
 The checker in `mint-backend/systemd/contabo-mainnet-preflight.sh` fails with non-zero status if:
 
-1. `/etc/corecats-mint-backend.env` or systemd unit is missing
+1. `<backend-env-file>` or the systemd unit is missing
 2. env file permission is not `600`
 3. mainnet constraints are not met (`network/chain/rpc/explorer`)
 4. `CORECATS_BACKEND_SHARED_SECRET` or `CORECATS_ADDRESS` is missing/placeholder
@@ -150,7 +155,7 @@ This script does not print raw secret values.
 The checker in `mint-backend/systemd/contabo-mainnet-smoke.sh` verifies:
 
 1. `/healthz` reports `mainnet` and chain id `1`
-2. the backend accepts the shared secret from `/etc/corecats-mint-backend.env`
+2. the backend accepts the shared secret from `<backend-env-file>`
 3. internal session `PUT -> GET -> DELETE` works against SQLite
 
 This script does not issue mint signatures or submit on-chain finalize transactions.

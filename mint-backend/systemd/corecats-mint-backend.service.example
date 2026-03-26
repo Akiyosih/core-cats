@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/root/core-cats/mint-backend
+WorkingDirectory=/srv/core-cats/mint-backend
 EnvironmentFile=/etc/corecats-mint-backend.env
 Environment=PYTHONUNBUFFERED=1
 ExecStart=/usr/bin/python3 -m corecats_mint_backend.server

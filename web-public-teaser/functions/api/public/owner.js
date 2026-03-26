@@ -23,19 +23,19 @@ function jsonResponse(payload, status, cacheControl, extraHeaders = {}) {
       "cache-control": cacheControl,
       "Cloudflare-CDN-Cache-Control": cacheControl,
       "access-control-allow-origin": "*",
-      "x-corecats-status-source": "cloudflare-public-teaser-owner",
+      "x-corecats-public-api-source": "cloudflare-public-teaser-owner",
       ...extraHeaders,
     },
   });
 }
 
-function buildOwnerUpstream(statusUpstream, address) {
-  const upstream = String(statusUpstream || "").trim();
+function buildOwnerUpstream(apiUpstream, address) {
+  const upstream = String(apiUpstream || "").trim();
   if (!upstream) {
     return "";
   }
   const url = new URL(upstream);
-  url.pathname = url.pathname.replace(/\/status$/, "/owner");
+  url.pathname = `${url.pathname.replace(/\/$/, "").replace(/\/status$/i, "")}/owner`;
   url.searchParams.set("address", address);
   return url.toString();
 }
@@ -53,12 +53,15 @@ export async function onRequestGet(context) {
     );
   }
 
-  const upstream = buildOwnerUpstream(context.env.CORECATS_PUBLIC_STATUS_UPSTREAM, address);
+  const upstream = buildOwnerUpstream(
+    context.env.CORECATS_PUBLIC_API_UPSTREAM || context.env.CORECATS_PUBLIC_STATUS_UPSTREAM,
+    address,
+  );
   if (!upstream) {
     return jsonResponse(
       {
-        error: "status_upstream_not_configured",
-        detail: "Public ownership snapshot upstream is not configured for this deployment.",
+        error: "public_api_upstream_not_configured",
+        detail: "Public ownership API upstream is not configured for this deployment.",
       },
       500,
       "no-store",

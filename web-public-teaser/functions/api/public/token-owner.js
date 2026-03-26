@@ -23,19 +23,19 @@ function jsonResponse(payload, status, cacheControl, extraHeaders = {}) {
       "cache-control": cacheControl,
       "Cloudflare-CDN-Cache-Control": cacheControl,
       "access-control-allow-origin": "*",
-      "x-corecats-status-source": "cloudflare-public-teaser-token-owner",
+      "x-corecats-public-api-source": "cloudflare-public-teaser-token-owner",
       ...extraHeaders,
     },
   });
 }
 
-function buildTokenOwnerUpstream(statusUpstream, tokenId) {
-  const upstream = String(statusUpstream || "").trim();
+function buildTokenOwnerUpstream(apiUpstream, tokenId) {
+  const upstream = String(apiUpstream || "").trim();
   if (!upstream) {
     return "";
   }
   const url = new URL(upstream);
-  url.pathname = url.pathname.replace(/\/status$/, "/token-owner");
+  url.pathname = `${url.pathname.replace(/\/$/, "").replace(/\/status$/i, "")}/token-owner`;
   url.search = "";
   url.searchParams.set("tokenId", tokenId);
   return url.toString();
@@ -54,11 +54,14 @@ export async function onRequestGet(context) {
     );
   }
 
-  const upstream = buildTokenOwnerUpstream(context.env.CORECATS_PUBLIC_STATUS_UPSTREAM, tokenId);
+  const upstream = buildTokenOwnerUpstream(
+    context.env.CORECATS_PUBLIC_API_UPSTREAM || context.env.CORECATS_PUBLIC_STATUS_UPSTREAM,
+    tokenId,
+  );
   if (!upstream) {
     return jsonResponse(
       {
-        error: "status_upstream_not_configured",
+        error: "public_api_upstream_not_configured",
         detail: "Public token owner upstream is not configured for this deployment.",
       },
       500,

@@ -1,6 +1,6 @@
 # Official CCAT Cutover Note
 
-Status: Prepared before the official `CCAT` deploy
+Status: historical cutover note from the official `CCAT` deploy window
 
 ## Purpose
 Provide the one-page replacement map for moving from the completed `CCATTEST rehearsal canary` into the official `CCAT` deploy and the later Vercel Pro exact-host smoke.

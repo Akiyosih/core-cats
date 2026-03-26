@@ -1,5 +1,10 @@
 # Core Cats Mint Backend Architecture
 
+Status note:
+1. this document records the architecture chosen for the official launch
+2. after sell-out, the ongoing public role is primarily ownership lookup and supporting public verification pages
+3. launch-era mint/finalize notes remain here as historical architecture context
+
 ## Decision
 The production mint path will be split into:
 

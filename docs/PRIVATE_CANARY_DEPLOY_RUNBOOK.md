@@ -53,7 +53,7 @@ Notes:
 1. the private canary host should not reuse the public teaser origin
 2. if the web app and backend share the same Contabo host, prefer `CORECATS_INTERNAL_BACKEND_BASE_URL=http://127.0.0.1:8787`
 3. if the canary web app is hosted elsewhere, set `CORECATS_BACKEND_BASE_URL=https://...` instead
-4. `NEXT_PUBLIC_CORECATS_STATUS_URL` is optional on the private canary host, but keeping it set is useful for `/collection` and `/my-cats`
+4. `NEXT_PUBLIC_CORECATS_PUBLIC_API_BASE_URL` is optional on the private canary host, but keeping it set is useful for `/collection`, `/cats/[tokenId]`, and `/my-cats`
 
 ## Repo-Side Files
 
@@ -97,20 +97,20 @@ Before deployment:
 
 Recommended default when the existing Contabo host is used:
 
-1. copy `core-cats/web/systemd/corecats-private-canary-web.env.example` to `/etc/corecats-private-canary-web.env`
+1. copy `core-cats/web/systemd/corecats-private-canary-web.env.example` to `<private-canary-env-file>`
 2. set:
    - `NEXT_PUBLIC_SITE_BASE_URL=https://<private-canary-origin>`
    - `CORECATS_BACKEND_SHARED_SECRET=<same-secret-as-backend>`
-   - `NEXT_PUBLIC_CORECATS_STATUS_URL=<public-status-url>` if browse pages should show ownership
+   - `NEXT_PUBLIC_CORECATS_PUBLIC_API_BASE_URL=<public-api-base-url>` if browse pages should show ownership
 3. keep `CORECATS_INTERNAL_BACKEND_BASE_URL=http://127.0.0.1:8787`
 4. set file permissions:
-   - `chmod 600 /etc/corecats-private-canary-web.env`
+   - `chmod 600 <private-canary-env-file>`
 5. install the systemd unit:
-   - `cp /root/core-cats/web/systemd/corecats-private-canary-web.service.example /etc/systemd/system/corecats-private-canary-web.service`
+   - `cp <repo-root>/web/systemd/corecats-private-canary-web.service.example <private-canary-systemd-unit-file>`
    - `systemctl daemon-reload`
    - `systemctl enable --now corecats-private-canary-web`
 6. install the Caddy config:
-   - `cp /root/core-cats/web/reverse-proxy/Caddyfile.private-canary.example /etc/caddy/Caddyfile`
+   - `cp <repo-root>/web/reverse-proxy/Caddyfile.private-canary.example <caddy-config-file>`
    - replace `canary.example.com`
    - replace `REPLACE_WITH_BCRYPT_HASH`
    - keep `/api/mint/corepass/callback/*` outside Basic Auth so CorePass can reach the callback URL

@@ -23,7 +23,7 @@ export default async function MyCatsPage({ searchParams }) {
     const query = owner ? `?owner=${encodeURIComponent(owner)}` : "";
     redirect(buildBrowseHref(config, `/my-cats${query}`));
   }
-  const { launchState, statusSnapshotUrl, coreCatsAddress } = config;
+  const { launchState, publicApiBaseUrl, coreCatsAddress } = config;
 
   if (launchState === "closed") {
     return (
@@ -60,7 +60,7 @@ export default async function MyCatsPage({ searchParams }) {
         initialCoreCatsAddress={initialCoreCatsAddress}
         initialCoreCatsContractQr={initialCoreCatsContractQr}
         launchState={launchState}
-        statusSnapshotUrl={statusSnapshotUrl}
+        publicApiBaseUrl={publicApiBaseUrl}
       />
     </Suspense>
   );

@@ -53,7 +53,7 @@ export default async function CatDetailPageContent({ tokenId, config }) {
           <CatDetailLive
             tokenId={tokenId}
             teaserEnabled={config.launchState !== "public"}
-            statusSnapshotUrl={config.statusSnapshotUrl}
+            publicApiBaseUrl={config.publicApiBaseUrl}
             collectionIndexUrl="/viewer/collection-index.json"
             explorerBaseUrl={config.explorerBaseUrl}
             coreCatsAddress={config.coreCatsAddress}

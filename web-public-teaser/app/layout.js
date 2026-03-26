@@ -6,7 +6,7 @@ import { getPublicRuntimeConfig } from "../lib/public-runtime-config.js";
 export const metadata = {
   title: "Core Cats",
   description:
-    "Core Cats public teaser site for a transparent, mobile-friendly, browse-first full on-chain pixel cat gallery, ownership lookup, centered CorePass helper guidance, balanced collection pagination, and verification references.",
+    "Core Cats public browse site for a transparent, mobile-friendly, fully on-chain pixel cat gallery, ownership lookup, and verification references.",
 };
 
 export default function RootLayout({ children }) {
@@ -14,13 +14,13 @@ export default function RootLayout({ children }) {
   const { launchState, publicTeaserSite, privateCanarySite } = config;
   const siteNotice =
     launchState === "closed"
-      ? "Public mint is not open yet. Browse the collection here, check transparency, and return to the official mint host when launch opens."
+      ? "This browse host stays online even when mint availability is paused on the separate mint surface."
       : launchState === "public"
         ? ""
         : publicTeaserSite
-        ? "Final prelaunch checks are underway. This public site stays browse-first while the official mint host remains closed to the public."
+        ? "This browse host stays public while the separate mint surface is under limited verification."
         : privateCanarySite
-          ? "Private rehearsal host. Public mint remains closed until the official mint host opens."
+          ? "Historical or private rehearsal host."
           : "";
 
   return (

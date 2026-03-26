@@ -16,7 +16,7 @@ async function buildCorePassContractQr(address) {
 }
 
 export default async function MyCatsPage() {
-  const { launchState, statusSnapshotUrl, coreCatsAddress } = {
+  const { launchState, publicApiBaseUrl, coreCatsAddress } = {
     ...getPublicRuntimeConfig(),
     ...PUBLIC_TEASER_CONTRACT_SURFACE,
   };
@@ -56,7 +56,7 @@ export default async function MyCatsPage() {
         initialCoreCatsAddress={initialCoreCatsAddress}
         initialCoreCatsContractQr={initialCoreCatsContractQr}
         launchState={launchState}
-        statusSnapshotUrl={statusSnapshotUrl}
+        publicApiBaseUrl={publicApiBaseUrl}
       />
     </Suspense>
   );

@@ -1,5 +1,10 @@
 # Cloudflare Public Teaser Runbook
 
+Status note:
+1. public mint is complete
+2. this document remains as the public browse-host deployment runbook
+3. launch-era `Mint Soon` language below should be interpreted as historical context unless intentionally reenabling a closed browse surface
+
 Purpose:
 - relaunch the community-facing teaser and browse surface on a low-cost static-first host
 - keep mint rehearsal on a separate private canary surface
@@ -29,17 +34,16 @@ Expected public routes:
 6. `/my-cats`
 
 Public teaser behavior:
-1. `Mint` stays closed and shows `Soon`
-2. `/mint` is not deployed on the public teaser origin
-3. bots are discouraged from indexing `/mint` and `/api/`
-4. live ownership comes from a same-origin Cloudflare Pages Function, not from a request-time Vercel function
+1. `/mint` is not deployed on the public teaser origin
+2. bots are discouraged from indexing `/mint` and `/api/`
+3. live ownership comes from a same-origin Cloudflare Pages Function, not from a request-time Vercel function
 
 ## Environment
 
 Minimum public teaser environment:
 
 ```bash
-NEXT_PUBLIC_LAUNCH_STATE=canary
+NEXT_PUBLIC_LAUNCH_STATE=public
 NEXT_PUBLIC_SITE_SURFACE=public-teaser
 NEXT_PUBLIC_SITE_BASE_URL=https://replace-with-public-site-origin
 NEXT_PUBLIC_CORE_CHAIN_ID=1
@@ -47,14 +51,14 @@ CORE_NETWORK_ID=1
 CORE_NETWORK_NAME=mainnet
 NEXT_PUBLIC_CORE_EXPLORER_BASE_URL=https://blockindex.net
 NEXT_PUBLIC_CORECATS_ADDRESS=replace-with-current-public-contract
-NEXT_PUBLIC_CORECATS_STATUS_URL=/api/public/status
-CORECATS_PUBLIC_STATUS_UPSTREAM=https://replace-with-public-status-origin/api/public/status
+NEXT_PUBLIC_CORECATS_PUBLIC_API_BASE_URL=/api/public
+CORECATS_PUBLIC_API_UPSTREAM=https://replace-with-public-api-origin/api/public
 ```
 
 Notes:
 1. `NEXT_PUBLIC_SITE_BASE_URL` keeps public links and robots host-neutral.
-2. `NEXT_PUBLIC_CORECATS_STATUS_URL=/api/public/status` keeps browser reads same-origin on the public teaser host.
-3. `CORECATS_PUBLIC_STATUS_UPSTREAM` points the Cloudflare Pages Function at the current public Contabo snapshot URL.
+2. `NEXT_PUBLIC_CORECATS_PUBLIC_API_BASE_URL=/api/public` keeps browser reads same-origin on the public teaser host.
+3. `CORECATS_PUBLIC_API_UPSTREAM` points the Cloudflare Pages Functions at the current public backend API origin.
 4. `CORECATS_BACKEND_SHARED_SECRET` is not required on the public teaser surface because mint routes stay closed there.
 
 Cloudflare Pages build settings:
@@ -99,25 +103,26 @@ cache `viewer` art assets, the white-background avatar PNGs, and the teaser imag
 It also includes Pages Functions at:
 1. `web-public-teaser/functions/api/public/status.js`
 2. `web-public-teaser/functions/api/public/owner.js`
+3. `web-public-teaser/functions/api/public/token-owner.js`
 
-These keep browser ownership reads same-origin on the teaser host instead of hitting Contabo directly. The owner route
-is preferred for `My Cats` because it avoids downloading the full ownership snapshot for one wallet search.
+The global status route is retired after sell-out and now returns `410 public_status_retired`. Active ownership reads
+should use the owner and token-owner routes so the browser stays same-origin on the teaser host instead of hitting the
+upstream backend directly.
 
 ## Verification Checklist
 
-Before relaunching the public teaser:
+Before relaunching or auditing the public teaser:
 
-1. `Mint` in the header shows `Soon` and is not clickable.
-2. `/mint` returns the teaser-origin not-found response instead of opening CorePass session flow.
-3. `/api/public/status` returns JSON on the public teaser origin.
-4. `/api/public/owner?address=<known-owner>` returns JSON on the public teaser origin.
-5. `/collection` loads minted status through the same-origin status route.
-6. `/my-cats` can look up ownership through the same-origin owner route.
-7. cat detail pages expose both transparent and white-background avatar PNG links.
-8. `/robots.txt` disallows `/mint` and `/api/`.
-9. `/transparency` shows the correct `Site surface`.
-10. `/viewer/collection-index.json` loads from the static teaser origin.
-11. image responses under `/viewer/png/`, `/viewer/png-white/`, and `/viewer/svg/` return long-lived cache headers.
+1. `/mint` returns the teaser-origin not-found response instead of opening CorePass session flow.
+2. `/api/public/status` returns `410 public_status_retired` on the public teaser origin.
+3. `/api/public/owner?address=<known-owner>` returns JSON on the public teaser origin.
+4. `/api/public/token-owner?tokenId=<known-token>` returns JSON on the public teaser origin.
+5. `/my-cats` can look up ownership through the same-origin owner route.
+6. cat detail pages expose both transparent and white-background avatar PNG links.
+7. `/robots.txt` disallows `/mint` and `/api/`.
+8. `/transparency` shows the correct `Site surface`.
+9. `/viewer/collection-index.json` loads from the static teaser origin.
+10. image responses under `/viewer/png/`, `/viewer/png-white/`, and `/viewer/svg/` return long-lived cache headers.
 
 ## After Relaunch
 

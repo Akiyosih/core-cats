@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/root/core-cats/web
+WorkingDirectory=/srv/core-cats/web
 EnvironmentFile=/etc/corecats-private-canary-web.env
 ExecStart=/usr/bin/env bash -lc '/usr/bin/npm run start -- --hostname "${HOSTNAME:-127.0.0.1}" --port "${PORT:-3000}"'
 Restart=always

@@ -89,10 +89,10 @@ export default function TransparencyPageContent({ config }) {
     : networkName === "mainnet" && config.launchState === "public"
       ? "Official mainnet contract live"
       : networkName === "mainnet" && config.launchState === "canary"
-        ? "Official mainnet contract under final prelaunch checks"
+        ? "Historical prelaunch record"
         : networkName === "mainnet"
-          ? "Official mainnet contract configured"
-        : "Devin rehearsal contract configured";
+          ? "Mainnet contract configured"
+        : "Historical devin rehearsal contract";
   const verificationLinks = [
     { href: "https://github.com/Akiyosih/core-cats", label: "GitHub repository" },
     { href: explorerBaseUrl, label: "Blockindex explorer" },

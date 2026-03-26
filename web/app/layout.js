@@ -17,7 +17,7 @@ export function generateMetadata() {
   const metadataBase = resolveMetadataBase(config.siteBaseUrl);
   const description = config.privateCanarySite
     ? `${config.privateCanaryBadgeText}. ${config.privateCanaryTitleText}. ${config.privateCanaryWarningText}. This host is for a separate mainnet rehearsal and is not the official public mint.`
-    : "Core Cats web UI foundation for a transparent, full on-chain pixel cat collection.";
+    : "Core Cats public mint and ownership lookup surface for the sold-out fully on-chain pixel cat collection.";
 
   return {
     metadataBase,
@@ -48,9 +48,9 @@ export default function RootLayout({ children }) {
   const { launchState, publicTeaserSite, privateCanarySite } = config;
   const siteNotice =
     launchState === "closed"
-      ? "Public mint is not open yet. This official mint host stays closed while final prelaunch checks are completed."
+      ? "This mint host can remain online even when new minting is paused."
       : publicTeaserSite
-        ? "This host is browse-first. Public mint stays on the official mint host."
+        ? "This host is browse-first. Mint activity belongs on the separate mint surface."
         : privateCanarySite
           ? `${config.privateCanaryBadgeText} · ${config.privateCanaryTitleText} · ${config.privateCanaryWarningText}. This is a separate rehearsal host, not the official public mint entry.`
           : "";

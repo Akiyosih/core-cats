@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 
+// Legacy filename retained for import stability. This client now powers
+// owner-lookup reads; the global public status snapshot was retired after sell-out.
 const snapshotCache = new Map();
 
 async function loadJson(url) {
   const response = await fetch(url, { cache: "no-store" });
   const payload = await response.json();
   if (!response.ok) {
-    throw new Error(payload.detail || payload.error || "Failed to load live status");
+    throw new Error(payload.detail || payload.error || "Failed to load live data");
   }
   return payload;
 }
@@ -48,7 +50,7 @@ function useCachedJson(url) {
       setError(nextData.errorMessage || "");
       return nextData;
     } catch (loadError) {
-      const message = loadError instanceof Error ? loadError.message : "Failed to load live status";
+      const message = loadError instanceof Error ? loadError.message : "Failed to load live data";
       setError(message);
       return null;
     } finally {

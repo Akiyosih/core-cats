@@ -15,7 +15,7 @@ function normalizeOwnerInput(value) {
 function buildOwnerLookupUrl(baseUrl, owner) {
   if (!baseUrl || !owner) return "";
   const url = new URL(baseUrl, "https://corecats.local");
-  url.pathname = url.pathname.replace(/\/status$/, "/owner");
+  url.pathname = `${url.pathname.replace(/\/$/, "").replace(/\/status$/i, "")}/owner`;
   url.searchParams.set("address", owner);
   return url.toString().replace("https://corecats.local", "");
 }
@@ -35,7 +35,7 @@ export default function MyCatsBrowser({
   initialCoreCatsAddress = "",
   initialCoreCatsContractQr = "",
   launchState,
-  statusSnapshotUrl,
+  publicApiBaseUrl,
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,8 +45,8 @@ export default function MyCatsBrowser({
   const hasSearch = activeOwner.length > 0;
   const validOwner = hasSearch ? isCoreAddress(activeOwner) : false;
   const ownerLookupUrl = useMemo(
-    () => (validOwner ? buildOwnerLookupUrl(statusSnapshotUrl, activeOwner) : ""),
-    [activeOwner, statusSnapshotUrl, validOwner],
+    () => (validOwner ? buildOwnerLookupUrl(publicApiBaseUrl, activeOwner) : ""),
+    [activeOwner, publicApiBaseUrl, validOwner],
   );
   const { ownerLookup, loading, error, refresh: refreshOwnerLookup } = usePublicOwnerLookup(ownerLookupUrl);
   const normalizedInitialCoreCatsAddress = normalizeOwnerInput(initialCoreCatsAddress);
@@ -170,7 +170,7 @@ export default function MyCatsBrowser({
         </section>
       ) : null}
 
-      {hasSearch && validOwner && !ownerLookupUrl && !statusSnapshotUrl ? (
+      {hasSearch && validOwner && !ownerLookupUrl && !publicApiBaseUrl ? (
         <section className="copy-grid my-cats-grid">
           <article className="copy-card my-cats-card">
             <h2>Live ownership is unavailable</h2>

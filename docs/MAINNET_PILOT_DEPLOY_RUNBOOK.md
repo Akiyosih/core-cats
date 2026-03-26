@@ -161,13 +161,13 @@ Use this when the goal is to validate the real Contabo/Vercel/CorePass path on m
 2. Run preflight against the staged env first:
 
 ```bash
-ENV_FILE=/root/corecats-mint-backend.env.mainnet-candidate \
-bash /root/core-cats/mint-backend/systemd/contabo-mainnet-preflight.sh
+ENV_FILE=<staged-backend-env-file> \
+bash <repo-root>/mint-backend/systemd/contabo-mainnet-preflight.sh
 ```
 
 3. Promote the candidate env to active, restart the backend, and run:
-   - `bash /root/core-cats/mint-backend/systemd/contabo-mainnet-smoke.sh`
-   - `bash /root/core-cats/mint-backend/systemd/contabo-public-origin-check.sh https://<backend-origin>`
+   - `ENV_FILE=<active-backend-env-file> bash <repo-root>/mint-backend/systemd/contabo-mainnet-smoke.sh`
+   - `bash <repo-root>/mint-backend/systemd/contabo-public-origin-check.sh https://<backend-origin>`
 4. Keep the public site launch state at `closed`.
 5. Point the site/backend config at the pilot contract only if the team accepts that the public closed site will temporarily reference `CCATTEST`.
 6. Run the self-only CorePass flow and record:
