@@ -4,6 +4,12 @@ Generate compact Solidity constants from final_1000_manifest and 24x24 PNG asset
 
 Output:
 - foxar/src/CoreCatsOnchainData.sol
+
+Boundary note:
+- this script is an archive-derived helper kept in the active Core repo because it still regenerates the live packed on-chain data bundle
+- it should not be read as evidence that `core-cats` mirrors the full historical PNG part library
+- the current repo keeps the canonical manifests, packed data, and the local beam overlay used by the active no-logo path
+- broader historical source-art inputs remain part of the `core-cats-eth` archive
 """
 
 from __future__ import annotations

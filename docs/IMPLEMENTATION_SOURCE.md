@@ -80,3 +80,14 @@ Therefore:
 - Repository path: `manifests/`
 - Includes final 1000 manifests, validation/summary/audit outputs, and display-label mapping.
 - Sync source commit (core-cats-eth): `f264140` (implementation payload baseline)
+
+## Historical Source Art Boundary
+- `core-cats` does **not** aim to mirror the full historical PNG part library from `core-cats-eth`.
+- The active repository is centered on:
+  - canonical manifests under `manifests/`
+  - packed on-chain data under `foxar/src/`
+  - published browse artifacts under `manifests/viewer/` and `web/public/viewer/`
+- `contracts/reference_eth/` and `scripts/reference_eth/` are archive-derived helpers and imported references, not evidence that this repository still carries the entire historical raster-art source tree.
+- Some archive-derived helpers still refer to historical `art/...` source paths. Outside readers should not assume those paths are fully mirrored here.
+- The main local exception is `assets/traits/beam.png`, which remains in `core-cats` because the current no-logo beam superrare path uses that overlay directly.
+- If a reviewer needs the broader historical PNG source-art set, the intended reference location is the `core-cats-eth` archive, not the active `core-cats` repository.

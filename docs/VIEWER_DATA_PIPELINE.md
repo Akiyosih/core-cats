@@ -26,6 +26,12 @@ node scripts/ui/rebuild_final1000_beam_outputs.mjs
 python3 scripts/reference_eth/generate_onchain_data.py
 ```
 
+Important boundary:
+1. `scripts/reference_eth/generate_onchain_data.py` is an archive-derived helper kept because it still generates the active packed on-chain data output.
+2. It should not be read as evidence that `core-cats` mirrors the full historical PNG part library.
+3. The current repository keeps the active manifests, packed data, viewer outputs, and the local `assets/traits/beam.png` overlay used by the no-logo beam path.
+4. The broader historical raster source-art set remains part of the `core-cats-eth` archive.
+
 ## Command
 Run from the `core-cats` repository root:
 
@@ -83,6 +89,7 @@ Optional:
 4. The current web UI uses static PNG previews for browsing performance while preserving the same renderer-derived SVG for detail views and verification.
 5. This is the current source for `/collection`, `/about`, and `/transparency`, and it remains compatible with the live `commit-finalize` mint flow.
 6. For the no-logo launch path, the upstream manifest rebuild also fixes the canonical `beam` superrare selection and the final token reorder map before viewer generation runs.
+7. If an archive-derived helper references historical `art/...` inputs that are not present in this repository, treat that as an archive boundary, not as the active production source of truth being missing.
 
 ## External Review Shortcut
 If an outside reader wants a practical renderer / metadata check without rebuilding the whole site, the shortest path is:

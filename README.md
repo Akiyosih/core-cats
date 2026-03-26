@@ -68,6 +68,8 @@ Contract build and test work should be treated as `foxar/`-first, not repository
 2. `core-cats-eth` is a historical reference archive, not a parallel active implementation
 3. `contracts/reference_eth/` and `scripts/reference_eth/` remain as clearly labeled imported reference material
 4. final manifest and viewer artifacts live under `manifests/`
+5. the historical PNG part library is not fully mirrored here; active canonical outputs are manifests, packed on-chain data, and published viewer artifacts
+6. `assets/traits/beam.png` is the notable local exception because the current no-logo beam superrare path still uses that overlay directly
 
 See:
 - [Implementation Source Mapping](docs/IMPLEMENTATION_SOURCE.md)
