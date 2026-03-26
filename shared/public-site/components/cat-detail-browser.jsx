@@ -63,6 +63,36 @@ function formatSnapshotTimestamp(value) {
   return parsed.toLocaleString();
 }
 
+function OwnerCopyButton({ value }) {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return undefined;
+    const timeout = setTimeout(() => setCopied(false), 1600);
+    return () => clearTimeout(timeout);
+  }, [copied]);
+
+  async function handleClick() {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      className="button button--ghost button--inline"
+      onClick={handleClick}
+      aria-label={`Copy owner address ${value}`}
+    >
+      {copied ? "Copied" : "Copy"}
+    </button>
+  );
+}
+
 export default function CatDetailBrowser({
   tokenId,
   teaserEnabled,
@@ -161,13 +191,16 @@ export default function CatDetailBrowser({
         <p>
           <strong>Current owner:</strong>{" "}
           {resolvedOwner ? (
-            resolvedOwnerExplorer ? (
-              <a href={resolvedOwnerExplorer} target="_blank" rel="noreferrer" className="detail-external-link">
-                {resolvedOwner}
-              </a>
-            ) : (
-              resolvedOwner
-            )
+            <span className="detail-owner-row">
+              {resolvedOwnerExplorer ? (
+                <a href={resolvedOwnerExplorer} target="_blank" rel="noreferrer" className="detail-external-link">
+                  {resolvedOwner}
+                </a>
+              ) : (
+                <span>{resolvedOwner}</span>
+              )}
+              <OwnerCopyButton value={resolvedOwner} />
+            </span>
           ) : tokenOwnerLookupUrl && ownerLookupLoading ? (
             "loading..."
           ) : (

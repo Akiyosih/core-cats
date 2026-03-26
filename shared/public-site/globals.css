@@ -892,6 +892,14 @@ main {
   overflow-wrap: anywhere;
 }
 
+.detail-owner-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  vertical-align: middle;
+}
+
 .detail-meta__short {
   color: var(--ink-soft);
 }
