@@ -4,7 +4,11 @@ import unittest
 from pathlib import Path
 
 from corecats_mint_backend.config import Config
-from corecats_mint_backend.server import is_canary_wallet_allowed, normalized_path
+from corecats_mint_backend.server import (
+    is_canary_wallet_allowed,
+    normalized_path,
+    token_owner_lookup_error_is_not_minted,
+)
 
 
 class ServerPathTests(unittest.TestCase):
@@ -20,11 +24,17 @@ class ServerPathTests(unittest.TestCase):
             "/api/internal/sessions/test-session",
         )
 
+    def test_invalid_token_lookup_errors_map_to_not_minted(self) -> None:
+        self.assertTrue(token_owner_lookup_error_is_not_minted(RuntimeError("xcb_call failed: CRC721: invalid token ID")))
+        self.assertTrue(token_owner_lookup_error_is_not_minted(RuntimeError("owner query for nonexistent token")))
+        self.assertFalse(token_owner_lookup_error_is_not_minted(RuntimeError("temporary upstream RPC failure")))
+
 
 class CanaryAllowlistTests(unittest.TestCase):
     def make_config(self, allowed: frozenset[str]) -> Config:
         return Config(
             profile="production",
+            backend_mode="mint-active",
             bind="127.0.0.1",
             port=8787,
             db_path=Path("/tmp/corecats-test.db"),

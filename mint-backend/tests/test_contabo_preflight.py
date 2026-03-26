@@ -47,6 +47,7 @@ class ContaboPreflightTests(unittest.TestCase):
         body = textwrap.dedent(
             f"""\
             CORECATS_BACKEND_PROFILE=production
+            CORECATS_BACKEND_MODE=mint-active
             CORECATS_BACKEND_BIND=127.0.0.1
             CORECATS_BACKEND_PORT=8787
             CORECATS_BACKEND_DB_PATH={self.db_dir / "corecats-mint.db"}
@@ -123,6 +124,38 @@ class ContaboPreflightTests(unittest.TestCase):
             "Set FINALIZER_PRIVATE_KEY or FINALIZER_KEYSTORE_PATH + FINALIZER_PASSWORD_FILE",
             result.stderr,
         )
+
+    def test_preflight_accepts_read_only_without_finalizer_or_foxar_tooling(self) -> None:
+        env_file = self._write_env_file(include_finalizer_keystore=False)
+        env_file.write_text(
+            textwrap.dedent(
+                f"""\
+                CORECATS_BACKEND_PROFILE=production
+                CORECATS_BACKEND_MODE=read-only
+                CORECATS_BACKEND_BIND=127.0.0.1
+                CORECATS_BACKEND_PORT=8787
+                CORECATS_BACKEND_DB_PATH={self.db_dir / "corecats-mint.db"}
+                CORECATS_BACKEND_SHARED_SECRET=super-secret-value
+                CORE_RPC_URL=https://xcbapi-arch-mainnet.coreblockchain.net/
+                CORE_CHAIN_ID=1
+                CORE_NETWORK_ID=1
+                CORE_NETWORK_NAME=mainnet
+                CORE_EXPLORER_BASE_URL=https://blockindex.net
+                CORECATS_ADDRESS={DUMMY_MAINNET_CORECATS_ADDRESS}
+                CORECATS_FOXAR_DIR={self.temp_path / "missing-foxar"}
+                SPARK_PATH={self.temp_path / "missing-spark"}
+                """
+            ),
+            encoding="utf-8",
+        )
+        env_file.chmod(0o600)
+
+        result = self._run_preflight(env_file)
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertIn("Preflight OK", result.stdout)
+        self.assertIn("backend_mode=read-only", result.stdout)
+        self.assertIn("finalizer_mode=disabled", result.stdout)
 
     def test_preflight_requires_finalizer_address_in_keystore_mode(self) -> None:
         env_file = self._write_env_file()

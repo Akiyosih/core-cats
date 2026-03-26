@@ -71,6 +71,32 @@ def run_smoke_check(
         raise RuntimeError(f"/healthz returned unexpected networkName: {health.get('networkName')}")
     if int(health.get("chainId") or 0) != 1:
         raise RuntimeError(f"/healthz returned unexpected chainId: {health.get('chainId')}")
+    backend_mode = str(health.get("backendMode") or "mint-active")
+
+    if backend_mode == "read-only":
+        mint_count = _request_json(normalized_base_url, shared_secret, "GET", "/api/public/mint-count", opener=opener)
+        if int(mint_count.get("mintedCount") or 0) <= 0:
+            raise RuntimeError("/api/public/mint-count returned an invalid mintedCount")
+
+        token_owner = _request_json(
+            normalized_base_url,
+            shared_secret,
+            "GET",
+            "/api/public/token-owner?tokenId=1",
+            opener=opener,
+        )
+        if int(token_owner.get("token", {}).get("tokenId") or 0) != 1:
+            raise RuntimeError("/api/public/token-owner did not return tokenId=1")
+        if not str(token_owner.get("token", {}).get("owner") or "").strip():
+            raise RuntimeError("/api/public/token-owner did not return an owner")
+
+        return {
+            "base_url": normalized_base_url,
+            "network": health.get("networkName"),
+            "chain_id": int(health.get("chainId") or 0),
+            "backend_mode": backend_mode,
+            "public_reads": "ok",
+        }
 
     session_id = f"smoke-{uuid.uuid4()}"
     session = {
@@ -134,6 +160,7 @@ def run_smoke_check(
         "base_url": normalized_base_url,
         "network": health.get("networkName"),
         "chain_id": int(health.get("chainId") or 0),
+        "backend_mode": backend_mode,
         "session_crud": "ok",
     }
 
@@ -154,7 +181,11 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  base_url={result['base_url']}")
     print(f"  network={result['network']}")
     print(f"  chain_id={result['chain_id']}")
-    print(f"  session_crud={result['session_crud']}")
+    print(f"  backend_mode={result['backend_mode']}")
+    if "session_crud" in result:
+        print(f"  session_crud={result['session_crud']}")
+    if "public_reads" in result:
+        print(f"  public_reads={result['public_reads']}")
     return 0
 
 

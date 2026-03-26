@@ -99,7 +99,9 @@ class FinalizeManager:
 
     @property
     def enabled(self) -> bool:
-        return bool(self._config.finalizer_private_key or self._config.finalizer_keystore_path)
+        return self._config.mint_writes_enabled and bool(
+            self._config.finalizer_private_key or self._config.finalizer_keystore_path
+        )
 
     def snapshot(self) -> dict[str, object]:
         with self._lock:

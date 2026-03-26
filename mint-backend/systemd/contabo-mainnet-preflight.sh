@@ -54,6 +54,12 @@ set -a
 . "${ENV_FILE}"
 set +a
 
+BACKEND_MODE="${CORECATS_BACKEND_MODE:-mint-active}"
+BACKEND_MODE="$(echo "${BACKEND_MODE}" | tr '[:upper:]' '[:lower:]' | tr '_' '-')"
+if [[ "${BACKEND_MODE}" != "mint-active" && "${BACKEND_MODE}" != "read-only" ]]; then
+  fail "CORECATS_BACKEND_MODE must be mint-active or read-only"
+fi
+
 if [[ "${CORECATS_BACKEND_PROFILE:-}" != "production" ]]; then
   fail "CORECATS_BACKEND_PROFILE must be production"
 fi
@@ -100,10 +106,12 @@ if [[ -n "${MINT_SIGNER_PRIVATE_KEY:-}" ]]; then
   fi
 fi
 
-require_dir "${CORECATS_FOXAR_DIR:-}"
-require_file "${SPARK_PATH:-}"
-if [[ ! -x "${SPARK_PATH}" ]]; then
-  fail "SPARK_PATH is not executable: ${SPARK_PATH}"
+if [[ "${BACKEND_MODE}" == "mint-active" ]]; then
+  require_dir "${CORECATS_FOXAR_DIR:-}"
+  require_file "${SPARK_PATH:-}"
+  if [[ ! -x "${SPARK_PATH}" ]]; then
+    fail "SPARK_PATH is not executable: ${SPARK_PATH}"
+  fi
 fi
 
 require_dir "$(dirname "${CORECATS_BACKEND_DB_PATH:-/var/lib/corecats-mint-backend/corecats-mint.db}")"
@@ -139,7 +147,7 @@ if [[ -n "${FINALIZER_KEYSTORE_PATH:-}" || -n "${FINALIZER_PASSWORD_FILE:-}" ]];
   fi
 fi
 
-if [[ "${HAS_FINALIZER_RAW}" -eq 0 && "${HAS_FINALIZER_KEYSTORE}" -eq 0 ]]; then
+if [[ "${BACKEND_MODE}" == "mint-active" && "${HAS_FINALIZER_RAW}" -eq 0 && "${HAS_FINALIZER_KEYSTORE}" -eq 0 ]]; then
   fail "Set FINALIZER_PRIVATE_KEY or FINALIZER_KEYSTORE_PATH + FINALIZER_PASSWORD_FILE"
 fi
 
@@ -156,6 +164,11 @@ PY
 echo "Preflight OK"
 echo "  env_file=${ENV_FILE}"
 echo "  service_file=${SERVICE_FILE}"
+echo "  backend_mode=${BACKEND_MODE}"
 echo "  rpc_url=${RPC_URL}"
 echo "  corecats_address=${CORECATS_ADDRESS}"
-echo "  finalizer_mode=$([[ "${HAS_FINALIZER_KEYSTORE}" -eq 1 ]] && echo "keystore" || echo "raw")"
+if [[ "${BACKEND_MODE}" == "read-only" ]]; then
+  echo "  finalizer_mode=disabled"
+else
+  echo "  finalizer_mode=$([[ "${HAS_FINALIZER_KEYSTORE}" -eq 1 ]] && echo "keystore" || echo "raw")"
+fi

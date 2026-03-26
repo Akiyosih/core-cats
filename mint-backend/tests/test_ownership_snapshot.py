@@ -50,6 +50,7 @@ class OwnershipSnapshotTests(unittest.TestCase):
     def make_config(self) -> Config:
         return Config(
             profile="production",
+            backend_mode="mint-active",
             bind="127.0.0.1",
             port=8787,
             db_path=Path("/tmp/corecats-test.db"),
@@ -203,6 +204,7 @@ class OwnershipSnapshotTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             config = Config(
                 profile="production",
+                backend_mode="mint-active",
                 bind="127.0.0.1",
                 port=8787,
                 db_path=Path(tmp_dir) / "corecats-test.db",

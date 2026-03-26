@@ -21,6 +21,11 @@ from .storage import SessionStore
 MAX_SUPPLY = 1000
 
 
+def token_owner_lookup_error_is_not_minted(error: Exception) -> bool:
+    detail = str(error or "").lower()
+    return "invalid token" in detail or "nonexistent token" in detail
+
+
 def now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
@@ -123,6 +128,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             200,
             {
                 "ok": True,
+                "backendMode": self.config.backend_mode,
                 "networkName": self.config.network_name,
                 "chainId": self.config.chain_id,
                 "finalizeWorker": self.finalize_manager.snapshot(),
@@ -240,18 +246,6 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             )
             return
 
-        snapshot = self.ownership_snapshot_cache.snapshot()
-        token_status = snapshot.get("byToken", {}).get(str(token_id))
-        if not isinstance(token_status, dict) or not token_status.get("minted"):
-            json_response(
-                self,
-                404,
-                {"error": "token_not_minted", "detail": "This token is not minted yet."},
-                cache_control="public, max-age=30, stale-while-revalidate=30",
-                extra_headers=self._public_status_headers(),
-            )
-            return
-
         try:
             payload = self.ownership_snapshot_cache.token_owner_lookup(token_id, self.rpc)
         except ValueError as error:
@@ -264,6 +258,15 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             )
             return
         except RpcError as error:
+            if token_owner_lookup_error_is_not_minted(error):
+                json_response(
+                    self,
+                    404,
+                    {"error": "token_not_minted", "detail": "This token is not minted yet."},
+                    cache_control="public, max-age=30, stale-while-revalidate=30",
+                    extra_headers=self._public_status_headers(),
+                )
+                return
             json_response(
                 self,
                 502,
@@ -282,7 +285,22 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             extra_headers=self._public_status_headers(),
         )
 
+    def _handle_read_only_write_endpoint(self, *, detail: str) -> None:
+        json_response(
+            self,
+            410,
+            {
+                "error": "mint_backend_read_only",
+                "detail": detail,
+            },
+        )
+
     def _handle_authorize(self) -> None:
+        if self.config.read_only:
+            self._handle_read_only_write_endpoint(
+                detail="Mint authorization is retired on this read-only backend.",
+            )
+            return
         body = self._read_json()
         minter = str(body.get("minter") or "").strip()
         quantity = int(body.get("quantity") or 0)
@@ -366,6 +384,11 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             json_response(self, 500, {"error": "failed_to_issue_mint_authorization", "detail": str(error)})
 
     def _handle_precheck(self) -> None:
+        if self.config.read_only:
+            self._handle_read_only_write_endpoint(
+                detail="Mint precheck is retired on this read-only backend.",
+            )
+            return
         body = self._read_json()
         minter = str(body.get("minter") or "").strip()
         quantity = int(body.get("quantity") or 0)
@@ -427,6 +450,11 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             json_response(self, 500, {"error": "failed_to_run_wallet_precheck", "detail": str(error)})
 
     def _handle_finalize(self) -> None:
+        if self.config.read_only:
+            self._handle_read_only_write_endpoint(
+                detail="Finalize relaying is retired on this read-only backend.",
+            )
+            return
         body = self._read_json()
         minter = str(body.get("minter") or "").strip()
         session_id = str(body.get("sessionId") or "").strip()
@@ -463,6 +491,11 @@ class MintBackendHandler(BaseHTTPRequestHandler):
             json_response(self, status, {"error": code, "detail": detail})
 
     def _handle_get_session(self, session_id: str) -> None:
+        if self.config.read_only:
+            self._handle_read_only_write_endpoint(
+                detail="Mint session storage is retired on this read-only backend.",
+            )
+            return
         session = self.store.get_session(session_id)
         if not session:
             json_response(self, 404, {"error": "session_not_found", "detail": "mint session not found or expired"})
@@ -470,6 +503,11 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         json_response(self, 200, session)
 
     def _handle_put_session(self, session_id: str) -> None:
+        if self.config.read_only:
+            self._handle_read_only_write_endpoint(
+                detail="Mint session storage is retired on this read-only backend.",
+            )
+            return
         body = self._read_json()
         if str(body.get("id") or "").strip() != session_id:
             json_response(self, 400, {"error": "session_id_mismatch"})
@@ -482,6 +520,11 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         json_response(self, 200, session)
 
     def _handle_delete_session(self, session_id: str) -> None:
+        if self.config.read_only:
+            self._handle_read_only_write_endpoint(
+                detail="Mint session storage is retired on this read-only backend.",
+            )
+            return
         deleted = self.store.delete_session(session_id)
         json_response(self, 200, {"ok": True, "deleted": deleted})
 
@@ -562,8 +605,12 @@ def main() -> None:
     store = SessionStore(config.db_path)
     rpc = CoreRpcClient(config.rpc_url)
     finalize_manager = FinalizeManager(config, store, rpc_client=rpc)
-    finalize_worker = FinalizeWorker(finalize_manager, config.finalize_worker_interval_seconds)
     ownership_snapshot_cache = OwnershipSnapshotCache(config)
+    finalize_worker = (
+        FinalizeWorker(finalize_manager, config.finalize_worker_interval_seconds)
+        if config.mint_writes_enabled
+        else None
+    )
 
     server = ThreadingHTTPServer((config.bind, config.port), MintBackendHandler)
     server.config = config  # type: ignore[attr-defined]
@@ -572,12 +619,14 @@ def main() -> None:
     server.finalize_manager = finalize_manager  # type: ignore[attr-defined]
     server.ownership_snapshot_cache = ownership_snapshot_cache  # type: ignore[attr-defined]
 
-    finalize_worker.start()
+    if finalize_worker is not None:
+        finalize_worker.start()
     print(f"Core Cats mint backend listening on http://{config.bind}:{config.port}")
     try:
         server.serve_forever()
     finally:
-        finalize_worker.stop()
+        if finalize_worker is not None:
+            finalize_worker.stop()
 
 
 if __name__ == "__main__":

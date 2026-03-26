@@ -33,6 +33,7 @@ class FinalizeManagerTests(unittest.TestCase):
         self.store = SessionStore(Path(self.tempdir.name) / "corecats-mint.db")
         self.config = Config(
             profile="development",
+            backend_mode="mint-active",
             bind="127.0.0.1",
             port=8787,
             db_path=Path(self.tempdir.name) / "corecats-mint.db",

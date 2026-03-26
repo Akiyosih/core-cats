@@ -16,6 +16,7 @@ _ICAN_RE = re.compile(r"[a-z]{2}[0-9a-f]{42}")
 @dataclass(frozen=True)
 class Config:
     profile: str
+    backend_mode: str
     bind: str
     port: int
     db_path: Path
@@ -39,6 +40,14 @@ class Config:
     canary_allowed_core_id_keys: frozenset[str]
     public_status_cache_seconds: int
 
+    @property
+    def read_only(self) -> bool:
+        return self.backend_mode == "read-only"
+
+    @property
+    def mint_writes_enabled(self) -> bool:
+        return self.backend_mode == "mint-active"
+
 
 def _read_int(name: str, default: int) -> int:
     raw = os.environ.get(name, "").strip()
@@ -52,6 +61,15 @@ def _normalize_profile(raw: str) -> str:
     if profile in {"production", "prod"}:
         return "production"
     raise ValueError("CORECATS_BACKEND_PROFILE must be 'development' or 'production'")
+
+
+def _normalize_backend_mode(raw: str) -> str:
+    mode = raw.strip().lower().replace("_", "-")
+    if mode in {"", "mint", "mint-active"}:
+        return "mint-active"
+    if mode in {"read-only", "readonly"}:
+        return "read-only"
+    raise ValueError("CORECATS_BACKEND_MODE must be 'mint-active' or 'read-only'")
 
 
 def normalize_core_address_key(value: str) -> str:
@@ -95,10 +113,11 @@ def validate_config(config: Config) -> None:
     ):
         errors.append("CORECATS_BACKEND_SHARED_SECRET must not use a placeholder or dev-only value in production")
 
-    if not config.spark_path.is_file():
-        errors.append(f"SPARK_PATH does not point to a file: {config.spark_path}")
-    if not config.foxar_dir.is_dir():
-        errors.append(f"CORECATS_FOXAR_DIR does not point to a directory: {config.foxar_dir}")
+    if config.mint_writes_enabled:
+        if not config.spark_path.is_file():
+            errors.append(f"SPARK_PATH does not point to a file: {config.spark_path}")
+        if not config.foxar_dir.is_dir():
+            errors.append(f"CORECATS_FOXAR_DIR does not point to a directory: {config.foxar_dir}")
     if config.finalizer_keystore_path and not (
         config.finalizer_keystore_path.is_file() or config.finalizer_keystore_path.is_dir()
     ):
@@ -134,15 +153,16 @@ def validate_config(config: Config) -> None:
             errors.append("CORE_EXPLORER_BASE_URL must not use the default devin explorer in production")
         if _looks_like_placeholder(config.corecats_address) or not config.corecats_address:
             errors.append("CORECATS_ADDRESS must be set to the real mainnet CoreCats contract address in production")
-        has_finalizer_private_key = bool(os.environ.get("FINALIZER_PRIVATE_KEY", "").strip())
-        has_finalizer_keystore = bool(config.finalizer_keystore_path and config.finalizer_password_file)
-        if not has_finalizer_private_key and not has_finalizer_keystore:
-            errors.append(
-                "Either FINALIZER_PRIVATE_KEY or the FINALIZER_KEYSTORE_PATH + FINALIZER_PASSWORD_FILE pair "
-                "must be explicitly set in production"
-            )
-        if has_finalizer_keystore and not config.finalizer_address:
-            errors.append("FINALIZER_ADDRESS must be explicitly set when FINALIZER_KEYSTORE_PATH is used in production")
+        if config.mint_writes_enabled:
+            has_finalizer_private_key = bool(os.environ.get("FINALIZER_PRIVATE_KEY", "").strip())
+            has_finalizer_keystore = bool(config.finalizer_keystore_path and config.finalizer_password_file)
+            if not has_finalizer_private_key and not has_finalizer_keystore:
+                errors.append(
+                    "Either FINALIZER_PRIVATE_KEY or the FINALIZER_KEYSTORE_PATH + FINALIZER_PASSWORD_FILE pair "
+                    "must be explicitly set in production when CORECATS_BACKEND_MODE=mint-active"
+                )
+            if has_finalizer_keystore and not config.finalizer_address:
+                errors.append("FINALIZER_ADDRESS must be explicitly set when FINALIZER_KEYSTORE_PATH is used in production")
 
     if errors:
         detail = "\n".join(f"- {item}" for item in errors)
@@ -155,6 +175,7 @@ def load_config() -> Config:
     default_db_dir = repo_root / "mint-backend" / "data"
     default_db_dir.mkdir(parents=True, exist_ok=True)
     profile = _normalize_profile(os.environ.get("CORECATS_BACKEND_PROFILE", "development"))
+    backend_mode = _normalize_backend_mode(os.environ.get("CORECATS_BACKEND_MODE", "mint-active"))
 
     deployer_private_key = os.environ.get("DEPLOYER_PRIVATE_KEY", "").strip()
     mint_signer_private_key = os.environ.get("MINT_SIGNER_PRIVATE_KEY", "").strip()
@@ -167,6 +188,7 @@ def load_config() -> Config:
 
     config = Config(
         profile=profile,
+        backend_mode=backend_mode,
         bind=os.environ.get("CORECATS_BACKEND_BIND", "127.0.0.1").strip(),
         port=_read_int("CORECATS_BACKEND_PORT", 8787),
         db_path=Path(os.environ.get("CORECATS_BACKEND_DB_PATH", str(default_db_dir / "corecats-mint.db"))).expanduser(),
