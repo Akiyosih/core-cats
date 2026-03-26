@@ -39,7 +39,7 @@ export default async function HomePage() {
   const [collection, summary] = await Promise.all([getCollection(isTeaserDisplayEnabled(config)), getSummary()]);
   const mintPubliclyOpen = config.launchState === "public" && Boolean(config.mintBaseUrl);
   const mintStatusHref = mintPubliclyOpen ? buildMintHref(config, "/mint") : "/transparency";
-  const mintStatusLabel = mintPubliclyOpen ? "Mint" : "Launch Status";
+  const mintStatusLabel = mintPubliclyOpen ? "Sold Out" : "Launch Status";
   const itemById = new Map(collection.items.map((item) => [item.token_id, item]));
   const naturalPreview = HOME_NATURAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
   const specialPreview = HOME_SPECIAL_IDS.map((id) => itemById.get(id)).filter(Boolean);

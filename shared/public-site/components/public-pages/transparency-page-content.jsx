@@ -105,11 +105,12 @@ export default function TransparencyPageContent({ config }) {
         <p className="eyebrow">Transparency</p>
         <h1>Check the live contract surface and public artifacts.</h1>
         <p>
-          Use this page to verify what is live right now, how the mint flow is structured, and where to inspect the
+          Use this page to verify what is live right now, how the published mint path worked, and where to inspect the
           public artifacts yourself.
         </p>
         <p>
-          This is not a promise of safety. It is a map of what you can inspect for yourself before and after minting.
+          This is not a promise of safety. It is a map of what can be inspected directly in the contract, explorer,
+          and repository.
         </p>
       </section>
 
@@ -208,9 +209,9 @@ export default function TransparencyPageContent({ config }) {
       </section>
 
       <section className="page-stack transparency-section">
-        <SectionHeading eyebrow="How This Mint Works" title="How the approvals and delivery fit together">
-          This page should still make sense on its own, so the mint flow is described here as first approval, second
-          approval, and finalize rather than only as QR labels.
+        <SectionHeading eyebrow="How Minting Worked" title="How the approvals and delivery fit together">
+          The public mint is complete, but the structure of the historical mint flow still matters for verification.
+          It is summarized here as first approval, second approval, and finalize rather than only as QR labels.
         </SectionHeading>
         <div className="copy-grid copy-grid--two">
           <article className="copy-card">
@@ -256,17 +257,17 @@ export default function TransparencyPageContent({ config }) {
       <section className="page-stack transparency-section">
         <SectionHeading eyebrow="How To Verify" title="How to verify it yourself">
           If you want the practical checks rather than the architecture, start with the checklist and then use the
-          listed surfaces to inspect the details.
+          listed surfaces to inspect the published contract, historical mint transactions, and repository artifacts.
         </SectionHeading>
         <div className="copy-grid copy-grid--two">
           <article className="copy-card">
             <h2>Quick verification checklist</h2>
             <ol className="plain-list">
-              <li>Check the current contract address on this page before minting.</li>
-              <li>In CorePass, confirm the first approval only binds one wallet and does not move tokens.</li>
-              <li>For the mint call, confirm <span className="mono-wrap">to</span> matches the published contract and <span className="mono-wrap">value</span> is <span className="mono-wrap">0</span>.</li>
-              <li>Stop if the wallet asks for `approve`, `setApprovalForAll`, or a token transfer outside the published mint flow.</li>
-              <li>After submission, inspect the transaction result in Blockindex.</li>
+              <li>Check the current contract address on this page against the explorer and repository references.</li>
+              <li>When reviewing historical mint transactions, confirm the first approval only binds one wallet and does not move tokens.</li>
+              <li>For historical mint calls, confirm <span className="mono-wrap">to</span> matches the published contract and <span className="mono-wrap">value</span> is <span className="mono-wrap">0</span>.</li>
+              <li>Treat `approve`, `setApprovalForAll`, or unrelated token transfers as outside the published Core Cats mint flow.</li>
+              <li>Inspect transaction results in Blockindex when checking historical mint or ownership activity.</li>
               <li>Compare explorer details, trust notes, and repository artifacts when you want deeper assurance.</li>
             </ol>
           </article>
@@ -284,11 +285,11 @@ export default function TransparencyPageContent({ config }) {
           <article className="copy-card transparency-card--wide">
             <h2>What this page does not prove for you</h2>
             <ul className="plain-list">
-              <li>This page shows both the current live surface and the intended official philosophy; do not assume they already match until the official deployed contract and evidence do.</li>
+              <li>This page combines the live contract surface with repository notes. The explorer entries and published artifacts remain the primary verification surface.</li>
               <li>The top-level CoreCats contract file is not the whole review surface; imported dependency contracts also matter.</li>
               <li>The active contract build path uses the Core-specific Ylem / Foxar / Spark toolchain, not a generic Ethereum-only path.</li>
-              <li>If the currently published contract still retains owner, signer, or other admin-controlled mint surfaces, treat them as explicit trust surfaces until the official no-owner, no-signer release is the deployed and verified one.</li>
-              <li>If the explorer verification is missing, wait for the published verify packet or equivalent reproducibility evidence before treating the deployment as fully inspectable.</li>
+              <li>Historical rehearsal contracts, notes, and canary records remain public evidence, but they are not the canonical `CCAT` collection.</li>
+              <li>If explorer verification is missing or incomplete, rely on the published verify packet or equivalent reproducibility evidence before treating the deployment as fully inspectable.</li>
             </ul>
           </article>
         </div>
@@ -297,7 +298,7 @@ export default function TransparencyPageContent({ config }) {
       <section className="page-stack transparency-section">
         <SectionHeading eyebrow="References" title="Where to inspect more">
           Use these links to inspect the public project surface, the explorer entry points, and the repository
-          references for renderer logic, data tables, manifests, and canary procedure.
+          references for renderer logic, data tables, manifests, and historical rehearsal evidence.
         </SectionHeading>
         <div className="copy-grid">
           <article className="copy-card transparency-card--wide">
