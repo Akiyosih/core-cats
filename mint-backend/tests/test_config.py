@@ -78,7 +78,7 @@ class ConfigValidationTests(unittest.TestCase):
             {
                 "CORECATS_BACKEND_PROFILE": "production",
                 "CORECATS_BACKEND_MODE": "read-only",
-                "CORECATS_BACKEND_SHARED_SECRET": "super-secret-value",
+                "CORECATS_BACKEND_SHARED_SECRET": "",
                 "CORE_RPC_URL": "https://xcbapi-arch-mainnet.coreblockchain.net/",
                 "CORE_CHAIN_ID": "1",
                 "CORE_NETWORK_ID": "1",
@@ -96,6 +96,7 @@ class ConfigValidationTests(unittest.TestCase):
         self.assertEqual(config.backend_mode, "read-only")
         self.assertTrue(config.read_only)
         self.assertFalse(config.mint_writes_enabled)
+        self.assertEqual(config.shared_secret, "")
 
     def test_production_profile_accepts_finalizer_keystore_pair(self) -> None:
         env = self._base_env()

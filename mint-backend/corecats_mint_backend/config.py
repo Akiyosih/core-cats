@@ -106,12 +106,16 @@ def _looks_like_placeholder(value: str) -> bool:
 def validate_config(config: Config) -> None:
     errors: list[str] = []
 
-    if not config.shared_secret:
-        errors.append("CORECATS_BACKEND_SHARED_SECRET is required")
-    if config.profile == "production" and (
-        _looks_like_placeholder(config.shared_secret) or config.shared_secret == "dev-only-secret"
-    ):
-        errors.append("CORECATS_BACKEND_SHARED_SECRET must not use a placeholder or dev-only value in production")
+    if config.mint_writes_enabled:
+        if not config.shared_secret:
+            errors.append("CORECATS_BACKEND_SHARED_SECRET is required when CORECATS_BACKEND_MODE=mint-active")
+        if config.profile == "production" and (
+            _looks_like_placeholder(config.shared_secret) or config.shared_secret == "dev-only-secret"
+        ):
+            errors.append(
+                "CORECATS_BACKEND_SHARED_SECRET must not use a placeholder or dev-only value in production "
+                "when CORECATS_BACKEND_MODE=mint-active"
+            )
 
     if config.mint_writes_enabled:
         if not config.spark_path.is_file():

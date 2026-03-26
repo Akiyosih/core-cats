@@ -19,6 +19,22 @@ from .spark import classify_finalize_error_detail, issue_mint_authorization, rel
 from .storage import SessionStore
 
 MAX_SUPPLY = 1000
+PUBLIC_READ_PATHS = frozenset(
+    {
+        "/healthz",
+        "/api/public/status",
+        "/api/public/owner",
+        "/api/public/token-owner",
+        "/api/public/mint-count",
+    }
+)
+READ_ONLY_RETIRED_PATHS = frozenset(
+    {
+        "/api/mint/precheck",
+        "/api/mint/authorize",
+        "/api/mint/finalize",
+    }
+)
 
 
 def token_owner_lookup_error_is_not_minted(error: Exception) -> bool:
@@ -54,6 +70,15 @@ def normalized_path(value: str) -> str:
     return urlparse(value).path
 
 
+def is_public_read_path(path: str) -> bool:
+    return normalized_path(path) in PUBLIC_READ_PATHS
+
+
+def is_read_only_retired_path(path: str) -> bool:
+    normalized = normalized_path(path)
+    return normalized in READ_ONLY_RETIRED_PATHS or normalized.startswith("/api/internal/sessions/")
+
+
 def is_canary_wallet_allowed(config: Config, minter: str) -> bool:
     if not config.canary_allowed_core_id_keys:
         return True
@@ -84,13 +109,11 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         return self.server.ownership_snapshot_cache  # type: ignore[attr-defined]
 
     def _require_auth(self) -> bool:
-        if normalized_path(self.path) in {
-            "/healthz",
-            "/api/public/status",
-            "/api/public/owner",
-            "/api/public/token-owner",
-            "/api/public/mint-count",
-        }:
+        path = normalized_path(self.path)
+        if is_public_read_path(path):
+            return True
+
+        if self.config.read_only and is_read_only_retired_path(path):
             return True
 
         expected = self.config.shared_secret
@@ -549,12 +572,7 @@ class MintBackendHandler(BaseHTTPRequestHandler):
         json_response(self, 404, {"error": "not_found"})
 
     def do_OPTIONS(self) -> None:  # noqa: N802
-        if normalized_path(self.path) in {
-            "/api/public/status",
-            "/api/public/owner",
-            "/api/public/token-owner",
-            "/api/public/mint-count",
-        }:
+        if is_public_read_path(self.path):
             self.send_response(204)
             for key, value in self._public_status_headers().items():
                 self.send_header(key, value)

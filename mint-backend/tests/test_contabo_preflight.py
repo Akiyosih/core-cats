@@ -135,7 +135,6 @@ class ContaboPreflightTests(unittest.TestCase):
                 CORECATS_BACKEND_BIND=127.0.0.1
                 CORECATS_BACKEND_PORT=8787
                 CORECATS_BACKEND_DB_PATH={self.db_dir / "corecats-mint.db"}
-                CORECATS_BACKEND_SHARED_SECRET=super-secret-value
                 CORE_RPC_URL=https://xcbapi-arch-mainnet.coreblockchain.net/
                 CORE_CHAIN_ID=1
                 CORE_NETWORK_ID=1

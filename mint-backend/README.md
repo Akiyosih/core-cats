@@ -44,7 +44,7 @@ Implemented endpoints:
 10. `GET /api/public/token-owner`
 11. `GET /api/public/status` (retired after sell-out; returns `410`)
 
-All `/api/*` endpoints require:
+In `mint-active` mode, the mint write endpoints and internal session CRUD require:
 
 - `x-corecats-backend-shared-secret: ...`
 
@@ -55,7 +55,7 @@ Public read-only exceptions:
 3. `GET /api/public/mint-count`
 4. `GET /api/public/status` remains public only as a retired endpoint so clients receive an explicit `410 public_status_retired`
 
-When `CORECATS_BACKEND_MODE=read-only`, the mint write endpoints and internal session CRUD routes stay mounted only to return an explicit retired response. They are no longer part of the active production flow.
+When `CORECATS_BACKEND_MODE=read-only`, the public read endpoints remain open and the mint write/internal session routes stay mounted only to return an explicit retired response. The shared secret is no longer required for that read-only posture.
 
 ## Runtime
 
@@ -74,7 +74,7 @@ export CORECATS_BACKEND_SHARED_SECRET=dev-only-secret
 python3 -m corecats_mint_backend.server
 ```
 
-Without explicit overrides, local development uses the current Devin defaults.
+Without explicit overrides, local development uses the current Devin defaults. The shared secret is only needed when exercising mint-active routes.
 
 ## Production / Contabo shape
 
@@ -125,7 +125,7 @@ Source reference for the keystore path:
 When `CORECATS_BACKEND_PROFILE=production` is set, the backend now fails closed on startup if:
 
 1. it is still pointing at Devin defaults
-2. the shared secret is missing
+2. it is in `mint-active` mode and the shared secret is missing
 3. it is in `mint-active` mode and neither `FINALIZER_PRIVATE_KEY` nor the `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` pair is explicitly set
 4. it is in `mint-active` mode and `spark` or `foxar` paths do not exist
 

@@ -18,11 +18,14 @@ set -a
 . "${ENV_FILE}"
 set +a
 
-if [[ -z "${CORECATS_BACKEND_SHARED_SECRET:-}" ]]; then
+BACKEND_MODE="${CORECATS_BACKEND_MODE:-mint-active}"
+BACKEND_MODE="$(echo "${BACKEND_MODE}" | tr '[:upper:]' '[:lower:]' | tr '_' '-')"
+
+if [[ "${BACKEND_MODE}" == "mint-active" && -z "${CORECATS_BACKEND_SHARED_SECRET:-}" ]]; then
   fail "CORECATS_BACKEND_SHARED_SECRET is not set in ${ENV_FILE}"
 fi
 
 (
   cd "${BACKEND_DIR}"
-  python3 -m corecats_mint_backend.contabo_smoke "${BASE_URL}" "${CORECATS_BACKEND_SHARED_SECRET}"
+  python3 -m corecats_mint_backend.contabo_smoke "${BASE_URL}" "${CORECATS_BACKEND_SHARED_SECRET:-}"
 )

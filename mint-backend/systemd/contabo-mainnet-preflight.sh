@@ -89,8 +89,10 @@ if [[ "${CORE_EXPLORER_BASE_URL:-}" == "https://xab.blockindex.net" ]]; then
   fail "CORE_EXPLORER_BASE_URL must not point to the Devin explorer in production"
 fi
 
-if is_placeholder "${CORECATS_BACKEND_SHARED_SECRET:-}" || [[ "${CORECATS_BACKEND_SHARED_SECRET:-}" == "dev-only-secret" ]]; then
-  fail "CORECATS_BACKEND_SHARED_SECRET is empty or placeholder-like"
+if [[ "${BACKEND_MODE}" == "mint-active" ]]; then
+  if is_placeholder "${CORECATS_BACKEND_SHARED_SECRET:-}" || [[ "${CORECATS_BACKEND_SHARED_SECRET:-}" == "dev-only-secret" ]]; then
+    fail "CORECATS_BACKEND_SHARED_SECRET is empty or placeholder-like"
+  fi
 fi
 
 if is_placeholder "${CORECATS_ADDRESS:-}"; then

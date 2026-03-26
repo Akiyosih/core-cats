@@ -5,6 +5,8 @@ from pathlib import Path
 
 from corecats_mint_backend.config import Config
 from corecats_mint_backend.server import (
+    is_public_read_path,
+    is_read_only_retired_path,
     is_canary_wallet_allowed,
     normalized_path,
     token_owner_lookup_error_is_not_minted,
@@ -28,6 +30,16 @@ class ServerPathTests(unittest.TestCase):
         self.assertTrue(token_owner_lookup_error_is_not_minted(RuntimeError("xcb_call failed: CRC721: invalid token ID")))
         self.assertTrue(token_owner_lookup_error_is_not_minted(RuntimeError("owner query for nonexistent token")))
         self.assertFalse(token_owner_lookup_error_is_not_minted(RuntimeError("temporary upstream RPC failure")))
+
+    def test_public_read_paths_match_owner_surface(self) -> None:
+        self.assertTrue(is_public_read_path("/healthz"))
+        self.assertTrue(is_public_read_path("/api/public/token-owner?tokenId=1"))
+        self.assertFalse(is_public_read_path("/api/internal/sessions/test"))
+
+    def test_read_only_retired_paths_cover_mint_and_sessions(self) -> None:
+        self.assertTrue(is_read_only_retired_path("/api/mint/precheck"))
+        self.assertTrue(is_read_only_retired_path("/api/internal/sessions/test-session"))
+        self.assertFalse(is_read_only_retired_path("/api/public/owner"))
 
 
 class CanaryAllowlistTests(unittest.TestCase):

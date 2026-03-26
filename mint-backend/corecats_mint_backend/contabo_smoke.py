@@ -60,9 +60,6 @@ def run_smoke_check(
     *,
     opener: Urlopen = urllib.request.urlopen,
 ) -> dict[str, Any]:
-    if not shared_secret:
-        raise ValueError("shared secret is required")
-
     normalized_base_url = base_url.rstrip("/")
     health = _request_json(normalized_base_url, shared_secret, "GET", "/healthz", opener=opener)
     if health.get("ok") is not True:
@@ -74,13 +71,13 @@ def run_smoke_check(
     backend_mode = str(health.get("backendMode") or "mint-active")
 
     if backend_mode == "read-only":
-        mint_count = _request_json(normalized_base_url, shared_secret, "GET", "/api/public/mint-count", opener=opener)
+        mint_count = _request_json(normalized_base_url, "", "GET", "/api/public/mint-count", opener=opener)
         if int(mint_count.get("mintedCount") or 0) <= 0:
             raise RuntimeError("/api/public/mint-count returned an invalid mintedCount")
 
         token_owner = _request_json(
             normalized_base_url,
-            shared_secret,
+            "",
             "GET",
             "/api/public/token-owner?tokenId=1",
             opener=opener,
@@ -97,6 +94,9 @@ def run_smoke_check(
             "backend_mode": backend_mode,
             "public_reads": "ok",
         }
+
+    if not shared_secret:
+        raise ValueError("shared secret is required when backend mode is mint-active")
 
     session_id = f"smoke-{uuid.uuid4()}"
     session = {
@@ -167,12 +167,15 @@ def run_smoke_check(
 
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
-    if len(args) != 2:
-        print("Usage: python3 -m corecats_mint_backend.contabo_smoke <base_url> <shared_secret>", file=sys.stderr)
+    if len(args) not in {1, 2}:
+        print(
+            "Usage: python3 -m corecats_mint_backend.contabo_smoke <base_url> [shared_secret]",
+            file=sys.stderr,
+        )
         return 2
 
     try:
-        result = run_smoke_check(args[0], args[1])
+        result = run_smoke_check(args[0], args[1] if len(args) == 2 else "")
     except Exception as error:  # noqa: BLE001
         print(f"ERROR: {error}", file=sys.stderr)
         return 1
