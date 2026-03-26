@@ -3,7 +3,6 @@ import Link from "next/link";
 import { getCollection, getSummary } from "../../shared/public-site/lib/viewer-data.js";
 import { isTeaserDisplayEnabled } from "../../shared/public-site/lib/server/teaser-display.js";
 import { getPublicRuntimeConfig } from "../lib/public-runtime-config.js";
-import { buildMintHref } from "../../shared/public-site/lib/site-surface-links.js";
 
 const HOME_NATURAL_IDS = [1, 102, 242, 273, 323, 416, 516, 648, 691, 803, 819, 924];
 const HOME_SPECIAL_IDS = [25, 48, 195, 306, 480, 490, 715, 868, 905, 941, 167, 839];
@@ -37,9 +36,6 @@ function PreviewImage({ item }) {
 export default async function HomePage() {
   const config = getPublicRuntimeConfig();
   const [collection, summary] = await Promise.all([getCollection(isTeaserDisplayEnabled(config)), getSummary()]);
-  const mintPubliclyOpen = config.launchState === "public" && Boolean(config.mintBaseUrl);
-  const mintStatusHref = mintPubliclyOpen ? buildMintHref(config, "/mint") : "/transparency";
-  const mintStatusLabel = mintPubliclyOpen ? "Sold Out" : "Launch Status";
   const itemById = new Map(collection.items.map((item) => [item.token_id, item]));
   const naturalPreview = HOME_NATURAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
   const specialPreview = HOME_SPECIAL_IDS.map((id) => itemById.get(id)).filter(Boolean);
@@ -75,15 +71,6 @@ export default async function HomePage() {
             <Link href="/transparency" className="button button--ghost">
               Transparency
             </Link>
-            {mintStatusHref.startsWith("http") ? (
-              <a href={mintStatusHref} className="button button--ghost">
-                {mintStatusLabel}
-              </a>
-            ) : (
-              <Link href={mintStatusHref} className="button button--ghost">
-                {mintStatusLabel}
-              </Link>
-            )}
           </div>
         </div>
 

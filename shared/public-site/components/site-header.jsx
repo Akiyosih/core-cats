@@ -26,7 +26,12 @@ export default function SiteHeader({ config }) {
           const mintDisabled =
             link.soonBeforePublic &&
             (config.publicTeaserSite ? config.launchState !== "public" : !config.mintSurfaceEnabled && !config.mintBaseUrl);
-          const badge = link.soonBeforePublic && showSoonBadge ? <span className="main-nav__badge">Soon</span> : null;
+          const badge =
+            link.href === "/mint" && config.launchState === "public" ? (
+              <span className="main-nav__badge">Sold Out</span>
+            ) : link.soonBeforePublic && showSoonBadge ? (
+              <span className="main-nav__badge">Soon</span>
+            ) : null;
           const href = link.href === "/mint" ? buildMintHref(config, link.href) : buildBrowseHref(config, link.href);
 
           if (mintDisabled) {

@@ -31,7 +31,7 @@ const verificationReferences = [
   },
   {
     href: "https://github.com/Akiyosih/core-cats/blob/main/docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md",
-    label: "Work procedure",
+    label: "Historical launch procedure",
   },
   {
     href: "https://github.com/Akiyosih/core-cats/blob/main/docs/DECISIONS/ADR-0002-randomness-strategy.md",
@@ -52,10 +52,6 @@ const verificationReferences = [
   {
     href: "https://github.com/Akiyosih/core-cats/blob/main/docs/TRUST_AND_PRIVACY_SURFACE.md",
     label: "Trust + privacy notes",
-  },
-  {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/MINTER_SELF_REVIEW_CHECKLIST.md",
-    label: "Minter self-review checklist",
   },
 ];
 
