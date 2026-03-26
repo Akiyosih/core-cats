@@ -51,26 +51,26 @@ The collection and homepage use the static PNG previews for browsing speed, whil
 
 ## Post-Launch Public API
 
-Current live ownership reads should be based on:
+Active ownership reads use:
 1. `/api/public/owner?address=...`
 2. `/api/public/token-owner?tokenId=...`
 
-Preferred env:
+Canonical env names:
 1. `NEXT_PUBLIC_CORECATS_PUBLIC_API_BASE_URL`
 2. `CORECATS_PUBLIC_API_BASE_URL`
 
 Legacy compatibility:
 1. `NEXT_PUBLIC_CORECATS_STATUS_URL` is still accepted and normalized to the same `/api/public` base
-2. `GET /api/public/status` itself is retired after sell-out and should not be treated as an active public data source
+2. `GET /api/public/status` is retired after sell-out and is not part of the active public data surface
 
 ## Mint Environment
 
-The mint routes use:
+The historical mint routes use:
 1. CorePass protocol URIs for wallet-facing `sign` / `login` / `tx` requests
-2. local server-side execution of `spark` scripts to preserve the current Core signing path
+2. local server-side execution of `spark` scripts for the Core signing path
 3. an in-memory session store for CorePass callback state during local/testnet iteration
 
-The `web/` app can also be switched into proxy mode so that these mint routes forward to an external Linux backend.
+The app can also run in proxy mode so these routes forward to an external Linux backend.
 
 Server runtime looks for values in this order:
 1. `web` process environment
@@ -102,8 +102,7 @@ When `CORECATS_BACKEND_BASE_URL` points at the public HTTPS backend origin, the 
 1. `<CORECATS_BACKEND_BASE_URL>/api/public/owner?address=...`
 2. `<CORECATS_BACKEND_BASE_URL>/api/public/token-owner?tokenId=...`
 
-For the Cloudflare browse host, prefer same-origin routes under `/api/public/*` and point those routes at the
-upstream public API origin with a host-side binding or equivalent runtime env.
+For the Cloudflare browse host, same-origin routes under `/api/public/*` proxy to the upstream public API origin through host-side binding or equivalent runtime env.
 
 Useful env templates:
 1. `./.env.production.example`
@@ -111,31 +110,29 @@ Useful env templates:
 
 ## Deployment Surfaces
 
-The same app can be deployed in three public-facing modes:
+This workspace supports three public-facing modes:
 
 1. `public-teaser`
-   Browse-only community site. `Mint` stays closed and public visitors cannot create CorePass sessions there.
+   Browse-only community site.
 2. `private-canary`
-   Historical / recovery rehearsal surface. The code path remains documented, but it is no longer the active public
-   operating mode after sell-out.
+   Historical / recovery rehearsal surface.
 3. `public-mint`
-   Final public release mode. This can either be the community-facing site itself or a mint-only host linked from the
-   browse site.
+   Mint-oriented host mode used during launch and retained after sell-out as a support / verification surface.
 
-For long-lived hosting, the current direction is:
+In the post-launch production layout:
 1. use `web-public-teaser/` as the preferred static browse-only app for the community-facing teaser origin
 2. use `web/` for the mint/support host
 3. feed live ownership from the public owner/token-owner API
 4. keep any historical canary host separate from the community-facing browse origin
 
-For the current mainnet direction, `public-mint` should be treated as a mint-support surface rather than a full browse host:
+For mainnet, `public-mint` acts as a mint-support surface rather than a full browse host:
 1. keep the full browse site on Cloudflare
 2. point the browse-site mint CTA at the Vercel mint host
 3. set `NEXT_PUBLIC_CORECATS_MINT_ONLY_HOST=1`
 4. set `NEXT_PUBLIC_CORECATS_BROWSE_BASE_URL=https://<cloudflare-browse-origin>`
 5. let `/` serve the mint entry while non-mint browse routes on the Vercel host hand off to the browse origin
 
-For a private canary with outside testers, prefer the same split:
+The historical private-canary path used the same split:
 1. keep the official public mint host reserved for `public-mint`
 2. give `private-canary` its own stable canary-only alias
 3. set `NEXT_PUBLIC_SITE_BASE_URL` to that canary alias, not to the official host and not to a raw preview deployment URL
@@ -153,8 +150,8 @@ For a private canary with outside testers, prefer the same split:
 
 ## Production Note
 
-The current CorePass session store in `web/` is not the primary production authority. Post-launch, ownership lookup
-and historical mint evidence remain relevant, while durable mint session storage lives on the external backend.
+The CorePass session store in `web/` is not the durable production authority. Post-launch, ownership lookup and
+historical mint evidence remain relevant here, while durable mint session storage lives on the external backend.
 
 The production shape used for the launch was:
 1. Vercel for the public website
@@ -168,21 +165,19 @@ The Vercel app keeps:
 
 Host-sensitive callback note:
 1. callback URLs and callback redirects must always resolve to the external site origin users opened
-2. do not rely on implicit `request.url` / reverse-proxy host behavior when an explicit `NEXT_PUBLIC_SITE_BASE_URL` is available
-3. if a temporary edge auth layer is added, keep `/api/mint/corepass/callback/*` reachable from CorePass without browser-only auth prompts
+2. explicit `NEXT_PUBLIC_SITE_BASE_URL` takes precedence over implicit reverse-proxy host detection
+3. any temporary edge auth layer must leave `/api/mint/corepass/callback/*` reachable from CorePass without browser-only auth prompts
 
 The external mint backend owns:
 1. durable session persistence
 2. finalize relayer execution
-3. optional legacy authorization issuance for older rehearsal tooling only; the intended official path is permissionless and should not rely on signer or allowlist gating
+3. optional legacy authorization issuance for older rehearsal tooling only; the official path is permissionless and does not rely on signer or allowlist gating
 4. `spark` / `foxar` execution
-5. the public ownership snapshot consumed directly by collection / ownership pages
+5. the public ownership API consumed by collection / ownership pages
 
 See `../docs/MINT_BACKEND_ARCHITECTURE.md`.
-Use `./.env.production.example` and `../docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md` as historical/operator reference for the
-mainnet mint host shape.
-Use `./.env.private-canary.example` and `../docs/PRIVATE_CANARY_DEPLOY_RUNBOOK.md` only when reviewing the historical or
-recovery canary path.
+Use `./.env.production.example` and `../docs/VERCEL_MAINNET_CUTOVER_CHECKLIST.md` as historical reference for the mainnet mint host shape.
+Use `./.env.private-canary.example` and `../docs/PRIVATE_CANARY_DEPLOY_RUNBOOK.md` only when reviewing the historical or recovery canary path.
 
 Before copying the final values into Vercel, stage them in a local file such as `.env.production.local` and run:
 
@@ -195,10 +190,3 @@ This catches obvious mainnet cutover mistakes such as:
 2. non-HTTPS backend origin
 3. placeholder shared secret values
 4. accidental private key placement in the Vercel env
-
-## Current Local Validation Limit
-
-In the active local user environment, the available CorePass app exposes only a mainnet `cb...` account and does not expose a Devin testnet `ab...` account. That means:
-1. the CorePass-first `/mint` implementation is now the intended production-target UX
-2. live CorePass E2E on Devin is still blocked by wallet availability
-3. Core Devin contract and relayer validation should continue separately until a testnet-capable CorePass path exists

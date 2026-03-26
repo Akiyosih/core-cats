@@ -21,10 +21,10 @@ Current public state:
 - [Mainnet Public Evidence Checklist](docs/MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
 - [Historical Mainnet Rehearsal Contracts](docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md)
 
-Important distinction:
-1. [Official CCAT Launch Principles](docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md) describes the intended final `CCAT` standard
-2. [Historical Mainnet Rehearsal Contracts](docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md) defines how `CCATTEST` and `CCATTEST2` should be interpreted after launch
-3. rehearsal and current-state notes document evidence from the already-run canary path and should not be mistaken for the final official philosophy
+Document roles:
+1. [Official CCAT Launch Principles](docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md) describes the final `CCAT` standard
+2. [Historical Mainnet Rehearsal Contracts](docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md) records the post-launch interpretation of `CCATTEST` and `CCATTEST2`
+3. rehearsal and current-state notes record evidence from the already-run canary path rather than the final official philosophy
 
 ## Preview
 ![Core Cats Preview Grid](docs/assets/core_cats_preview_grid_teaser.png)
@@ -41,7 +41,7 @@ Representative random sample grid from the current 1,000-cat artwork review set.
 | `shared/public-site/` | browse UI shared by `web/` and `web-public-teaser/` |
 | `mint-backend/` | Contabo-backed session, precheck, and finalize path |
 
-Contract build and test work should be treated as `foxar/`-first, not repository-root-first.
+Contract build and test work is centered in `foxar/`.
 
 ## Review Paths
 

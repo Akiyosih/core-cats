@@ -18,11 +18,11 @@ Post-launch state:
 5. a small internal HTTP API consumed by the Vercel frontend
 6. backend-side finalize retry / receipt tracking / stuck-session detection
 
-The public browser should continue to use the Vercel origin. The Vercel app keeps the UI flow, CorePass callback URL, and QR/app-link generation. This backend only handles durable storage and privileged mint operations.
+The public browser uses the Vercel origin. The Vercel app owns the UI flow, CorePass callback URL, and QR/app-link generation. This backend handles durable storage and privileged mint operations.
 
-For a separate `private-canary` rehearsal host, keep the same backend contract/secret pairing and move only the web-side origin values:
-1. the canary host should have its own `NEXT_PUBLIC_SITE_BASE_URL`
-2. the official public mint host should keep its own production env
+For the historical `private-canary` rehearsal host, the backend contract/secret pairing stayed fixed while only the web-side origin values changed:
+1. the canary host had its own `NEXT_PUBLIC_SITE_BASE_URL`
+2. the official public mint host kept its own production env
 3. callback separation is therefore handled on the web side, not by changing the backend API shape
 
 ## API shape
@@ -66,7 +66,7 @@ export CORECATS_BACKEND_SHARED_SECRET=dev-only-secret
 python3 -m corecats_mint_backend.server
 ```
 
-For local development, the backend keeps the current Devin defaults unless you override them.
+Without explicit overrides, local development uses the current Devin defaults.
 
 ## Production / Contabo shape
 
@@ -77,7 +77,7 @@ Use the provided examples:
 2. systemd unit:
    - `systemd/corecats-mint-backend.service.example`
 
-The intended production pattern is:
+Production pattern:
 
 1. copy the env example to your backend env file, for example `/etc/corecats-mint-backend.env`
 2. fill in the real mainnet values and secrets there
@@ -88,7 +88,7 @@ For mainnet deployment, prefer `CORE_RPC_URL`.
 
 `CORE_TESTNET_RPC_URL` still works as a legacy alias, but it is semantically the wrong name for the final mainnet service.
 
-The intended official production shape expects:
+Mainnet runtime shape:
 
 1. no signer key for the normal permissionless mint path
 2. `FINALIZER_PRIVATE_KEY` as a raw key, or
@@ -98,7 +98,7 @@ The intended official production shape expects:
    - `CORECATS_FINALIZE_WORKER_INTERVAL_SECONDS`
    - `CORECATS_FINALIZE_STUCK_TIMEOUT_SECONDS`
 
-`MINT_SIGNER_PRIVATE_KEY` is now optional and should stay unset for the intended official `CCAT` release.
+`MINT_SIGNER_PRIVATE_KEY` is optional and remains unset for the official `CCAT` release.
 It only exists for legacy signer-gated rehearsal compatibility.
 
 Source reference for the keystore path:
@@ -113,7 +113,7 @@ When `CORECATS_BACKEND_PROFILE=production` is set, the backend now fails closed 
 3. neither `FINALIZER_PRIVATE_KEY` nor the `FINALIZER_KEYSTORE_PATH` + `FINALIZER_PASSWORD_FILE` pair is explicitly set
 4. `spark` or `foxar` paths do not exist
 
-This is intentional. The goal is to prevent a Contabo service from silently starting in a misconfigured Devin-like state.
+This prevents a Contabo service from silently starting in a misconfigured Devin-like state.
 
 ## Verification
 
@@ -139,7 +139,7 @@ in production, `/healthz` also exposes finalize-worker summary fields so stuck-s
 2. stuck finalize count
 3. oldest pending finalize age in seconds
 
-For the public HTTPS frontend, the recommended default is Caddy:
+A Caddy reverse-proxy example is provided:
 
 1. reverse-proxy example:
    - `reverse-proxy/Caddyfile.example`
