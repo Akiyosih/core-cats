@@ -37,8 +37,11 @@ const DEFAULTS = {
   privateCanaryWarningText: "NOT PUBLIC MINT",
 };
 // Prefer NEXT_PUBLIC_CORECATS_MINT_BASE_URL / CORECATS_MINT_BASE_URL.
-// This fallback remains for host-detection compatibility with the launch-era official mint URL.
-const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
+// This fallback tracks the current managed mint/support host. The launch-era
+// `core-cats-mint.vercel.app` hostname is kept only as legacy compatibility if
+// it is ever reattached to the current app.
+const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-zeta.vercel.app";
+const LEGACY_PUBLIC_MAINNET_MINT_BASE_URLS = new Set(["https://core-cats-mint.vercel.app"]);
 
 function normalizeLaunchState(value) {
   if (value === "canary" || value === "public" || value === "closed") {
@@ -87,7 +90,8 @@ function normalizePublicApiBaseUrl(value) {
 }
 
 function isOfficialMintHost(siteBaseUrl) {
-  return normalizeUrl(siteBaseUrl) === DEFAULT_MAINNET_MINT_BASE_URL;
+  const normalized = normalizeUrl(siteBaseUrl);
+  return normalized === DEFAULT_MAINNET_MINT_BASE_URL || LEGACY_PUBLIC_MAINNET_MINT_BASE_URLS.has(normalized);
 }
 
 function isLoopbackHttpUrl(value) {

@@ -16,9 +16,13 @@ import {
 import { runMintPrecheck } from "./mint-precheck.js";
 
 const OFFICIAL_MAINNET_CORECATS_ADDRESS = "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3";
-// Historical launch-era official mint host fallback. Prefer explicit env when rotating hosts.
-const OFFICIAL_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
-const OFFICIAL_MAINNET_MINT_HOST = "core-cats-mint.vercel.app";
+// Prefer explicit env. The current managed mint/support host is
+// `core-cats-zeta.vercel.app`; the old `core-cats-mint.vercel.app` hostname is
+// accepted only as historical compatibility if it is ever pointed back here.
+const CURRENT_MAINNET_MINT_BASE_URL = "https://core-cats-zeta.vercel.app";
+const CURRENT_MAINNET_MINT_HOST = "core-cats-zeta.vercel.app";
+const LEGACY_MAINNET_MINT_BASE_URLS = new Set(["https://core-cats-mint.vercel.app"]);
+const LEGACY_MAINNET_MINT_HOSTS = new Set(["core-cats-mint.vercel.app"]);
 const SESSION_TTL_MS = Number(process.env.COREPASS_SESSION_TTL_SECONDS || 20 * 60) * 1000;
 const ACTIVE_MINT_SESSION_TTL_MS = Number(process.env.COREPASS_ACTIVE_MINT_SESSION_TTL_SECONDS || 35 * 60) * 1000;
 const SESSION_READ_CACHE_TTL_MS = Number(process.env.COREPASS_SESSION_READ_CACHE_SECONDS || 15) * 1000;
@@ -164,7 +168,7 @@ async function getRequiredSession(request, sessionId) {
 
 function buildAbsoluteUrl(request, pathname, search = "") {
   const requestOrigin = resolveRequestOrigin(request);
-  if (requestOrigin === OFFICIAL_MAINNET_MINT_BASE_URL) {
+  if (isRecognizedOfficialMintOrigin(requestOrigin)) {
     return `${requestOrigin}${pathname}${search}`;
   }
   const config = getCorePublicConfig();
@@ -196,23 +200,29 @@ function resolveRequestOrigin(request) {
   const host = String(request?.headers?.get("x-forwarded-host") || request?.headers?.get("host") || "")
     .trim()
     .toLowerCase();
-  if (host === OFFICIAL_MAINNET_MINT_HOST) {
+  if (host === CURRENT_MAINNET_MINT_HOST || LEGACY_MAINNET_MINT_HOSTS.has(host)) {
     return `${forwardedProto || "https"}://${host}`;
   }
   try {
     const parsed = new URL(request?.url || "");
-    if (parsed.host.toLowerCase() === OFFICIAL_MAINNET_MINT_HOST) {
-      return OFFICIAL_MAINNET_MINT_BASE_URL;
+    const parsedHost = parsed.host.toLowerCase();
+    if (parsedHost === CURRENT_MAINNET_MINT_HOST || LEGACY_MAINNET_MINT_HOSTS.has(parsedHost)) {
+      return `${parsed.protocol}//${parsedHost}`;
     }
   } catch {}
   return "";
+}
+
+function isRecognizedOfficialMintOrigin(value) {
+  const normalized = String(value || "").trim().toLowerCase().replace(/\/$/, "");
+  return normalized === CURRENT_MAINNET_MINT_BASE_URL || LEGACY_MAINNET_MINT_BASE_URLS.has(normalized);
 }
 
 function resolveIdentifyMethod(request, env) {
   if (String(env?.coreCatsAddress || "").trim().toLowerCase() === OFFICIAL_MAINNET_CORECATS_ADDRESS) {
     return "login";
   }
-  if (resolveRequestOrigin(request) === OFFICIAL_MAINNET_MINT_BASE_URL) {
+  if (isRecognizedOfficialMintOrigin(resolveRequestOrigin(request))) {
     return "login";
   }
   return normalizeIdentifyMethod(env.corePassIdentifyMethod);

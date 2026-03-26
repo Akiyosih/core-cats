@@ -1,7 +1,13 @@
 # CCATTEST2 Private Canary Preview
 
+Historical note:
+- this is a launch-era rehearsal note
+- at that time, the goal was to keep `core-cats-mint.vercel.app` reserved for the future public mint
+- in the current active repo, the managed mint/support host is `core-cats-zeta.vercel.app`
+- treat `core-cats-mint.vercel.app` as a legacy public hostname, not the canonical managed host
+
 Purpose:
-1. keep `core-cats-mint.vercel.app` reserved for the official public mint
+1. historically, keep `core-cats-mint.vercel.app` reserved for the official public mint
 2. run `CCATTEST2` on a separate stable canary-only host
 3. avoid sharing a raw preview deployment URL with outside testers
 
@@ -32,7 +38,7 @@ Use a stable canary-only alias such as:
 `https://replace-with-stable-private-canary-origin`
 
 Rules:
-1. do not reuse `core-cats-mint.vercel.app`
+1. do not reuse the current managed mint host or the legacy public hostname
 2. do not send testers to a raw preview deployment URL
 3. set `NEXT_PUBLIC_SITE_BASE_URL` to the stable canary alias
 4. after each preview deploy, move the alias to the latest ready preview deployment
@@ -142,5 +148,5 @@ Before sharing the canary URL:
 After the private canary is no longer needed:
 1. remove the stable canary alias from the preview deployment
 2. clear `CCATTEST2` preview-only values from Vercel Preview env if they are no longer needed
-3. leave `core-cats-mint.vercel.app` untouched
+3. leave the legacy public hostname `core-cats-mint.vercel.app` untouched
 4. keep any public evidence/worklog separate from the official `CCAT` launch record

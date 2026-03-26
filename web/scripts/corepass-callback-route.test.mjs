@@ -211,17 +211,17 @@ test("login identify mode keeps the two-step mint flow while changing only QR1",
   );
 });
 
-test("official mint host forces login identify mode even if stale env says sign", async () => {
-  const sessionRequest = new Request("https://core-cats-mint.vercel.app/api/mint/corepass/session", {
+test("current managed mint host forces login identify mode even if stale env says sign", async () => {
+  const sessionRequest = new Request("https://core-cats-zeta.vercel.app/api/mint/corepass/session", {
     headers: {
-      host: "core-cats-mint.vercel.app",
+      host: "core-cats-zeta.vercel.app",
       "x-forwarded-proto": "https",
     },
   });
 
   await withEnv(
     {
-      NEXT_PUBLIC_SITE_BASE_URL: "https://core-cats-mint.vercel.app",
+      NEXT_PUBLIC_SITE_BASE_URL: "https://core-cats-zeta.vercel.app",
       COREPASS_IDENTIFY_METHOD: "sign",
       NEXT_PUBLIC_LAUNCH_STATE: "canary",
       NEXT_PUBLIC_SITE_SURFACE: "private-canary",
@@ -268,7 +268,7 @@ test("official mint host forces login identify mode even if stale env says sign"
   );
 });
 
-test("official mint request host overrides stale site base env for QR1 login and callback origin", async () => {
+test("legacy public mint hostname still overrides stale site base env for QR1 login and callback origin", async () => {
   const sessionRequest = new Request("https://core-cats-mint.vercel.app/api/mint/corepass/session", {
     headers: {
       host: "core-cats-mint.vercel.app",
