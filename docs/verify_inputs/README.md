@@ -1,6 +1,6 @@
 # Verify Inputs
 
-This directory stores manual verification inputs for current-source CoreCats contracts.
+This directory stores manual verification inputs for CoreCats contracts.
 
 ## Available Packets
 
@@ -28,6 +28,7 @@ Files:
 ## Notes
 - Compiler version: `1.1.2+commit.cb4b093a`
 - Optimizer: enabled, runs `200`
-- The `standard-input.json` files are compiler inputs for the current source tree and are network-agnostic.
+- The `standard-input.json` files in this directory were regenerated from the current `foxar/` source tree after confirming that the deploy-relevant files are unchanged relative to the exact official mainnet deploy commit `d30f394f4da352871a5677bb32d702cd4aa55f8c`.
+- For the official mainnet packet under `mainnet/`, treat those regenerated `standard-input.json` files as exact-deploy-equivalent inputs.
 - Constructor argument files are deployment-specific and must match the target deployment addresses.
 - `CoreCatsOnchainData` has no constructor arguments.

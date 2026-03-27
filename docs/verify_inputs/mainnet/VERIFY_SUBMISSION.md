@@ -1,6 +1,6 @@
 # Core Blockchain Mainnet Manual Verify Submission
 
-Status: Official mainnet packet prepared from the current canonical source tree.
+Status: Final official mainnet packet prepared from source files confirmed identical to the exact deploy commit for all deploy-relevant paths.
 
 ## Scope
 This packet is for the official Core Blockchain deployment of:
@@ -18,20 +18,23 @@ This packet is for the official Core Blockchain deployment of:
 ### CoreCatsOnchainData
 1. Contract address: `cb748bebbcac49b28fdeccb8a56f1cf677e9d94ef25c`
 2. Deploy tx: `0x5a6d7faad990b46e5028d7cbc95244d1c042d1b44a2d888327d47a939739f440`
-3. Contract path: `foxar/src/CoreCatsOnchainData.sol:CoreCatsOnchainData`
-4. Constructor args: none
+3. Compiler target: `src/CoreCatsOnchainData.sol:CoreCatsOnchainData`
+4. Repo file path: `foxar/src/CoreCatsOnchainData.sol`
+5. Constructor args: none
 
 ### CoreCatsMetadataRenderer
 1. Contract address: `cb762d998b8e79a74e1bc667b1ba2fd4154f25a467ac`
 2. Deploy tx: `0x8a657061a784d8303b98b494cc5d3e5bb70344a04e79b76e254684d931eaa8d7`
-3. Contract path: `foxar/src/CoreCatsMetadataRenderer.sol:CoreCatsMetadataRenderer`
-4. Constructor args file: `CoreCatsMetadataRenderer.constructor-args.txt`
+3. Compiler target: `src/CoreCatsMetadataRenderer.sol:CoreCatsMetadataRenderer`
+4. Repo file path: `foxar/src/CoreCatsMetadataRenderer.sol`
+5. Constructor args file: `CoreCatsMetadataRenderer.constructor-args.txt`
 
 ### CoreCats
 1. Contract address: `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3`
 2. Deploy tx: `0x9f47acfdaad77ace0f6200cc3f7443d1da70f29e1cf658cdf903d4874076063c`
-3. Contract path: `foxar/src/CoreCats.sol:CoreCats`
-4. Constructor args file: `CoreCats.constructor-args.txt`
+3. Compiler target: `src/CoreCats.sol:CoreCats`
+4. Repo file path: `foxar/src/CoreCats.sol`
+5. Constructor args file: `CoreCats.constructor-args.txt`
 
 ## Compiler Settings
 1. Compiler: `1.1.2+commit.cb4b093a`
@@ -45,16 +48,13 @@ This packet is for the official Core Blockchain deployment of:
 4. `CoreCatsMetadataRenderer.constructor-args.txt`
 5. `CoreCats.constructor-args.txt`
 
-## Source and Deployment Notes
-1. The `standard-input.json` files were prepared from the current canonical source tree.
-2. The constructor argument files were reconstructed by matching the current-source creation bytecode length against the official mainnet creation tx input and taking the ABI-encoded suffix.
-3. The exact repository commit used for the original broadcast deploy was later confirmed from the original Foxar mainnet broadcast artifacts:
+## Source Set Decision
+1. The authoritative source set for the official mainnet deploy is the exact broadcast commit:
    - `d30f394f4da352871a5677bb32d702cd4aa55f8c`
-4. The original Foxar mainnet broadcast artifacts also record the same 3 official tx hashes and returned addresses for `CoreCatsOnchainData`, `CoreCatsMetadataRenderer`, and `CoreCats`.
-5. The official deploy script and official env defaults were finalized no later than commit `d4b1ebd192d42a0a5e669287267d36e4326f6cba`.
-6. Current source still matches the deploy-relevant contents of:
-   - `foxar/script/CoreCatsDeploy.s.sol`
-   - `foxar/.env.mainnet-official.example`
+2. The original Foxar mainnet broadcast artifacts record that same commit together with the 3 official deploy tx hashes and returned addresses for `CoreCatsOnchainData`, `CoreCatsMetadataRenderer`, and `CoreCats`.
+3. `git diff d30f394..HEAD -- foxar/src/CoreCats.sol foxar/src/CoreCatsMetadataRenderer.sol foxar/src/CoreCatsOnchainData.sol foxar/script/CoreCatsDeploy.s.sol foxar/.env.mainnet-official.example` is empty in this repository.
+4. Therefore the current `foxar/` tree is deploy-equivalent for the official mainnet contracts, and the `standard-input.json` files in this directory were regenerated from that deploy-equivalent source tree.
+5. The constructor argument files were reconstructed by matching the deploy-equivalent creation bytecode length against the official mainnet creation tx input and taking the ABI-encoded suffix.
 
 ## Why Post-Deploy Submission Is Expected
 The public runbooks treat explorer verification as a post-deploy step:
@@ -73,7 +73,7 @@ Send the following together:
 2. symbol: `CCAT`
 3. contract addresses for all three contracts
 4. deploy tx hashes for all three contracts
-5. contract path/name for all three contracts
+5. compiler target (`src/...:ContractName`) for all three contracts
 6. compiler version and optimizer settings
 7. corresponding `standard-input.json` file for each contract
 8. constructor args for `CoreCatsMetadataRenderer` and `CoreCats`

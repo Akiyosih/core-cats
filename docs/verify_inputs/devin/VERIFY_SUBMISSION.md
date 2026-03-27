@@ -4,11 +4,8 @@ Status: Current-source packet prepared; fresh Devin redeploy required before sub
 
 ## Current State
 1. The standard-input JSON files in this directory were regenerated from the current source tree.
-2. The current source tree has moved since the 2026-03-06 Devin rehearsal:
-   - 11-pattern taxonomy is canonical
-   - token order is updated
-   - public metadata now uses 5 attributes
-3. As a result, the older Devin rehearsal deployment is no longer a valid target for the files in this directory.
+2. The current `foxar/` source tree is also deploy-equivalent to the exact official mainnet deploy commit for the active CoreCats contracts, but that does not make the old 2026-03-06 Devin rehearsal addresses valid targets.
+3. As a result, this directory should be used only after a fresh Devin redeploy of the current source tree.
 
 ## Deployment Addresses
 Populate this section after the next Devin redeploy of the current source revision.

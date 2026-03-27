@@ -239,8 +239,8 @@ repo 記載だけでなく、後日 review 時に project-operated Core Blockcha
 
 | 項目 | 内容 | 根拠ファイル | 短い引用 |
 | --- | --- | --- | --- |
-| manual verify inputs | current-source verify input index あり | `docs/verify_inputs/README.md` | `This directory stores manual verification inputs for current-source CoreCats contracts.` |
-| mainnet verify packet | official mainnet packet あり | `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md` | `Status: Official mainnet packet prepared from the current canonical source tree.` |
+| manual verify inputs | deploy-equivalent verify input index あり | `docs/verify_inputs/README.md` | `The \`standard-input.json\` files in this directory were regenerated from the current \`foxar/\` source tree after confirming that the deploy-relevant files are unchanged relative to the exact official mainnet deploy commit` |
+| mainnet verify packet | official mainnet final packet あり | `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md` | `Status: Final official mainnet packet prepared from source files confirmed identical to the exact deploy commit for all deploy-relevant paths.` |
 | live token evidence helper | on-chain `tokenURI`, owner, metadata renderer を読む helper | `scripts/read_live_token_evidence.py` | `description="Read live CoreCats token evidence over xcb_call without spark address parsing."` |
 | Core-specific RPC support | `xcb_call` / `eth_call` 両対応 | `mint-backend/corecats_mint_backend/rpc.py` | `CALL_METHODS = ("xcb_call", "eth_call")` |
 

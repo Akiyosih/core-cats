@@ -154,11 +154,11 @@
   - verify inputs index と mainnet/devin packet の分離根拠
   - `# Verify Inputs`
   - `Official mainnet verification packet for the canonical \`CCAT\` deployment.`
-  - `The \`standard-input.json\` files are compiler inputs for the current source tree and are network-agnostic.`
+  - `The \`standard-input.json\` files in this directory were regenerated from the current \`foxar/\` source tree after confirming that the deploy-relevant files are unchanged relative to the exact official mainnet deploy commit`
 
 - [official mainnet verify packet] `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md`
-  - official mainnet 3 契約分の verify packet と deploy block evidence
-  - `Status: Official mainnet packet prepared from the current canonical source tree.`
+  - official mainnet 3 契約分の final verify packet と deploy block evidence
+  - `Status: Final official mainnet packet prepared from source files confirmed identical to the exact deploy commit for all deploy-relevant paths.`
   - `Block number: \`16880258\``
   - `Block timestamp (JST): \`2026-03-21T21:01:16+09:00\``
 
