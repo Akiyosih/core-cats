@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import CollectionCard from "./collection-card";
@@ -39,6 +39,7 @@ export default function MyCatsBrowser({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const ownerInputRef = useRef(null);
   const initialOwner = normalizeOwnerInput(searchParams.get("owner") || "");
   const [ownerQuery, setOwnerQuery] = useState(initialOwner);
   const [activeOwner, setActiveOwner] = useState(initialOwner);
@@ -92,6 +93,13 @@ export default function MyCatsBrowser({
     router.replace(href, { scroll: false });
   }
 
+  function handleClearQuery() {
+    setOwnerQuery("");
+    setActiveOwner("");
+    router.replace("/my-cats", { scroll: false });
+    ownerInputRef.current?.focus();
+  }
+
   return (
     <div className="page-stack">
       <section className="copy-panel my-cats-panel">
@@ -112,17 +120,30 @@ export default function MyCatsBrowser({
             Core wallet address
           </label>
           <div className="owner-search-form__row">
-            <input
-              id="owner-address"
-              name="owner"
-              type="search"
-              value={ownerQuery}
-              onChange={(event) => setOwnerQuery(event.target.value)}
-              placeholder="cb..."
-              className="owner-search-form__input"
-              autoComplete="off"
-              spellCheck="false"
-            />
+            <div className="owner-search-form__input-wrap">
+              <input
+                ref={ownerInputRef}
+                id="owner-address"
+                name="owner"
+                type="search"
+                value={ownerQuery}
+                onChange={(event) => setOwnerQuery(event.target.value)}
+                placeholder="cb..."
+                className="owner-search-form__input"
+                autoComplete="off"
+                spellCheck="false"
+              />
+              {ownerQuery ? (
+                <button
+                  type="button"
+                  className="owner-search-form__clear"
+                  onClick={handleClearQuery}
+                  aria-label="Clear wallet address"
+                >
+                  ×
+                </button>
+              ) : null}
+            </div>
             <button type="submit" className="button">
               Search
             </button>

@@ -979,10 +979,15 @@ main {
   gap: 12px;
 }
 
+.owner-search-form__input-wrap {
+  position: relative;
+  min-width: 0;
+}
+
 .owner-search-form__input {
   width: 100%;
   min-width: 0;
-  padding: 14px 16px;
+  padding: 14px 52px 14px 16px;
   border-radius: 18px;
   border: 1px solid rgba(41, 36, 31, 0.12);
   background: rgba(255,255,255,0.92);
@@ -990,9 +995,50 @@ main {
   font: inherit;
 }
 
+.owner-search-form__input::-webkit-search-cancel-button,
+.owner-search-form__input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.owner-search-form__input::-ms-clear {
+  display: none;
+}
+
 .owner-search-form__input:focus {
   outline: 2px solid rgba(20, 143, 138, 0.18);
   border-color: rgba(20, 143, 138, 0.3);
+}
+
+.owner-search-form__clear {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.owner-search-form__clear:hover {
+  background: rgba(41, 36, 31, 0.08);
+  color: var(--ink);
+}
+
+.owner-search-form__clear:focus-visible {
+  outline: 2px solid rgba(20, 143, 138, 0.24);
+  outline-offset: 2px;
 }
 
 .owner-results-header {
