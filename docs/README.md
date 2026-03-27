@@ -9,8 +9,10 @@ For a first outside review, read these in order:
 2. [Historical Mainnet Rehearsal Contracts](HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md)
 3. [Public Trust + Privacy Notes](TRUST_AND_PRIVACY_SURFACE.md)
 4. [Mainnet Public Evidence Checklist](MAINNET_PUBLIC_EVIDENCE_CHECKLIST.md)
-5. [Freeze / Renounce Policy](FREEZE_AND_RENOUNCE_POLICY.md)
-6. [Minter Privacy Note](MINTER_PRIVACY_NOTE.md)
+5. [Blockindex Verification Pack](BLOCKINDEX_VERIFICATION_PACK.md)
+6. [Blockindex Evidence Index](BLOCKINDEX_EVIDENCE_INDEX.md)
+7. [Freeze / Renounce Policy](FREEZE_AND_RENOUNCE_POLICY.md)
+8. [Minter Privacy Note](MINTER_PRIVACY_NOTE.md)
 
 ## Historical Launch / Cutover Path
 These describe how the project moved from public website publication to official mainnet opening. They remain public
@@ -30,8 +32,10 @@ Use these when reviewing the published collection artifacts and live token surfa
 
 1. [Final 1000 Trait Schema](FINAL1000_TRAIT_SCHEMA.md)
 2. [Viewer Data Pipeline](VIEWER_DATA_PIPELINE.md)
-3. [Web UI / Mint DApp Spec](WEB_UI_MINT_DAPP_SPEC.md)
-4. [Implementation Source Mapping](IMPLEMENTATION_SOURCE.md)
+3. [Verify Inputs Index](verify_inputs/README.md)
+4. [Mainnet Manual Verify Submission Packet](verify_inputs/mainnet/VERIFY_SUBMISSION.md)
+5. [Web UI / Mint DApp Spec](WEB_UI_MINT_DAPP_SPEC.md)
+6. [Implementation Source Mapping](IMPLEMENTATION_SOURCE.md)
 
 ## Rehearsal / Canary Evidence
 These are useful, but they describe rehearsal and canary work rather than the final official `CCAT` promise surface.
