@@ -12,15 +12,17 @@
 - fully on-chain JSON + SVG、`1000` fixed supply、`3` per wallet、`commit-finalize + future blockhash + lazy Fisher-Yates` という説明が source / docs の両方で確認できる
 - official deploy tx `0x9f47acfdaad77ace0f6200cc3f7443d1da70f29e1cf658cdf903d4874076063c` は、後日 review 時に project-operated Core Blockchain full node でも確認でき、block `16880258` で contract address `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3` を作成している
 - 同じ deploy block `16880258`（timestamp `2026-03-21T21:01:16+09:00`）で、on-chain data tx `0x5a6d7faad990b46e5028d7cbc95244d1c042d1b44a2d888327d47a939739f440` と renderer tx `0x8a657061a784d8303b98b494cc5d3e5bb70344a04e79b76e254684d931eaa8d7` も full node で確認できる
+- original Foxar mainnet broadcast artifacts record exact deploy commit `d30f394f4da352871a5677bb32d702cd4aa55f8c` together with the same 3 official tx hashes and returned contract addresses
+- current public-surface policy in the repo points to browse host `https://core-cats.pages.dev` and current managed mint/support host `https://core-cats-zeta.vercel.app`
 
 一方で、repo 内だけでは次の重要事項は確定できません。
 
 - 現在 Blockindex 上でこの contract がどう表示されているか
 - 現在 explorer verification が完了しているか
-- current live browse host の canonical URL
-- deploy 時に使った正確な repo commit SHA
+- exact Foxar binary version
+- exact Spark binary version
 
-この pack は **repo 内証拠の整理を中心にしつつ、一部は後日 review 時の full-node 確認で補強**しています。explorer verification の最終確認は、なお Blockindex 側または人手の explorer 確認で補う必要があります。
+この pack は **repo 内証拠の整理を中心にしつつ、一部は original deploy-time artifacts と後日 review 時の full-node 確認で補強**しています。explorer verification の最終確認は、なお Blockindex 側または人手の explorer 確認で補う必要があります。
 
 ## 2. 公式プロジェクト情報
 
@@ -37,19 +39,23 @@
 | GitHub リポジトリ URL（UI 側） | `https://github.com/Akiyosih/core-cats` | `shared/public-site/components/public-pages/cat-detail-page-content.jsx` | `const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";` |
 | official mainnet contract 候補 | `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3` | `README.md` | `the canonical official collection contract is \`cb40316dcf944c9c2d4d1381653753a514e5e01d5df3\`` |
 | official mainnet contract 候補（UI contract surface） | `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3` | `web-public-teaser/lib/public-teaser-contract-surface.js` | `coreCatsAddress: "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3"` |
+| current browse host | `https://core-cats.pages.dev` | `web/lib/server/core-env.js` | `browseBaseUrl = "https://core-cats.pages.dev";` |
+| current managed mint/support host | `https://core-cats-zeta.vercel.app` | `web/lib/server/corepass-mint-sessions.js` | `const CURRENT_MAINNET_MINT_BASE_URL = "https://core-cats-zeta.vercel.app";` |
 
-### 公式サイト URL について
+### current public surface について
 
-- `GitHub repository` は repo 内で確認できます。
-- しかし **current browse host の canonical URL** は repo 内で固定値としては確認できません。
-- `web-public-teaser/lib/public-runtime-config.js` には `https://core-cats-zeta.vercel.app` が出ますが、同ファイルのコメントで `not a provenance claim` とされています。
+- current browse host は `https://core-cats.pages.dev`
+- current managed mint/support host は `https://core-cats-zeta.vercel.app`
+- legacy public hostname `core-cats-mint.vercel.app` は historical compatibility 扱いで、current canonical public surface ではありません
 
 根拠:
 
-- `web-public-teaser/lib/public-runtime-config.js`
-  - `This fallback matches the current live mint host wiring and is not a provenance claim.`
+- `web/lib/server/core-env.js`
+  - `browseBaseUrl = "https://core-cats.pages.dev";`
+- `web/lib/server/corepass-mint-sessions.js`
+  - `the old \`core-cats-mint.vercel.app\` hostname is accepted only as historical compatibility`
 
-したがって、**official site URL は repo 外で人手補完が必要**です。
+したがって、**current public surface は repo 内で説明できますが、historical deploy provenance としての host claim までは意図していません。**
 
 ## 3. コントラクト構成一覧
 
@@ -141,28 +147,38 @@ repo 内で確認できる根拠は次のとおりです。
 | deployer secrets kept outside repo | RPC / keystore / password separated from example file | `docs/OFFICIAL_CCAT_CUTOVER_NOTE.md` | `Keep these secrets or live values outside the repository:` |
 | post-deploy expected values env | `CORECATS_ADDRESS`, `EXPECTED_RENDERER_ADDRESS`, `EXPECTED_COLLECTION_NAME`, `EXPECTED_COLLECTION_SYMBOL` | `foxar/script/CoreCatsPostDeployCheck.s.sol` | `address coreCatsAddress = vm.envAddress("CORECATS_ADDRESS");` |
 
-### 4.4.1 official deploy 時点の script 状態に関する repo-side 推定
+### 4.4.1 official deploy exact commit と script 状態
 
-repo 内の git history と private non-secret note を突き合わせると、official mainnet deploy に使われた script 状態について次のことが言えます。
+official mainnet deploy に対応する exact repository commit は、original Foxar mainnet broadcast artifacts から確認できます。
 
-1. `foxar/script/CoreCatsDeploy.s.sol` の最後の更新は `d4b1ebd192d42a0a5e669287267d36e4326f6cba`
-2. `foxar/.env.mainnet-official.example` の最後の更新も `d4b1ebd192d42a0a5e669287267d36e4326f6cba`
-3. その commit 時刻は `2026-03-21 18:49:30 +0900`
-4. official address を public surface に入れた `web-public-teaser/lib/public-teaser-contract-surface.js` の最初の commit は `b5712ff858762c0f255f6bcaaf43e37184ac32cf`
-5. その commit 時刻は `2026-03-21 21:33:11 +0900`
+1. original deploy broadcast artifact records `commit: "d30f394"`
+2. the same artifact records the 3 official deploy tx hashes:
+   - `0x5a6d7faad990b46e5028d7cbc95244d1c042d1b44a2d888327d47a939739f440`
+   - `0x8a657061a784d8303b98b494cc5d3e5bb70344a04e79b76e254684d931eaa8d7`
+   - `0x9f47acfdaad77ace0f6200cc3f7443d1da70f29e1cf658cdf903d4874076063c`
+3. the same artifact records the returned addresses:
+   - `coreCats = cb40316dcf944c9c2d4d1381653753a514e5e01d5df3`
+   - `data = cb748bebbcac49b28fdeccb8a56f1cf677e9d94ef25c`
+   - `renderer = cb762d998b8e79a74e1bc667b1ba2fd4154f25a467ac`
+4. a follow-up mined artifact records the same `commit: "d30f394"` and includes success receipts for the same 3 tx hashes in block `16880258`
 
-repo-side での最も強い整理は次です。
+したがって、official mainnet deploy に使われた exact repository commit SHA は次でよいです。
 
-- official deploy 用の script / env defaults は **`d4b1ebd` 時点で固まっている**
-- `b5712ff` までには public contract surface 側へ official addresses が入っている
-- したがって、**official deploy 実行は `2026-03-21 18:49:30 +0900` 以後、`2026-03-21 21:33:11 +0900` 以前**という推定が成り立つ
-- chain-side で確認した official deploy block `16880258` の timestamp は **`2026-03-21T21:01:16+09:00`** で、上の commit window の中に収まる
+- `d30f394f4da352871a5677bb32d702cd4aa55f8c`
 
-さらに、current HEAD と `d4b1ebd` の間で `foxar/script/CoreCatsDeploy.s.sol` と `foxar/.env.mainnet-official.example` に差分はありません。  
-そのため、**deploy に使われた official deploy script / official env defaults の内容自体は current repo と実質一致している**と見るのが妥当です。
+script / env defaults の内容については、次も同時に言えます。
+
+1. `foxar/script/CoreCatsDeploy.s.sol` の最後の deploy-relevant 更新は `d4b1ebd192d42a0a5e669287267d36e4326f6cba`
+2. `foxar/.env.mainnet-official.example` の最後の deploy-relevant 更新も `d4b1ebd192d42a0a5e669287267d36e4326f6cba`
+3. `d30f394` と current HEAD の間でも、この 2 ファイルに追加差分はありません
+
+そのため、**deploy に使われた official deploy script / official env defaults の内容は current repo と実質一致している**と見るのが妥当です。
 
 根拠:
 
+- original Foxar mainnet broadcast artifacts
+  - `commit: "d30f394"`
+  - `pending` / `receipts` / `returns` が official 3 tx と official 3 addresses に一致
 - `docs/OFFICIAL_CCAT_CUTOVER_NOTE.md`
   - `Official Deploy Dry-Run Inputs`
   - `Expected official values:`
@@ -172,11 +188,6 @@ repo-side での最も強い整理は次です。
   - `CORECATS_TOKEN_DESCRIPTION="CoreCats is a 1,000-piece fully on-chain 24x24 SVG cat collection on Core Blockchain, built from public code and fixed manifests."`
 - `web-public-teaser/lib/public-teaser-contract-surface.js`
   - `coreCatsAddress: "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3"`
-
-注意:
-
-- exact deploy commit SHA そのものは repo 内ファイルだけでは断定できません
-- ただし、deploy script / official env defaults の内容は `d4b1ebd` 時点のものに固定されていると見てよいです
 
 ### 4.4.2 official deploy block の chain-side 確認
 
@@ -248,22 +259,18 @@ repo 記載だけでなく、後日 review 時に project-operated Core Blockcha
 | Random assignment design | `commit-finalize + future blockhash + lazy Fisher-Yates` | `docs/DECISIONS/ADR-0002-randomness-strategy.md`, `foxar/src/CoreCats.sol` | そのまま提出可能 |
 | Toolchain | Ylem `1.1.2`, Foxar workspace, Spark config, remappings, submodules | `foxar/spark.toml`, `foxar/foxar.toml`, `.gitmodules`, `docs/verify_inputs/README.md` | そのまま提出可能 |
 | GitHub repository URL | `https://github.com/Akiyosih/core-cats` | `docs/IMPLEMENTATION_SOURCE.md`, `shared/public-site/components/public-pages/cat-detail-page-content.jsx` | そのまま提出可能 |
-| Official site URL | repo 内では canonical browse URL を固定確認できない | `web-public-teaser/lib/public-runtime-config.js` | 人手で補完が必要 |
+| Current public browse host | `https://core-cats.pages.dev` | `web/lib/server/core-env.js` | そのまま提出可能 |
+| Current managed mint/support host | `https://core-cats-zeta.vercel.app` | `web/lib/server/corepass-mint-sessions.js` | そのまま提出可能 |
 | Explorer verification status | repo 内では確認できない | n/a | 人手で補完が必要 |
 | Mainnet manual verify packet path | `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md` | `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md` | そのまま提出可能 |
-| Deploy commit SHA | repo 内では official deploy に対応する exact commit SHA を確認できない | n/a | 人手で補完が必要 |
+| Deploy commit SHA | `d30f394f4da352871a5677bb32d702cd4aa55f8c` | original Foxar mainnet broadcast artifacts, `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md` | そのまま提出可能 |
 
 ## 6. リポジトリ内では確認できない事項
 
 1. Blockindex 上で official `CCAT` contract が現在 verified 表示かどうか
-2. current canonical browse host URL
-3. current canonical mint/support host URL を provenance として主張してよいか
-4. official deploy に使った exact repository commit SHA
-5. exact Foxar binary version
-6. exact Spark binary version
-7. live explorer 上の renderer / on-chain data contract verification 状態
-8. live site 上の contract surface と repo 記載アドレスの current 一致確認
-9. official production path に signer 設定 script が存在するか
+2. current explorer verification state of renderer / on-chain data contracts
+3. exact Foxar binary version
+4. exact Spark binary version
 
 ## 7. Blockindex 向け提出チェックリスト
 
@@ -296,20 +303,22 @@ repo 記載だけでなく、後日 review 時に project-operated Core Blockcha
   - `docs/verify_inputs/mainnet/CoreCats.standard-input.json`
   - `docs/verify_inputs/mainnet/CoreCatsMetadataRenderer.constructor-args.txt`
   - `docs/verify_inputs/mainnet/CoreCats.constructor-args.txt`
+- [ ] Exact deploy commit SHA: `d30f394f4da352871a5677bb32d702cd4aa55f8c`
 - [ ] Historical / official separation note:
   - `docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md`
 
 ### repo 外で人が補完すべきもの
 
-- [ ] Official site URL
 - [ ] Explorer contract URL
 - [ ] Explorer verified status
 - [ ] Official deploy tx hash の explorer URL と live 照合
 - [ ] Official renderer / data contract explorer URLs
-- [ ] Official deploy に対応する commit SHA
 
 ### 備考
 
 - repo には `docs/verify_inputs/mainnet/` があり、official mainnet verify packet として提出可能。
 - `docs/verify_inputs/devin/` は **Devin 用**であり official mainnet packet とは別物。
+- current public surface policy in the repo is:
+  - browse: `https://core-cats.pages.dev`
+  - managed mint/support host: `https://core-cats-zeta.vercel.app`
 - repo 上の official address / deploy tx は Blockindex 問い合わせの strong candidate になるが、**live explorer state は別途確認が必要**。

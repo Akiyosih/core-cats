@@ -162,6 +162,11 @@
   - `Block number: \`16880258\``
   - `Block timestamp (JST): \`2026-03-21T21:01:16+09:00\``
 
+- [exact deploy commit] `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md`
+  - original Foxar mainnet broadcast artifacts confirm the exact repository commit used for the official deploy
+  - `The exact repository commit used for the original broadcast deploy was later confirmed from the original Foxar mainnet broadcast artifacts:`
+  - ``d30f394f4da352871a5677bb32d702cd4aa55f8c``
+
 - [official mainnet constructor args] `docs/verify_inputs/mainnet/CoreCatsMetadataRenderer.constructor-args.txt`
   - renderer verify 用の mainnet constructor args
   - `cb748bebbcac49b28fdeccb8a56f1cf677e9d94ef25c`

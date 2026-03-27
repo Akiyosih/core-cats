@@ -48,11 +48,13 @@ This packet is for the official Core Blockchain deployment of:
 ## Source and Deployment Notes
 1. The `standard-input.json` files were prepared from the current canonical source tree.
 2. The constructor argument files were reconstructed by matching the current-source creation bytecode length against the official mainnet creation tx input and taking the ABI-encoded suffix.
-3. The official deploy script and official env defaults were finalized no later than commit `d4b1ebd192d42a0a5e669287267d36e4326f6cba`.
-4. The exact repository commit used for the broadcast deploy is not explicitly recorded in the repo.
-5. The official deploy block timestamp `2026-03-21T21:01:16+09:00` falls between:
-   - `d4b1ebd` (`2026-03-21 18:49:30 +0900`)
-   - `b5712ff` (`2026-03-21 21:33:11 +0900`)
+3. The exact repository commit used for the original broadcast deploy was later confirmed from the original Foxar mainnet broadcast artifacts:
+   - `d30f394f4da352871a5677bb32d702cd4aa55f8c`
+4. The original Foxar mainnet broadcast artifacts also record the same 3 official tx hashes and returned addresses for `CoreCatsOnchainData`, `CoreCatsMetadataRenderer`, and `CoreCats`.
+5. The official deploy script and official env defaults were finalized no later than commit `d4b1ebd192d42a0a5e669287267d36e4326f6cba`.
+6. Current source still matches the deploy-relevant contents of:
+   - `foxar/script/CoreCatsDeploy.s.sol`
+   - `foxar/.env.mainnet-official.example`
 
 ## Why Post-Deploy Submission Is Expected
 The public runbooks treat explorer verification as a post-deploy step:
