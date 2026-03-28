@@ -460,6 +460,8 @@ main {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  appearance: none;
+  -webkit-appearance: none;
   border-radius: 999px;
   border: 1px solid transparent;
   padding: 14px 24px;
@@ -482,6 +484,7 @@ main {
 }
 
 .button--ghost,
+.button,
 .sort-pill,
 .page-pill {
   background: rgba(255, 255, 255, 0.6);
@@ -1153,8 +1156,9 @@ main {
 
 .collection-token-search__row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
+  align-items: stretch;
 }
 
 .collection-token-search__input {
@@ -1171,6 +1175,20 @@ main {
 .collection-token-search__input:focus {
   outline: 2px solid rgba(20, 143, 138, 0.18);
   border-color: rgba(20, 143, 138, 0.3);
+}
+
+.collection-token-search__submit {
+  min-width: 88px;
+}
+
+.collection-token-search__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.collection-filter-toggle {
+  margin-top: 14px;
 }
 
 .resource-link {
@@ -2029,7 +2047,7 @@ main {
   }
 
   .collection-token-search__row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .owner-results-header {

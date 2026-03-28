@@ -362,18 +362,20 @@ export default function CollectionBrowser({ collection, filtersDoc, teaserEnable
                 onChange={(event) => setTokenSearchValue(event.target.value)}
                 className="collection-token-search__input"
               />
-              <button type="submit" className="button button--ghost button--inline">
+              <button type="submit" className="button button--ghost button--inline collection-token-search__submit">
                 Go
               </button>
-              {params.token_id ? (
+            </div>
+            {params.token_id ? (
+              <div className="collection-token-search__actions">
                 <Link
                   href={buildSearchHref(params, { token_id: null, page: null }, teaserEnabled)}
                   className="button button--ghost button--inline"
                 >
-                  Clear
+                  Clear token search
                 </Link>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
           </form>
           <button
             type="button"
