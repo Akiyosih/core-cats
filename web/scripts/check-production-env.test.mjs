@@ -37,6 +37,30 @@ test("browse-only surface accepts explicit public snapshot url without backend s
   assert.deepEqual(result.errors, []);
 });
 
+test("sold-out public mint host accepts missing backend secret", () => {
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "public",
+      NEXT_PUBLIC_SITE_SURFACE: "public-mint",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+      CORECATS_BACKEND_SHARED_SECRET: "",
+    }),
+  );
+  assert.deepEqual(result.errors, []);
+});
+
+test("sold-out public mint host warns when backend secret is still set", () => {
+  const result = validateProductionEnv(
+    buildBaseEnv({
+      NEXT_PUBLIC_LAUNCH_STATE: "public",
+      NEXT_PUBLIC_SITE_SURFACE: "public-mint",
+      NEXT_PUBLIC_CORECATS_ADDRESS: "cb111111111111111111111111111111111111111111",
+    }),
+  );
+  assert.deepEqual(result.errors, []);
+  assert.match(result.warnings.join("\n"), /still set on a sold-out public host/);
+});
+
 test("canary launch rejects placeholder contract address", () => {
   const result = validateProductionEnv(buildBaseEnv({ NEXT_PUBLIC_LAUNCH_STATE: "canary", NEXT_PUBLIC_SITE_SURFACE: "private-canary" }));
   assert.match(result.errors.join("\n"), /real mainnet contract address/);

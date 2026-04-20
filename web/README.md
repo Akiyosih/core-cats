@@ -89,7 +89,7 @@ Important variables:
 10. `COREPASS_SESSION_TTL_SECONDS` (optional, defaults to 1200)
 11. `CORECATS_BACKEND_MODE` (`local` or `proxy`)
 12. `CORECATS_BACKEND_BASE_URL` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
-13. `CORECATS_BACKEND_SHARED_SECRET` (required when the mint surface is enabled and `CORECATS_BACKEND_MODE=proxy`)
+13. `CORECATS_BACKEND_SHARED_SECRET` (required for canary / active mint proxy operation; optional and usually removable on the sold-out public host)
 14. `CORECATS_INTERNAL_BACKEND_BASE_URL` (optional loopback backend origin for a self-hosted private canary)
 15. `NEXT_PUBLIC_PRIVATE_CANARY_BADGE_TEXT`, `NEXT_PUBLIC_PRIVATE_CANARY_TITLE_TEXT`, `NEXT_PUBLIC_PRIVATE_CANARY_WARNING_TEXT` (optional UI-only labels for a private canary host)
 16. `NEXT_PUBLIC_CORECATS_RENDERER_ADDRESS` and `NEXT_PUBLIC_CORECATS_DATA_ADDRESS` (optional but recommended; used by `/transparency` so mint hosts can publish the renderer/data surface alongside the CoreCats contract)
@@ -188,5 +188,5 @@ node ./scripts/check-production-env.mjs ./.env.production.local
 This catches obvious mainnet cutover mistakes such as:
 1. Devin fallback addresses
 2. non-HTTPS backend origin
-3. placeholder shared secret values
+3. placeholder shared secret values on canary / active mint hosts, or stale shared secrets left on the sold-out public host
 4. accidental private key placement in the Vercel env

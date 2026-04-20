@@ -16,13 +16,13 @@ import {
 import { runMintPrecheck } from "./mint-precheck.js";
 
 const OFFICIAL_MAINNET_CORECATS_ADDRESS = "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3";
-// Prefer explicit env. The current managed mint/support host is
-// `core-cats-zeta.vercel.app`; the old `core-cats-mint.vercel.app` hostname is
-// accepted only as historical compatibility if it is ever pointed back here.
-const CURRENT_MAINNET_MINT_BASE_URL = "https://core-cats-zeta.vercel.app";
-const CURRENT_MAINNET_MINT_HOST = "core-cats-zeta.vercel.app";
-const LEGACY_MAINNET_MINT_BASE_URLS = new Set(["https://core-cats-mint.vercel.app"]);
-const LEGACY_MAINNET_MINT_HOSTS = new Set(["core-cats-mint.vercel.app"]);
+// Prefer explicit env. The canonical post-mint alias is
+// `core-cats-mint.vercel.app`; `core-cats-zeta.vercel.app` is kept as a
+// compatibility alias while the browse surface catches up.
+const CURRENT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
+const CURRENT_MAINNET_MINT_HOST = "core-cats-mint.vercel.app";
+const LEGACY_MAINNET_MINT_BASE_URLS = new Set(["https://core-cats-zeta.vercel.app"]);
+const LEGACY_MAINNET_MINT_HOSTS = new Set(["core-cats-zeta.vercel.app"]);
 const SESSION_TTL_MS = Number(process.env.COREPASS_SESSION_TTL_SECONDS || 20 * 60) * 1000;
 const ACTIVE_MINT_SESSION_TTL_MS = Number(process.env.COREPASS_ACTIVE_MINT_SESSION_TTL_SECONDS || 35 * 60) * 1000;
 const SESSION_READ_CACHE_TTL_MS = Number(process.env.COREPASS_SESSION_READ_CACHE_SECONDS || 15) * 1000;

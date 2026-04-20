@@ -147,6 +147,21 @@ test("mint runtime config errors flag missing proxy backend wiring when mint is 
   assert.match(errors[1], /CORECATS_BACKEND_SHARED_SECRET/);
 });
 
+test("mint runtime config errors allow a sold-out public host to omit the backend secret", () => {
+  const errors = getMintRuntimeConfigErrors({
+    launchState: "public",
+    siteSurface: "public-mint",
+    siteBaseUrl: "https://core-cats-mint.vercel.app",
+    coreCatsAddress: "cb111111111111111111111111111111111111111111",
+    backendMode: "proxy",
+    backendBaseUrl: "https://backend.example.com",
+    internalBackendBaseUrl: "",
+    backendSharedSecret: "",
+  });
+
+  assert.deepEqual(errors, []);
+});
+
 test("mint runtime config errors reject a malformed explicit site base URL", () => {
   const errors = getMintRuntimeConfigErrors({
     launchState: "canary",

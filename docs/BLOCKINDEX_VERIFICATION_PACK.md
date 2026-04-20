@@ -13,7 +13,7 @@
 - official deploy tx `0x9f47acfdaad77ace0f6200cc3f7443d1da70f29e1cf658cdf903d4874076063c` は、後日 review 時に project-operated Core Blockchain full node でも確認でき、block `16880258` で contract address `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3` を作成している
 - 同じ deploy block `16880258`（timestamp `2026-03-21T21:01:16+09:00`）で、on-chain data tx `0x5a6d7faad990b46e5028d7cbc95244d1c042d1b44a2d888327d47a939739f440` と renderer tx `0x8a657061a784d8303b98b494cc5d3e5bb70344a04e79b76e254684d931eaa8d7` も full node で確認できる
 - original Foxar mainnet broadcast artifacts record exact deploy commit `d30f394f4da352871a5677bb32d702cd4aa55f8c` together with the same 3 official tx hashes and returned contract addresses
-- current public-surface policy in the repo points to browse host `https://core-cats.pages.dev` and current managed mint/support host `https://core-cats-zeta.vercel.app`
+- current public-surface policy in the repo points to browse host `https://core-cats.pages.dev` and canonical mint/support host `https://core-cats-mint.vercel.app`
 
 一方で、repo 内だけでは次の重要事項は確定できません。
 
@@ -40,13 +40,13 @@
 | official mainnet contract 候補 | `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3` | `README.md` | `the canonical official collection contract is \`cb40316dcf944c9c2d4d1381653753a514e5e01d5df3\`` |
 | official mainnet contract 候補（UI contract surface） | `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3` | `web-public-teaser/lib/public-teaser-contract-surface.js` | `coreCatsAddress: "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3"` |
 | current browse host | `https://core-cats.pages.dev` | `web/lib/server/core-env.js` | `browseBaseUrl = "https://core-cats.pages.dev";` |
-| current managed mint/support host | `https://core-cats-zeta.vercel.app` | `web/lib/server/corepass-mint-sessions.js` | `const CURRENT_MAINNET_MINT_BASE_URL = "https://core-cats-zeta.vercel.app";` |
+| canonical mint/support host | `https://core-cats-mint.vercel.app` | `web/lib/server/corepass-mint-sessions.js` | `const CURRENT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";` |
 
 ### current public surface について
 
 - current browse host は `https://core-cats.pages.dev`
-- current managed mint/support host は `https://core-cats-zeta.vercel.app`
-- legacy public hostname `core-cats-mint.vercel.app` は historical compatibility 扱いで、current canonical public surface ではありません
+- canonical mint/support host は `https://core-cats-mint.vercel.app`
+- `https://core-cats-zeta.vercel.app` は compatibility alias として残されています
 
 根拠:
 
@@ -260,7 +260,7 @@ repo 記載だけでなく、後日 review 時に project-operated Core Blockcha
 | Toolchain | Ylem `1.1.2`, Foxar workspace, Spark config, remappings, submodules | `foxar/spark.toml`, `foxar/foxar.toml`, `.gitmodules`, `docs/verify_inputs/README.md` | そのまま提出可能 |
 | GitHub repository URL | `https://github.com/Akiyosih/core-cats` | `docs/IMPLEMENTATION_SOURCE.md`, `shared/public-site/components/public-pages/cat-detail-page-content.jsx` | そのまま提出可能 |
 | Current public browse host | `https://core-cats.pages.dev` | `web/lib/server/core-env.js` | そのまま提出可能 |
-| Current managed mint/support host | `https://core-cats-zeta.vercel.app` | `web/lib/server/corepass-mint-sessions.js` | そのまま提出可能 |
+| Canonical mint/support host | `https://core-cats-mint.vercel.app` | `web/lib/server/corepass-mint-sessions.js` | そのまま提出可能 |
 | Explorer verification status | repo 内では確認できない | n/a | 人手で補完が必要 |
 | Mainnet manual verify packet path | `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md` | `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md` | そのまま提出可能 |
 | Deploy commit SHA | `d30f394f4da352871a5677bb32d702cd4aa55f8c` | original Foxar mainnet broadcast artifacts, `docs/verify_inputs/mainnet/VERIFY_SUBMISSION.md` | そのまま提出可能 |
@@ -320,5 +320,5 @@ repo 記載だけでなく、後日 review 時に project-operated Core Blockcha
 - `docs/verify_inputs/devin/` は **Devin 用**であり official mainnet packet とは別物。
 - current public surface policy in the repo is:
   - browse: `https://core-cats.pages.dev`
-  - managed mint/support host: `https://core-cats-zeta.vercel.app`
+  - canonical mint/support host: `https://core-cats-mint.vercel.app`
 - repo 上の official address / deploy tx は Blockindex 問い合わせの strong candidate になるが、**live explorer state は別途確認が必要**。

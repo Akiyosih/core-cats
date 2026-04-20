@@ -37,11 +37,10 @@ const DEFAULTS = {
   privateCanaryWarningText: "NOT PUBLIC MINT",
 };
 // Prefer NEXT_PUBLIC_CORECATS_MINT_BASE_URL / CORECATS_MINT_BASE_URL.
-// This fallback tracks the current managed mint/support host. The launch-era
-// `core-cats-mint.vercel.app` hostname is kept only as legacy compatibility if
-// it is ever reattached to the current app.
-const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-zeta.vercel.app";
-const LEGACY_PUBLIC_MAINNET_MINT_BASE_URLS = new Set(["https://core-cats-mint.vercel.app"]);
+// This fallback tracks the canonical post-mint alias. `core-cats-zeta` is kept
+// only as compatibility while the browse surface is repointed.
+const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
+const LEGACY_PUBLIC_MAINNET_MINT_BASE_URLS = new Set(["https://core-cats-zeta.vercel.app"]);
 
 function normalizeLaunchState(value) {
   if (value === "canary" || value === "public" || value === "closed") {
@@ -335,6 +334,8 @@ export function getMintRuntimeConfigErrors(state = getCoreServerEnv()) {
   const siteBaseUrlError = getSiteBaseUrlConfigError(siteBaseUrl);
   const externalOrigin = !siteBaseUrlError && siteBaseUrl && !isLoopbackHttpUrl(siteBaseUrl);
   const browseBaseUrl = normalizeUrl(state.browseBaseUrl || "");
+  const soldOutPublicMintHost = state.launchState === "public" && state.siteSurface === "public-mint";
+  const backendSharedSecretRequired = state.backendMode === "proxy" && !soldOutPublicMintHost;
 
   if (siteBaseUrlError) {
     errors.push(siteBaseUrlError);
@@ -390,9 +391,12 @@ export function getMintRuntimeConfigErrors(state = getCoreServerEnv()) {
       }
     }
 
-    if (!backendSharedSecret) {
+    if (!backendSharedSecret && backendSharedSecretRequired) {
       errors.push("CORECATS_BACKEND_SHARED_SECRET must be explicitly set when the mint surface uses proxy mode.");
-    } else if (looksLikePlaceholder(backendSharedSecret) || backendSharedSecret === "dev-only-secret") {
+    } else if (
+      backendSharedSecretRequired &&
+      (looksLikePlaceholder(backendSharedSecret) || backendSharedSecret === "dev-only-secret")
+    ) {
       errors.push("The mint surface backend shared secret must not use a placeholder or dev-only value.");
     }
   }

@@ -104,6 +104,8 @@ export function validateProductionEnv(env) {
   const mintSurfaceEnabled = launchState !== "closed" && (siteSurface === "private-canary" || siteSurface === "public-mint");
   const hasInternalBackend = Boolean(internalBackendBaseUrl);
   const requiresExternalBackend = mintSurfaceEnabled && siteSurface === "public-mint";
+  const soldOutPublicMintHost = launchState === "public" && siteSurface === "public-mint";
+  const backendSharedSecretRequired = mintSurfaceEnabled && backendMode === "proxy" && !soldOutPublicMintHost;
 
   if (mintSurfaceEnabled) {
     if (!siteBaseUrl) {
@@ -131,9 +133,17 @@ export function validateProductionEnv(env) {
     }
 
     if (!backendSharedSecret) {
-      errors.push("CORECATS_BACKEND_SHARED_SECRET is required when the mint surface is enabled");
-    } else if (SECRET_PLACEHOLDER_RE.test(backendSharedSecret) || backendSharedSecret === "dev-only-secret") {
-      errors.push("CORECATS_BACKEND_SHARED_SECRET must not use a placeholder or dev-only value");
+      if (backendSharedSecretRequired) {
+        errors.push("CORECATS_BACKEND_SHARED_SECRET is required when the mint surface is enabled");
+      }
+    } else if (backendSharedSecretRequired) {
+      if (SECRET_PLACEHOLDER_RE.test(backendSharedSecret) || backendSharedSecret === "dev-only-secret") {
+        errors.push("CORECATS_BACKEND_SHARED_SECRET must not use a placeholder or dev-only value");
+      }
+    } else if (soldOutPublicMintHost) {
+      warnings.push(
+        "CORECATS_BACKEND_SHARED_SECRET is still set on a sold-out public host; remove it unless mint-active behavior is being revived.",
+      );
     }
   } else {
     if (siteBaseUrl && !siteBaseUrl.startsWith("https://")) {

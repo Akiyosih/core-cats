@@ -212,16 +212,16 @@ test("login identify mode keeps the two-step mint flow while changing only QR1",
 });
 
 test("current managed mint host forces login identify mode even if stale env says sign", async () => {
-  const sessionRequest = new Request("https://core-cats-zeta.vercel.app/api/mint/corepass/session", {
+  const sessionRequest = new Request("https://core-cats-mint.vercel.app/api/mint/corepass/session", {
     headers: {
-      host: "core-cats-zeta.vercel.app",
+      host: "core-cats-mint.vercel.app",
       "x-forwarded-proto": "https",
     },
   });
 
   await withEnv(
     {
-      NEXT_PUBLIC_SITE_BASE_URL: "https://core-cats-zeta.vercel.app",
+      NEXT_PUBLIC_SITE_BASE_URL: "https://core-cats-mint.vercel.app",
       COREPASS_IDENTIFY_METHOD: "sign",
       NEXT_PUBLIC_LAUNCH_STATE: "canary",
       NEXT_PUBLIC_SITE_SURFACE: "private-canary",
@@ -268,10 +268,10 @@ test("current managed mint host forces login identify mode even if stale env say
   );
 });
 
-test("legacy public mint hostname still overrides stale site base env for QR1 login and callback origin", async () => {
-  const sessionRequest = new Request("https://core-cats-mint.vercel.app/api/mint/corepass/session", {
+test("legacy managed mint alias still overrides stale site base env for QR1 login and callback origin", async () => {
+  const sessionRequest = new Request("https://core-cats-zeta.vercel.app/api/mint/corepass/session", {
     headers: {
-      host: "core-cats-mint.vercel.app",
+      host: "core-cats-zeta.vercel.app",
       "x-forwarded-proto": "https",
     },
   });
@@ -321,7 +321,7 @@ test("legacy public mint hostname still overrides stale site base env for QR1 lo
         assert.match(session.identify.desktopUri, /^corepass:login\/\?/);
         assert.match(
           session.identify.desktopUri,
-          /conn=https%3A%2F%2Fcore-cats-mint\.vercel\.app%2Fapi%2Fmint%2Fcorepass%2Fcallback/,
+          /conn=https%3A%2F%2Fcore-cats-zeta\.vercel\.app%2Fapi%2Fmint%2Fcorepass%2Fcallback/,
         );
       });
     },

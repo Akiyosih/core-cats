@@ -2,7 +2,7 @@ import { PUBLIC_TEASER_CONTRACT_SURFACE } from "./public-teaser-contract-surface
 
 // Prefer NEXT_PUBLIC_CORECATS_MINT_BASE_URL / CORECATS_MINT_BASE_URL.
 // This fallback matches the current live mint host wiring and is not a provenance claim.
-const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-zeta.vercel.app";
+const DEFAULT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";
 const OFFICIAL_MAINNET_CORECATS_ADDRESS = "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3";
 
 function normalizeLaunchState(value) {
