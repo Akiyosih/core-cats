@@ -4,7 +4,7 @@ Historical note:
 - this is a launch-era rehearsal note
 - at that time, the goal was to keep `core-cats-mint.vercel.app` reserved for the future public mint
 - in the current active repo, the canonical mint/support host is `core-cats-mint.vercel.app`
-- `core-cats-zeta.vercel.app` is retained as a compatibility alias while the browse surface is repointed
+- the former `core-cats-zeta.vercel.app` compatibility alias has been retired
 
 Purpose:
 1. historically, keep `core-cats-mint.vercel.app` reserved for the official public mint

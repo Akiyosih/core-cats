@@ -46,14 +46,13 @@
 
 - current browse host は `https://core-cats.pages.dev`
 - canonical mint/support host は `https://core-cats-mint.vercel.app`
-- `https://core-cats-zeta.vercel.app` は compatibility alias として残されています
 
 根拠:
 
 - `web/lib/server/core-env.js`
   - `browseBaseUrl = "https://core-cats.pages.dev";`
 - `web/lib/server/corepass-mint-sessions.js`
-  - `the old \`core-cats-mint.vercel.app\` hostname is accepted only as historical compatibility`
+  - `const CURRENT_MAINNET_MINT_BASE_URL = "https://core-cats-mint.vercel.app";`
 
 したがって、**current public surface は repo 内で説明できますが、historical deploy provenance としての host claim までは意図していません。**
 
