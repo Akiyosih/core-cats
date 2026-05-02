@@ -105,6 +105,53 @@ function loadText(filePath) {
   return fs.readFileSync(filePath, "utf8");
 }
 
+function normalizeForCompare(value) {
+  if (Array.isArray(value)) {
+    return value.map(normalizeForCompare);
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, normalizeForCompare(value[key])]),
+    );
+  }
+  return value;
+}
+
+function withoutGeneratedAt(doc) {
+  const copy = { ...doc };
+  delete copy.generated_at;
+  return normalizeForCompare(copy);
+}
+
+function preserveGeneratedAtIfUnchanged(nextDoc, outputPath) {
+  if (!fs.existsSync(outputPath)) {
+    return nextDoc;
+  }
+
+  try {
+    const existingDoc = readJson(outputPath);
+    const existingComparable = JSON.stringify(withoutGeneratedAt(existingDoc));
+    const nextComparable = JSON.stringify(withoutGeneratedAt(nextDoc));
+    if (existingDoc.generated_at && existingComparable === nextComparable) {
+      return {
+        ...nextDoc,
+        generated_at: existingDoc.generated_at,
+      };
+    }
+  } catch {
+    // If an existing generated file is malformed, overwrite it normally.
+  }
+
+  return nextDoc;
+}
+
+function writeGeneratedJson(outputPath, doc) {
+  const stableDoc = preserveGeneratedAtIfUnchanged(doc, outputPath);
+  fs.writeFileSync(outputPath, JSON.stringify(stableDoc, null, 2) + "\n");
+}
+
 function ensureAttrEqual(actual, expected, tokenId) {
   if (actual.length !== expected.length) {
     throw new Error(`token ${tokenId}: attributes length mismatch ${actual.length} != ${expected.length}`);
@@ -545,11 +592,11 @@ function main() {
   const collectionIndexDoc = buildCollectionIndexDoc(collectionItems, root, outDir);
   const detailIndexDoc = buildDetailIndexDoc(collectionItems, root, outDir);
 
-  fs.writeFileSync(path.join(outDir, "collection.json"), JSON.stringify(collectionDoc, null, 2) + "\n");
-  fs.writeFileSync(path.join(outDir, "filters.json"), JSON.stringify(filtersDoc, null, 2) + "\n");
-  fs.writeFileSync(path.join(outDir, "summary.json"), JSON.stringify(summaryViewDoc, null, 2) + "\n");
-  fs.writeFileSync(path.join(outDir, "detail-index.json"), JSON.stringify(detailIndexDoc, null, 2) + "\n");
-  fs.writeFileSync(publicCollectionIndexPath, JSON.stringify(collectionIndexDoc, null, 2) + "\n");
+  writeGeneratedJson(path.join(outDir, "collection.json"), collectionDoc);
+  writeGeneratedJson(path.join(outDir, "filters.json"), filtersDoc);
+  writeGeneratedJson(path.join(outDir, "summary.json"), summaryViewDoc);
+  writeGeneratedJson(path.join(outDir, "detail-index.json"), detailIndexDoc);
+  writeGeneratedJson(publicCollectionIndexPath, collectionIndexDoc);
 
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "collection.json"))}`);
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "filters.json"))}`);
