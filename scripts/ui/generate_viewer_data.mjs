@@ -105,51 +105,8 @@ function loadText(filePath) {
   return fs.readFileSync(filePath, "utf8");
 }
 
-function normalizeForCompare(value) {
-  if (Array.isArray(value)) {
-    return value.map(normalizeForCompare);
-  }
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.keys(value)
-        .sort()
-        .map((key) => [key, normalizeForCompare(value[key])]),
-    );
-  }
-  return value;
-}
-
-function withoutGeneratedAt(doc) {
-  const copy = { ...doc };
-  delete copy.generated_at;
-  return normalizeForCompare(copy);
-}
-
-function preserveGeneratedAtIfUnchanged(nextDoc, outputPath) {
-  if (!fs.existsSync(outputPath)) {
-    return nextDoc;
-  }
-
-  try {
-    const existingDoc = readJson(outputPath);
-    const existingComparable = JSON.stringify(withoutGeneratedAt(existingDoc));
-    const nextComparable = JSON.stringify(withoutGeneratedAt(nextDoc));
-    if (existingDoc.generated_at && existingComparable === nextComparable) {
-      return {
-        ...nextDoc,
-        generated_at: existingDoc.generated_at,
-      };
-    }
-  } catch {
-    // If an existing generated file is malformed, overwrite it normally.
-  }
-
-  return nextDoc;
-}
-
-function writeGeneratedJson(outputPath, doc) {
-  const stableDoc = preserveGeneratedAtIfUnchanged(doc, outputPath);
-  fs.writeFileSync(outputPath, JSON.stringify(stableDoc, null, 2) + "\n");
+function writeJson(outputPath, doc) {
+  fs.writeFileSync(outputPath, JSON.stringify(doc, null, 2) + "\n");
 }
 
 function ensureAttrEqual(actual, expected, tokenId) {
@@ -234,7 +191,6 @@ function buildFilterDoc(collectionItems, labelsDoc, summaryDoc, root, outDir) {
 
   return {
     version: "viewer_filters",
-    generated_at: new Date().toISOString(),
     source_manifest: "manifests/final_1000_manifest.json",
     source_trait_labels: "manifests/trait_display_labels_v1.json",
     source_trait_summary: "manifests/final_1000_trait_summary.json",
@@ -247,7 +203,6 @@ function buildFilterDoc(collectionItems, labelsDoc, summaryDoc, root, outDir) {
 function buildSummaryDoc(summaryDoc, root, outDir) {
   return {
     version: "viewer_summary",
-    generated_at: new Date().toISOString(),
     source_manifest: "manifests/final_1000_manifest.json",
     source_trait_summary: "manifests/final_1000_trait_summary.json",
     source_collection: normalizeRel(root, path.join(outDir, "collection.json")),
@@ -260,7 +215,6 @@ function buildSummaryDoc(summaryDoc, root, outDir) {
 function buildCollectionIndexDoc(collectionItems, root, outDir) {
   return {
     version: "viewer_collection_index",
-    generated_at: new Date().toISOString(),
     source_collection: normalizeRel(root, path.join(outDir, "collection.json")),
     total: collectionItems.length,
     items: collectionItems.map((item) => ({
@@ -273,7 +227,6 @@ function buildCollectionIndexDoc(collectionItems, root, outDir) {
 function buildDetailIndexDoc(collectionItems, root, outDir) {
   return {
     version: "viewer_detail_index",
-    generated_at: new Date().toISOString(),
     source_collection: normalizeRel(root, path.join(outDir, "collection.json")),
     total: collectionItems.length,
     items: collectionItems.map((item) => ({
@@ -578,7 +531,6 @@ function main() {
 
   const collectionDoc = {
     version: "viewer_collection",
-    generated_at: new Date().toISOString(),
     source_manifest: "manifests/final_1000_manifest.json",
     source_trait_labels: "manifests/trait_display_labels_v1.json",
     source_onchain_data: data.source_path,
@@ -592,11 +544,11 @@ function main() {
   const collectionIndexDoc = buildCollectionIndexDoc(collectionItems, root, outDir);
   const detailIndexDoc = buildDetailIndexDoc(collectionItems, root, outDir);
 
-  writeGeneratedJson(path.join(outDir, "collection.json"), collectionDoc);
-  writeGeneratedJson(path.join(outDir, "filters.json"), filtersDoc);
-  writeGeneratedJson(path.join(outDir, "summary.json"), summaryViewDoc);
-  writeGeneratedJson(path.join(outDir, "detail-index.json"), detailIndexDoc);
-  writeGeneratedJson(publicCollectionIndexPath, collectionIndexDoc);
+  writeJson(path.join(outDir, "collection.json"), collectionDoc);
+  writeJson(path.join(outDir, "filters.json"), filtersDoc);
+  writeJson(path.join(outDir, "summary.json"), summaryViewDoc);
+  writeJson(path.join(outDir, "detail-index.json"), detailIndexDoc);
+  writeJson(publicCollectionIndexPath, collectionIndexDoc);
 
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "collection.json"))}`);
   console.log(`[viewer-data] PASS: wrote ${normalizeRel(root, path.join(outDir, "filters.json"))}`);
