@@ -18,7 +18,7 @@
 - [プロジェクト情報] `docs/IMPLEMENTATION_SOURCE.md`
   - active canonical repo と GitHub URL を定義している
   - `Active implementation repository: \`core-cats\``
-  - `GitHub: https://github.com/Akiyosih/core-cats`
+  - `GitHub: https://github.com/CoreCats-CCAT/core-cats`
 
 - [collection name / symbol / description defaults] `foxar/.env.mainnet-official.example`
   - official mainnet deploy defaults が確認できる
@@ -139,13 +139,13 @@
 
 - [GitHub / verification links in UI] `shared/public-site/components/public-pages/transparency-page-content.jsx`
   - transparency page が GitHub repo と Blockindex explorer を verification surface として提示している
-  - `{ href: "https://github.com/Akiyosih/core-cats", label: "GitHub repository" }`
+  - `{ href: "https://github.com/CoreCats-CCAT/core-cats", label: "GitHub repository" }`
   - `{ href: explorerBaseUrl, label: "Blockindex explorer" }`
   - `Check the live contract surface and public artifacts.`
 
 - [GitHub links from token detail] `shared/public-site/components/public-pages/cat-detail-page-content.jsx`
   - public detail page から repo 内証拠へ飛べることの根拠
-  - `const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";`
+  - `const PROJECT_REPOSITORY_URL = "https://github.com/CoreCats-CCAT/core-cats";`
   - `Render script on GitHub`
   - `On-chain data tables on GitHub`
   - `Renderer reference on GitHub`

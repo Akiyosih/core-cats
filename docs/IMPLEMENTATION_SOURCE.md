@@ -5,13 +5,13 @@ Clarify where active implementation and migration planning are maintained.
 
 ## Source of Truth
 - Active implementation repository: `core-cats`
-- GitHub: https://github.com/Akiyosih/core-cats
+- GitHub: https://github.com/CoreCats-CCAT/core-cats
 - Historical contract path ADR: `docs/DECISIONS/ADR-0001-core-toolchain-priority.md`
 - Current execution procedure: `docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md`
 
 ## Reference Archive (`core-cats-eth`)
 - Role: frozen reference track and historical implementation log
-- GitHub: https://github.com/Akiyosih/core-cats-eth
+- GitHub: https://github.com/CoreCats-CCAT/core-cats-eth
 - Latest reference commit: `cae76d3`
 
 ## Mainnet Release Clarity Policy

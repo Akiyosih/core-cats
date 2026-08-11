@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import CatDetailLive from "../cat-detail-live.jsx";
 import { getCollectionItem, getSummary } from "../../lib/viewer-data.js";
 
-const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";
+const PROJECT_REPOSITORY_URL = "https://github.com/CoreCats-CCAT/core-cats";
 const RENDER_SCRIPT_URL = `${PROJECT_REPOSITORY_URL}/blob/main/scripts/ui/generate_viewer_data.mjs`;
 const ONCHAIN_DATA_URL = `${PROJECT_REPOSITORY_URL}/blob/main/foxar/src/CoreCatsOnchainData.sol`;
 const RENDERER_REFERENCE_URL = `${PROJECT_REPOSITORY_URL}/blob/main/foxar/src/CoreCatsMetadataRenderer.sol`;

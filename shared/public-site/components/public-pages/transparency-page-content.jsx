@@ -26,31 +26,31 @@ function buildExplorerAddressUrl(explorerBaseUrl, address) {
 
 const verificationReferences = [
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/README.md",
+    href: "https://github.com/CoreCats-CCAT/core-cats/blob/main/README.md",
     label: "Repository overview",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md",
+    href: "https://github.com/CoreCats-CCAT/core-cats/blob/main/docs/WORK_PROCEDURE_CORE_BLOCKCHAIN.md",
     label: "Historical launch procedure",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/DECISIONS/ADR-0002-randomness-strategy.md",
+    href: "https://github.com/CoreCats-CCAT/core-cats/blob/main/docs/DECISIONS/ADR-0002-randomness-strategy.md",
     label: "Randomness strategy ADR",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md",
+    href: "https://github.com/CoreCats-CCAT/core-cats/blob/main/docs/HISTORICAL_MAINNET_REHEARSAL_CONTRACTS.md",
     label: "Historical rehearsal contracts",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md",
+    href: "https://github.com/CoreCats-CCAT/core-cats/blob/main/docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md",
     label: "Official CCAT launch principles",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/manifests/final_1000_manifest.json",
+    href: "https://github.com/CoreCats-CCAT/core-cats/blob/main/manifests/final_1000_manifest.json",
     label: "Final 1000 manifest",
   },
   {
-    href: "https://github.com/Akiyosih/core-cats/blob/main/docs/TRUST_AND_PRIVACY_SURFACE.md",
+    href: "https://github.com/CoreCats-CCAT/core-cats/blob/main/docs/TRUST_AND_PRIVACY_SURFACE.md",
     label: "Trust + privacy notes",
   },
 ];
@@ -90,7 +90,7 @@ export default function TransparencyPageContent({ config }) {
           ? "Mainnet contract configured"
         : "Historical devin rehearsal contract";
   const verificationLinks = [
-    { href: "https://github.com/Akiyosih/core-cats", label: "GitHub repository" },
+    { href: "https://github.com/CoreCats-CCAT/core-cats", label: "GitHub repository" },
     { href: explorerBaseUrl, label: "Blockindex explorer" },
     ...verificationReferences,
   ].filter((item) => item.href);

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { buildBrowseHref } from "../lib/site-surface-links.js";
 
-const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";
+const PROJECT_REPOSITORY_URL = "https://github.com/CoreCats-CCAT/core-cats";
 const HANDOFF_DESKTOP = "desktop";
 const HANDOFF_SAME_DEVICE = "same-device";
 const HANDOFF_MODE_STORAGE_KEY = "corecats.mint.handoffMode";

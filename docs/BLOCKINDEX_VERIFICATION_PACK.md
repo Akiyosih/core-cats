@@ -35,8 +35,8 @@
 | collection 名 | `CoreCats` | `foxar/.env.mainnet-official.example` | `CORECATS_COLLECTION_NAME=CoreCats` |
 | token name prefix | `CoreCats` | `foxar/.env.mainnet-official.example` | `CORECATS_TOKEN_NAME_PREFIX=CoreCats` |
 | コレクション説明文 | `CoreCats is a 1,000-piece fully on-chain 24x24 SVG cat collection on Core Blockchain, built from public code and fixed manifests.` | `foxar/script/CoreCatsDeploy.s.sol` | `string memory defaultDescription = "CoreCats is a 1,000-piece fully on-chain 24x24 SVG cat collection on Core Blockchain, built from public code and fixed manifests.";` |
-| GitHub リポジトリ URL | `https://github.com/Akiyosih/core-cats` | `docs/IMPLEMENTATION_SOURCE.md` | `GitHub: https://github.com/Akiyosih/core-cats` |
-| GitHub リポジトリ URL（UI 側） | `https://github.com/Akiyosih/core-cats` | `shared/public-site/components/public-pages/cat-detail-page-content.jsx` | `const PROJECT_REPOSITORY_URL = "https://github.com/Akiyosih/core-cats";` |
+| GitHub リポジトリ URL | `https://github.com/CoreCats-CCAT/core-cats` | `docs/IMPLEMENTATION_SOURCE.md` | `GitHub: https://github.com/CoreCats-CCAT/core-cats` |
+| GitHub リポジトリ URL（UI 側） | `https://github.com/CoreCats-CCAT/core-cats` | `shared/public-site/components/public-pages/cat-detail-page-content.jsx` | `const PROJECT_REPOSITORY_URL = "https://github.com/CoreCats-CCAT/core-cats";` |
 | official mainnet contract 候補 | `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3` | `README.md` | `the canonical official collection contract is \`cb40316dcf944c9c2d4d1381653753a514e5e01d5df3\`` |
 | official mainnet contract 候補（UI contract surface） | `cb40316dcf944c9c2d4d1381653753a514e5e01d5df3` | `web-public-teaser/lib/public-teaser-contract-surface.js` | `coreCatsAddress: "cb40316dcf944c9c2d4d1381653753a514e5e01d5df3"` |
 | current browse host | `https://core-cats.pages.dev` | `web/lib/server/core-env.js` | `browseBaseUrl = "https://core-cats.pages.dev";` |
@@ -257,7 +257,7 @@ repo 記載だけでなく、後日 review 時に project-operated Core Blockcha
 | Supply / per-wallet rule | `1000`, `3 per wallet` | `foxar/src/CoreCats.sol`, `docs/OFFICIAL_CCAT_LAUNCH_PRINCIPLES.md` | そのまま提出可能 |
 | Random assignment design | `commit-finalize + future blockhash + lazy Fisher-Yates` | `docs/DECISIONS/ADR-0002-randomness-strategy.md`, `foxar/src/CoreCats.sol` | そのまま提出可能 |
 | Toolchain | Ylem `1.1.2`, Foxar workspace, Spark config, remappings, submodules | `foxar/spark.toml`, `foxar/foxar.toml`, `.gitmodules`, `docs/verify_inputs/README.md` | そのまま提出可能 |
-| GitHub repository URL | `https://github.com/Akiyosih/core-cats` | `docs/IMPLEMENTATION_SOURCE.md`, `shared/public-site/components/public-pages/cat-detail-page-content.jsx` | そのまま提出可能 |
+| GitHub repository URL | `https://github.com/CoreCats-CCAT/core-cats` | `docs/IMPLEMENTATION_SOURCE.md`, `shared/public-site/components/public-pages/cat-detail-page-content.jsx` | そのまま提出可能 |
 | Current public browse host | `https://core-cats.pages.dev` | `web/lib/server/core-env.js` | そのまま提出可能 |
 | Canonical mint/support host | `https://core-cats-mint.vercel.app` | `web/lib/server/corepass-mint-sessions.js` | そのまま提出可能 |
 | Explorer verification status | repo 内では確認できない | n/a | 人手で補完が必要 |
